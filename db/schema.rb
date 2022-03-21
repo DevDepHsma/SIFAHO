@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_03_05_152905) do
+ActiveRecord::Schema.define(version: 2022_03_21_221955) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "fuzzystrmatch"
@@ -1060,8 +1060,6 @@ ActiveRecord::Schema.define(version: 2022_03_05_152905) do
     t.bigint "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "professional_type_id", default: 5
-    t.index ["professional_type_id"], name: "index_professionals_on_professional_type_id"
     t.index ["user_id"], name: "index_professionals_on_user_id"
   end
 
@@ -1489,7 +1487,6 @@ ActiveRecord::Schema.define(version: 2022_03_05_152905) do
   add_foreign_key "products", "areas"
   add_foreign_key "products", "snomed_concepts"
   add_foreign_key "products", "unities"
-  add_foreign_key "professionals", "professional_types"
   add_foreign_key "quantity_ord_supply_lots", "laboratories"
   add_foreign_key "quantity_ord_supply_lots", "supplies"
   add_foreign_key "quantity_ord_supply_lots", "supply_lots"

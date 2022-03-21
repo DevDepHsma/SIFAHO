@@ -9,8 +9,7 @@ class ProfessionalsController < ApplicationController
       Professional,
       params[:filterrific],
       select_options: {
-        sorted_by: Professional.options_for_sorted_by,
-        professional_type_id: ProfessionalType.options_for_select
+        sorted_by: Professional.options_for_sorted_by
       },
       persistence_id: false
     ) or return
@@ -36,7 +35,6 @@ class ProfessionalsController < ApplicationController
   def new
     authorize Professional
     @professional = params[:id].present? ? Professional.find(params[:id]) : Professional.new
-    @professional_types = ProfessionalType.all
     respond_to do |format|
       format.js
     end
@@ -45,7 +43,6 @@ class ProfessionalsController < ApplicationController
   # GET /professionals/1/edit
   def edit
     authorize @professional
-    @professional_types = ProfessionalType.all
   end
 
   # POST /professionals
@@ -77,7 +74,6 @@ class ProfessionalsController < ApplicationController
         flash[:success] = "#{@professional.fullname} se ha modificado correctamente."
         format.html { redirect_to @professional }
       else
-        @professional_types = ProfessionalType.all
         flash[:error] = "#{@professional.fullname} no se ha podido modificar."
         format.html { redirect_to @professional }
       end
@@ -141,7 +137,6 @@ class ProfessionalsController < ApplicationController
       :last_name,
       :dni,
       :enrollment,
-      :professional_type_id,
       :is_active,
       :fullname,
       :sex,
