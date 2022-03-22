@@ -135,12 +135,11 @@
       <!-- Productos a dispensar -->
       <%= render "shared/prescription_orders/order_products_table", form: f, :relation => :outpatient_prescription_products %>
 
-      <input name="commit" id="submit-type" type="hidden">     
     <% end %>
   </div>
 
   <div class="card-footer d-flex justify-content-end">
-    <%= link_to 'Volver', outpatient_prescriptions_path, class: 'btn mr-1 btn-light' %>
+    <%= link_to 'Cancelar', outpatient_prescriptions_path, class: 'btn mr-1 btn-light' %>
   
     <!--button type='submit' class='btn btn-success mr-2' form="<%#= @outpatient_prescription.new_record? ? 'new_outpatient_prescription' : 'edit_outpatient_prescription_' + @outpatient_prescription.id.to_s %>" data-value='audit'>
       
@@ -155,7 +154,7 @@
 
     </button-->
 
-    <button type='submit' class='btn btn-primary' form="<%= @outpatient_prescription.new_record? ? 'new_outpatient_prescription' : 'edit_outpatient_prescription_' + @outpatient_prescription.id.to_s %>" data-value='dispensing'>
+    <button type='submit' class='btn btn-primary' form="<%= @outpatient_prescription.new_record? ? 'new_outpatient_prescription' : 'edit_outpatient_prescription_' + @outpatient_prescription.id.to_s %>">
       <div class="c-msg" style="pointer-events: none;">
         <%= fa_icon "paper-plane" %> Dispensar
       </div>

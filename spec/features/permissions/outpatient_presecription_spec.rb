@@ -130,6 +130,7 @@ RSpec.feature 'OutpatientPrescriptions', type: :feature do
               expect(page.has_link?('Imprimir')).to be true
               expect(page.has_button?('Retornar')).to be false
               expect(page.has_link?('Dispensar')).to be false
+              expect(page.has_link?('Editar')).to be false
 
               # Add return permission
               @return_recipe_permission = create(:permission, name: 'return_outpatient_recipes', permission_module: @permission_module)
@@ -146,7 +147,29 @@ RSpec.feature 'OutpatientPrescriptions', type: :feature do
               end
               expect(page.has_link?('Dispensar')).to be true
 
-              sleep 10
+              # Add Edition action
+              @update_recipe_permission = create(:permission, name: 'update_outpatient_recipes', permission_module: @permission_module)
+              PermissionUser.create(user: @user, sector: @user.sector, permission: @update_recipe_permission)
+              visit current_path
+
+              expect(page.has_link?('Editar')).to be true
+              click_link 'Editar'
+
+              expect(page).to have_content('Editando receta ambulatoria')
+              within '#order-product-cocoon-container' do
+                page.execute_script %Q{$('input.request-quantity').first().val(50).keydown()}
+                page.execute_script %Q{$('input.deliver-quantity').first().val(50).keydown()}
+                page.execute_script %Q{$('button.select-lot-btn').first().click()}
+                sleep 1
+              end
+              # Select a lot
+              expect(page.has_css?('#table-lot-selection')).to be true
+              within '#lot-selection' do
+                page.execute_script %Q{$('input[name="lot-quantity[0]"]').click().val(50)}
+                click_button 'Volver'
+              end
+              click_button 'Dispensar'
+              expect(page).to have_content('Viendo receta ambulatoria')
             end
           end
         end

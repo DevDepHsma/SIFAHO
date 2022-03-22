@@ -83,17 +83,15 @@ class Prescriptions::OutpatientPrescriptionsController < ApplicationController
   def update
     authorize @outpatient_prescription
 
-    @outpatient_prescription.status= dispensing? ? 'dispensada' : 'pendiente'
-    @outpatient_prescription.date_dispensed = dispensing? ? DateTime.now : ''
+    @outpatient_prescription.status = 'dispensada'
+    @outpatient_prescription.date_dispensed = DateTime.now
 
     respond_to do |format|
       begin
         @outpatient_prescription.update!(outpatient_prescription_params)
-
-        if(dispensing?); @outpatient_prescription.dispense_by(current_user); end
-
-        message = dispensing? ? "La receta ambulatoria de "+@outpatient_prescription.patient.fullname+" se ha auditado y dispensado correctamente." : "La receta ambulatoria de "+@outpatient_prescription.patient.fullname+" se ha auditado correctamente."
-        notification_type = dispensing? ? "auditó y dispensó" : "auditó"
+        @outpatient_prescription.dispense_by(current_user)
+        message = "La receta ambulatoria de #{@outpatient_prescription.patient.fullname} se ha auditado y dispensado correctamente." 
+        notification_type = 'auditó y dispensó'
 
         @outpatient_prescription.create_notification(current_user, notification_type)
         format.html { redirect_to @outpatient_prescription, notice: message }
@@ -200,9 +198,5 @@ class Prescriptions::OutpatientPrescriptionsController < ApplicationController
         ]
       ]
     )
-  end
-
-  def dispensing?
-    return params[:commit] == "dispensing"
   end
 end
