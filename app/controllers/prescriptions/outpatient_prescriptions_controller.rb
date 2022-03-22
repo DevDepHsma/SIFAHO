@@ -52,19 +52,18 @@ class Prescriptions::OutpatientPrescriptionsController < ApplicationController
     authorize @outpatient_prescription
     @outpatient_prescription.provider_sector = current_user.sector
     @outpatient_prescription.establishment = current_user.sector.establishment
-    @outpatient_prescription.remit_code = "AM"+DateTime.now.to_s(:number)
-
-    @outpatient_prescription.status = dispensing? ? 'dispensada' : 'pendiente'
-    @outpatient_prescription.date_dispensed = dispensing? ? DateTime.now : ''
+    @outpatient_prescription.remit_code = "AM#{DateTime.now.to_s(:number)}"
+    @outpatient_prescription.status = 'dispensada'
+    @outpatient_prescription.date_dispensed = DateTime.now
 
     respond_to do |format|
       # Si se entrega la receta
       begin
         @outpatient_prescription.save!
-        if(dispensing?); @outpatient_prescription.dispense_by(current_user); end
+        @outpatient_prescription.dispense_by(current_user)
 
-        message = dispensing? ? "La receta ambulatoria de "+@outpatient_prescription.patient.fullname+" se ha creado y dispensado correctamente." : "La receta ambulatoria de "+@outpatient_prescription.patient.fullname+" se ha creado correctamente."
-        notification_type = dispensing? ? "creó y dispensó" : "creó"
+        message = "La receta ambulatoria de #{@outpatient_prescription.patient.fullname} se ha creado y dispensado correctamente."
+        notification_type = 'creó y dispensó'
 
         @outpatient_prescription.create_notification(current_user, notification_type)
         format.html { redirect_to @outpatient_prescription, notice: message }

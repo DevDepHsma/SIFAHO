@@ -8,7 +8,7 @@ class OutpatientPrescriptionPolicy < ApplicationPolicy
   end
 
   def new?
-    user.has_permission?(:create_outpatient_recipes)
+    dispense?
   end
 
   def create?
@@ -28,7 +28,9 @@ class OutpatientPrescriptionPolicy < ApplicationPolicy
   end
 
   def dispense?
-    user.has_permission?(:dispense_outpatient_recipes)
+    if !defined?(record.pendiente?) || (defined?(record.pendiente?) && record.pendiente?)
+      user.has_permission?(:dispense_outpatient_recipes) 
+    end
   end
 
   def return_dispensation?

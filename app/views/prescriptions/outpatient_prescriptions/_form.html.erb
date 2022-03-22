@@ -157,10 +157,10 @@
 
     <button type='submit' class='btn btn-primary' form="<%= @outpatient_prescription.new_record? ? 'new_outpatient_prescription' : 'edit_outpatient_prescription_' + @outpatient_prescription.id.to_s %>" data-value='dispensing'>
       <div class="c-msg" style="pointer-events: none;">
-        <%= fa_icon "paper-plane" %> Guardar y dispensar
+        <%= fa_icon "paper-plane" %> Dispensar
       </div>
       <div class="d-none" style="pointer-events: none;">
-        Guardando...
+        Dispensando...
         <%= fa_icon "spinner", class: "fa-spin send-audit" %>
       </div>
     </button>

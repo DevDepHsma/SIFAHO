@@ -180,11 +180,11 @@ RSpec.feature 'Permissions', type: :feature do
 
             find(:css, "#linked-sector-#{@sector.id}").click
             expect(page.has_css?('#delete-item', visible: true)).to be true
-            sleep 1 #seleep for modal animation delay
+            sleep 1 #sleep for modal animation delay
             within '#delete-item' do
               click_link 'Confirmar'
             end
-            sleep 1 #seleep for modal animation delay
+            sleep 1 #sleep for modal animation delay
 
             expect(page.has_css?('ul#available_sectors_container', visible: true)).to be false
 

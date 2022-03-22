@@ -5,9 +5,6 @@ RSpec.feature 'OutpatientPrescriptions', type: :feature do
   background do
     @user = create(:user_1)
     @permission_module = create(:permission_module, name: 'Recetas Ambulatorias')
-    @professionals_permission_module = create(:permission_module, name: 'Profesionales')
-    @create_recipe_permission = create(:permission, name: 'create_outpatient_recipes', permission_module: @permission_module)
-    @create_professional_permission = create(:permission, name: 'create_professionals', permission_module: @professionals_permission_module)
     visit '/users/sign_in'
     within('#new_user') do
       fill_in 'user_username', with: @user.username
@@ -58,7 +55,8 @@ RSpec.feature 'OutpatientPrescriptions', type: :feature do
 
         describe 'Create action outpatient recipe' do
           before(:each) do
-            PermissionUser.create(user: @user, sector: @user.sector, permission: @create_recipe_permission)
+            @dispense_recipe_permission = create(:permission, name: 'dispense_outpatient_recipes', permission_module: @permission_module)
+            PermissionUser.create(user: @user, sector: @user.sector, permission: @dispense_recipe_permission)
           end
 
           it 'shows "+ Ambulatoria" link button' do
@@ -75,12 +73,20 @@ RSpec.feature 'OutpatientPrescriptions', type: :feature do
             expect(page.has_css?('input#outpatient_prescription_outpatient_prescription_products_attributes_0_request_quantity')).to be true
             expect(page.has_css?('input#outpatient_prescription_outpatient_prescription_products_attributes_0_delivery_quantity')).to be true
             expect(page.has_link?('Agregar insumo')).to be true
-            expect(page.has_button?('Guardar y dispensar')).to be true
+            expect(page.has_button?('Dispensar')).to be true
           end
 
           describe 'save new outpatient recipe' do
             before(:each) do
+              # Create scenario with professional form completed
+              @professionals_permission_module = create(:permission_module, name: 'Profesionales')
+              @create_professional_permission = create(:permission, name: 'create_professionals', permission_module: @professionals_permission_module)
               PermissionUser.create(user: @user, sector: @user.sector, permission: @create_professional_permission)
+              product = create(:unidad_product)
+              lot = create(:province_lot_without_product, product: product)
+              stock = create(:stock, product: product, sector: @user.sector)
+              @lot_stock = LotStock.create(quantity: 1500, lot: lot, stock: stock)
+
               find(:css, '#new-outpatient').click
               sleep 1
               page.execute_script %Q{$('#add-professional-btn').click()}
@@ -95,7 +101,52 @@ RSpec.feature 'OutpatientPrescriptions', type: :feature do
               sleep 2
             end
             it 'create recipe' do
+              # Add product
               expect(page.has_css?('#professional')).to be true
+              within '#order-product-cocoon-container' do
+                page.execute_script %Q{$('input[name="product_code_fake-"]').val('0000').keydown()}
+                sleep 2
+              end
+              expect(find('ul.ui-autocomplete')).to have_content('0000')
+              page.execute_script("$('.ui-menu-item:contains(\"0000\")').first().click()")
+              sleep 1
+              within '#order-product-cocoon-container' do
+                page.execute_script %Q{$('input.request-quantity').first().val(100).keydown()}
+                page.execute_script %Q{$('input.deliver-quantity').first().val(100).keydown()}
+                page.execute_script %Q{$('button.select-lot-btn').first().click()}
+                sleep 1
+              end
+              # Select a lot
+              expect(page.has_css?('#table-lot-selection')).to be true
+              within '#lot-selection' do
+                page.execute_script %Q{$('input[name="lot-quantity[0]"]').click().val(100)}
+                click_button 'Volver'
+              end
+              sleep 1
+              # Dispense
+              click_button 'Dispensar'
+              expect(page).to have_content('Viendo receta ambulatoria')
+              expect(page.has_link?('Volver')).to be true
+              expect(page.has_link?('Imprimir')).to be true
+              expect(page.has_button?('Retornar')).to be false
+              expect(page.has_link?('Dispensar')).to be false
+
+              # Add return permission
+              @return_recipe_permission = create(:permission, name: 'return_outpatient_recipes', permission_module: @permission_module)
+              PermissionUser.create(user: @user, sector: @user.sector, permission: @return_recipe_permission)
+              visit current_path
+
+              # Return recipe
+              expect(page.has_button?('Retornar')).to be true
+              click_button 'Retornar'
+              sleep 1
+              expect(page).to have_content('Retornar a Pendiente')
+              within '#return-confirm' do
+                click_link 'Confirmar'
+              end
+              expect(page.has_link?('Dispensar')).to be true
+
+              sleep 10
             end
           end
         end
