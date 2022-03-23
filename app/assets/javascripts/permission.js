@@ -10,9 +10,16 @@ $(document).on('turbolinks:load', function() {
   });
   $(".perm-toggle-button").on('change', function(e){
     $(e.target).siblings("input[type='hidden']").val(!$(e.target).is(':checked'));
+    // mark "todos" checkbox as checked if all children are checked
+    const parentCheckbox = $(e.target).closest('.card').find('input[type=checkbox].perm-mod-toggle-button').first();
+    const checkboxes = $(e.target).closest('.collapse').find('input[type=checkbox].perm-toggle-button');
+    const checkBoxValueArr = checkboxes.toArray().map(element => $(element).is(':checked') );
+    const anyUnchecked = checkBoxValueArr.some(element => element == false);
+    parentCheckbox.prop('checked', !anyUnchecked);
   });
   
   $('#remote_form_sector, #remote_form_sector_selector').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+    $("#remote_form_input_sector").val($(e.target).val());
     $(e.target).closest('form').submit();
   });
 
