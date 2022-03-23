@@ -20,6 +20,7 @@ $(document).on('turbolinks:load', function() {
   
   $('#remote_form_sector, #remote_form_sector_selector').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
     $("#remote_form_input_sector").val($(e.target).val());
+    $("#remote_form_search_name").val("");
     $(e.target).closest('form').submit();
   });
 

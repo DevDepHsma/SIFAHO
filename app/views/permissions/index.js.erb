@@ -21,7 +21,3 @@ $(".perm-toggle-button").on('change', function(e){
     const anyUnchecked = checkBoxValueArr.some(element => element == false);
     parentCheckbox.prop('checked', !anyUnchecked);
   });
-
-$('#remote_form_sector').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
-  $(e.target).closest('form').submit();
-});
