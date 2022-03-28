@@ -20,7 +20,7 @@ class OriginalChronicPrescriptionProductPolicy < ApplicationPolicy
 
   def deliver?
     if record.pendiente?
-      user.has_any_role?(:admin, :farmaceutico, :auxiliar_farmacia)
+      user.has_permission?(:dispense_chronic_prescriptions)
     end
   end
 end

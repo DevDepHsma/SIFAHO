@@ -6,21 +6,21 @@ class ChronicPrescriptionPolicy < ApplicationPolicy
   def show?
     user.has_permission?(:read_chronic_prescriptions)
   end
-  
+
   def new?
     user.has_permission?(:create_chronic_prescriptions)
   end
-  
+
   def create?
     new?
-  end  
-  
+  end
+
   def edit?
     if (record.pendiente? || record.dispensada_parcial?) && (DateTime.now.to_time < record.expiry_date)
       user.has_permission?(:update_chronic_prescriptions)
     end
   end
-  
+
   def edit_dispense?
     if record.dispensada_parcial?
       user.has_any_role?(:admin, :farmaceutico, :auxiliar_farmacia)
@@ -30,17 +30,17 @@ class ChronicPrescriptionPolicy < ApplicationPolicy
   def update?
     edit?
   end
-  
+
   def dispense_new?
     if record.any_product_without_dispensing? && !record.vencida? && !record.dispensada?
-      user.has_any_role?(:admin, :farmaceutico, :auxiliar_farmacia)
+      user.has_permission?(:dispense_chronic_prescriptions)
     end
   end
-  
+
   def dispense?
     dispense_new?
   end
-  
+
   def return_dispensation?
     # no se puede retornar ninguna dispensacion, si la receta esta vencida
     !record.vencida?
