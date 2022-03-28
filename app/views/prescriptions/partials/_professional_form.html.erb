@@ -1,0 +1,33 @@
+<div>
+  <%= form.label :professional_id do %>
+    Médico
+    <% if policy(Professional).create? %>
+      <%= link_to new_professional_path, class: "btn btn-primary btn-sm", 
+                                        remote: 'true', 
+                                        title: 'Nuevo médico', 
+                                        tabindex: "-1", 
+                                        id: 'add-professional-btn', 
+                                        data: { toggle: 'tooltip', placement: 'top' } do %>
+        <%= fa_icon "plus" %>
+      <% end %>
+    <% end %>
+  <% end %>
+  <div class="custom-input-group">
+    <%= form.input :professional, as: :string,
+      label: false,
+      placeholder: 'Matrícula | Apellido | Nombre',
+      required: true,
+      autocomplete: false,
+      :input_html => {
+        id: "professional",
+        data: { autocomplete_source: professionals_path },
+        value: "#{ if form.object.professional.present?; form.object.professional.full_info; end }",
+        size: 30
+      }
+    %>
+    <%= form.hidden_field :professional_id, id: "professional_id", value: "#{if form.object.professional.present?; form.object.professional.id; end }" %>
+    <div class="with-loading">
+      <%= fa_icon 'spinner', class: "fa-spin"%>
+    </div>
+  </div>
+</div>

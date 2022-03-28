@@ -3,18 +3,9 @@ require 'rails_helper'
 RSpec.feature 'OutpatientPrescriptions', type: :feature do
 
   background do
-
     @user = create(:user_1)
     sign_in_as(@user)
     @permission_module = create(:permission_module, name: 'Recetas Ambulatorias')
-
-    # @user = create(:user_1)
-    # visit '/users/sign_in'
-    # within('#new_user') do
-    #   fill_in 'user_username', with: @user.username
-    #   fill_in 'user_password', with: @user.password
-    # end
-    # click_button 'Iniciar sesión'
   end
 
   describe 'GET / (home page)', js: true do
