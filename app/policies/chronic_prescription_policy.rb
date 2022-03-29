@@ -48,7 +48,7 @@ class ChronicPrescriptionPolicy < ApplicationPolicy
 
   def destroy?
     if record.pendiente?
-      user.has_any_role?(:admin, :farmaceutico)
+      user.has_permission?(:destroy_chronic_prescriptions)
     end
   end
   
@@ -64,7 +64,7 @@ class ChronicPrescriptionPolicy < ApplicationPolicy
 
   def finish?
     unless record.any_product_without_dispensing? || record.dispensada? || record.vencida?
-      user.has_any_role?(:admin, :farmaceutico, :auxiliar_farmacia, :medic)
+      user.has_permission?(:complete_treatment_chronic_prescriptions)
     end
   end
 end
