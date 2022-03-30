@@ -136,13 +136,12 @@ RSpec.feature 'Permissions::ChronicPrescriptions', type: :feature do
             click_link 'Volver'
             # List filters
             expect(page.has_css?('#filterrific_filter')).to be true
-            expect(page.has_css?('input[name="filterrific[search_by_remit_code]"')).to be true
-            expect(page.has_css?('input[name="filterrific[search_by_professional]"')).to be true
-            expect(page.has_css?('input[name="filterrific[search_by_patient]"')).to be true
-            expect(page.has_css?('input[name="filterrific[date_prescribed_since]"')).to be true
-            expect(page.has_css?('input[name="filterrific[for_statuses][]"', visible: false)).to be true
-            expect(page.has_css?('input[name="filterrific[sorted_by]"', visible: false)).to be true
-
+            expect(page.has_css?('input[name="filterrific[search_by_remit_code]"]')).to be true
+            expect(page.has_css?('input[name="filterrific[search_by_professional]"]')).to be true
+            expect(page.has_css?('input[name="filterrific[search_by_patient]"]')).to be true
+            expect(page.has_css?('input[name="filterrific[date_prescribed_since]"]')).to be true
+            expect(page.has_css?('select[name="filterrific[for_statuses][]"]', visible: false)).to be true
+            expect(page.has_css?('select[name="filterrific[sorted_by]"]', visible: false)).to be true
             # List
             expect(page.has_css?('#filterrific_results')).to be true
             expect(page.has_css?('#chronic_prescriptions')).to be true
