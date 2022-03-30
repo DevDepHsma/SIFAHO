@@ -23,7 +23,7 @@ class ChronicPrescriptionPolicy < ApplicationPolicy
 
   def edit_dispense?
     if record.dispensada_parcial?
-      user.has_any_role?(:admin, :farmaceutico, :auxiliar_farmacia)
+      user.has_permission?(:update_chronic_prescriptions)
     end
   end
 
@@ -54,12 +54,6 @@ class ChronicPrescriptionPolicy < ApplicationPolicy
   
   def delete?
     destroy?
-  end
-
-  def nullify?
-    if record.provider_sector == user.sector && record.solicitud? && (record.solicitud_enviada? || record.proveedor_auditoria?)
-      user.has_any_role?(:admin, :farmaceutico, :auxiliar_farmacia, :medic, :enfermero)
-    end
   end
 
   def finish?
