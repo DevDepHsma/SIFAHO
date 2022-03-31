@@ -2,7 +2,9 @@ module Helpers
   module Recipe
     def find_or_create_patient_by_dni(link, patient_dni)
       visit '/'
-      click_link 'Recetas'
+      within '#sidebar-wrapper' do
+        click_link 'Recetas'
+      end
       expect(page.has_link?(link)).to be true
       within '#new_patient' do
         expect(page.has_css?('input#patient-dni')).to be true
