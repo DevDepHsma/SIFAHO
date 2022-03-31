@@ -4,12 +4,7 @@ class PrescriptionsController < ApplicationController
   # GET /prescriptions.json
   def index
     authorize Prescription
-    @filterrific = initialize_filterrific(
-      Prescription.with_establishment(current_user.establishment),
-      params[:filterrific],
-      persistence_id: false
-    ) or return
-    @prescriptions = @filterrific.find.page(params[:page]).per_page(15)
+    @patient = Patient.new
   end
 
   def get_prescriptions
@@ -21,11 +16,4 @@ class PrescriptionsController < ApplicationController
       format.js
     end
   end
-
-  # GET /prescriptions/new
-  def new
-    # authorize Prescription
-    @patient = Patient.new
-  end
-
 end

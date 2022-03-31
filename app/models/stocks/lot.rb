@@ -1,6 +1,6 @@
 class Lot < ApplicationRecord
   acts_as_paranoid
-  include PgSearch
+  include PgSearch::Model
 
   enum status: { vigente: 0, por_vencer: 1, vencido: 2 }
 
@@ -127,6 +127,7 @@ class Lot < ApplicationRecord
 
   # Se actualiza el estado de expiración sin guardar
   def update_status
+    puts self.id
     unless self.vencido?
       if self.expiry_date.present?
         # If expired

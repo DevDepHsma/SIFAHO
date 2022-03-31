@@ -1,5 +1,5 @@
 class Professional < ApplicationRecord
-  include PgSearch
+  include PgSearch::Model
 
   enum sex: { indeterminate: 1, female: 2, male: 3 }
 
@@ -9,7 +9,6 @@ class Professional < ApplicationRecord
   has_many :outpatient_prescriptions
   has_many :chronic_prescriptions
   has_many :qualifications
-  belongs_to :professional_type, optional: true
   has_one :user
   has_one_attached :avatar
 
@@ -23,7 +22,7 @@ class Professional < ApplicationRecord
   filterrific(
     default_filter_params: { sorted_by: 'created_at_desc' },
     available_filters: %i[sorted_by search_professional search_professional_qualification
-                          get_by_qualifications_and_fullname search_dni with_professional_type_id]
+                          get_by_qualifications_and_fullname search_dni]
   )
 
   pg_search_scope :get_by_qualifications_and_fullname,
@@ -58,9 +57,6 @@ class Professional < ApplicationRecord
     when /^matricula_/
       # Ordenamiento por matricula
       order("LOWER(qualifications.code) #{direction}").joins(:qualifications)
-    when /^professional_type_/
-      # Ordenamiento por nombre del sector
-      order("LOWER(professional_types.name) #{direction}").joins(:professional_type)
     else
       # Si no existe la opcion de ordenamiento se levanta la excepcion
       raise(ArgumentError, "Invalid sort option: #{sort_option.inspect}")
@@ -94,10 +90,6 @@ class Professional < ApplicationRecord
     "#{fullname} MP #{qualifications.first.code}"
   end
 
-  # filters on 'sector_id' foreign key
-  scope :with_professional_type_id, lambda { |type_id|
-    where(professional_type_id: [*type_id])
-  }
 
   def assign_full_name
     self.fullname = "#{last_name} #{first_name}"

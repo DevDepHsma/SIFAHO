@@ -21,7 +21,7 @@ FactoryBot.define do
       name { 'Barbijo tableteado, triple capa, descartable' }
       description { 'Barbijo tableteado, tricapa, descartable, con cuatro tiras para fijación en posición.' }
     end
-    
+
     trait :prod_2 do
       association :area, factory: :medication_area
       association :unity, factory: :unidad_unity

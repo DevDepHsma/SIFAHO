@@ -1,12 +1,12 @@
 class Patient < ApplicationRecord
-  include PgSearch
+  include PgSearch::Model
 
   enum status: { Temporal: 0, Validado: 1 }
   enum sex: { Otro: 1, Femenino: 2, Masculino: 3 }
   enum marital_status: { soltero: 1, casado: 2, separado: 3, divorciado: 4, viudo: 5, otro: 6 }
 
   # Relationships
-  belongs_to :patient_type
+  belongs_to :patient_type, optional: true
   belongs_to :address, optional: true
   belongs_to :bed, optional: true
   has_many :outpatient_prescriptions, dependent: :destroy

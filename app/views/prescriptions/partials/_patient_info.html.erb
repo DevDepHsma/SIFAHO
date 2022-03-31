@@ -1,0 +1,25 @@
+<div class="d-flex">
+  <div class="w-25">
+    <%= image_tag patient_avatar(recipe.patient), size: '162x200', class:"img-thumbnail" %>
+  </div>
+  <div class="w-75">
+    <h5 id="patient-name" data-insurance-url="<%= get_insurance_path %>" data-patient-dni="<%= recipe.patient.dni %>">
+      <strong><%= recipe.patient.last_name %>,</strong>
+      <%= recipe.patient.first_name %>
+    </h5>
+  </div>
+</div>
+  
+<h5 class="mt-3">
+  <%= recipe.patient.dni %>
+  <span class="badge badge-<%= recipe.patient.Temporal? ? "warning" : "success" %>">
+    <%= recipe.patient.status %>
+  </span>
+</h5>
+
+<h5> <%= recipe.patient.email %> </h5>
+
+<% if recipe.patient.birthdate.present? %>
+  <p class="mb-0 mt-3"><strong>Fecha de nacimiento</strong></p>
+  <p><%= recipe.patient.birthdate.strftime("%d/%m/%Y")%> | <%= recipe.patient.age_string %></h5>
+<% end %>

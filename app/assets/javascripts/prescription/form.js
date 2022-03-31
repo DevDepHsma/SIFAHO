@@ -1,5 +1,5 @@
 $(document).on('turbolinks:load', function(e){
-  if(!(['prescriptions'].includes(_PAGE.controller) && (['new', 'edit', 'create', 'update', 'dispense'].includes(_PAGE.action))) ) return false;
+  if(!(['prescriptions'].includes(_PAGE.controller) && (['index'].includes(_PAGE.action))) ) return false;
 
   // Scan document and fill input autocomplete
   $(document).scannerDetection({

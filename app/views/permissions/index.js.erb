@@ -1,0 +1,23 @@
+<% js = escape_javascript(
+  render(partial: 'permissions/list', locals: { permission_modules: @permission_modules })
+) %>
+$("#permissions_list").html("<%= js %>");
+
+$(".perm-mod-toggle-button").on('change', function(e){
+  const parent = $(e.target).closest('.card');
+  const permissions = parent.find('.perm-toggle-button');
+  permissions.each((index, permission) => {
+    $(permission).prop('checked', $(e.target).is(':checked'));
+    $(permission).siblings("input[type='hidden']").val(!$(e.target).is(':checked'));
+  });
+});
+
+$(".perm-toggle-button").on('change', function(e){
+    $(e.target).siblings("input[type='hidden']").val(!$(e.target).is(':checked'));
+    // mark "todos" checkbox as checked if all children are checked
+    const parentCheckbox = $(e.target).closest('.card').find('input[type=checkbox].perm-mod-toggle-button').first();
+    const checkboxes = $(e.target).closest('.collapse').find('input[type=checkbox].perm-toggle-button');
+    const checkBoxValueArr = checkboxes.toArray().map(element => $(element).is(':checked') );
+    const anyUnchecked = checkBoxValueArr.some(element => element == false);
+    parentCheckbox.prop('checked', !anyUnchecked);
+  });

@@ -32,9 +32,9 @@
           <% end %>
 
           <% if policy(Prescription).new? %>
-            <%= link_to new_prescription_path, class: "dropdown-item" do %>
+            <%= link_to prescriptions_path, class: "dropdown-item" do %>
               <%= fa_icon "plus" %>
-              Nueva receta
+              Recetas
             <% end %>
           <% end %>          
         </div>

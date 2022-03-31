@@ -68,6 +68,7 @@
 @import 'bootstrap_datepicker_1_9_0/css/bootstrap-datepicker.min';
 @import 'snomed_concepts';
 @import 'loading';
+@import 'permission';
 
 
 html {
@@ -304,4 +305,14 @@ a {
   li:hover{
     background-color: #f8f9fa;
   }
+}
+
+.user-thumbnail-25{
+  width: 25px;
+  height: 25px;
+}
+
+.user-thumbnail-40{
+  width: 40px;
+  height: 40px;
 }

@@ -21,79 +21,16 @@
         <div class="col-6">
           <div class="row">
             <div class="col-6 border-right">
-              <div class="d-flex">
-                <div class="w-25">
-                  <%= image_tag patient_avatar(@chronic_prescription.patient), size: '162x200', class:"img-thumbnail" %>
-                </div>
-                <div class="w-75">
-                  <h5 id="patient-name" data-insurance-url="<%= get_insurance_path %>" data-patient-dni="<%= @chronic_prescription.patient.dni %>">
-                    <strong><%= @chronic_prescription.patient.last_name %>,</strong>
-                    <%= @chronic_prescription.patient.first_name %>
-                  </h5>
-                </div>
-              </div>
-                
-              <h5 class="mt-3">
-                <%= @chronic_prescription.patient.dni %>
-                <span class="badge badge-<%= @chronic_prescription.patient.Temporal? ? "warning" : "success" %>">
-                  <%= @chronic_prescription.patient.status %>
-                </span>
-              </h5>
-
-              <h5> <%= @chronic_prescription.patient.email %> </h5>
-
-              <% if @chronic_prescription.patient.birthdate.present? %>
-                <p class="mb-0 mt-3"><strong>Fecha de nacimiento</strong></p>
-                <p><%= @chronic_prescription.patient.birthdate.strftime("%d/%m/%Y")%> | <%= @chronic_prescription.patient.age_string %></h5>
-              <% end %>
-
-              <%# <div id="pat-os-body"></div> %>
+              <%= render 'prescriptions/partials/patient_info', recipe: @chronic_prescription %>
             </div>
             <div class="col-6 border-right">              
               <%# Medico %>
-              <div>
-                <% if !policy(chronic_prescription).edit_dispense? %>
-                  <%= f.label :professional_id do %>
-                    Médico
-                    <%= link_to new_professional_path, class: "btn btn-primary btn-sm", remote: 'true',
-                      title: 'Nuevo médico', tabindex: "-1", data: { toggle: 'tooltip', placement: 'top' } do %>
-                      <%= fa_icon "plus" %>
-                    <% end %>
-                  <% end %>
-                  <div class="custom-input-group">
-                    <%= f.input :professional, as: :string,
-                      label: false,
-                      placeholder: 'Matrícula | Apellido | Nombre',
-                      required: true,
-                      autocomplete: false,
-                      :input_html => {
-                        id: "professional",
-                        data: { autocomplete_source: professionals_path },
-                        value: "#{ if f.object.professional.present?; f.object.professional.full_info; end }",
-                        size: 30
-                      }
-                    %>
-                    <%= f.hidden_field :professional_id, id: "professional_id", value: "#{if f.object.professional.present?; f.object.professional.id; end }" %>
-                    <div class="with-loading">
-                      <%= fa_icon 'spinner', class: "fa-spin"%>
-                    </div>
-                  </div>
-                <% else %>
-                  <label for="professional_fake">
-                    Médico
-                  </label>
-                  <div class="form-group">
-                    <input class="form-control" name="professional_fake" value="<%= f.object.professional.full_info %>" readonly="'readonly'">
-                  </div>
-                <% end %>
-              </div>
-              
+              <%= render 'prescriptions/partials/professional_form', form: f, recipe: @chronic_prescription %>
             </div>
           </div>
         </div>
         <div class="col-6">
-
-        <!--------------------------inputs receta---------------------------------->
+          <!--------------------------inputs receta---------------------------------->
           <div class="row">
             <%# fecha recetada %>
             <div class="col-4">
@@ -170,7 +107,7 @@
 
     <button type='submit' class='btn btn-primary' form="<%= @chronic_prescription.new_record? ? 'new_chronic_prescription' : 'edit_chronic_prescription_' + @chronic_prescription.id.to_s %>" data-value='dispensing'>
       <div class="c-msg" style="pointer-events: none;">
-        <%= fa_icon "paper-plane" %> Guardar y dispensar
+        <%= fa_icon "paper-plane" %> Guardar
       </div>
       <div class="d-none" style="pointer-events: none;">
         Guardando...

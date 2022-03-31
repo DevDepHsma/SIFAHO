@@ -63,7 +63,8 @@ class Prescriptions::ChronicPrescriptionsController < ApplicationController
         notification_type = 'creó'
 
         @chronic_prescription.create_notification(current_user, notification_type)
-        if dispensing?
+
+        if policy(@chronic_prescription).dispense_new?
           format.html { redirect_to new_chronic_prescription_chronic_dispensation_path(@chronic_prescription), notice: message }
         else
           format.html { redirect_to @chronic_prescription, notice: message }
@@ -93,7 +94,7 @@ class Prescriptions::ChronicPrescriptionsController < ApplicationController
         notification_type = 'auditó'
 
         @chronic_prescription.create_notification(current_user, notification_type)
-        if dispensing?
+        if policy(@chronic_prescription).dispense_new?
           format.html { redirect_to new_chronic_prescription_chronic_dispensation_path(@chronic_prescription), notice: message }
         else
           format.html { redirect_to @chronic_prescription, notice: message }
@@ -176,9 +177,5 @@ class Prescriptions::ChronicPrescriptionsController < ApplicationController
         :_destroy
       ]
     )
-  end
-
-  def dispensing?
-    return params[:commit] == 'dispensing'
   end
 end

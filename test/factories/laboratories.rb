@@ -6,10 +6,14 @@ FactoryBot.define do
 
     trait :abbott do
       name { 'ABBOTT LABORATORIES ARGENTINA S.A.' }
+      cuit { '30500846301' }
+      gln { '7790440000007' }
     end
 
     trait :abbvie do
       name { 'ABBVIE S.A.' }
+      cuit { '30500846302' }
+      gln { '7790440000008' }
     end
 
     trait :genomma do

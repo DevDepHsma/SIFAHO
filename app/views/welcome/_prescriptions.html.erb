@@ -1,49 +1,47 @@
 <!--  Panel graficos de prescripciones -->
-<%# if @prescriptions.count > 0 %>
-  <div class="card">
-    <div class="card-header d-flex justify-content-between">
+<div class="card">
+  <div class="card-header d-flex justify-content-between">
 
-      <div>
-        <span class="navbar-brand">
-            <%= fa_icon "signature" %>
-            Recetas
-          </span>
-      </div>
+    <div>
+      <span class="navbar-brand">
+          <%= fa_icon "signature" %>
+          Recetas
+        </span>
+    </div>
 
-      <ul class="nav nav-tabs card-header-tabs" id="title-chart">
-        <li class="nav-item">
-          <a class="nav-link active" data-toggle="tab" href="#week">Semana 
-            <span class="badge badge-secondary"><%#= @prescriptions.last_week.count %></span> 
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" data-toggle="tab" href="#year">Año
-            <span class="badge badge-secondary"><%#= @prescriptions.current_year.count %></span>
-          </a>
-        </li>
+    <ul class="nav nav-tabs card-header-tabs" id="title-chart">
+      <li class="nav-item">
+        <a class="nav-link active" data-toggle="tab" href="#week">Semana 
+          <span class="badge badge-secondary"><%#= @prescriptions.last_week.count %></span> 
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-toggle="tab" href="#year">Año
+          <span class="badge badge-secondary"><%#= @prescriptions.current_year.count %></span>
+        </a>
+      </li>
+      <% if policy(OutpatientPrescription).index? %>
         <li class="nav-item">
           <a class="nav-link" data-toggle="tab" href="#last-outpatient-prescription">Últimas Ambulatorias
             <span class="badge badge-secondary"><%= @last_outpatient_prescriptions.count %></span>
           </a>
         </li>
+      <% end %>
+      <% if policy(ChronicPrescription).index? %>
         <li class="nav-item">
           <a class="nav-link" data-toggle="tab" href="#last-chronic-prescription">Últimas Crónicas
             <span class="badge badge-secondary"><%= @last_chronic_prescriptions.count %></span>
           </a>
         </li>
-      </ul>
+      <% end %>
+    </ul>
+  </div>
 
-      <%# <div class="d-flex align-items-center"> %>
-        <%#= link_to outpatient_prescriptions_path, class: 'btn btn-secondary btn-sm' do %>
-          <%# Ver más %>
-        <%# end %>
-      <%# </div> %>
-    </div>
-
-    <div class="card-body pb-2 mb-3">
-      <div class="tab-content">
-        <div id="week" class="tab-pane fade show active" data-outpatient-prescriptions="<%= @outpatient_prescriptions_by_days %>" data-chronic-prescriptions="<%= @chronic_prescriptions_by_days %>" data-chronic-prescriptions-days="<%= @chronic_prescriptions_days %>"></div>
-        <div id="year" class="tab-pane fade" data-outpatient-prescriptions="<%= @outpatient_prescriptions %>" data-chronic-prescriptions="<%= @chronic_prescriptions %>" data-chronic-prescriptions-months="<%= @chronic_prescriptions_months %>"></div>
+  <div class="card-body pb-2 mb-3">
+    <div class="tab-content">
+      <div id="week" class="tab-pane fade show active" data-outpatient-prescriptions="<%= @outpatient_prescriptions_by_days %>" data-chronic-prescriptions="<%= @chronic_prescriptions_by_days %>" data-chronic-prescriptions-days="<%= @chronic_prescriptions_days %>"></div>
+      <div id="year" class="tab-pane fade" data-outpatient-prescriptions="<%= @outpatient_prescriptions %>" data-chronic-prescriptions="<%= @chronic_prescriptions %>" data-chronic-prescriptions-months="<%= @chronic_prescriptions_months %>"></div>
+      <% if policy(OutpatientPrescription).index? %>
         <div id="last-outpatient-prescription" class="tab-pane fade pb-0">
           <div class="card">
             <table class="table table-hover table-striped">
@@ -82,7 +80,8 @@
             <% end %>
           </div>
         </div>
-        
+      <% end %>
+      <% if policy(ChronicPrescription).index? %>
         <div id="last-chronic-prescription" class="tab-pane fade pb-0">
           <div class="card">
             <table class="table table-hover table-striped">
@@ -121,7 +120,7 @@
             <% end %>
           </div>
         </div>
-      </div>
+      <% end %>
     </div>
   </div>
-<%# end %>
+</div>

@@ -1,4 +1,4 @@
-<%= simple_form_for @user, url: update_permissions_users_admin_path, method: :put, html: { role: 'check-modified'} do |f| %>
+<%= simple_form_for @user, url: old_update_permissions_users_admin_path, method: :put, html: { role: 'check-modified'} do |f| %>
   <%= f.error_notification %>
     <%= f.input :sector_id, label: 'Sector actual',
     collection:
