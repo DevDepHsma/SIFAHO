@@ -64,7 +64,7 @@ Rails.application.routes.draw do
       end
     end
 
-    get :prescriptions, to: 'prescriptions#new', as: 'new_prescription'
+    get :prescriptions, to: 'prescriptions#index', as: 'prescriptions'
     # ajax para obtener recetas [cronicas / ambulatorias]
     get 'prescriptions(/:patient_id)', to: 'prescriptions#get_prescriptions', as: 'get_prescriptions'
   end

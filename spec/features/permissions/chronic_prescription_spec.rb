@@ -36,7 +36,7 @@ RSpec.feature 'Permissions::ChronicPrescriptions', type: :feature do
 
     it 'does not show "Recetas" link' do
       visit '/'
-      expect(page).to_not have_selector(:css, "a[href='#{new_prescription_path}']")
+      expect(page).to_not have_selector(:css, "a[href='#{prescriptions_path}']")
     end
 
     describe 'Add permissions ::' do
@@ -46,7 +46,7 @@ RSpec.feature 'Permissions::ChronicPrescriptions', type: :feature do
 
       it 'can READ' do
         visit '/'
-        expect(page).to have_selector(:css, "a[href='#{new_prescription_path}']")
+        expect(page).to have_selector(:css, "a[href='#{prescriptions_path}']")
       end
 
       describe 'CREATE ::' do

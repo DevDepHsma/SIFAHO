@@ -29,7 +29,7 @@ RSpec.feature 'Permissions::OutpatientPrescriptions', type: :feature do
 
     it 'does not show "Recetas" link button' do
       visit '/'
-      expect(page).to_not have_selector(:css, "a[href='#{new_prescription_path}']")
+      expect(page).to_not have_selector(:css, "a[href='#{prescriptions_path}']")
     end
 
     describe 'GET /recetas (recipes page)' do
@@ -39,7 +39,7 @@ RSpec.feature 'Permissions::OutpatientPrescriptions', type: :feature do
 
       it 'shows "Recetas" link button' do
         visit '/'
-        expect(page).to have_selector(:css, "a[href='#{new_prescription_path}']")
+        expect(page).to have_selector(:css, "a[href='#{prescriptions_path}']")
       end
 
       describe 'Create action outpatient recipe' do

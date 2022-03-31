@@ -1,9 +1,9 @@
 <% content_for :title, "Recetas" %>
 
 <% content_for :page_header do %>
-  <% if policy(OutpatientPrescription).new? || policy(ChronicPrescription).new? %>
+  <% if policy(Prescription).index? %>
     <li class="nav-item non-sel">
-      <%= link_to new_prescription_path, class: "nav-link #{ active_action_and_controller('new', 'prescriptions') }" do %>
+      <%= link_to prescriptions_path, class: "nav-link #{ active_action_and_controller('new', 'prescriptions') }" do %>
         <%= fa_icon "signature" %>
         Recetas
       <% end %>
