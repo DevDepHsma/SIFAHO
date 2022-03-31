@@ -51,8 +51,6 @@ RSpec.feature 'Permissions::ChronicPrescriptions', type: :feature do
 
       describe 'CREATE ::' do
         before(:each) do
-          visit '/'
-          click_link 'Recetas'
           find_or_create_patient_by_dni('Crónicas', '37458994')
         end
 
