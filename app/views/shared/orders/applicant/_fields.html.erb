@@ -1,9 +1,9 @@
 <%# Generate a random id, for identify html form %>
 <% form_id = rand(0..100000) %>
 <% if order_product.new_record? %>
-  <% url = polymorphic_path([order.class.name.underscore.pluralize, :applicant_products], applicant_id: order, form_id: form_id) %>
+  <% url = polymorphic_path([order.class.name.underscore.pluralize.to_sym, :applicant_products], applicant_id: order, form_id: form_id) %>
 <% else %>
-  <% url = polymorphic_path([order.class.name.underscore.pluralize, :applicant_product], applicant_id: order, id: order_product.id) %>
+  <% url = polymorphic_path([order.class.name.underscore.pluralize.to_sym, :applicant_product], applicant_id: order, id: order_product.id) %>
 <% end %>
 
 <%= simple_form_for order_product, 

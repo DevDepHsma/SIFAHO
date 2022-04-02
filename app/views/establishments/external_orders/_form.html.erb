@@ -40,7 +40,7 @@
                     <td><%= deliver.applicant_sector_and_establishment %></td>
                     <td><%= deliver.order_products.count %></td>
                     <td>
-                      <%= link_to polymorphic_path(['external_orders', deliver.custom_notification_url], id: deliver), target: :_blank, class: 'btn btn-light btn-sm' do %>
+                      <%= link_to polymorphic_path(['external_orders'.to_sym, deliver.custom_notification_url.to_sym], id: deliver), target: :_blank, class: 'btn btn-light btn-sm' do %>
                         <%= fa_icon 'external-link-alt' %>
                       <% end %>
                     </td>

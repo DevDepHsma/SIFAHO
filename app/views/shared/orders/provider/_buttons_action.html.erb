@@ -9,7 +9,7 @@
     <%= fa_icon 'save', class: 'fa-fw' %>
   </button>
   
-  <%= link_to polymorphic_path([order_product.order.class.name.underscore.pluralize, :provider_product], provider_id: order_product.order_id, id: order_product.id), 
+  <%= link_to polymorphic_path([order_product.order.class.name.underscore.pluralize.to_sym, :provider_product], provider_id: order_product.order_id, id: order_product.id), 
               class: "btn btn-sm btn-outline-danger btn-req",
               remote: true do %>
     <%= fa_icon 'times', class: 'fa-fw' %>
@@ -41,7 +41,7 @@
       data-target="#delete-item" 
       data-title="Eliminar producto"
       data-body="Esta seguro que desea eliminar el producto <%= order_product.product.name %>?"
-      data-href="<%= polymorphic_path([order_product.order.class.name.underscore.pluralize, :provider_product], provider_id: order_product.order_id, id: order_product.id) %>">
+      data-href="<%= polymorphic_path([order_product.order.class.name.underscore.pluralize.to_sym, :provider_product], provider_id: order_product.order_id, id: order_product.id) %>">
         <%= fa_icon 'trash-alt', class: 'fa-fw' %>
     </button>
   <% end %>

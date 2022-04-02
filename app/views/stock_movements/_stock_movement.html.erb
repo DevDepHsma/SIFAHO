@@ -9,8 +9,8 @@
   <% if stock_movement.order.present? %>
     <td>
       <% if stock_movement.order.class.method_defined?(:custom_notification_url) %>
-        <%= link_to polymorphic_url([stock_movement.order.class.name.underscore.pluralize, 
-                                    stock_movement.order.custom_notification_url ], 
+        <%= link_to polymorphic_url([stock_movement.order.class.name.underscore.pluralize.to_sym, 
+                                    stock_movement.order.custom_notification_url.to_sym ], 
                                     id: stock_movement.order.id,
                                     resaltar: @stock.product_id), 
                                     target: :_blank, 

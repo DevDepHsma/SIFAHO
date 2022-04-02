@@ -16,7 +16,7 @@
     <% end.presence || ( render "shared/orders/provider/fields", order: order, order_product: order_product ) %>
   </div>
 
-  <%= link_to polymorphic_path([:new, order.class.name.underscore.pluralize, :provider_product], provider_id: order.id), remote: true, 
+  <%= link_to polymorphic_path([:new, order.class.name.underscore.pluralize.to_sym, :provider_product], provider_id: order.id), remote: true, 
     class: 'btn btn-primary btn-sm' do %>
     Agregar producto
     <%= fa_icon "plus" %>
