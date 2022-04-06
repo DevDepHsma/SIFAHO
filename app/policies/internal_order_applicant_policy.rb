@@ -4,8 +4,12 @@ class InternalOrderApplicantPolicy < InternalOrderPolicy
     show?
   end
 
+  def show?
+    user.has_permission?(:read_internal_order_applicant)
+  end
+
   def new?
-    user.has_any_role?(:admin, :farmaceutico, :auxiliar_farmacia, :medic, :enfermero)
+    user.has_permission?(:create_internal_order_applicant)
   end
 
   def new_report?

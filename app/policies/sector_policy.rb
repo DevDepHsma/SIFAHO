@@ -1,10 +1,10 @@
 class SectorPolicy < ApplicationPolicy
   def index?
-    show_roles.any? { |role| user.has_role?(role) }
+    show?
   end
 
   def show?
-    index?
+    user.has_permission?(:read_sectors) || user.has_permission?(:read_internal_order_applicant)
   end
 
   def new?

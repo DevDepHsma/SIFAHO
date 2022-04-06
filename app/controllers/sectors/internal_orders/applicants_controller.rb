@@ -20,7 +20,10 @@ class Sectors::InternalOrders::ApplicantsController < Sectors::InternalOrders::I
 
   # GET /internal_orders/applicants/new_applicant
   def new
-    policy(:internal_order_applicant).new?
+    unless policy(:internal_order_applicant).new?
+      flash[:error] = 'Usted no está autorizado para realizar esta acción.'
+      redirect_back(fallback_location: root_path)
+    end
     flash[:error] = 'No se ha encontrado la plantilla' if params[:template].present?
     @internal_order = InternalOrder.new
     @internal_order.order_type = 'solicitud'
