@@ -27,7 +27,9 @@ class InternalOrderApplicantPolicy < ApplicationPolicy
   end
 
   def edit_products?(resource)
-    edit?(resource)
+    if resource.solicitud_auditoria? && resource.applicant_sector == user.sector
+      user.has_permission?(:update_internal_order_applicant) || create?
+    end
   end
 
   def update?(resource)

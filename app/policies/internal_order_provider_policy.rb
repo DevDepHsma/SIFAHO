@@ -3,6 +3,10 @@ class InternalOrderProviderPolicy < InternalOrderPolicy
     show?
   end
 
+  def show?
+    user.has_permission?(:read_internal_order_provider)
+  end
+
   def new?
     user.has_any_role?(:admin, :farmaceutico, :auxiliar_farmacia, :medic, :enfermero)
   end
