@@ -83,14 +83,32 @@ RSpec.feature 'Orders::Internal::Applicants', type: :feature do
               expect(page.has_css?('textarea#internal_order_observation', visible: false)).to be true
               expect(page.has_link?('Volver')).to be true
               expect(page.has_button?('Guardar y agregar productos')).to be true
-            # end
 
-            # it ':: success' do
               within '#order-form' do
                 select_sector(@deposito.name, 'select#provider-sector')
               end
               expect(page).to have_content(@deposito.name)
               click_button 'Guardar y agregar productos'
+              expect(page).to have_content('Editando productos solicitud de sector código')
+              expect(page).to have_content('Solicitante')
+              expect(page).to have_content(@farmacia.name)
+              expect(page).to have_content('Proveedor')
+              expect(page).to have_content(@deposito.name)
+              expect(page).to have_content('Código')
+              expect(page).to have_content('Producto')
+              expect(page).to have_content('Unidad')
+              expect(page).to have_content('Tu stock')
+              expect(page).to have_content('Solicitar')
+              expect(page).to have_content('Tu observación')
+              expect(page.has_link?('Volver')).to be true
+              expect(page.has_button?('Enviar')).to be true
+
+              PermissionUser.create(user: @user, sector: @user.sector, permission: @update_internal_order_applicant)
+              visit current_path
+              # within '#order-products-container' do
+              add_products(@products, 3, :request_quantity, :observations)
+              # end
+              sleep 10
             end
           end
         end
