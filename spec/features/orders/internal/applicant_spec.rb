@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.feature 'Orders::Internal::Applicants', type: :feature do
   before(:all) do
-    @establishment =  create(:establishment_1)
+    @establishment = create(:establishment_1)
     @farmacia = create(:sector_1, establishment: @establishment)
     @deposito = create(:sector_4, establishment: @establishment)
     @user = create(:user_1, sector: @farmacia)
@@ -101,14 +101,51 @@ RSpec.feature 'Orders::Internal::Applicants', type: :feature do
               expect(page).to have_content('Solicitar')
               expect(page).to have_content('Tu observación')
               expect(page.has_link?('Volver')).to be true
-              expect(page.has_button?('Enviar')).to be true
+              expect(page.has_button?('Enviar')).to be false
 
               PermissionUser.create(user: @user, sector: @user.sector, permission: @update_internal_order_applicant)
               visit current_path
-              # within '#order-products-container' do
               add_products(@products, 3, :request_quantity, :observations)
-              # end
-              sleep 10
+              expect(page).to have_selector('input.product-code', count: 3)
+              click_link 'Volver'
+              within '#applicant_orders' do
+                expect(page).to have_selector('tr', count: 1)
+                expect(page).to have_selector('.btn-edit', count: 1)
+                page.execute_script %Q{$('a.btn-edit')[0].click()}
+              end
+
+              expect(page).to have_content('Editando solicitud de sector código')
+              expect(page).to have_selector('#provider-sector', visible: false)
+              expect(page).to have_selector('textarea#internal_order_observation')
+              expect(page.has_link?('Volver')).to be true
+              expect(page.has_link?('Editar productos')).to be true
+              expect(page.has_button?('Guardar y agregar productos')).to be true
+              click_button 'Guardar y agregar productos'
+              expect(page.has_link?('Volver')).to be true
+              expect(page.has_button?('Enviar')).to be false
+
+              # Add send permission
+              PermissionUser.create(user: @user, sector: @user.sector, permission: @send_internal_order_applicant)
+              visit current_path
+              expect(page.has_button?('Enviar')).to be true
+              click_button 'Enviar'
+              expect(page).to have_content('La solicitud se ha enviado correctamente.')
+              expect(page).to have_content('Solicitud enviada')
+              expect(page).to have_content('Productos 3')
+              expect(page.has_link?('Volver')).to be true
+              expect(page.has_link?('Imprimir')).to be true
+              expect(page.has_button?('Retornar')).to be false
+              # Add return permission
+              PermissionUser.create(user: @user, sector: @user.sector, permission: @return_internal_order_applicant)
+              visit current_path
+              expect(page.has_button?('Retornar')).to be true
+              click_button 'Retornar'
+              sleep 1
+              expect(page).to have_content('Retornar a solicitud auditoria')
+              expect(page.has_link?('Cancelar')).to be true
+              expect(page.has_link?('Confirmar')).to be true
+              click_link 'Confirmar'
+              expect(page).to have_content('Solicitud auditoria')
             end
           end
         end

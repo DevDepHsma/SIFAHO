@@ -38,7 +38,7 @@ class InternalOrderApplicantPolicy < ApplicationPolicy
 
   def can_send?(resource)
     if resource.solicitud_auditoria? && resource.applicant_sector == user.sector
-      user.has_any_role?(:admin, :farmaceutico, :auxiliar_farmacia, :medic, :enfermero)
+      user.has_permission?(:send_internal_order_applicant)
     end
   end
 
@@ -60,7 +60,7 @@ class InternalOrderApplicantPolicy < ApplicationPolicy
 
   def rollback_order?(resource)
     if resource.applicant_sector == user.sector && resource.solicitud_enviada?
-      user.has_any_role?(:admin, :farmaceutico, :auxiliar_farmacia, :medic, :enfermero)
+      user.has_permission?(:return_internal_order_applicant)
     end
   end
 end

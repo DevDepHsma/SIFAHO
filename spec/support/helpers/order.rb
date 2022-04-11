@@ -14,7 +14,7 @@ module Helpers
     def add_products(products, products_size, *fields_args)
       products.sample(products_size).each_with_index do |product, index|
         page.execute_script %Q{
-          $($('input[name="product_code_fake-"]')[#{index}]).val("#{product[1]}").keydown()
+          $($('input.product-code')[#{index}]).val("#{product[1]}").keydown()
         }
         sleep 1
         expect(find('ul.ui-autocomplete')).to have_content(product[1].to_s)
@@ -22,14 +22,11 @@ module Helpers
         page.execute_script %Q{
           $($('input.request-quantity')[#{index}]).val(#{rand(100..750)}).keydown()
         }
-        page.execute_script %Q{$($('button.btn-save')[#{index}]).click()}
-        sleep 2
-        unless (index + 1).eql?(products_size)
-          click_link 'Agregar producto'
-        end
-        sleep 2
+        page.execute_script %Q{$('button.btn-save').first().click()}
+        sleep 1
+        click_link 'Agregar producto' unless (index + 1).eql?(products_size)
+        sleep 1
       end
-        sleep 10
     end
   end
 end
