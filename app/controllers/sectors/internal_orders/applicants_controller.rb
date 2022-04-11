@@ -46,7 +46,7 @@ class Sectors::InternalOrders::ApplicantsController < Sectors::InternalOrders::I
 
     if params[:template].present?
       new_from_template(params[:template], 'solicitud')
-    else
+    elsif @internal_order.order_products.count.zero?
       @internal_order_product = @internal_order.order_products.build
     end
   end
