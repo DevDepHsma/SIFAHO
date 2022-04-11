@@ -146,6 +146,26 @@ RSpec.feature 'Orders::Internal::Applicants', type: :feature do
               expect(page.has_link?('Confirmar')).to be true
               click_link 'Confirmar'
               expect(page).to have_content('Solicitud auditoria')
+              click_link 'Volver'
+              within '#applicant_orders' do
+                expect(page).not_to have_selector('.delete-item', count: 1)
+              end
+              # Add destroy permission
+              PermissionUser.create(user: @user, sector: @user.sector, permission: @destroy_internal_order_applicant)
+              visit current_path
+              within '#applicant_orders' do
+                expect(page).to have_selector('.delete-item', count: 1)
+                page.execute_script %Q{$('button.delete-item')[0].click()}
+                sleep 1
+              end
+              expect(page).to have_content('Eliminar solicitud')
+              expect(page.has_button?('Volver')).to be true
+              expect(page.has_link?('Confirmar')).to be true
+              click_link 'Confirmar'
+              sleep 1
+              within '#applicant_orders' do
+                expect(page).to have_selector('.delete-item', count: 0)
+              end
             end
           end
         end

@@ -44,7 +44,7 @@ class InternalOrderApplicantPolicy < ApplicationPolicy
 
   def destroy?(resource)
     if resource.solicitud_auditoria? && resource.applicant_sector == user.sector
-      user.has_any_role?(:admin, :farmaceutico, :enfermero)
+      user.has_permission?(:destroy_internal_order_applicant)
     end
   end
 
