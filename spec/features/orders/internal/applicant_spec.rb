@@ -105,7 +105,7 @@ RSpec.feature 'Orders::Internal::Applicants', type: :feature do
 
               PermissionUser.create(user: @user, sector: @user.sector, permission: @update_internal_order_applicant)
               visit current_path
-              add_products(@products, 3, :request_quantity, :observations)
+              add_products(@products, 3, request_quantity: true, observations: true)
               expect(page).to have_selector('input.product-code', count: 3)
               click_link 'Volver'
               within '#applicant_orders' do
