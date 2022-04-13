@@ -35,7 +35,7 @@
       <% end %>
     </li>
   <% end %>
-  <% if policy(:internal_order_provider).new? %>
+  <% if policy(:internal_order_provider).index? %>
     <li class="nav-item non-sel d-flex align-items-center">
       <%= link_to internal_orders_providers_path, class: "nav-link #{ active_action_and_controller('index', 'providers') }" do %>
         <%= fa_icon "paper-plane" %>

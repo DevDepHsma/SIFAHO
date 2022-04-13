@@ -22,7 +22,10 @@ class Sectors::InternalOrders::ProvidersController < Sectors::InternalOrders::In
 
   # GET /internal_orders/provider/new
   def new
-    policy(:internal_order_provider).new?
+    unless policy(:internal_order_provider).new?
+      flash[:error] = 'Usted no está autorizado para realizar esta acción.'
+      redirect_back(fallback_location: root_path)
+    end
     flash[:error] = 'No se ha encontrado la plantilla' if params[:template].present?
     @internal_order = InternalOrder.new
     @internal_order.order_type = 'provision'

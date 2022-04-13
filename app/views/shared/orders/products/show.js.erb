@@ -1,11 +1,11 @@
 
 <%= render 'shared/flash_message' %>
 
-<% if policy(:external_order_applicant).edit?(@order) || policy(@order_product).edit_product? %>
+<% if (policy(:external_order_applicant).edit?(@order) || policy(:internal_order_applicant).edit?(@order)) && policy(@order_product).edit_product? %>
   <% js = escape_javascript(
     render "shared/orders/applicant/fields", order: @order, order_product: @order_product
   ) %>
-<% else %>
+<% elsif (policy(:external_order_provider).edit?(@order) || policy(:internal_order_provider).edit?(@order)) && policy(@order_product).edit_product? %>
   <% js = escape_javascript(
     render "shared/orders/provider/fields", order: @order, order_product: @order_product
   ) %>

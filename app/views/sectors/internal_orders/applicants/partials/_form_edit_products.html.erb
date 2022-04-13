@@ -1,12 +1,12 @@
 <div class="card fixed-custom-card">
-  <div class="card-header <%= order.new_record? ? 'bg-primary text-white' : 'bg-warning' %> d-flex align-items-center justify-content-between">
+  <div class="card-header bg-warning d-flex align-items-center justify-content-between">
     <div class="d-flex align-items-center ml-2">
       <%= fa_icon "edit" %>
       <h5 class="card-title mb-0 ml-2">
-        Editando productos <%= order.order_type %> de sector código <%= order.remit_code %>
+        Editando productos de <%= order.order_type %> de sector código <%= order.remit_code %>
       </h5>
     </div>
-    <%= link_to :back, class: order.new_record? ? 'btn text-white' : 'btn' do %>
+    <%= link_to :back, class: 'btn' do %>
       <%= fa_icon "times" %>
     <% end %>
   </div>

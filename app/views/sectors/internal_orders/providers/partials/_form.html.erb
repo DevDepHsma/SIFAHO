@@ -24,13 +24,13 @@
           <label>Sector proveedor</label>
           <h6><%= current_user.sector_name %></h6>
 
-          <%# Sector Proveedor %>
+          <%# Sector Solicitante %>
           <%= f.input :applicant_sector_id, label: 'Sector solicitante',
             collection: @sectors.map {|s| [ s['name'], s['id'] ] },
             required: true,
             selected: f.object.applicant_sector.present? ? f.object.applicant_sector.id : "",
             :input_html => {
-              id: 'provider-sector',
+              id: 'applicant-sector',
               class: 'selectpicker-md custom-select-pick show-tick',
               "data-width"=>"auto",
               "title"=>"Seleccionar sector",
@@ -46,7 +46,7 @@
           </div>
         </div>
         <div class="col-6" id='last-requests'>
-          <% if @last_delivers.present? %>
+          <%# if @last_delivers.present? %>
           Últimas entregas de sectores
             <table class="table">
               <thead>
@@ -72,9 +72,9 @@
                 <% end %>
               </tbody>
             </table>
-          <% else %>
-            No hay entregas realizadas.
-          <% end %>
+          <%# else %>
+            <%# No hay entregas realizadas. %>
+          <%# end %>
         </div>
       </div>
 
