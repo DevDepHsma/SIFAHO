@@ -12,7 +12,7 @@ FactoryBot.define do
     trait :abbott do
       association :laboratory, factory: :abbott_laboratory
     end
-    
+
     trait :abbvie do
       association :laboratory, factory: :abbvie_laboratory
     end

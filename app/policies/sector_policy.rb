@@ -4,7 +4,7 @@ class SectorPolicy < ApplicationPolicy
   end
 
   def show?
-    user.has_permission?(:read_sectors) || user.has_permission?(:read_internal_order_applicant)
+    user.has_permission?(:read_sectors) || user.has_permission?(:read_internal_order_applicant) || user.has_permission?(:read_internal_order_provider)
   end
 
   def new?

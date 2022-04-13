@@ -32,6 +32,29 @@ module Helpers
         end
         page.execute_script %Q{$('button.btn-save').first().click()}
         sleep 1
+        if fields_args.include?(:select_lot_stock)
+          expect(page).to have_content('Seleccionar lote en stock')
+          expect(page).to have_content(product[1].to_s)
+          expect(page).to have_content('Cantidad seleccionada')
+          expect(page.has_button?('Volver')).to be true
+          expect(page.has_button?('Guardar')).to be true
+          expect(page).to have_content('Cantidad')
+          expect(page).to have_content('Stock')
+          expect(page).to have_content('Código')
+          expect(page).to have_content('Estado')
+          expect(page).to have_content('Procedencia')
+          expect(page).to have_content('Vencimiento')
+          expect(page).to have_content('Laboratorio')
+          expect(page).to have_content('Reservado')
+          expect(page.has_css?('#table-lot-selection')).to be true
+          within '#table-lot-selection' do
+            page.execute_script %Q{
+              $($('input.quantity')[0]).val(#{rand(100..750)}).trigger('change')
+            }
+          end
+          click_button 'Guardar'
+          sleep 1
+        end
         click_link 'Agregar producto' unless (index + 1).eql?(products_size)
         sleep 1
       end

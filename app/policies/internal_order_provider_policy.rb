@@ -8,7 +8,7 @@ class InternalOrderProviderPolicy < InternalOrderPolicy
   end
 
   def new?
-    user.has_any_role?(:admin, :farmaceutico, :auxiliar_farmacia, :medic, :enfermero)
+    user.has_permission?(:create_internal_order_provider)
   end
 
   def new_report?
@@ -21,14 +21,14 @@ class InternalOrderProviderPolicy < InternalOrderPolicy
 
   def edit?(resource)
     if resource.provision? && resource.proveedor_auditoria? && resource.provider_sector == user.sector
-      user.has_any_role?(:admin, :farmaceutico, :auxiliar_farmacia, :medic, :enfermero)
+      user.has_permission?(:update_internal_order_provider)
     end
   end
 
   def edit_products?(resource)
-    return unless %w[solicitud_enviada proveedor_auditoria].any?(resource.status) && resource.provider_sector == user.sector
-
-    user.has_any_role?(:admin, :farmaceutico, :auxiliar_farmacia, :medic, :enfermero)
+    if %w[solicitud_enviada proveedor_auditoria].any?(resource.status) && resource.provider_sector == user.sector
+      user.has_permission?(:update_internal_order_provider) || create?
+    end
   end
 
   def update?(resource)
@@ -36,7 +36,9 @@ class InternalOrderProviderPolicy < InternalOrderPolicy
   end
 
   def can_send?(resource)
-    update?(resource)
+    if resource.proveedor_auditoria? && resource.provider_sector == user.sector
+      user.has_permission?(:send_internal_order_provider)
+    end
   end
 
   def destroy?(resource)
