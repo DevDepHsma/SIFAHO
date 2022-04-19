@@ -12,11 +12,11 @@ class ExternalOrderApplicantPolicy < ApplicationPolicy
   def new?
     user.has_permission?(:create_external_order_applicant)
   end
-  
+
   def create?
     new?
   end
-  
+
   def edit?(resource)
     if resource.solicitud_auditoria? && resource.applicant_sector == user.sector
       user.has_permission?(:update_external_order_applicant)

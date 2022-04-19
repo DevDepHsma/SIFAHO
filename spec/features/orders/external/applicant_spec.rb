@@ -116,16 +116,10 @@ RSpec.feature "Orders::External::Applicants", type: :feature do
                 page.execute_script %Q{$('a.btn-edit')[0].click()}
               end
 
-<<<<<<< HEAD
               expect(page).to have_content('Editando solicitud de establecimiento código')
               expect(page.has_css?('input#effector-establishment', visible: false)).to be true
               expect(page.has_css?('select#effector-sector', visible: false)).to be true
               expect(page).to have_selector('textarea#external_order_applicant_observation')
-=======
-              expect(page).to have_content('Editando solicitud de sector código')
-              expect(page).to have_selector('#provider-sector', visible: false)
-              expect(page).to have_selector('textarea#internal_order_observation')
->>>>>>> adds establishments orders applicant rspec
               expect(page.has_link?('Volver')).to be true
               expect(page.has_link?('Editar productos')).to be true
               expect(page.has_button?('Guardar y agregar productos')).to be true
@@ -134,11 +128,7 @@ RSpec.feature "Orders::External::Applicants", type: :feature do
               expect(page.has_button?('Enviar')).to be false
 
               # Add send permission
-<<<<<<< HEAD
               PermissionUser.create(user: @user, sector: @user.sector, permission: @send_external_order_applicant)
-=======
-              PermissionUser.create(user: @user, sector: @user.sector, permission: @send_internal_order_applicant)
->>>>>>> adds establishments orders applicant rspec
               visit current_path
               expect(page.has_button?('Enviar')).to be true
               click_button 'Enviar'
@@ -149,11 +139,7 @@ RSpec.feature "Orders::External::Applicants", type: :feature do
               expect(page.has_link?('Imprimir')).to be true
               expect(page.has_button?('Retornar')).to be false
               # Add return permission
-<<<<<<< HEAD
               PermissionUser.create(user: @user, sector: @user.sector, permission: @return_external_order_applicant)
-=======
-              PermissionUser.create(user: @user, sector: @user.sector, permission: @return_internal_order_applicant)
->>>>>>> adds establishments orders applicant rspec
               visit current_path
               expect(page.has_button?('Retornar')).to be true
               click_button 'Retornar'
@@ -168,11 +154,7 @@ RSpec.feature "Orders::External::Applicants", type: :feature do
                 expect(page).not_to have_selector('.delete-item', count: 1)
               end
               # Add destroy permission
-<<<<<<< HEAD
               PermissionUser.create(user: @user, sector: @user.sector, permission: @destroy_external_order_applicant)
-=======
-              PermissionUser.create(user: @user, sector: @user.sector, permission: @destroy_internal_order_applicant)
->>>>>>> adds establishments orders applicant rspec
               visit current_path
               within '#applicant_orders' do
                 expect(page).to have_selector('.delete-item', count: 1)
