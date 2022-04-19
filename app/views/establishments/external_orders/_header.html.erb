@@ -1,49 +1,57 @@
 <% content_for :title, "Establecimientos" %>
 
 <% content_for :page_header do %>
-  <li class="nav-item non-sel">
-    <%= link_to establishments_path, class: "nav-link #{ active_action_and_controller('index', 'establishments') }" do %>
-      <%= fa_icon "hospital" %>
-      Establecimientos
-    <% end %>
-  </li>
-
-  <li class="nav-item non-sel">
-    <%= link_to new_establishment_path, class: "nav-link #{ active_action_and_controller('new', 'establishments') }" do %>
-      <%= fa_icon "plus"%>
-      Agregar
-    <% end %>
-  </li>
-
-  <li class="nav-item non-sel d-flex align-items-center">
-    <%= link_to external_orders_applicants_path, class: "nav-link #{ active_action_and_controller('index', 'applicants') }" do %>
-      <%= fa_icon "inbox" %>
-      Recibos
-    <% end %>
-    <!-- Badge notification -->
-    <% request_count = ExternalOrder.applicant(current_user.sector).provision_en_camino.count %>
-    <% if request_count > 0%>
-      <%= link_to external_orders_applicants_path(filterrific: {:with_status => 4}), class: 'badge badge-info',
-      title: "En camino", data: { toggle: 'tooltip', placement: 'bottom' } do %>
-        <%= request_count %>
+  <% if policy(Establishment).index? %>
+    <li class="nav-item non-sel">
+      <%= link_to establishments_path, class: "nav-link #{ active_action_and_controller('index', 'establishments') }" do %>
+        <%= fa_icon "hospital" %>
+        Establecimientos
       <% end %>
-    <% end %>
-  </li>
+    </li>
+  <% end %>
 
-  <li class="nav-item non-sel d-flex align-items-center">
-    <%= link_to external_orders_providers_path, class: "nav-link #{ active_action_and_controller('index', 'providers') }" do %>
-      <%= fa_icon "paper-plane" %>
-      Despachos
-    <% end %>
-    <!-- Badge notification -->
-    <% request_count = ExternalOrder.provider(current_user.sector).solicitud_enviada.count %>
-    <% if request_count > 0%>
-      <%= link_to external_orders_providers_path(filterrific: {:with_status => 1}), class: 'badge badge-info',
-      title: "Solicitud", data: { toggle: 'tooltip', placement: 'bottom' } do %>
-        <%= request_count %>
+  <% if policy(Establishment).create? %>
+    <li class="nav-item non-sel">
+      <%= link_to new_establishment_path, class: "nav-link #{ active_action_and_controller('new', 'establishments') }" do %>
+        <%= fa_icon "plus"%>
+        Agregar
       <% end %>
-    <% end %>
-  </li>
+    </li>
+  <% end %>
+
+  <% if policy(:external_order_applicant).index? %>
+    <li class="nav-item non-sel d-flex align-items-center">
+      <%= link_to external_orders_applicants_path, class: "nav-link #{ active_action_and_controller('index', 'applicants') }" do %>
+        <%= fa_icon "inbox" %>
+        Recibos
+      <% end %>
+      <!-- Badge notification -->
+      <% request_count = ExternalOrder.applicant(current_user.sector).provision_en_camino.count %>
+      <% if request_count > 0%>
+        <%= link_to external_orders_applicants_path(filterrific: {:with_status => 4}), class: 'badge badge-info',
+        title: "En camino", data: { toggle: 'tooltip', placement: 'bottom' } do %>
+          <%= request_count %>
+        <% end %>
+      <% end %>
+    </li>
+  <% end %>
+
+  <% if policy(:external_order_provider).index? %>
+    <li class="nav-item non-sel d-flex align-items-center">
+      <%= link_to external_orders_providers_path, class: "nav-link #{ active_action_and_controller('index', 'providers') }" do %>
+        <%= fa_icon "paper-plane" %>
+        Despachos
+      <% end %>
+      <!-- Badge notification -->
+      <% request_count = ExternalOrder.provider(current_user.sector).solicitud_enviada.count %>
+      <% if request_count > 0%>
+        <%= link_to external_orders_providers_path(filterrific: {:with_status => 1}), class: 'badge badge-info',
+        title: "Solicitud", data: { toggle: 'tooltip', placement: 'bottom' } do %>
+          <%= request_count %>
+        <% end %>
+      <% end %>
+    </li>
+  <% end %>
 
   <% if policy(:external_order_applicant).new? %>
     <li class="nav-item non-sel">

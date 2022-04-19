@@ -38,7 +38,11 @@ class ExternalOrderProduct < ApplicationRecord
   end
 
   def is_provision?
-    return order.order_type == 'provision'
+    order.order_type == 'provision'
+  end
+
+  def is_solicitud?
+    order.order_type == 'solicitud'
   end
 
   # Se habilita la cantidad que estaba reservada en stock

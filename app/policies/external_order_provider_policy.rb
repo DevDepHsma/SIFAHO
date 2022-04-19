@@ -1,5 +1,13 @@
 class ExternalOrderProviderPolicy < ExternalOrderPolicy
 
+  def index?
+    show?
+  end
+
+  def show?
+    user.has_permission?(:read_external_order_provider)
+  end
+
   def new?
     user.has_any_role?(:admin, :farmaceutico, :enfermero)
   end

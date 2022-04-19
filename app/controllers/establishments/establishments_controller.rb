@@ -4,16 +4,24 @@ class EstablishmentsController < ApplicationController
   # GET /establishments
   # GET /establishments.json
   def index
-    authorize Establishment
-    @filterrific = initialize_filterrific(
-      Establishment,
-      params[:filterrific],
-      select_options: {
-        sorted_by: Establishment.options_for_sorted_by
-      },
-      persistence_id: false
-    ) or return
-    @establishments = @filterrific.find.paginate(page: params[:page], per_page: 15)
+    respond_to do |format|
+      if authorize Establishment
+        @filterrific = initialize_filterrific(
+          Establishment,
+          params[:filterrific],
+          select_options: {
+            sorted_by: Establishment.options_for_sorted_by
+          },
+          persistence_id: false
+        ) or return
+        @establishments = @filterrific.find.paginate(page: params[:page], per_page: 15)
+      end
+      if policy(:external_order_applicant).index?
+        format.html { redirect_to external_orders_applicants_path }
+      elsif policy(:external_order_provider).index?
+        format.html { redirect_to external_orders_providers_path }
+      end
+    end
   end
 
   # GET /establishments/1

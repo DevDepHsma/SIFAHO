@@ -1,21 +1,25 @@
-class ExternalOrderApplicantPolicy < ExternalOrderPolicy
+class ExternalOrderApplicantPolicy < ApplicationPolicy
 
   def index?
     show?
   end
 
-  # new version
-  def new?
-    user.has_any_role?(:admin, :farmaceutico, :enfermero)
+  def show?
+    user.has_permission?(:read_external_order_applicant)
   end
 
+  # new version
+  def new?
+    user.has_permission?(:create_external_order_applicant)
+  end
+  
   def create?
     new?
   end
-
+  
   def edit?(resource)
     if resource.solicitud_auditoria? && resource.applicant_sector == user.sector
-      user.has_any_role?(:admin, :farmaceutico, :enfermero)
+      user.has_permission?(:update_external_order_applicant)
     end
   end
 
@@ -40,7 +44,7 @@ class ExternalOrderApplicantPolicy < ExternalOrderPolicy
 
   def edit_products?(resource)
     return unless resource.solicitud_auditoria? && resource.applicant_sector == user.sector
-    user.has_any_role?(:admin, :farmaceutico, :auxiliar_farmacia, :medic, :enfermero)
+    user.has_permission?(:update_external_order_applicant) || create?
   end
   
   def can_send?(resource)
