@@ -1,6 +1,15 @@
 module Helpers
   module Order
-    def select_sector(sector_name, select_id)
+    def select_sector(sector_name, select_id, *establishment)
+
+      if establishment.count.positive?
+        page.execute_script %Q{
+          $('input#effector-establishment').val("#{establishment.first.name}").keydown()
+        }
+        sleep 1
+        expect(find('ul.ui-autocomplete')).to have_content(establishment.first.name)
+        page.execute_script("$('.ui-menu-item:contains(#{establishment.first.name})').first().click()")
+      end
       expect(page.has_css?(select_id.to_s, visible: false)).to be true
       page.execute_script %Q{$('#{select_id.to_s}').siblings('button').first().click()}
       expect(page.has_css?('ul.dropdown-menu')).to be true

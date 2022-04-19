@@ -1,10 +1,10 @@
 class EstablishmentPolicy < ApplicationPolicy
   def index?
-    user.has_any_role?(:admin, :farmaceutico, :auxiliar_farmacia, :central_farmaceutico, :medic, :enfermero)
+    show?
   end
 
   def show?
-    index?
+    user.has_permission?(:read_establishment) || user.has_permission?(:read_external_order_applicant) || user.has_permission?(:read_external_order_provider)
   end
 
   def create?
