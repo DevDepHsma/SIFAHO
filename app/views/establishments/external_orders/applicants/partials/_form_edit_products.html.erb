@@ -36,22 +36,24 @@
   <div class="card-footer d-flex justify-content-end">
     <%= link_to 'Volver', external_orders_applicants_path, class: 'btn btn-secondary mr-2' %>
   
-    <button class='btn btn-primary mr-2 send-order' 
-            type="button" 
-            data-url="<%= dispatch_order_external_orders_applicant_path(order) %>"
-            data-title="Enviando solicitud de establecimiento"
-            data-body="Hay productos que no han sido guardados aún">
-      
-      <div class="c-msg" style="pointer-events: none;">
-        <%= fa_icon "paper-plane" %> Enviar
-      </div>
-      
-      <div class="d-none" style="pointer-events: none;">
-        <%= fa_icon "spinner", class: "fa-spin send-audit" %>
-        Guardando...
-      </div>
+    <% if policy(:external_order_applicant).can_send?(order) %>
+      <button class='btn btn-primary mr-2 send-order' 
+              type="button" 
+              data-url="<%= dispatch_order_external_orders_applicant_path(order) %>"
+              data-title="Enviando solicitud de establecimiento"
+              data-body="Hay productos que no han sido guardados aún">
+        
+        <div class="c-msg" style="pointer-events: none;">
+          <%= fa_icon "paper-plane" %> Enviar
+        </div>
+        
+        <div class="d-none" style="pointer-events: none;">
+          <%= fa_icon "spinner", class: "fa-spin send-audit" %>
+          Guardando...
+        </div>
+      </button>
+    <%end%>
 
-    </button>
   </div>
 </div>
 

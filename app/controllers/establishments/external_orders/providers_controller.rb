@@ -7,7 +7,10 @@ class Establishments::ExternalOrders::ProvidersController < Establishments::Exte
   # GET /external_orders/providers
   # GET /external_orders/providers.json
   def index
-    policy(:external_order_provider).index?
+    unless policy(:external_order_provider).index?
+      flash[:error] = 'Usted no está autorizado para realizar esta acción.'
+      redirect_back(fallback_location: root_path)
+    end
     @filterrific = initialize_filterrific(
       ExternalOrder.provider(current_user.sector).without_status(0),
       params[:filterrific],

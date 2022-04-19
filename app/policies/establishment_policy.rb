@@ -4,7 +4,7 @@ class EstablishmentPolicy < ApplicationPolicy
   end
 
   def show?
-    user.has_permission?(:read_establishments)
+    user.has_permission?(:read_establishment) || user.has_permission?(:read_external_order_applicant) || user.has_permission?(:read_external_order_provider)
   end
 
   def create?

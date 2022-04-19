@@ -19,8 +19,8 @@ FactoryBot.define do
     end
 
     trait :est_2 do
-      name { 'Hospital Dr. Pepito Perez' }
-      short_name { 'HPP' }
+      name { 'Hospital Junin de los andes' }
+      short_name { 'HJA' }
     end
 
     factory :hospital_establishment, traits: %i[hospital_type iv_zone]

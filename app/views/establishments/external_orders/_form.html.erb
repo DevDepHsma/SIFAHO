@@ -20,38 +20,7 @@
           <%= yield(:form_edit) %>
         </div>
 
-        <%# Last requests %>
-        <div class="col-6" id='last-requests'>
-          <% if @last_delivers.present? %>
-            Últimos despachos de establecimientos
-            <table class="table">
-              <thead>
-                <tr>
-                  <th>Fecha</th>
-                  <th>Destino</th>
-                  <th>Productos</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                <% @last_delivers.reverse.each do |deliver| %>
-                  <tr>
-                    <td><%= deliver.created_at.strftime('%d/%m/%y') %></td>
-                    <td><%= deliver.applicant_sector_and_establishment %></td>
-                    <td><%= deliver.order_products.count %></td>
-                    <td>
-                      <%= link_to polymorphic_path(['external_orders'.to_sym, deliver.custom_notification_url.to_sym], id: deliver), target: :_blank, class: 'btn btn-light btn-sm' do %>
-                        <%= fa_icon 'external-link-alt' %>
-                      <% end %>
-                    </td>
-                  </tr>
-                <% end %>
-              </tbody>
-            </table>
-          <% else %>
-            Aún no hay despachos realizados
-          <% end%>
-        </div>
+        <%= yield(:last_list) %>
       </div>
   </div>
 
