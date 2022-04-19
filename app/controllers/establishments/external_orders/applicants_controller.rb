@@ -81,7 +81,7 @@ class Establishments::ExternalOrders::ApplicantsController < Establishments::Ext
 
     if params[:template].present?
       new_from_template(params[:template], 'solicitud')
-    else
+    elsif @external_order.order_products.count.zero?
       @external_order.order_products.build
     end
   end
