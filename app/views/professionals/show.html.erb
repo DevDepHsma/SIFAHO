@@ -213,11 +213,7 @@
         <% end %>
         <h5><strong>Legajo: </strong> <%= @professional.docket %> </h5>
         <h5><strong>Especialdad </strong>
-          <% if @professional_type.present? %>
-            <%= @professional.professional_type.name %>
-          <% else %>
-            ----
-          <% end %>
+          <%= @professional.qualifications.any? ? @professional.qualifications.first.name.titleize : "----" %>
         </h5>
 
         <h5> 

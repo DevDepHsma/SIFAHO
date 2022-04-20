@@ -11,7 +11,7 @@
       </span>
     </td>
     <td><%= professional.dni %></td>
-    <td><%= professional.professional_type.present? ? professional.professional_type.name : "----" %></td>
+    <td><%= professional.qualifications.any? ? professional.qualifications.first.name.titleize : "----" %></td>
     <td class="actions-col">
       <%= render(
         partial: 'shared/action_buttons',
