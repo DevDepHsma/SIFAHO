@@ -1,20 +1,20 @@
 require 'rails_helper'
 
-RSpec.feature "Orders::External::Applicants", type: :feature do
+RSpec.feature "Orders::External::Providers", type: :feature do
   before(:all) do
-    @establishment = create(:establishment_1)
-    @other_establishment = create(:establishment_2)
-    @farmacia = create(:sector_1, establishment: @establishment)
-    @deposito = create(:sector_4, establishment: @other_establishment)
-    @user = create(:user_1, sector: @farmacia)
-    @permission_module = create(:permission_module, name: 'Ordenes Externas Solicitud')
-    @read_external_order_applicant = create(:permission, name: 'read_external_order_applicant', permission_module: @permission_module)
-    @create_external_order_applicant = create(:permission, name: 'create_external_order_applicant', permission_module: @permission_module)
-    @update_external_order_applicant = create(:permission, name: 'update_external_order_applicant', permission_module: @permission_module)
-    @destroy_external_order_applicant = create(:permission, name: 'destroy_external_order_applicant', permission_module: @permission_module)
-    @send_external_order_applicant = create(:permission, name: 'send_external_order_applicant', permission_module: @permission_module)
-    @receive_external_order_applicant = create(:permission, name: 'receive_external_order_applicant', permission_module: @permission_module)
-    @return_external_order_applicant = create(:permission, name: 'return_external_order_applicant', permission_module: @permission_module)
+    @establishment = create(:establishment_2)
+    @other_establishment = create(:establishment_1)
+    @deposito = create(:sector_1, establishment: @establishment)
+    @farmacia = create(:sector_4, establishment: @other_establishment)
+    @user = create(:user_1, sector: @deposito)
+    @permission_module = create(:permission_module, name: 'Ordenes Externas Proveedor')
+    @read_external_order_provider = create(:permission, name: 'read_external_order_provider', permission_module: @permission_module)
+    @create_external_order_provider = create(:permission, name: 'create_external_order_provider', permission_module: @permission_module)
+    @update_external_order_provider = create(:permission, name: 'update_external_order_provider', permission_module: @permission_module)
+    @destroy_external_order_provider = create(:permission, name: 'destroy_external_order_provider', permission_module: @permission_module)
+    @send_external_order_provider = create(:permission, name: 'send_external_order_provider', permission_module: @permission_module)
+    @receive_external_order_provider = create(:permission, name: 'receive_external_order_provider', permission_module: @permission_module)
+    @return_external_order_provider = create(:permission, name: 'return_external_order_provider', permission_module: @permission_module)
 
     @products = get_products
     @unity = create(:unidad_unity)
@@ -41,7 +41,7 @@ RSpec.feature "Orders::External::Applicants", type: :feature do
 
     describe '' do
       before(:each) do
-        PermissionUser.create(user: @user, sector: @user.sector, permission: @read_external_order_applicant)
+        PermissionUser.create(user: @user, sector: @user.sector, permission: @read_external_order_provider)
         visit '/'
       end
 
@@ -58,8 +58,8 @@ RSpec.feature "Orders::External::Applicants", type: :feature do
 
         it 'has header links' do
           expect(page.has_link?('Establecimientos')).to be true
-          expect(page.has_link?('Recibos')).to be true
-          expect(page.has_link?('Despachos')).not_to be true
+          expect(page.has_link?('Despachos')).to be true
+          expect(page.has_link?('Recibos')).not_to be true
           expect(page.has_link?('Solicitar')).not_to be true
           expect(page.has_link?('Despachar')).not_to be true
           expect(page.has_link?('Plantillas')).not_to be true
@@ -67,31 +67,31 @@ RSpec.feature "Orders::External::Applicants", type: :feature do
 
         describe ':: CREATE' do
           it ':: fail' do
-            visit '/establecimientos/pedidos/recibos/nuevo'
+            visit '/establecimientos/pedidos/despachos/nuevo'
             expect(page).to have_content('Usted no está autorizado para realizar esta acción.')
           end
 
           describe '' do
             before(:each) do
-              PermissionUser.create(user: @user, sector: @user.sector, permission: @create_external_order_applicant)
+              PermissionUser.create(user: @user, sector: @user.sector, permission: @create_external_order_provider)
             end
 
             it ':: visit create form' do
-              expect(page.has_link?('Solicitar')).to be true
-              click_link 'Solicitar'
-              expect(page).to have_content('Nueva solicitud de establecimiento')
-              expect(page).to have_content('Aún no hay solicitudes realizadas')
+              expect(page.has_link?('Despachar')).to be true
+              click_link 'Despachar'
+              expect(page).to have_content('Nueva provision de establecimiento')
+              expect(page).to have_content('Aún no hay despachos realizadas')
               expect(page.has_css?('input#effector-establishment', visible: false)).to be true
               expect(page.has_css?('select#effector-sector', visible: false)).to be true
-              expect(page).to have_selector('textarea#external_order_applicant_observation')
+              expect(page).to have_selector('textarea#external_order_provider_observation')
               expect(page.has_link?('Volver')).to be true
               expect(page.has_button?('Guardar y agregar productos')).to be true
 
-              select_sector(@deposito.name, 'select#effector-sector', @other_establishment)
+              select_sector(@farmacia.name, 'select#effector-sector', @other_establishment)
               expect(page).to have_content(@deposito.name)
               click_button 'Guardar y agregar productos'
-              expect(page).to have_content('La solicitud de abastecimiento se ha creado y se encuentra en auditoría.')
-              expect(page).to have_content('Editando solicitud de establecimiento código')
+              expect(page).to have_content('La provisión se ha creado y se encuentra en auditoria.')
+              expect(page).to have_content('Editando provision de establecimiento código')
               expect(page).to have_content('Solicitante')
               expect(page).to have_content(@farmacia.name)
               expect(page).to have_content('Proveedor')
@@ -100,32 +100,33 @@ RSpec.feature "Orders::External::Applicants", type: :feature do
               expect(page).to have_content('Producto')
               expect(page).to have_content('Unidad')
               expect(page).to have_content('Tu stock')
-              expect(page).to have_content('Solicitar')
+              expect(page).to have_content('Solicitado')
+              expect(page).to have_content('Entregar')
               expect(page).to have_content('Tu observación')
               expect(page.has_link?('Volver')).to be true
-              expect(page.has_button?('Enviar')).to be false
+              expect(page.has_button?('Aceptar')).to be false
 
-              PermissionUser.create(user: @user, sector: @user.sector, permission: @update_external_order_applicant)
+              PermissionUser.create(user: @user, sector: @user.sector, permission: @update_external_order_provider)
               visit current_path
               add_products(@products, 3, request_quantity: true, observations: true)
               expect(page).to have_selector('input.product-code', count: 3)
               click_link 'Volver'
-              within '#applicant_orders' do
+              within '#external_orders' do
                 expect(page).to have_selector('tr', count: 1)
                 expect(page).to have_selector('.btn-edit', count: 1)
                 page.execute_script %Q{$('a.btn-edit')[0].click()}
               end
 
-              expect(page).to have_content('Editando solicitud de establecimiento código')
+              expect(page).to have_content('Editando provision de establecimiento código')
               expect(page.has_css?('input#effector-establishment', visible: false)).to be true
               expect(page.has_css?('select#effector-sector', visible: false)).to be true
-              expect(page).to have_selector('textarea#external_order_applicant_observation')
+              expect(page).to have_selector('textarea#external_order_provider_observation')
               expect(page.has_link?('Volver')).to be true
               expect(page.has_link?('Editar productos')).to be true
               expect(page.has_button?('Guardar y agregar productos')).to be true
               click_button 'Guardar y agregar productos'
               expect(page.has_link?('Volver')).to be true
-              expect(page.has_button?('Enviar')).to be false
+              expect(page.has_button?('Aceptar')).to be false
 
               # Add send permission
               PermissionUser.create(user: @user, sector: @user.sector, permission: @send_external_order_applicant)
