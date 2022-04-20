@@ -1,4 +1,4 @@
-class ExternalOrderProviderPolicy < ExternalOrderPolicy
+class ExternalOrderProviderPolicy < ApplicationPolicy
 
   def index?
     show?
@@ -9,7 +9,7 @@ class ExternalOrderProviderPolicy < ExternalOrderPolicy
   end
 
   def new?
-    user.has_any_role?(:admin, :farmaceutico, :enfermero)
+    user.has_permission?(:create_external_order_provider)
   end
 
   def create?
@@ -18,13 +18,13 @@ class ExternalOrderProviderPolicy < ExternalOrderPolicy
 
   def edit?(resource)
     if (resource.solicitud_enviada? || resource.proveedor_auditoria?) && resource.provider_sector == user.sector
-      user.has_any_role?(:admin, :farmaceutico, :enfermero)
+      user.has_permission?(:update_external_order_provider)
     end
   end
 
   def edit_applicant_on_solicitud?(resource)
     if resource.provision? && resource.proveedor_auditoria? && resource.provider_sector == user.sector
-      user.has_any_role?(:admin, :farmaceutico, :enfermero)
+      user.has_permission?(:update_external_order_provider)
     end
   end
 
@@ -38,8 +38,9 @@ class ExternalOrderProviderPolicy < ExternalOrderPolicy
   end
 
   def edit_products?(resource)
-    return unless %w[solicitud_enviada proveedor_auditoria].any?(resource.status) && resource.provider_sector == user.sector
-    user.has_any_role?(:admin, :farmaceutico, :auxiliar_farmacia, :medic, :enfermero)
+    if %w[solicitud_enviada proveedor_auditoria].any?(resource.status) && resource.provider_sector == user.sector
+      user.has_permission?(:update_external_order_provider) || create?
+    end
   end
 
   def can_send?(resource)
@@ -56,7 +57,7 @@ class ExternalOrderProviderPolicy < ExternalOrderPolicy
 
   def accept_order?(resource)
     if resource.proveedor_auditoria? && resource.provider_sector == user.sector
-      user.has_any_role?(:admin, :farmaceutico, :auxiliar_farmacia, :medic, :enfermero)
+      user.has_permission?(:accept_external_order_provider)
     end
   end
 
