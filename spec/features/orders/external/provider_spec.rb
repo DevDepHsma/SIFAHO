@@ -15,14 +15,16 @@ RSpec.feature "Orders::External::Providers", type: :feature do
     @send_external_order_provider = create(:permission, name: 'send_external_order_provider', permission_module: @permission_module)
     @receive_external_order_provider = create(:permission, name: 'receive_external_order_provider', permission_module: @permission_module)
     @return_external_order_provider = create(:permission, name: 'return_external_order_provider', permission_module: @permission_module)
+    @accept_external_order_provider = create(:permission, name: 'accept_external_order_provider', permission_module: @permission_module)
 
     @products = get_products
     @unity = create(:unidad_unity)
     @area = create(:medication_area)
     @lab = create(:abbott_laboratory)
+    @provenance = create(:province_lot_provenance)
     @products.each_with_index do |product, index|
       prod = create(:product, name: product[0], code: product[1], area: @area, unity: @unity)
-      lot = create(:lot, laboratory: @lab, product: prod, code: "BB-#{index}", expiry_date:  Date.today + 15.month)
+      lot = create(:lot, laboratory: @lab, product: prod, code: "BB-#{index}", expiry_date:  Date.today + 15.month, provenance: @provenance)
       stock = create(:stock, product: prod, sector: @user.sector)
       LotStock.create(quantity: rand(1500..5000), lot: lot, stock: stock)
     end
@@ -108,7 +110,7 @@ RSpec.feature "Orders::External::Providers", type: :feature do
 
               PermissionUser.create(user: @user, sector: @user.sector, permission: @update_external_order_provider)
               visit current_path
-              add_products(@products, 3, request_quantity: true, observations: true)
+              add_products(@products, 3, request_quantity: true, observations: true, select_lot_stock: true)
               expect(page).to have_selector('input.product-code', count: 3)
               click_link 'Volver'
               within '#external_orders' do
@@ -129,12 +131,12 @@ RSpec.feature "Orders::External::Providers", type: :feature do
               expect(page.has_button?('Aceptar')).to be false
 
               # Add send permission
-              PermissionUser.create(user: @user, sector: @user.sector, permission: @send_external_order_applicant)
+              PermissionUser.create(user: @user, sector: @user.sector, permission: @accept_external_order_provider)
               visit current_path
-              expect(page.has_button?('Enviar')).to be true
-              click_button 'Enviar'
-              expect(page).to have_content('La solicitud se ha enviado correctamente.')
-              expect(page).to have_content('Solicitud enviada')
+              expect(page.has_button?('Aceptar')).to be true
+              click_button 'Aceptar'
+              expect(page).to have_content('La provision se ha aceptado correctamente.')
+              expect(page).to have_content('Proveedor aceptado')
               expect(page).to have_content('Productos 3')
               expect(page.has_link?('Volver')).to be true
               expect(page.has_link?('Imprimir')).to be true

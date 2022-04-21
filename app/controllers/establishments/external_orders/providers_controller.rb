@@ -169,7 +169,7 @@ class Establishments::ExternalOrders::ProvidersController < Establishments::Exte
       new_from_template(params[:template], 'provision')
     else
       @external_order.proveedor_auditoria! if @external_order.solicitud_enviada?
-      @external_order.order_products.build
+      (@external_order_product = @external_order.order_products.build) if @external_order.order_products.count.zero?
     end
   end
 
