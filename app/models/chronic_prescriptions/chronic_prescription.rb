@@ -187,13 +187,13 @@ class ChronicPrescription < ApplicationRecord
   # Update status prescription based on expiry date and delivered quantity
   def update_status
     if !vencida? && Date.today > self.expiry_date
-      vencida!
+      self.status = 'vencida'
     elsif (sum_request_quantity <= sum_delivery_quantity) || !any_product_without_dispensing?
-      dispensada!
+      self.status = 'dispensada'
     elsif any_product_without_dispensing? && chronic_dispensations.count > 0
-      dispensada_parcial!
+      self.status = 'dispensada_parcial'
     elsif chronic_dispensations.count == 0
-      pendiente!
+      self.status = 'pendiente'
     end
   end
   
