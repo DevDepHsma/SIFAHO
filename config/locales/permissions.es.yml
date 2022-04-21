@@ -47,3 +47,4 @@ es:
       send_external_order_provider: 'Despachar'
       nullify_external_order_provider: 'Anular'
       return_external_order_provider: 'Retornar'
+      accept_external_order_provider: 'Aceptar'
