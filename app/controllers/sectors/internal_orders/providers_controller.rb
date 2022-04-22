@@ -50,7 +50,7 @@ class Sectors::InternalOrders::ProvidersController < Sectors::InternalOrders::In
       new_from_template(params[:template], 'provision')
     else
       @internal_order.proveedor_auditoria! if @internal_order.solicitud_enviada?
-      @internal_order_product = @internal_order.order_products.build
+      (@internal_order_product = @internal_order.order_products.build) if @internal_order.order_products.count.zero?
     end
   end
 
