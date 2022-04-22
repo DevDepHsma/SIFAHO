@@ -23,7 +23,6 @@
                                             order_product_id: order_product.id,
                                             product_id: order_product.product.id),
               class: "btn btn-sm btn-lot-selection btn-req #{ order_product.delivery_quantity == 0 ? "btn-outline-primary" : "btn-outline-success"}",
-              remote: true,
               remote: true do %>
     <%= fa_icon 'barcode', class: 'fa-fw' %>
   <% end %>

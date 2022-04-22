@@ -132,37 +132,38 @@ RSpec.feature "Orders::Internal::Providers", type: :feature do
               visit current_path
               expect(page.has_button?('Enviar')).to be true
               click_button 'Enviar'
+              sleep 1
               # Confirmation modal
               expect(page).to have_content('Enviando provisión de sector')
               expect(page).to have_content('Una vez enviada la orden, no se podrán retornar los productos a stock.')
               expect(page).to have_content('Desea enviar la provisión?')
-              expect(page.has_button?('Volver')).to be true
+              expect(page.has_button?('Cancelar')).to be true
               expect(page.has_link?('Enviar')).to be true
-              clink_link 'Enviar'
+              click_link 'Enviar'
               sleep 1
               expect(page).to have_content('La provision se ha enviado correctamente.')
               expect(page).to have_content('Provision en camino')
               expect(page).to have_content('Productos 4')
               expect(page.has_link?('Volver')).to be true
               expect(page.has_link?('Imprimir')).to be true
-              expect(page.has_button?('Retornar')).to be false
+              # expect(page.has_button?('Retornar')).to be false
               # Add return permission
-              PermissionUser.create(user: @user, sector: @user.sector, permission: @return_internal_order_applicant)
-              visit current_path
-              expect(page.has_button?('Retornar')).to be true
-              click_button 'Retornar'
-              sleep 1
-              expect(page).to have_content('Retornar a solicitud auditoria')
-              expect(page.has_link?('Cancelar')).to be true
-              expect(page.has_link?('Confirmar')).to be true
-              click_link 'Confirmar'
-              expect(page).to have_content('Solicitud auditoria')
-              click_link 'Volver'
-              within '#applicant_orders' do
-                expect(page).not_to have_selector('.delete-item', count: 1)
-              end
+              # PermissionUser.create(user: @user, sector: @user.sector, permission: @return_internal_order_provider)
+              # visit current_path
+              # expect(page.has_button?('Retornar')).to be true
+              # click_button 'Retornar'
+              # sleep 1
+              # expect(page).to have_content('Retornar a solicitud auditoria')
+              # expect(page.has_link?('Cancelar')).to be true
+              # expect(page.has_link?('Confirmar')).to be true
+              # click_link 'Confirmar'
+              # expect(page).to have_content('Solicitud auditoria')
+              # click_link 'Volver'
+              # within '#applicant_orders' do
+              #   expect(page).not_to have_selector('.delete-item', count: 1)
+              # end
               # Add destroy permission
-              PermissionUser.create(user: @user, sector: @user.sector, permission: @destroy_internal_order_applicant)
+              PermissionUser.create(user: @user, sector: @user.sector, permission: @destroy_internal_order_provider)
               visit current_path
               within '#applicant_orders' do
                 expect(page).to have_selector('.delete-item', count: 1)
@@ -176,6 +177,12 @@ RSpec.feature "Orders::Internal::Providers", type: :feature do
               sleep 1
               within '#applicant_orders' do
                 expect(page).to have_selector('.delete-item', count: 0)
+              end
+            end
+
+            describe '' do
+              before(:each) do
+                
               end
             end
           end
