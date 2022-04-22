@@ -111,7 +111,6 @@ RSpec.feature "Orders::Internal::Providers", type: :feature do
               expect(page).to have_selector('input.product-code', count: 4)
               sleep 1
               click_link 'Volver'
-              sleep 10
               within '#provider_orders' do
                 expect(page).to have_selector('tr', count: 1)
                 expect(page).to have_selector('.btn-edit', count: 1)
@@ -133,6 +132,14 @@ RSpec.feature "Orders::Internal::Providers", type: :feature do
               visit current_path
               expect(page.has_button?('Enviar')).to be true
               click_button 'Enviar'
+              # Confirmation modal
+              expect(page).to have_content('Enviando provisión de sector')
+              expect(page).to have_content('Una vez enviada la orden, no se podrán retornar los productos a stock.')
+              expect(page).to have_content('Desea enviar la provisión?')
+              expect(page.has_button?('Volver')).to be true
+              expect(page.has_link?('Enviar')).to be true
+              clink_link 'Enviar'
+              sleep 1
               expect(page).to have_content('La provision se ha enviado correctamente.')
               expect(page).to have_content('Provision en camino')
               expect(page).to have_content('Productos 4')

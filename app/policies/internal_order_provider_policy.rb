@@ -53,7 +53,7 @@ class InternalOrderProviderPolicy < InternalOrderPolicy
 
   def rollback_order?(resource)
     if resource.provider_sector == user.sector && resource.provision_en_camino?
-      user.has_any_role?(:admin, :farmaceutico, :auxiliar_farmacia, :medic, :enfermero)
+      user.has_permission?(:return_internal_order_provider)
     end
   end
 

@@ -53,7 +53,7 @@
       <% end %>
     <% end %>
     <% if policy(:internal_order_provider).edit?(internal_order) %>
-      <%= link_to edit_internal_orders_provider_path(internal_order), :"data-turbolinks" => false, class: 'btn btn-warning btn-sm', 
+      <%= link_to edit_internal_orders_provider_path(internal_order), :"data-turbolinks" => false, class: 'btn btn-warning btn-sm btn-edit', 
         title: 'Editar', data: { toggle: 'tooltip', placement: 'top' } do %>
         <%= fa_icon "pen" %>
       <% end %>
