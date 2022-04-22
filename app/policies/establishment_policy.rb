@@ -1,14 +1,14 @@
 class EstablishmentPolicy < ApplicationPolicy
   def index?
-    user.has_any_role?(:admin, :farmaceutico, :auxiliar_farmacia, :central_farmaceutico, :medic, :enfermero)
+    show?
   end
 
   def show?
-    index?
+    user.has_permission?(:read_establishments)
   end
 
   def create?
-    user.has_any_role?(:admin)
+    user.has_permission?(:create_establishments)
   end
 
   def new?
@@ -16,7 +16,7 @@ class EstablishmentPolicy < ApplicationPolicy
   end
 
   def update?
-    user.has_any_role?(:admin, :modificar_establecimientos)
+    user.has_permission?(:update_establishments)
   end
 
   def edit?
@@ -24,7 +24,7 @@ class EstablishmentPolicy < ApplicationPolicy
   end
 
   def destroy?
-    user.has_any_role?(:admin)
+    user.has_permission?(:destroy_establishments)
   end
 
   def delete?

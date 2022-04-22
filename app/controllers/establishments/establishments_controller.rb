@@ -6,7 +6,7 @@ class EstablishmentsController < ApplicationController
   def index
     authorize Establishment
     @filterrific = initialize_filterrific(
-      Establishment,
+      Establishment.eager_load(:sectors),
       params[:filterrific],
       select_options: {
         sorted_by: Establishment.options_for_sorted_by

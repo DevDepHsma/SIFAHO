@@ -17,7 +17,7 @@ FactoryBot.define do
       name { 'Hospital Dr. Ramón Carrillo' }
       short_name { 'HSMA' }
     end
-    
+
     trait :est_2 do
       name { 'Hospital Dr. Pepito Perez' }
       short_name { 'HPP' }
