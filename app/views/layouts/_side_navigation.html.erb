@@ -49,7 +49,7 @@
       <% end %>
     <% end %>
 
-    <% if policy(Establishment).index? %>
+    <%# if policy(Establishment).index? %>
       <%= link_to main_app.external_orders_providers_path, class: "list-group-item list-group-item-action list-custom
         #{active_class_folder('establishments')}" do %>
         <span class="sb-icon">
@@ -57,7 +57,7 @@
         </span>
         <span class="ml-2 sb-title">Establecimientos</span>
       <% end %>
-    <% end %>
+    <%# end %>
     
     <% if policy(Purchase).index? %>
       <%= link_to main_app.purchases_path, class: "list-group-item list-group-item-action list-custom #{active_class('purchases')}" do %>
