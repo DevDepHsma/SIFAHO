@@ -15,7 +15,12 @@ class EstablishmentsController < ApplicationController
       },
       persistence_id: false
     ) or return
-    @establishments = @filterrific.find.page(params[:page]).per(15)
+    @establishments = (request.format.xlsx? || request.format.pdf?) ? @filterrific.find : @filterrific.find.page(params[:page]).per(15)
+    respond_to do |format|
+      format.html
+      format.js
+      format.xlsx { headers['Content-Disposition'] = "attachment; filename=\"Establecimientos_#{DateTime.now.strftime('%d-%m-%Y')}.xlsx\"" }
+    end
   end
 
   # GET /establishments/1
