@@ -6,14 +6,16 @@ class EstablishmentsController < ApplicationController
   def index
     authorize Establishment
     @filterrific = initialize_filterrific(
-      Establishment.eager_load(:sectors),
+      Establishment.select(:id, :cuie, :name, :establishment_type_id, 'SUM(sectors.user_sectors_count) AS total_users')
+      .joins(:sectors)
+      .group(:id, :cuie, :name, :establishment_type_id),
       params[:filterrific],
       select_options: {
         sorted_by: Establishment.options_for_sorted_by
       },
       persistence_id: false
     ) or return
-    @establishments = @filterrific.find.paginate(page: params[:page], per_page: 15)
+    @establishments = @filterrific.find.page(params[:page]).per(15)
   end
 
   # GET /establishments/1

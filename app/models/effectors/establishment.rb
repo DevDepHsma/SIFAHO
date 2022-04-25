@@ -71,8 +71,7 @@ class Establishment < ApplicationRecord
       reorder("establishments.sectors_count #{ direction }")
     when /^usuarios_/s
       # Ordenamiento por fecha de creación en la BD
-      select('establishments.id, establishments.name, establishments.cuei, establishment_types.name AS type_name, SUM(),  SUM(sectors.user_sectors_count) as total_users')
-      reorder("sectors.user_sectors_count #{ direction }")
+      reorder("total_users #{ direction }")
     else
       # Si no existe la opcion de ordenamiento se levanta la excepcion
       raise(ArgumentError, "Invalid sort option: #{ sort_option.inspect }")
@@ -85,10 +84,10 @@ class Establishment < ApplicationRecord
       ['Nombre (z-a)', 'nombre_desc'],
       ['Creado (nueva primero)', 'creado_desc'],
       ['Creado (antigua primero)', 'creado_asc'],
-      ['Sectores (mayor primero)', 'sectores_asc'],
-      ['Sectores (menor primero)', 'sectores_desc'],
-      ['Usuarios (mayor primero)', 'usuarios_asc'],
-      ['Usuarios (menor primero)', 'usuarios_desc'],
+      ['Sectores (mayor primero)', 'sectores_desc'],
+      ['Sectores (menor primero)', 'sectores_asc'],
+      ['Usuarios (mayor primero)', 'usuarios_desc'],
+      ['Usuarios (menor primero)', 'usuarios_asc'],
     ]
   end
 
