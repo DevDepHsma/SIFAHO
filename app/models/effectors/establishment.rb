@@ -69,6 +69,9 @@ class Establishment < ApplicationRecord
     when /^sectores_/s
       # Ordenamiento por fecha de creación en la BD
       reorder("establishments.sectors_count #{ direction }")
+    when /^usuarios_/s
+      # Ordenamiento por fecha de creación en la BD
+      reorder("total_users #{ direction }")
     else
       # Si no existe la opcion de ordenamiento se levanta la excepcion
       raise(ArgumentError, "Invalid sort option: #{ sort_option.inspect }")
@@ -77,14 +80,14 @@ class Establishment < ApplicationRecord
 
   def self.options_for_sorted_by
     [
-      ["Nombre (a-z)", "nombre_asc"],
-      ["Nombre (z-a)", "nombre_desc"],
-      ["Creado (nueva primero)", "creado_desc"],
-      ["Creado (antigua primero)", "creado_asc"],
-      ["Sectores (mayor primero)", "sectores_asc"],
-      ["Sectores (menor primero)", "sectores_desc"],
-      ["Usuarios (mayor primero)", "usuarios_asc"],
-      ["Usuarios (menor primero)", "usuarios_desc"],
+      ['Nombre (a-z)', 'nombre_asc'],
+      ['Nombre (z-a)', 'nombre_desc'],
+      ['Creado (nueva primero)', 'creado_desc'],
+      ['Creado (antigua primero)', 'creado_asc'],
+      ['Sectores (mayor primero)', 'sectores_desc'],
+      ['Sectores (menor primero)', 'sectores_asc'],
+      ['Usuarios (mayor primero)', 'usuarios_desc'],
+      ['Usuarios (menor primero)', 'usuarios_asc'],
     ]
   end
 

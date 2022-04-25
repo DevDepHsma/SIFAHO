@@ -43,6 +43,7 @@ class ChronicDispensation < ApplicationRecord
       original_product.deliver(dispensation_type.quantity) if dispensation_type.present?
     end
     self.chronic_prescription.update_status
+    self.chronic_prescription.save
   end
 
   def return_dispensation

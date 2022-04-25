@@ -4,22 +4,27 @@ class EstablishmentsController < ApplicationController
   # GET /establishments
   # GET /establishments.json
   def index
+    authorize Establishment
+    @filterrific = initialize_filterrific(
+      Establishment.select(:id, :cuie, :name, :establishment_type_id, 'SUM(sectors.user_sectors_count) AS total_users')
+      .joins(:sectors)
+      .group(:id, :cuie, :name, :establishment_type_id),
+      params[:filterrific],
+      select_options: {
+        sorted_by: Establishment.options_for_sorted_by
+      },
+      persistence_id: false
+    ) or return
+    @establishments = (request.format.xlsx? || request.format.pdf?) ? @filterrific.find : @filterrific.find.page(params[:page]).per(15)
     respond_to do |format|
-      if authorize Establishment
-        @filterrific = initialize_filterrific(
-          Establishment,
-          params[:filterrific],
-          select_options: {
-            sorted_by: Establishment.options_for_sorted_by
-          },
-          persistence_id: false
-        ) or return
-        @establishments = @filterrific.find.paginate(page: params[:page], per_page: 15)
-      end
       if policy(:external_order_applicant).index?
         format.html { redirect_to external_orders_applicants_path }
       elsif policy(:external_order_provider).index?
         format.html { redirect_to external_orders_providers_path }
+      else
+        format.html
+        format.js
+        format.xlsx { headers['Content-Disposition'] = "attachment; filename=\"Establecimientos_#{DateTime.now.strftime('%d-%m-%Y')}.xlsx\"" }
       end
     end
   end
