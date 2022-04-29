@@ -24,7 +24,7 @@ RSpec.feature "Orders::Internal::Providers", type: :feature do
     @products.each_with_index do |product, index|
       prod = create(:product, name: product[0], code: product[1], area: @area, unity: @unity)
       lot = create(:lot, laboratory: @lab, product: prod, code: "BB-#{index}", expiry_date:  Date.today + 15.month, provenance: @provenance)
-      stock = create(:stock, product: prod, sector: @user.sector)
+      stock = create(:stock, product: prod, sector: @deposito)
       LotStock.create(quantity: rand(1500..5000), lot: lot, stock: stock)
     end
   end
@@ -107,7 +107,8 @@ RSpec.feature "Orders::Internal::Providers", type: :feature do
               expect(page.has_button?('Enviar')).to be false
               PermissionUser.create(user: @user, sector: @user.sector, permission: @update_internal_order_provider)
               visit current_path
-              add_products(@products, 4, request_quantity: true, observations: true, select_lot_stock: true)
+              prods = @products.sample(4)
+              add_products(prods, request_quantity: true, observations: true, select_lot_stock: true)
               expect(page).to have_selector('input.product-code', count: 4)
               sleep 1
               click_link 'Volver'
@@ -162,27 +163,53 @@ RSpec.feature "Orders::Internal::Providers", type: :feature do
               # within '#applicant_orders' do
               #   expect(page).not_to have_selector('.delete-item', count: 1)
               # end
-              # Add destroy permission
-              PermissionUser.create(user: @user, sector: @user.sector, permission: @destroy_internal_order_provider)
-              visit current_path
-              within '#applicant_orders' do
-                expect(page).to have_selector('.delete-item', count: 1)
-                page.execute_script %Q{$('button.delete-item')[0].click()}
-                sleep 1
-              end
-              expect(page).to have_content('Eliminar solicitud')
-              expect(page.has_button?('Volver')).to be true
-              expect(page.has_link?('Confirmar')).to be true
-              click_link 'Confirmar'
-              sleep 1
-              within '#applicant_orders' do
-                expect(page).to have_selector('.delete-item', count: 0)
-              end
+
             end
 
             describe '' do
               before(:each) do
-                
+                product = Product.find_by(code: @products.first[1])
+
+                order = InternalOrder.create(
+                  provider_status: 0,
+                  requested_date: Date.today - 5.day,
+                  provider_sector_id: @deposito.id,
+                  applicant_sector_id: @farmacia.id,
+                  applicant_status: 0,
+                  remit_code: 'DEPÓprov0',
+                  order_type: 'provision',
+                  status: 'proveedor_auditoria'
+                )
+                op = InternalOrderProduct.create(
+                  order_id: order.id,
+                  product_id: product.id,
+                  request_quantity: rand(10..75),
+                  added_by_sector_id: @deposito.id
+                )
+                visit '/sectores/pedidos/despachos'
+              end
+
+              it 'DESTROY' do
+                # Add destroy permission
+                within '#provider_orders' do
+                  expect(page).not_to have_selector('.delete-item', count: 1)
+                end
+
+                PermissionUser.create(user: @user, sector: @user.sector, permission: @destroy_internal_order_provider)
+                visit current_path
+                within '#provider_orders' do
+                  expect(page).to have_selector('.delete-item', count: 1)
+                  page.execute_script %Q{$('button.delete-item')[0].click()}
+                  sleep 1
+                end
+                expect(page).to have_content('Eliminar provisión')
+                expect(page.has_button?('Volver')).to be true
+                expect(page.has_link?('Confirmar')).to be true
+                click_link 'Confirmar'
+                sleep 1
+                within '#provider_orders' do
+                  expect(page).to have_selector('.delete-item', count: 0)
+                end
               end
             end
           end

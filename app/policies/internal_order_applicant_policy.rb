@@ -53,8 +53,8 @@ class InternalOrderApplicantPolicy < ApplicationPolicy
   end
 
   def receive_order?(resource)
-    if resource.applicant_sector == user.sector && resource.provision_en_camino? 
-      user.has_any_role?(:admin, :farmaceutico, :auxiliar_farmacia, :medic, :enfermero)
+    if resource.applicant_sector == user.sector && resource.provision_en_camino?
+      user.has_permission?(:receive_internal_order_applicant)
     end
   end
 
