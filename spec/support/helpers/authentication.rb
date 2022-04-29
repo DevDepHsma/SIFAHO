@@ -8,5 +8,10 @@ module Helpers
       end
       click_button 'Iniciar sesión'
     end
+
+    def sign_out_as(user)
+      click_button "#{user.sector_name} #{user.establishment.short_name}"
+      click_link 'Cerrar sesión'
+    end
   end
 end

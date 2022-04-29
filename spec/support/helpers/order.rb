@@ -20,8 +20,8 @@ module Helpers
     # products => array of products (should be persisted)
     # products_size => number of products that sample will rake
     #  **fields => filds that should been fill it
-    def add_products(products, products_size, **fields_args)
-      products.sample(products_size).each_with_index do |product, index|
+    def add_products(products, **fields_args)
+      products.each_with_index do |product, index|
         page.execute_script %Q{
           $($('input.product-code')[#{index}]).val("#{product[1]}").keydown()
         }
@@ -64,7 +64,24 @@ module Helpers
           click_button 'Guardar'
           sleep 1
         end
-        click_link 'Agregar producto' unless (index + 1).eql?(products_size)
+        click_link 'Agregar producto' unless (index + 1).eql?(products.size)
+        sleep 1
+      end
+    end
+
+    def fill_products_deliver_quantity(products)
+      products.each_with_index do |btn, index|
+        page.execute_script %Q{$($('a.btn-lot-selection')[#{index}]).click()}
+        expect(page).to have_content('Seleccionar lote en stock')
+        expect(page).to have_content('Cantidad seleccionada')
+        expect(page.has_button?('Volver')).to be true
+        expect(page.has_button?('Guardar')).to be true
+        within '#table-lot-selection' do
+          page.execute_script %Q{
+            $($('input.quantity')[0]).val(#{rand(100..750)}).trigger('change')
+          }
+        end
+        click_button 'Guardar'
         sleep 1
       end
     end

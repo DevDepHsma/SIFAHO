@@ -1,4 +1,4 @@
-class InternalOrderProviderPolicy < InternalOrderPolicy
+class InternalOrderProviderPolicy < ApplicationPolicy
   def index?
     show?
   end
@@ -43,7 +43,7 @@ class InternalOrderProviderPolicy < InternalOrderPolicy
 
   def destroy?(resource)
     if (resource.provision? && resource.proveedor_auditoria?) && resource.provider_sector == user.sector
-      user.has_any_role?(:admin, :farmaceutico, :enfermero)
+      user.has_permission?(:destroy_internal_order_provider)
     end
   end
 

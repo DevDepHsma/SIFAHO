@@ -22,7 +22,7 @@ RSpec.feature 'Orders::Internal::Applicants', type: :feature do
     @products.each_with_index do |product, index|
       prod = create(:product, name: product[0], code: product[1], area: @area, unity: @unity)
       lot = create(:lot, laboratory: @lab, product: prod, code: "BB-#{index}", expiry_date:  Date.today + 15.month)
-      stock = create(:stock, product: prod, sector: @user.sector)
+      stock = create(:stock, product: prod, sector: @deposito)
       LotStock.create(quantity: rand(1500..5000), lot: lot, stock: stock)
     end
   end
@@ -105,7 +105,8 @@ RSpec.feature 'Orders::Internal::Applicants', type: :feature do
 
               PermissionUser.create(user: @user, sector: @user.sector, permission: @update_internal_order_applicant)
               visit current_path
-              add_products(@products, 3, request_quantity: true, observations: true)
+              prods = @products.sample(3)
+              add_products(prods, request_quantity: true, observations: true)
               expect(page).to have_selector('input.product-code', count: 3)
               click_link 'Volver'
               within '#applicant_orders' do
