@@ -1,36 +1,8 @@
 require 'rails_helper'
 
 RSpec.feature "Orders::Internal::Providers", type: :feature do
-
-  before(:all) do
-    @establishment = create(:establishment_1)
-    @farmacia = create(:sector_1, establishment: @establishment)
-    @deposito = create(:sector_4, establishment: @establishment)
-    @user = create(:user_1, sector: @deposito)
-    @permission_module = create(:permission_module, name: 'Ordenes Internas Proveedor')
-    @read_internal_order_provider = create(:permission, name: 'read_internal_order_provider', permission_module: @permission_module)
-    @create_internal_order_provider = create(:permission, name: 'create_internal_order_provider', permission_module: @permission_module)
-    @update_internal_order_provider = create(:permission, name: 'update_internal_order_provider', permission_module: @permission_module)
-    @destroy_internal_order_provider = create(:permission, name: 'destroy_internal_order_provider', permission_module: @permission_module)
-    @send_internal_order_provider = create(:permission, name: 'send_internal_order_provider', permission_module: @permission_module)
-    @nullify_internal_order_provider = create(:permission, name: 'nullify_internal_order_provider', permission_module: @permission_module)
-    @return_internal_order_provider = create(:permission, name: 'return_internal_order_provider', permission_module: @permission_module)
-
-    @products = get_products
-    @unity = create(:unidad_unity)
-    @area = create(:medication_area)
-    @lab = create(:abbott_laboratory)
-    @provenance = create(:province_lot_provenance)
-    @products.each_with_index do |product, index|
-      prod = create(:product, name: product[0], code: product[1], area: @area, unity: @unity)
-      lot = create(:lot, laboratory: @lab, product: prod, code: "BB-#{index}", expiry_date:  Date.today + 15.month, provenance: @provenance)
-      stock = create(:stock, product: prod, sector: @deposito)
-      LotStock.create(quantity: rand(1500..5000), lot: lot, stock: stock)
-    end
-  end
-
   background do
-    sign_in_as(@user)
+    sign_in_as(@provider_user)
   end
 
   describe 'Permissions', js: true do
@@ -42,7 +14,7 @@ RSpec.feature "Orders::Internal::Providers", type: :feature do
 
     describe '' do
       before(:each) do
-        PermissionUser.create(user: @user, sector: @user.sector, permission: @read_internal_order_provider)
+        PermissionUser.create(user: @provider_user, sector: @provider_user.sector, permission: @read_internal_order_provider)
         visit '/'
       end
 
@@ -73,7 +45,7 @@ RSpec.feature "Orders::Internal::Providers", type: :feature do
 
           describe '' do
             before(:each) do
-              PermissionUser.create(user: @user, sector: @user.sector, permission: @create_internal_order_provider)
+              PermissionUser.create(user: @provider_user, sector: @provider_user.sector, permission: @create_internal_order_provider)
             end
 
             it ':: visit create form' do
@@ -105,7 +77,7 @@ RSpec.feature "Orders::Internal::Providers", type: :feature do
               expect(page).to have_content('Tu observación')
               expect(page.has_link?('Volver')).to be true
               expect(page.has_button?('Enviar')).to be false
-              PermissionUser.create(user: @user, sector: @user.sector, permission: @update_internal_order_provider)
+              PermissionUser.create(user: @provider_user, sector: @provider_user.sector, permission: @update_internal_order_provider)
               visit current_path
               prods = @products.sample(4)
               add_products(prods, request_quantity: true, observations: true, select_lot_stock: true)
@@ -129,7 +101,7 @@ RSpec.feature "Orders::Internal::Providers", type: :feature do
               expect(page.has_button?('Enviar')).to be false
 
               # Add send permission
-              PermissionUser.create(user: @user, sector: @user.sector, permission: @send_internal_order_provider)
+              PermissionUser.create(user: @provider_user, sector: @provider_user.sector, permission: @send_internal_order_provider)
               visit current_path
               expect(page.has_button?('Enviar')).to be true
               click_button 'Enviar'
@@ -149,7 +121,7 @@ RSpec.feature "Orders::Internal::Providers", type: :feature do
               expect(page.has_link?('Imprimir')).to be true
               # expect(page.has_button?('Retornar')).to be false
               # Add return permission
-              # PermissionUser.create(user: @user, sector: @user.sector, permission: @return_internal_order_provider)
+              # PermissionUser.create(user: @provider_user, sector: @provider_user.sector, permission: @return_internal_order_provider)
               # visit current_path
               # expect(page.has_button?('Retornar')).to be true
               # click_button 'Retornar'
@@ -195,7 +167,7 @@ RSpec.feature "Orders::Internal::Providers", type: :feature do
                   expect(page).not_to have_selector('.delete-item', count: 1)
                 end
 
-                PermissionUser.create(user: @user, sector: @user.sector, permission: @destroy_internal_order_provider)
+                PermissionUser.create(user: @provider_user, sector: @provider_user.sector, permission: @destroy_internal_order_provider)
                 visit current_path
                 within '#provider_orders' do
                   expect(page).to have_selector('.delete-item', count: 1)
