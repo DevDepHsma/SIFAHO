@@ -41,8 +41,9 @@ class ExternalOrderProviderPolicy < ApplicationPolicy
   end
 
   def destroy?(resource)
-    %i['admin farmaceutico enfermero'].any? { |role| user.has_role?(role) } &&
-      resource.provision? && resource.proveedor_auditoria? && resource.provider_sector == user.sector
+    if resource.provision? && resource.proveedor_auditoria? && resource.provider_sector == user.sector
+      user.has_permission?(:destroy_external_order_provider)
+    end
   end
 
   def edit_products?(resource)
@@ -53,13 +54,13 @@ class ExternalOrderProviderPolicy < ApplicationPolicy
 
   def can_send?(resource)
     if resource.proveedor_aceptado? && resource.provider_sector == user.sector
-      user.has_any_role?(:admin, :farmaceutico, :auxiliar_farmacia, :medic, :enfermero)
+      user.has_permission?(:send_external_order_provider)
     end
   end
 
   def rollback_order?(resource)
     if resource.provider_sector == user.sector && resource.proveedor_aceptado?
-      user.has_any_role?(:admin, :farmaceutico, :auxiliar_farmacia, :medic, :enfermero)
+      user.has_permission?(:return_external_order_provider)
     end
   end
 

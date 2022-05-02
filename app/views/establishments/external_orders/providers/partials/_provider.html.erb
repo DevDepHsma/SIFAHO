@@ -41,7 +41,7 @@
     
     <% if policy(:external_order_provider).show? %>
       <%= link_to external_orders_provider_path(external_order),
-        class: 'btn btn-secondary btn-sm', title: 'Ver detalles', data: { toggle: 'tooltip', placement: 'top' }, 'data-disable-with' => "<i class='fa fa-spinner fa-spin'></i>".html_safe do %>
+        class: 'btn btn-secondary btn-sm btn-detail', title: 'Ver detalles', data: { toggle: 'tooltip', placement: 'top' }, 'data-disable-with' => "<i class='fa fa-spinner fa-spin'></i>".html_safe do %>
         <%= fa_icon "eye" %>
       <% end %>
     <% end %>
