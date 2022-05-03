@@ -1,6 +1,7 @@
 RSpec.configure do |config|
 
   config.before(:all) do
+    @user = create(:user_4)
     @establishment = create(:establishment_1)
     @deposito = create(:sector_4, establishment: @establishment)
     @farmacia = create(:sector_1, establishment: @establishment)

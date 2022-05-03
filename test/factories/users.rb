@@ -19,9 +19,15 @@ FactoryBot.define do
       password { 'password' }
       association :sector, factory: :sector_1
     end
-    
+
     trait :u_3 do
       username { 00004444 }
+      password { 'password' }
+      association :sector, factory: :sector_1
+    end
+    
+    trait :u_4 do
+      username { 000055555 }
       password { 'password' }
       association :sector, factory: :sector_1
     end
@@ -35,5 +41,6 @@ FactoryBot.define do
     factory :user_1, traits: %i[u_1]
     factory :user_2, traits: %i[u_2]
     factory :user_3, traits: %i[u_3]
+    factory :user_4, traits: %i[u_4]
   end
 end

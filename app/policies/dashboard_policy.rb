@@ -1,4 +1,4 @@
-class DashboardPolicy < Struct.new(:user, :dashboard)
+class DashboardPolicy < ApplicationPolicy
   def sidebar?
     # ROLES ARE DEPRECATED
     user.roles.any? || user.permissions.any?
