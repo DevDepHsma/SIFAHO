@@ -5,7 +5,7 @@
     <% if defined?(show) and show[:visible] %>
       <% if policy(object).show?%>
         <%= link_to polymorphic_path(object), 
-          class: 'btn btn-sm btn-secondary mr-1 ml-1', 
+          class: 'btn btn-sm btn-secondary mr-1 ml-1 btn-detail', 
           title: t("actions.tooltip.show"), 
           target: show[:target].present? ? show[:target] : :_self,
           data: { toggle: 'tooltip', placement: 'top' } do %>
@@ -19,7 +19,7 @@
     <% if defined?(edit) and edit[:visible] %>
       <% if policy(object).edit? %>
         <%= link_to edit_polymorphic_path(object),
-          class: 'btn btn-sm btn-warning mr-1 ml-1',
+          class: 'btn btn-sm btn-warning mr-1 ml-1 btn-edit',
           title: t("actions.tooltip.edit"),
           target: show[:target].present? ? show[:target] : :_self,
           data: { toggle: 'tooltip', placement: 'top'} do %> 

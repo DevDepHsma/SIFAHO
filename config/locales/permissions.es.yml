@@ -48,3 +48,7 @@ es:
       nullify_external_order_provider: 'Anular'
       return_external_order_provider: 'Retornar'
       accept_external_order_provider: 'Aceptar'
+      read_establishments: 'Ver / Listar'
+      create_establishments: 'Crear'
+      update_establishments: 'Editar'
+      destroy_establishments: 'Eliminar'
