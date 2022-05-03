@@ -34,7 +34,7 @@
     
     <% if policy(:external_order_provider).edit_products?(external_order) %>
       <%= link_to edit_products_external_orders_provider_path(external_order),
-        class: 'btn btn-warning btn-sm', title: 'Editar productos', data: { toggle: 'tooltip', placement: 'top' } do %>
+        class: 'btn btn-warning btn-sm btn-edit-product', title: 'Editar productos', data: { toggle: 'tooltip', placement: 'top' } do %>
         <%= fa_icon "file-signature" %>
       <% end %>
     <% end %>
@@ -73,7 +73,7 @@
     
     <% if policy(:external_order_provider).nullify_order?(external_order) %>
       <span data-toggle="modal" data-target="#anular-confirm-<%= external_order.id %>">
-        <%= button_tag class:"btn btn-sm btn-danger",
+        <%= button_tag class:"btn btn-sm btn-danger btn-nullify",
           title: 'Anular', data: { toggle: 'tooltip', placement: 'top' } do %>
           <%= fa_icon "ban" %>
         <% end %>
