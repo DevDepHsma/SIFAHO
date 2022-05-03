@@ -72,7 +72,7 @@ class ExternalOrderProviderPolicy < ApplicationPolicy
 
   def nullify_order?(resource)
     if (['solicitud_enviada'].include? resource.status) && resource.provider_sector == user.sector
-      user.has_any_role?(:admin, :farmaceutico, :enfermero)
+      user.has_permission?(:nullify_external_order_provider)
     end
   end
 end

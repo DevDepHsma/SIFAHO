@@ -45,7 +45,7 @@ RSpec.configure do |config|
     @update_external_order_provider = create(:permission, name: 'update_external_order_provider', permission_module: @pm_oe_provider)
     @destroy_external_order_provider = create(:permission, name: 'destroy_external_order_provider', permission_module: @pm_oe_provider)
     @send_external_order_provider = create(:permission, name: 'send_external_order_provider', permission_module: @pm_oe_provider)
-    @receive_external_order_provider = create(:permission, name: 'receive_external_order_provider', permission_module: @pm_oe_provider)
+    @nullify_external_order_provider = create(:permission, name: 'nullify_external_order_provider', permission_module: @pm_oe_provider)
     @return_external_order_provider = create(:permission, name: 'return_external_order_provider', permission_module: @pm_oe_provider)
     @accept_external_order_provider = create(:permission, name: 'accept_external_order_provider', permission_module: @pm_oe_provider)
 

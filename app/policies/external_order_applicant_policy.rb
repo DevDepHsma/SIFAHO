@@ -33,13 +33,13 @@ class ExternalOrderApplicantPolicy < ApplicationPolicy
     end
   end
 
-  def receive?
-    dispense_pres.any? { |role| user.has_role?(role) }
-  end
+  # def receive?
+  #   dispense_pres.any? { |role| user.has_role?(role) }
+  # end
 
   def receive_order?(resource)
     if resource.applicant_sector == user.sector && resource.provision_en_camino? 
-      user.has_any_role?(:admin, :farmaceutico, :auxiliar_farmacia, :medic, :enfermero)
+      user.has_permission?(:receive_external_order_applicant)
     end
   end
 
