@@ -10,7 +10,7 @@
         data-autocomplete-source="<%= search_by_code_products_path %>"
         size="6" 
         autocomplete="off"
-        <%= "readonly='readonly'" if policy(f.object).edit? %>
+        <%= "readonly='readonly'" if !policy(f.object).edit? %>
         placeholder="Código">
         <div class="invalid-feedback">
           <% if f.object.errors[:product_id].any? %>
@@ -43,7 +43,7 @@
         data-autocomplete-source="<%= search_by_name_products_path %>"
         size="45" 
         autocomplete="off" 
-        <%= "readonly='readonly'" if policy(f.object).edit? %>
+        <%= "readonly='readonly'" if !policy(f.object).edit? %>
         placeholder="Nombre">
         <% if f.object.errors[:product_id].any? %>
           <div id="product_id_fake" class="invalid-feedback">
@@ -79,7 +79,7 @@
     <td>
       <%= f.input :request_quantity, label: false, placeholder: 'Cant', required: false,
         input_html: {
-          readonly: policy(f.object).edit?,
+          readonly: !policy(f.object).edit?,
           "data-tooltip"=>true,
           :class=>"has-tip request-quantity input-sm",
           :title=>"Cantidad mensual",
@@ -103,13 +103,13 @@
     <!-- Observaciones proveedor -->
     <td>
       <%= f.input :observation, label: false, as: :text,
-        :input_html => { class: 'input-sm', :cols => 20  , :rows => 1, readonly: policy(f.object).edit? } %>
+        :input_html => { class: 'input-sm', :cols => 20  , :rows => 1, readonly: !policy(f.object).edit? } %>
     </td>
 
 
   <td>
     <!-- Botón quitar -->
-    <% if !policy(f.object).edit? %>
+    <% if policy(f.object).edit? %>
       <%= link_to_remove_association  f, class: 'remove-tag btn btn-warning',
         title: 'Quitar', data: { toggle: 'tooltip', placement: 'top' } do %>
           <%= fa_icon "minus" %>
