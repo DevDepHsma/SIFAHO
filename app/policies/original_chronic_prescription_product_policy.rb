@@ -1,4 +1,8 @@
 class OriginalChronicPrescriptionProductPolicy < ApplicationPolicy
+  def edit? 
+    record.total_delivered_quantity == 0
+  end
+
   def finish_treatment?
     if record.pendiente?
       user.has_permission?(:complete_treatment_chronic_prescriptions)
