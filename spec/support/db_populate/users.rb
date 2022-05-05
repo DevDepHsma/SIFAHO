@@ -1,10 +1,12 @@
 RSpec.configure do |config|
 
   config.before(:all) do
-    @user = create(:user_4)
-    @establishment = create(:establishment_1)
+    @establishment_type = create(:hospital_establishment_type)
+    @iv_zone = create(:iv_sanitary_zone)
+    @establishment = create(:establishment_1, sanitary_zone: @iv_zone, establishment_type: @establishment_type)
     @deposito = create(:sector_4, establishment: @establishment)
     @farmacia = create(:sector_1, establishment: @establishment)
+    @user = create(:user_4, sector: @farmacia)
     @applicant_user = create(:user_1, sector: @farmacia)
     @provider_user = create(:user_2, sector: @deposito)
 
@@ -27,7 +29,7 @@ RSpec.configure do |config|
     @return_internal_order_provider = create(:permission, name: 'return_internal_order_provider', permission_module: @pm_oip)
 
     # Farmacia other establishment
-    @other_establishment = create(:establishment_2)
+    @other_establishment = create(:establishment_2, sanitary_zone: @iv_zone, establishment_type: @establishment_type)
     @farmacia_other_establishment = create(:sector_4, establishment: @other_establishment)
     @farmacia_hja = create(:user_3, sector: @farmacia_other_establishment)
     @pm_oe_applicant = create(:permission_module, name: 'Ordenes Externas Solicitud')

@@ -7,7 +7,7 @@ class EstablishmentsController < ApplicationController
     authorize Establishment
     @filterrific = initialize_filterrific(
       Establishment.select(:id, :cuie, :name, :establishment_type_id, 'SUM(sectors.user_sectors_count) AS total_users')
-      .joins(:sectors)
+      .left_outer_joins(:sectors)
       .group(:id, :cuie, :name, :establishment_type_id),
       params[:filterrific],
       select_options: {

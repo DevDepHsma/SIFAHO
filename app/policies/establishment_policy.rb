@@ -24,7 +24,7 @@ class EstablishmentPolicy < ApplicationPolicy
   end
 
   def destroy?
-    user.has_permission?(:destroy_establishments)
+    user.has_permission?(:destroy_establishments) unless record.sectors.exists? || record.users.exists?
   end
 
   def delete?
