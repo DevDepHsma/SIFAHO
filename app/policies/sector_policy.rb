@@ -8,33 +8,30 @@ class SectorPolicy < ApplicationPolicy
   end
 
   def new?
-    destroy_roles.any? { |role| user.has_role?(role) }
+    create?
+  end
+
+  def create?
+    user.has_permission?(:create_sectors)
+  end
+
+  def select_establishment?
+    user.has_permission?(:create_to_other_establishment)
   end
 
   def edit?
-    destroy_roles.any? { |role| user.has_role?(role) }
+    update?
   end
 
+  def update?
+    user.has_permission?(:update_sectors)
+  end
 
   def destroy?
-    destroy_roles.any? { |role| user.has_role?(role) }
+    user.has_permission?(:destroy_sectors)
   end
 
   def delete?
     destroy?
-  end
-
-  private
-
-  def show_roles
-    [ :admin, :farmaceutico, :auxiliar_farmacia, :farmaceutico_central ]
-  end
-
-  def create_roles
-    [ :admin, :farmaceutico, :auxiliar_farmacia ]
-  end
-
-  def destroy_roles
-    [ :admin ]
   end
 end

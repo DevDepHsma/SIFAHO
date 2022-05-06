@@ -30,10 +30,6 @@ class UserPolicy < ApplicationPolicy
     end
   end
 
-  def show_establishment?
-    record.has_role?(:admin)
-  end
-
   private
 
   def index_user
