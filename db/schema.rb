@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_05_02_134728) do
+ActiveRecord::Schema.define(version: 2022_05_05_171754) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "fuzzystrmatch"
@@ -1476,32 +1476,3 @@ ActiveRecord::Schema.define(version: 2022_05_02_134728) do
   add_foreign_key "external_order_comments", "users"
   add_foreign_key "external_order_products", "sectors", column: "added_by_sector_id"
   add_foreign_key "internal_order_products", "sectors", column: "added_by_sector_id"
-  add_foreign_key "lots", "laboratories"
-  add_foreign_key "lots", "products"
-  add_foreign_key "patient_phones", "patients"
-  add_foreign_key "patients", "addresses"
-  add_foreign_key "permission_requests", "users"
-  add_foreign_key "prescriptions", "establishments"
-  add_foreign_key "prescriptions", "patients"
-  add_foreign_key "prescriptions", "professionals"
-  add_foreign_key "products", "areas"
-  add_foreign_key "products", "snomed_concepts"
-  add_foreign_key "products", "unities"
-  add_foreign_key "quantity_ord_supply_lots", "laboratories"
-  add_foreign_key "quantity_ord_supply_lots", "supplies"
-  add_foreign_key "quantity_ord_supply_lots", "supply_lots"
-  add_foreign_key "report_product_lines", "products"
-  add_foreign_key "reports", "sectors"
-  add_foreign_key "reports", "supplies"
-  add_foreign_key "reports", "users"
-  add_foreign_key "sectors", "establishments"
-  add_foreign_key "states", "countries"
-  add_foreign_key "stocks", "products"
-  add_foreign_key "stocks", "sectors"
-  add_foreign_key "supplies", "supply_areas"
-  add_foreign_key "supply_lots", "laboratories"
-  add_foreign_key "supply_lots", "supplies"
-  add_foreign_key "unify_products", "products", column: "origin_product_id"
-  add_foreign_key "unify_products", "products", column: "target_product_id"
-  add_foreign_key "users", "sectors"
-end

@@ -4,22 +4,23 @@ class SectorsController < ApplicationController
   # GET /sectors
   # GET /sectors.json
   def index
+    authorize Sector
+    @filterrific = initialize_filterrific(
+      Sector,
+      params[:filterrific],
+      persistence_id: false,
+      available_filters: [
+        :search_name
+      ]
+      ) or return
+    @sectors = @filterrific.find.page(params[:page]).per_page(15)
     respond_to do |format|
-      if authorize Sector
-        @filterrific = initialize_filterrific(
-          Sector,
-          params[:filterrific],
-          persistence_id: false,
-          available_filters: [
-            :search_name
-          ]
-        ) or return
-        @sectors = @filterrific.find.page(params[:page]).per_page(15)
-      end
       if policy(:internal_order_applicant).index?
         format.html { redirect_to internal_orders_applicants_path }
       elsif policy(:internal_order_provider).index?
         format.html { redirect_to internal_orders_providers_path }
+      else
+        format.html
       end
     end
   end

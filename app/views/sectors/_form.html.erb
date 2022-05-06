@@ -21,7 +21,7 @@
         </div>
 
         <div class="col-md-4">
-          <% if policy(current_user).show_establishment? %>
+          <% if policy(@sector).select_establishment? %>
             <%= f.input :establishment_id, label: 'Establecimiento',
               collection: @establishments.map {|establishment|  [establishment.name, establishment.id ]},
               :input_html => {
