@@ -54,6 +54,7 @@ RSpec.feature "Orders::External::Receives", type: :feature do
       within '#sidebar-wrapper' do
         click_link 'Establecimientos'
       end
+      click_link 'Despachos'
       within '#external_orders' do
         expect(page).to have_selector('tr', count: 1)
         expect(page).to have_selector('.btn-edit-product', count: 1)
@@ -89,6 +90,7 @@ RSpec.feature "Orders::External::Receives", type: :feature do
       within '#sidebar-wrapper' do
         click_link 'Establecimientos'
       end
+      click_link 'Recibos'
       within '#applicant_orders' do
         expect(page).to have_selector('tr', count: 1)
         expect(page).to have_selector('.btn-detail', count: 1)

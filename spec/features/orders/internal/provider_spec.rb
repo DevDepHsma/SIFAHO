@@ -109,9 +109,9 @@ RSpec.feature "Orders::Internal::Providers", type: :feature do
               expect(page).to have_content('Enviando provisión de sector')
               expect(page).to have_content('Una vez enviada la orden, no se podrán retornar los productos a stock.')
               expect(page).to have_content('Desea enviar la provisión?')
-              expect(page.has_button?('Volver')).to be true
+              expect(page.has_button?('Cancelar')).to be true
               expect(page.has_link?('Enviar')).to be true
-              clink_link 'Enviar'
+              click_link 'Enviar'
               sleep 1
               expect(page).to have_content('La provision se ha enviado correctamente.')
               expect(page).to have_content('Provision en camino')
@@ -120,35 +120,67 @@ RSpec.feature "Orders::Internal::Providers", type: :feature do
               expect(page.has_link?('Imprimir')).to be true
               expect(page.has_button?('Retornar')).to be false
               # Add return permission
-              PermissionUser.create(user: @user, sector: @user.sector, permission: @return_internal_order_applicant)
-              visit current_path
-              expect(page.has_button?('Retornar')).to be true
-              click_button 'Retornar'
-              sleep 1
-              expect(page).to have_content('Retornar a solicitud auditoria')
-              expect(page.has_link?('Cancelar')).to be true
-              expect(page.has_link?('Confirmar')).to be true
-              click_link 'Confirmar'
-              expect(page).to have_content('Solicitud auditoria')
-              click_link 'Volver'
-              within '#applicant_orders' do
-                expect(page).not_to have_selector('.delete-item', count: 1)
+              # PermissionUser.create(user: @user, sector: @user.sector, permission: @return_internal_order_provider)
+              # visit current_path
+              # sleep 10
+              # expect(page.has_button?('Retornar')).to be true
+              # click_button 'Retornar'
+              # sleep 1
+              # expect(page).to have_content('Retornar a solicitud auditoria')
+              # expect(page.has_link?('Cancelar')).to be true
+              # expect(page.has_link?('Confirmar')).to be true
+              # click_link 'Confirmar'
+              # expect(page).to have_content('Solicitud auditoria')
+              # click_link 'Volver'
+              # within '#applicant_orders' do
+              #   expect(page).not_to have_selector('.delete-item', count: 1)
+              # end
+            end
+
+            describe '' do
+              before(:each) do
+                product = Product.find_by(code: @products.first[1])
+
+                order = InternalOrder.create(
+                  provider_status: 0,
+                  requested_date: Date.today - 5.day,
+                  provider_sector_id: @deposito.id,
+                  applicant_sector_id: @farmacia.id,
+                  applicant_status: 0,
+                  remit_code: 'DEPÓprov0',
+                  order_type: 'provision',
+                  status: 'proveedor_auditoria'
+                )
+                op = InternalOrderProduct.create(
+                  order_id: order.id,
+                  product_id: product.id,
+                  request_quantity: rand(10..75),
+                  added_by_sector_id: @deposito.id
+                )
+                visit '/sectores/pedidos/despachos'
               end
-              # Add destroy permission
-              PermissionUser.create(user: @user, sector: @user.sector, permission: @destroy_internal_order_applicant)
-              visit current_path
-              within '#applicant_orders' do
-                expect(page).to have_selector('.delete-item', count: 1)
-                page.execute_script %Q{$('button.delete-item')[0].click()}
+
+              it 'DESTROY' do
+                # Add destroy permission
+                within '#provider_orders' do
+                  expect(page).not_to have_selector('.delete-item', count: 1)
+                end
+
+                PermissionUser.create(user: @provider_user, sector: @provider_user.sector, permission: @destroy_internal_order_provider)
+                visit current_path
+                within '#provider_orders' do
+                  expect(page).to have_selector('.delete-item', count: 1)
+                  page.execute_script %Q{$('button.delete-item')[0].click()}
+                  sleep 1
+                end
+                expect(page).to have_content('Eliminar provisión')
+                expect(page.has_button?('Volver')).to be true
+                expect(page.has_link?('Confirmar')).to be true
+                click_link 'Confirmar'
                 sleep 1
-              end
-              expect(page).to have_content('Eliminar solicitud')
-              expect(page.has_button?('Volver')).to be true
-              expect(page.has_link?('Confirmar')).to be true
-              click_link 'Confirmar'
-              sleep 1
-              within '#applicant_orders' do
-                expect(page).to have_selector('.delete-item', count: 0)
+                within '#provider_orders' do
+                  expect(page).to have_selector('.delete-item', count: 0)
+                end
               end
             end
           end

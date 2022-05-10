@@ -53,7 +53,7 @@ RSpec.feature "Orders::External::Providers", type: :feature do
               expect(page.has_link?('Despachar')).to be true
               click_link 'Despachar'
               expect(page).to have_content('Nueva provision de establecimiento')
-              expect(page).to have_content('Aún no hay despachos realizadas')
+              expect(page).to have_content('Aún no hay despachos realizados')
               expect(page.has_css?('input#effector-establishment', visible: false)).to be true
               expect(page.has_css?('select#effector-sector', visible: false)).to be true
               expect(page).to have_selector('textarea#external_order_provider_observation')
