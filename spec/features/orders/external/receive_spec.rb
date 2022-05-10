@@ -55,6 +55,7 @@ RSpec.feature "Orders::External::Receives", type: :feature do
         click_link 'Establecimientos'
       end
       click_link 'Despachos'
+      sleep 1
       within '#external_orders' do
         expect(page).to have_selector('tr', count: 1)
         expect(page).to have_selector('.btn-edit-product', count: 1)

@@ -21,7 +21,6 @@ class SectorsController < ApplicationController
         format.html { redirect_to internal_orders_providers_path }
       else
         format.html
-        format.js
       end
     end
   end
