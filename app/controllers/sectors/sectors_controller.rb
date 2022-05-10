@@ -6,7 +6,7 @@ class SectorsController < ApplicationController
   def index
     authorize Sector
     @filterrific = initialize_filterrific(
-      Sector,
+      current_user.has_permission?(:read_other_establishments) ? Sector : Sector.where(establishment_id: current_user.sector.establishment.id),
       params[:filterrific],
       persistence_id: false,
       available_filters: [
@@ -21,6 +21,7 @@ class SectorsController < ApplicationController
         format.html { redirect_to internal_orders_providers_path }
       else
         format.html
+        format.js
       end
     end
   end

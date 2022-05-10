@@ -24,6 +24,7 @@
           <% if policy(@sector).select_establishment? %>
             <%= f.input :establishment_id, label: 'Establecimiento',
               collection: @establishments.map {|establishment|  [establishment.name, establishment.id ]},
+              selected: current_user.sector.establishment.id,
               :input_html => {
                 required: true,
                 include_blank: false,
@@ -62,7 +63,7 @@
   </div>
 
   <div class="card-footer d-flex justify-content-end">
-    <%= link_to 'Volver', sectors_path, class: 'btn mr-2' %>
+    <%= link_to 'Volver', sectors_path, class: 'btn btn-light mr-2' %>
     <button type='submit' name='commit' class='btn btn-success' form="<%= @sector.new_record? ? 'new_sector' : 'edit_sector_' + @sector.id.to_s %>">
       <%= fa_icon 'save' %> Guardar
     </button>

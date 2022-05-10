@@ -32,9 +32,7 @@
   </div>
 
   <div class="card-footer d-flex justify-content-end">
-    <%= link_to :back, class: "btn btn-light mr-2" do %>
-      Volver
-    <% end %>
+  <%= link_to 'Volver', sectors_path, class: 'btn btn-light mr-2' %>
     <% if policy(@sector).edit? %>
       <%= link_to edit_sector_path(@sector), :"data-turbolinks" => false, class: "btn btn-warning" do %>
         <%= fa_icon "pen" %>

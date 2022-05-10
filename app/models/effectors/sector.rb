@@ -4,14 +4,10 @@ class Sector < ApplicationRecord
   # Relaciones
   belongs_to :establishment, counter_cache: true
   belongs_to :establishment, counter_cache: :sectors_count
-  has_many :sector_supply_lots, -> { with_deleted }
-  has_many :supply_lots, -> { with_deleted }, through: :sector_supply_lots
 
   has_many :lot_stocks
   has_many :lots, -> { with_deleted }, through: :lot_stocks
-  has_many :stocks
 
-  has_many :supplies, -> { with_deleted.distinct }, through: :supply_lots
   has_many :user_sectors
   has_many :users, through: :user_sectors
   has_many :reports, dependent: :destroy
@@ -21,15 +17,9 @@ class Sector < ApplicationRecord
   has_many :provider_internal_orders, class_name: 'InternalOrder', foreign_key: :provider_sector_id
   has_many :applicant_external_orders, class_name: 'ExternalOrder', foreign_key: :applicant_sector_id
   has_many :provider_external_orders, class_name: 'ExternalOrder', foreign_key: :provider_sector_id
-
-  # has_many :provider_external_orders, foreign_key: "provider_sector_id", class_name: "ExternalOrder"
-  # has_many :provider_ordering_quantity_supplies, through: :provider_external_orders, source: "quantity_ord_supply_lots"
-
-  # has_many :provider_internal_supplies, foreign_key: "provider_sector_id", class_name: "InternalOrder"
-  # has_many :provider_internal_quantity_supplies, through: :provider_internal_supplies, source: "quantity_ord_supply_lots"
-
-  # has_many :provider_prescriptions, foreign_key: "provider_sector_id", class_name: "Prescription"
-  # has_many :provider_prescription_quantity_supplies, through: :provider_prescriptions, source: "quantity_ord_supply_lots"
+  has_many :outpatient_prescriptons, class_name: 'OutpatientPrescription', foreign_key: :provider_sector_id
+  has_many :chronic_dispensations, class_name: 'ChronicDispensation', foreign_key: :provider_sector_id
+  has_many :chronic_prescriptions, class_name: 'ChronicPrescription', foreign_key: :provider_sector_id
 
   # Validaciones
   validates_presence_of :name, :establishment

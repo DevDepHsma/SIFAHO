@@ -54,6 +54,7 @@ es:
       destroy_establishments: 'Eliminar'
       read_sectors: 'Ver / Listar'
       create_sectors: 'Crear'
-      create_to_other_establishment: 'Crear sector a otro establecimiento'
+      read_other_establishments: 'Ver / Listar otros establecimientos'
+      create_to_other_establishments: 'Crear sector a otros establecimientos'
       update_sectors: 'Editar'
       destroy_sectors: 'Eliminar'

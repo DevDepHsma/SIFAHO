@@ -28,7 +28,17 @@ class SectorPolicy < ApplicationPolicy
   end
 
   def destroy?
-    user.has_permission?(:destroy_sectors)
+    if record.users.count.zero? &&
+       record.applicant_internal_orders.count.zero? &&
+       record.provider_internal_orders.count.zero? &&
+       record.applicant_external_orders.count.zero? &&
+       record.provider_external_orders.count.zero? &&
+       record.outpatient_prescriptons.count.zero? &&
+       record.chronic_dispensations.count.zero? &&
+       record.chronic_prescriptions.count.zero? &&
+       record.stocks.sum(:quantity).zero?
+      user.has_permission?(:destroy_sectors)
+    end
   end
 
   def delete?
