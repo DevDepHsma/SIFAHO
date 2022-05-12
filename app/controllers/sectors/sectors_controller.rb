@@ -19,6 +19,7 @@ class SectorsController < ApplicationController
     respond_to do |format|
       if policy(:sector).index?
         format.html
+        format.js
       elsif policy(:internal_order_applicant).index?
         format.html { redirect_to internal_orders_applicants_path }
       elsif policy(:internal_order_provider).index?
