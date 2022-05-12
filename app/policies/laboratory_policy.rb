@@ -1,14 +1,14 @@
 class LaboratoryPolicy < ApplicationPolicy
   def index?
-    show_lab.any? { |role| user.has_role?(role) }
+    show?
   end
 
   def show?
-    index?
+    user.has_permission?(:read_laboratories)
   end
 
   def create?
-    create_lab.any? { |role| user.has_role?(role) }
+    user.has_permission?(:create_laboratories)
   end
 
   def new?
@@ -16,7 +16,7 @@ class LaboratoryPolicy < ApplicationPolicy
   end
 
   def update?
-    update_lab.any? { |role| user.has_role?(role) }
+    user.has_permission?(:update_laboratories)
   end
 
   def edit?
@@ -24,28 +24,10 @@ class LaboratoryPolicy < ApplicationPolicy
   end
 
   def destroy?
-    destroy_lab.any? { |role| user.has_role?(role) }
+    user.has_permission?(:destroy_laboratories)
   end
 
   def delete?
     destroy?
-  end
-
-  private
-
-  def update_lab
-    [ :admin ]
-  end
-
-  def show_lab
-    [ :admin, :farmaceutico, :auxiliar_farmacia, :farmaceutico_central ]
-  end
-
-  def create_lab
-    [ :admin, :farmaceutico ]
-  end
-
-  def destroy_lab
-    [ :admin ]
   end
 end

@@ -36,8 +36,8 @@ class LaboratoriesController < ApplicationController
   # POST /laboratories
   # POST /laboratories.json
   def create
+    authorize Laboratory
     @laboratory = Laboratory.new(laboratory_params)
-    authorize @laboratory
 
     respond_to do |format|
       if @laboratory.save

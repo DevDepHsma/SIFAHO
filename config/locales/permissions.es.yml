@@ -58,3 +58,7 @@ es:
       create_to_other_establishments: 'Crear sector a otros establecimientos'
       update_sectors: 'Editar'
       destroy_sectors: 'Eliminar'
+      read_laboratories: 'Ver / Listar'
+      create_laboratories: 'Crear'
+      update_laboratories: 'Editar'
+      destroy_laboratories: 'Eliminar'
