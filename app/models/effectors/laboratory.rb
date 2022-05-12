@@ -35,7 +35,7 @@ class Laboratory < ApplicationRecord
     case sort_option.to_s
     when /^razon_social_/
       # Ordenamiento por nombre del profesional
-      order("LOWER(laboratories.name) #{direction}")
+      order("laboratories.name #{direction}")
     else
       # Si no existe la opcion de ordenamiento se levanta la excepcion
       raise(ArgumentError, "Invalid sort option: #{sort_option.inspect}")
