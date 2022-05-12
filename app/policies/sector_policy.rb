@@ -3,8 +3,12 @@ class SectorPolicy < ApplicationPolicy
     show?
   end
 
-  def show?
+  def sidebar_menu?
     user.has_permission?(:read_sectors) || user.has_permission?(:read_internal_order_applicant) || user.has_permission?(:read_internal_order_provider)
+  end
+
+  def show?
+    user.has_permission?(:read_sectors)
   end
 
   def new?

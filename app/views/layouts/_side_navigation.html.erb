@@ -39,7 +39,7 @@
       <% end %>
     <% end %>
 
-    <% if policy(Sector).index? %>
+    <% if policy(Sector).sidebar_menu? %>
       <%= link_to main_app.sectors_path, class: "list-group-item list-group-item-action list-custom 
         #{active_class_folder('sectors')}" do %>
         <span class="sb-icon">
@@ -49,7 +49,7 @@
       <% end %>
     <% end %>
 
-    <% if policy(Establishment).index? %>
+    <% if policy(Establishment).sidebar_menu? %>
       <%= link_to main_app.establishments_path, class: "list-group-item list-group-item-action list-custom
         #{active_class_folder('establishments')}" do %>
         <span class="sb-icon">

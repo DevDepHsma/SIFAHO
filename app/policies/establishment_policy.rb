@@ -3,8 +3,12 @@ class EstablishmentPolicy < ApplicationPolicy
     show?
   end
 
-  def show?
+  def sidebar_menu?
     user.has_permission?(:read_establishments) || user.has_permission?(:read_external_order_applicant) || user.has_permission?(:read_external_order_provider)
+  end
+
+  def show?
+    user.has_permission?(:read_establishments)
   end
 
   def create?

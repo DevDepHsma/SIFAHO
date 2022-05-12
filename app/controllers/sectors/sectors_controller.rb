@@ -4,23 +4,25 @@ class SectorsController < ApplicationController
   # GET /sectors
   # GET /sectors.json
   def index
-    authorize Sector
+    unless policy(:sector).sidebar_menu?
+      flash[:error] = 'Usted no está autorizado para realizar esta acción.'
+      redirect_back(fallback_location: root_path)
+    end
     @filterrific = initialize_filterrific(
       current_user.has_permission?(:read_other_establishments) ? Sector : Sector.where(establishment_id: current_user.sector.establishment.id),
       params[:filterrific],
       persistence_id: false,
       available_filters: [
         :search_name
-      ]
-      ) or return
+      ]) or return
     @sectors = @filterrific.find.page(params[:page]).per_page(15)
     respond_to do |format|
-      if policy(:internal_order_applicant).index?
+      if policy(:sector).index?
+        format.html
+      elsif policy(:internal_order_applicant).index?
         format.html { redirect_to internal_orders_applicants_path }
       elsif policy(:internal_order_provider).index?
         format.html { redirect_to internal_orders_providers_path }
-      else
-        format.html
       end
     end
   end
@@ -28,6 +30,7 @@ class SectorsController < ApplicationController
   # GET /sectors/1
   # GET /sectors/1.json
   def show
+    authorize @sector
     respond_to do |format|
       format.html
       format.js
@@ -36,16 +39,19 @@ class SectorsController < ApplicationController
 
   # GET /sectors/new
   def new
+    authorize @sector
     # @sector = Sector.new
   end
 
   # GET /sectors/1/edit
   def edit
+    authorize @sector
   end
 
   # POST /sectors
   # POST /sectors.json
   def create
+    authorize @sector
     @sector = Sector.new(sector_params)
 
     respond_to do |format|
@@ -64,6 +70,7 @@ class SectorsController < ApplicationController
   # PATCH/PUT /sectors/1
   # PATCH/PUT /sectors/1.json
   def update
+    authorize @sector
     respond_to do |format|
       if @sector.update(sector_params)
         flash.now[:success] = "#{@sector.name} se ha modificado correctamente."
@@ -80,6 +87,7 @@ class SectorsController < ApplicationController
   # DELETE /sectors/1
   # DELETE /sectors/1.json
   def destroy
+    authorize @sector
     sector = @sector.name
     @sector.destroy
     respond_to do |format|

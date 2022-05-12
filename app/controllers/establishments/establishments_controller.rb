@@ -4,7 +4,10 @@ class EstablishmentsController < ApplicationController
   # GET /establishments
   # GET /establishments.json
   def index
-    authorize Establishment
+    unless policy(:establishment).sidebar_menu?
+      flash[:error] = 'Usted no está autorizado para realizar esta acción.'
+      redirect_back(fallback_location: root_path)
+    end
     @filterrific = initialize_filterrific(
       Establishment.select(:id, :cuie, :name, :establishment_type_id, 'SUM(sectors.user_sectors_count) AS total_users')
       .left_outer_joins(:sectors)
@@ -17,14 +20,14 @@ class EstablishmentsController < ApplicationController
     ) or return
     @establishments = (request.format.xlsx? || request.format.pdf?) ? @filterrific.find : @filterrific.find.page(params[:page]).per(15)
     respond_to do |format|
-      if policy(:external_order_applicant).index?
-        format.html { redirect_to external_orders_applicants_path }
-      elsif policy(:external_order_provider).index?
-        format.html { redirect_to external_orders_providers_path }
-      else
+      if policy(:establishment).index?
         format.html
         format.js
         format.xlsx { headers['Content-Disposition'] = "attachment; filename=\"Establecimientos_#{DateTime.now.strftime('%d-%m-%Y')}.xlsx\"" }
+      elsif policy(:external_order_applicant).index?
+        format.html { redirect_to external_orders_applicants_path }
+      elsif policy(:external_order_provider).index?
+        format.html { redirect_to external_orders_providers_path }
       end
     end
   end
