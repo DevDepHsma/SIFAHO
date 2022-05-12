@@ -1,6 +1,8 @@
 class Laboratory < ApplicationRecord
   include PgSearch::Model
 
+  has_many :lots
+  
   # Validations
   validates_presence_of :name, :cuit, :gln
 

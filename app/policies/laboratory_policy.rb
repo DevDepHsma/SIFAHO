@@ -24,7 +24,7 @@ class LaboratoryPolicy < ApplicationPolicy
   end
 
   def destroy?
-    user.has_permission?(:destroy_laboratories)
+    user.has_permission?(:destroy_laboratories) if record.lots.count.zero?
   end
 
   def delete?

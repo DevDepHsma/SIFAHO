@@ -75,7 +75,7 @@ RSpec.feature "Laboratories", type: :feature do
         PermissionUser.create(user: @user, sector: @user.sector, permission: @destroy_laboratories)
         visit current_path
         within '#laboratories' do
-          expect(page).to have_selector('.delete-item', count: 2)
+          expect(page).to have_selector('.delete-item', count: 1)
           page.execute_script %Q{$('td:contains("ABC Prueba")').closest('tr').find('button.delete-item').click()}
         end
         sleep 1
@@ -85,7 +85,7 @@ RSpec.feature "Laboratories", type: :feature do
         click_link 'Confirmar'
         sleep 1
         within '#laboratories' do
-          expect(page).to have_selector('.delete-item', count: 1)
+          expect(page).to have_selector('.delete-item', count: 0)
           page.execute_script %Q{$('button.delete-item')[0].click()}
         end
       end
