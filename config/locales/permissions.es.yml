@@ -62,3 +62,7 @@ es:
       create_laboratories: 'Crear'
       update_laboratories: 'Editar'
       destroy_laboratories: 'Eliminar'
+      read_sanitary_zones: 'Ver / Listar'
+      create_sanitary_zones: 'Crear'
+      update_sanitary_zones: 'Editar'
+      destroy_sanitary_zones: 'Eliminar'

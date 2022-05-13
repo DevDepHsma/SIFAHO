@@ -1,23 +1,30 @@
 class SanitaryZonePolicy < ApplicationPolicy
   def index?
-    user.has_any_role?(:admin)
+    show?
   end
 
   def show?
-    index?
+    user.has_permission?(:read_sanitary_zones)
   end
 
   def new?
-    user.has_any_role?(:admin)
+    create?
+  end
+
+  def create?
+    user.has_permission?(:create_sanitary_zones)
   end
 
   def edit?
-    user.has_any_role?(:admin)
+    update?
   end
 
+  def update?
+    user.has_permission?(:update_sanitary_zones)
+  end
 
   def destroy?
-    user.has_any_role?(:admin)
+    user.has_permission?(:destroy_sanitary_zones) unless record.establishments.any?
   end
 
   def delete?
