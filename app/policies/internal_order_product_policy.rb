@@ -9,7 +9,7 @@ class InternalOrderProductPolicy < ApplicationPolicy
   end
 
   def edit_product?
-    if record.is_provision? && record.get_order.proveedor_auditoria?
+    if (record.is_provision? || record.is_solicitud?) && record.get_order.proveedor_auditoria?
       user.has_permission?(:update_internal_order_provider)
     elsif record.is_solicitud? && record.get_order.solicitud_auditoria?
       user.has_permission?(:update_internal_order_applicant)
