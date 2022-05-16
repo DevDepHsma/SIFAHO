@@ -5,24 +5,21 @@
     <td><%= sanitary_zone.establishments.count %></td>
     <td><%= sanitary_zone.users.count %></td>
     <td class="text-left actions-col">
-      <% if policy(sanitary_zone).show? %>
-        <%= link_to sanitary_zone_path(sanitary_zone), class: 'btn btn-secondary btn-sm',
-            title: 'Ver detalles', data: { toggle: 'tooltip', placement: 'top' } do %>
-            <%= fa_icon "eye" %>
-        <% end %>
-      <% end %>
-      <% if policy(sanitary_zone).edit? %>
-        <%= link_to edit_sanitary_zone_path(sanitary_zone), class: 'btn btn-warning btn-sm',
-            title: 'Editar', data: { toggle: 'tooltip', placement: 'top' } do %>
-            <%= fa_icon "pen" %>
-        <% end %>
-      <% end %>
-      <% if policy(sanitary_zone).destroy? %>
-        <%= link_to delete_sanitary_zone_path(sanitary_zone), remote: true,
-          class: 'btn btn-danger btn-sm', title: 'Borrar', data: { toggle: 'tooltip', placement: 'top' } do %>
-          <%= fa_icon "trash" %>
-        <% end %>
-      <% end %>
+      <%= render(
+        partial: 'shared/action_buttons',
+        locals:{ 
+          object: sanitary_zone, 
+          show: {visible: true, target: (show_target if defined?(show_target) )},
+          edit: {visible: true, target: (edit_target if defined?(edit_target) )},
+          destroy: {
+            visible: true, 
+            title: "Eliminar zona sanitaria",
+            body: "Esta seguro que desea eliminar el zona sanitaria #{ sanitary_zone.name }?",
+            path: sanitary_zone_url(sanitary_zone.id)
+          }
+        }
+      ) 
+      %>
     </td>
   </div>
 </tr>

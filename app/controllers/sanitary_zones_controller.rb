@@ -40,11 +40,11 @@ class SanitaryZonesController < ApplicationController
 
     respond_to do |format|
       if @sanitary_zone.save
-        flash.now[:success] = @sanitary_zone.name + " se ha creado correctamente."
+        flash.now[:success] = "#{@sanitary_zone.name} se ha creado correctamente."
         format.html { redirect_to @sanitary_zone }
         format.js
       else
-        flash[:error] = "El sanitary_zone no se ha podido crear."
+        flash[:error] = 'El sanitary_zone no se ha podido crear.'
         format.html { render :new }
         format.js { render layout: false, content_type: 'text/javascript' }
       end
@@ -56,11 +56,11 @@ class SanitaryZonesController < ApplicationController
   def update
     respond_to do |format|
       if @sanitary_zone.update(sanitary_zone_params)
-        flash.now[:success] = @sanitary_zone.name + " se ha modificado correctamente."
+        flash.now[:success] = "#{@sanitary_zone.name} se ha modificado correctamente."
         format.html { redirect_to @sanitary_zone }
         format.js
       else
-        flash.now[:error] = @sanitary_zone.name + " no se ha podido modificar."
+        flash.now[:error] = "#{@sanitary_zone.name} no se ha podido modificar."
         format.html { render :edit }
         format.js
       end
@@ -70,10 +70,9 @@ class SanitaryZonesController < ApplicationController
   # DELETE /sanitary_zones/1
   # DELETE /sanitary_zones/1.json
   def destroy
-    sanitary_zone = @sanitary_zone.name
     @sanitary_zone.destroy
     respond_to do |format|
-      flash.now[:success] = sanitary_zone.name+" se ha eliminado correctamente."
+      flash.now[:success] = "#{@sanitary_zone.name} se ha eliminado correctamente."
       format.js
     end
   end
