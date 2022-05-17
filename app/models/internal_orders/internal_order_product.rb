@@ -41,8 +41,12 @@ class InternalOrderProduct < ApplicationRecord
   def is_provision?
     order.order_type == 'provision'
   end
-  
+
   def is_solicitud?
     order.order_type == 'solicitud'
+  end
+
+  def is_solicitud_auditoria?
+    order.solicitud_auditoria?
   end
 end

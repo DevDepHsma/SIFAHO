@@ -20,7 +20,7 @@ class InternalOrderProviderPolicy < ApplicationPolicy
   end
 
   def edit?(resource)
-    if resource.provision? && resource.proveedor_auditoria? && resource.provider_sector == user.sector
+    if resource.proveedor_auditoria? && resource.provider_sector == user.sector
       user.has_permission?(:update_internal_order_provider)
     end
   end

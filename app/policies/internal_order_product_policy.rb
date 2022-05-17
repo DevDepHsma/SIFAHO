@@ -9,10 +9,20 @@ class InternalOrderProductPolicy < ApplicationPolicy
   end
 
   def edit_product?
-    if (record.is_provision? || record.is_solicitud?) && record.get_order.proveedor_auditoria?
+    if record.is_provision? && record.added_by_sector_id == user.sector_id && record.is_proveedor_auditoria?
       user.has_permission?(:update_internal_order_provider)
-    elsif record.is_solicitud? && record.get_order.solicitud_auditoria?
+    elsif record.is_solicitud? && record.added_by_sector_id == user.sector_id && record.is_solicitud_auditoria?
       user.has_permission?(:update_internal_order_applicant)
+    end
+  end
+
+  def add_product?
+    if record.new_record?
+      if record.is_proveedor_auditoria?
+        user.has_permission?(:update_internal_order_provider)
+      elsif record.is_solicitud_auditoria?
+        user.has_permission?(:update_internal_order_applicant)
+      end
     end
   end
 

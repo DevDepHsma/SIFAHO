@@ -17,7 +17,7 @@
   <div class="row nested-fields m-0" id="<%= order_product.new_record? ? "row-ord-prod-#{form_id}" : "row-ord-prod-#{order_product.id}" %>">
     <!-- Código del producto -->
     <div class="col-1 pl-1 pr-1">
-      <% if policy(form.object).edit_product? %>
+      <% if policy(form.object).edit_product? || policy(form.object).add_product? %>
         <div class="custom-input-group">
           <div class="form-group mt-1 mb-1 fake optional products_product_id_fake">
             <input type="text" 
@@ -58,7 +58,7 @@
 
     <!-- Nombre de Producto -->
     <div class="col-3 pl-1 pr-1">
-      <% if policy(form.object).edit_product? %>
+      <% if policy(form.object).edit_product? || policy(form.object).add_product? %>
         <div class="custom-input-group">
           <div class="form-group mt-1 mb-1 fake optional products_product_id_fake">
             <input type="text" 

@@ -33,6 +33,7 @@ RSpec.feature "Orders::Internal::Receives", type: :feature do
       expect(page).to have_content(@deposito.name)
       click_button 'Guardar y agregar productos'
       prods = @products.sample(3)
+      @products = @products - prods
       add_products(prods, request_quantity: true, observations: true)
       click_button 'Enviar'
       expect(page).to have_content('La solicitud se ha enviado correctamente.')
@@ -50,6 +51,11 @@ RSpec.feature "Orders::Internal::Receives", type: :feature do
       end
       sleep 1
       fill_products_deliver_quantity(prods)
+      expect(page.has_link?('Agregar producto')).to be true
+      click_link 'Agregar producto'
+      sleep 1
+      prov_prods = @products.sample(3)
+      add_products(prov_prods, request_quantity: true, observations: true, select_lot_stock: true)
       click_button 'Enviar'
       sleep 1
       expect(page).to have_content('Enviando provisión de sector')
@@ -58,7 +64,7 @@ RSpec.feature "Orders::Internal::Receives", type: :feature do
       sleep 1
       expect(page).to have_content('La provision se ha enviado correctamente.')
       expect(page).to have_content('Provision en camino')
-      expect(page).to have_content('Productos 3')
+      expect(page).to have_content('Productos 6')
       sign_out_as(@provider_user)
       sign_in_as(@applicant_user)
       within '#sidebar-wrapper' do
@@ -73,7 +79,7 @@ RSpec.feature "Orders::Internal::Receives", type: :feature do
       click_button 'Recibir'
       sleep 1
       expect(page).to have_content('Confirmar recibo de pedido de sector')
-      expect(page).to have_content('Contiene 3 productos diferentes.')
+      expect(page).to have_content('Contiene 6 productos diferentes.')
       expect(page.has_link?('Cancelar')).to be true
       expect(page.has_link?('Confirmar')).to be true
       click_link 'Confirmar'
