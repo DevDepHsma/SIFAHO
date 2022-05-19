@@ -47,6 +47,16 @@ RSpec.feature "Orders::Internal::Receives", type: :feature do
       within '#provider_orders' do
         expect(page).to have_selector('tr', count: 1)
         expect(page).to have_selector('.btn-edit-product', count: 1)
+        expect(page).to have_selector('.btn-nullify', count: 1)
+        page.execute_script %Q{$('button.btn-nullify')[0].click()}
+        sleep 1
+      end
+      expect(page).to have_content('Confirmar anulación de orden')
+      expect(page.has_link?('Cancelar')).to be true
+      expect(page.has_link?('Anular')).to be true
+      click_link 'Cancelar'
+      sleep 1
+      within '#provider_orders' do
         page.execute_script %Q{$('a.btn-edit-product')[0].click()}
       end
       sleep 1

@@ -59,7 +59,7 @@ class InternalOrderProviderPolicy < ApplicationPolicy
 
   def nullify_order?(resource)
     if resource.provider_sector == user.sector && resource.solicitud? && (resource.solicitud_enviada? || resource.proveedor_auditoria?)
-      user.has_any_role?(:admin, :farmaceutico, :auxiliar_farmacia, :medic, :enfermero)
+      user.has_permission?(:nullify_internal_order_provider)
     end
   end
 end
