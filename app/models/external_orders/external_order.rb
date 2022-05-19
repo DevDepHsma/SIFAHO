@@ -172,11 +172,11 @@ class ExternalOrder < ApplicationRecord
   end
 
   def is_provider?(a_user)
-    return self.provider_sector == a_user.sector
+    provider_sector == a_user.sector
   end
 
   def is_applicant?(a_user)
-    return self.applicant_sector == a_user.sector
+    applicant_sector == a_user.sector
   end
 
   def sum_to?(a_sector)

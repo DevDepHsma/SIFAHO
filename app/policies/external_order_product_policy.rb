@@ -11,6 +11,16 @@ class ExternalOrderProductPolicy < ApplicationPolicy
     edit_request_quantity?
   end
 
+  def add_product?
+    if record.new_record?
+      if record.is_proveedor_auditoria?
+        user.has_permission?(:update_external_order_provider)
+      elsif record.is_solicitud_auditoria?
+        user.has_permission?(:update_external_order_applicant)
+      end
+    end
+  end
+
   def remove_association?
     if record.is_provision? || record.new_record?
       user.has_any_role?(:admin, :farmaceutico, :auxiliar_farmacia, :central_farmaceutico, :medic, :enfermero)

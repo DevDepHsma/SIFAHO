@@ -73,11 +73,16 @@ RSpec.feature "Orders::External::Receives", type: :feature do
       end
       sleep 1
       fill_products_deliver_quantity(prods)
+      expect(page.has_link?('Agregar producto')).to be true
+      click_link 'Agregar producto'
+      sleep 1
+      prov_prods = @products.sample(3)
+      add_products(prov_prods, request_quantity: true, observations: true, select_lot_stock: true)
       expect(page.has_button?('Aceptar')).to be true
       click_button 'Aceptar'
       expect(page).to have_content('La provision se ha aceptado correctamente.')
       expect(page).to have_content('Proveedor aceptado')
-      expect(page).to have_content('Productos 3')
+      expect(page).to have_content('Productos 6')
       click_button 'Enviar provisión'
       sleep 1
       expect(page).to have_content('Confirmar envío de despacho')
@@ -101,7 +106,7 @@ RSpec.feature "Orders::External::Receives", type: :feature do
       click_button 'Recibir'
       sleep 1
       expect(page).to have_content('Confirmar recibo de pedido de establecimiento')
-      expect(page).to have_content('El pedido contiene 3 productos diferentes.')
+      expect(page).to have_content('El pedido contiene 6 productos diferentes.')
       expect(page.has_link?('Cancelar')).to be true
       expect(page.has_link?('Confirmar')).to be true
       click_link 'Confirmar'

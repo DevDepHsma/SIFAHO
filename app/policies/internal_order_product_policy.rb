@@ -36,7 +36,7 @@ class InternalOrderProductPolicy < ApplicationPolicy
 
   def destroy?
     if record.added_by_sector_id.present? && record.added_by_sector == user.sector
-      user.has_any_role?(:admin, :farmaceutico, :auxiliar_farmacia, :central_farmaceutico, :medic, :enfermero)
+      user.has_permission?(:update_internal_order_applicant)
     end
   end
 end

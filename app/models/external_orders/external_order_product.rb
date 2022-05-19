@@ -26,11 +26,11 @@ class ExternalOrderProduct < ApplicationRecord
   default_scope { joins(:product).order('products.name') }
   # new version
   def is_proveedor_auditoria?
-    return order.proveedor_auditoria?
+    order.proveedor_auditoria?
   end
 
   def is_proveedor_aceptado?
-    return order.proveedor_aceptado?
+    order.proveedor_aceptado?
   end
 
   def is_proveedor_aceptado_and_quantity_greater_than_0?
@@ -43,6 +43,10 @@ class ExternalOrderProduct < ApplicationRecord
 
   def is_solicitud?
     order.order_type == 'solicitud'
+  end
+
+  def is_solicitud_auditoria?
+    order.solicitud_auditoria?
   end
 
   # Se habilita la cantidad que estaba reservada en stock
