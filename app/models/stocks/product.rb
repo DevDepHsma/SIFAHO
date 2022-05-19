@@ -39,7 +39,7 @@ class Product < ApplicationRecord
   delegate :term, :fsn, :concept_id, :semantic_tag, to: :snomed_concept, prefix: :snomed, allow_nil: true
 
   filterrific(
-    default_filter_params: { sorted_by: 'nombre_asc' },
+    default_filter_params: { sorted_by: 'codigo_asc' },
     available_filters: %i[search_code search_name for_statuses with_area_ids sorted_by]
   )
 
@@ -76,7 +76,7 @@ class Product < ApplicationRecord
       order("products.code::integer #{direction}")
     when /^nombre_/
       # Ordenamiento por nombre de insumo
-      order("LOWER(products.name) #{direction}")
+      order("products.name #{direction}")
     when /^unidad_/
       # Ordenamiento por la unidad
       # order("LOWER(unities.name) #{direction}").joins(:unity)

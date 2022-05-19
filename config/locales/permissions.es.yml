@@ -66,3 +66,7 @@ es:
       create_sanitary_zones: 'Crear'
       update_sanitary_zones: 'Editar'
       destroy_sanitary_zones: 'Eliminar'
+      read_products: 'Ver / Listar'
+      create_products: 'Crear'
+      update_products: 'Editar'
+      destroy_products: 'Eliminar'

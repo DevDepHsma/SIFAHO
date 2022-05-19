@@ -9,17 +9,20 @@
   <td><%= product.unity_name %></td>
   <td><%= product.area_name %></td>
   <td class="text-left actions-col">
-    <% if policy(product).show? %>
-      <%= link_to product_path(product), class: 'btn btn-secondary btn-sm',
-        title: 'Ver detalles', data: { toggle: 'tooltip', placement: 'top' } do %>
-        <%= fa_icon "eye" %>
-      <% end %>
-    <% end %>
-    <% if policy(product).edit? %>
-      <%= link_to edit_product_path(product), class: 'btn btn-warning btn-sm',
-        title: 'Editar', data: { toggle: 'tooltip', placement: 'top' } do %>
-        <%= fa_icon "pen" %>
-      <% end %>
-    <% end %>
+    <%= render(
+      partial: 'shared/action_buttons',
+      locals:{ 
+        object: product, 
+        show: {visible: true, target: (show_target if defined?(show_target) )},
+        edit: {visible: true, target: (edit_target if defined?(edit_target) )},
+        destroy: {
+          visible: true, 
+          title: "Eliminar producto",
+          body: "Esta seguro que desea eliminar el producto #{ product.name }?",
+          path: product_url(product.id)
+        }
+      }
+    ) 
+    %>
   </td>
 </tr>

@@ -47,8 +47,8 @@ RSpec.feature "SanitaryZones", type: :feature do
           PermissionUser.create(user: @user, sector: @user.sector, permission: @create_sanitary_zones)
           visit current_path
           within '#dropdown-menu-header' do
-            expect(page.has_link?('Crear zona')).to be true
-            click_link 'Crear zona'
+            expect(page.has_link?('Agregar')).to be true
+            click_link 'Agregar'
           end
           expect(page.has_css?('#sanitary_zone_name')).to be true
           expect(page.has_css?('#sanitary_zone_state_id', visible: false)).to be true
