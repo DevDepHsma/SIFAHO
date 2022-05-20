@@ -1,30 +1,30 @@
 class LotPolicy < ApplicationPolicy
   def index?
-    user.has_any_role?(:admin)
+    show?
   end
 
   def show?
-    index?
+    user.has_permission?(:read_lots)
   end
-
+  
   def create?
-    user.has_any_role?(:admin)
+    user.has_permission?(:create_lots)
   end
-
+  
   def new?
     create?
   end
-
+  
   def update?
-    user.has_any_role?(:admin)
+    user.has_permission?(:update_lots)
   end
-
+  
   def edit?
     update?
   end
-
+  
   def destroy?
-    user.has_any_role?(:admin)
+    user.has_permission?(:destroy_lots)
   end
 
   def delete?

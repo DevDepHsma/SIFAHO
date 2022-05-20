@@ -70,3 +70,7 @@ es:
       create_products: 'Crear'
       update_products: 'Editar'
       destroy_products: 'Eliminar'
+      read_lots: 'Ver / Listar'
+      create_lots: 'Crear'
+      update_lots: 'Editar'
+      destroy_lots: 'Eliminar'
