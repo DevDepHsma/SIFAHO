@@ -74,3 +74,7 @@ es:
       create_lots: 'Crear'
       update_lots: 'Editar'
       destroy_lots: 'Eliminar'
+      read_lots_provenance: 'Ver / Listar'
+      create_lots_provenance: 'Crear'
+      update_lots_provenance: 'Editar'
+      destroy_lots_provenance: 'Eliminar'
