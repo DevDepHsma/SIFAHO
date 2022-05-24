@@ -17,12 +17,12 @@
       <div class="row nested-fields">
         <div class="custom-input-group col-2">
           <!-- Código de producto -->
-          <%= f.input :product, as: :string,
+          <%= f.input :product_code_fake, as: :string,
             placeholder: 'Código',
             label: 'Código',
             required: true,
             :input_html => {
-              class: "report-product-code select-change input-sm",
+              class: "input-sm find-product",
               data: { autocomplete_source: search_by_code_products_path },
               size: 4,
               autocomplete: 'off',
@@ -36,12 +36,12 @@
 
         <!-- Nombre de producto  -->
         <div class="custom-input-group col-10">
-          <%= f.input :product, as: :string, id: "nom_ins", class: "form-control",
+          <%= f.input :product_name_fake, as: :string, id: "nom_ins", class: "form-control",
             label: 'Nombre',
             placeholder: 'Nombre',
             required: true,
             :input_html => {
-              class: "report-product-name select-change input-sm",
+              class: "input-sm find-product",
               data: { autocomplete_source: search_by_name_products_path },
               size: 35,
               value: "#{if f.object.product.present?; f.object.product_name; end }"

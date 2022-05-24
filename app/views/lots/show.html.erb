@@ -55,9 +55,7 @@
 
   <div class="card-footer d-flex justify-content-between">
     <div class="text-right w-100">
-      <%= link_to :back, class: "btn btn-light mr-1" do %>
-        Volver
-      <% end %>    
+      <%= link_to 'Volver', lots_path, class: "btn btn-light mr-1" %>
 
       <%= link_to edit_lot_path(@lot), class: 'btn btn-warning btn-md mr-1' do %>
         <%= fa_icon "pen" %>

@@ -134,6 +134,7 @@ class ProductsController < ApplicationController
     @products = Product.active.order(:name).search_name(params[:term]).limit(8)
     render json: @products.map { |product| {
         label: product.name,
+        name: product.name,
         id: product.id,
         code: product.code,
         unity: product.unity.name,
@@ -146,6 +147,7 @@ class ProductsController < ApplicationController
     @products = Product.active.order(:id).with_code(params[:term]).limit(8)
     render json: @products.map { |product| {
                                  label: product.code,
+                                 code: product.code,
                                  id: product.id,
                                  name: product.name,
                                  unity: product.unity.name,

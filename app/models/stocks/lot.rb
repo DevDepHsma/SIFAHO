@@ -29,7 +29,7 @@ class Lot < ApplicationRecord
   delegate :name, to: :provenance, prefix: true
 
    filterrific(
-    default_filter_params: { sorted_by: 'creado_asc' },
+    default_filter_params: { sorted_by: 'creado_desc' },
     available_filters: [
       :sorted_by,
       :search_lot_code,
