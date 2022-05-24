@@ -70,7 +70,7 @@ class LotsController < ApplicationController
     authorize @lot
     @lot.destroy
     respond_to do |format|
-      format.html { redirect_to lots_url, notice: 'Lot was successfully destroyed.' }
+      format.html { redirect_to lots_url, notice: "Lote #{@lot.code} se ha eliminado correctamente." }
       format.json { head :no_content }
     end
   end
