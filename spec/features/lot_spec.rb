@@ -82,7 +82,7 @@ RSpec.feature "Lots", type: :feature do
         click_link 'Volver'
         PermissionUser.create(user: @user, sector: @user.sector, permission: @destroy_lots)
         visit current_path
-        sleep 15
+        sleep 1
         page.execute_script %Q{$('#filterrific_search_lot_code').val('BC456').keydown()}
         sleep 1
         within '#lots' do

@@ -5,7 +5,7 @@ class LotProvenancesController < ApplicationController
   # GET /lot_provenances.json
   def index
     authorize LotProvenance
-    @lot_provenances = LotProvenance.all.paginate(page: params[:page], per_page: 20)
+    @lot_provenances = LotProvenance.all
   end
 
   # GET /lot_provenances/1
@@ -18,25 +18,28 @@ class LotProvenancesController < ApplicationController
   def new
     authorize LotProvenance
     @lot_provenance = LotProvenance.new
-    @laboratories = Laboratory.all
+    respond_to do |format|
+      format.js
+    end
   end
 
   # GET /lot_provenances/1/edit
   def edit
     authorize @lot_provenance
-    @laboratories = Laboratory.all
+    respond_to do |format|
+      format.js
+    end
   end
 
   # POST /lot_provenances
   # POST /lot_provenances.json
   def create
     @lot_provenance = LotProvenance.new(lot_provenance_params)
-
     respond_to do |format|
       if @lot_provenance.save
-        flash.now[:notice] = 'La procedencia se ha cargado correctamente'
-        format.html { redirect_to @lot_provenance, notice: 'La procedencia se ha cargado correctamente.' }
-        format.js { render :create }
+        @lot_provenances = LotProvenance.all
+        flash[:notice] = 'La procedencia se ha creado correctamente.'
+        format.js
       else
         format.js { render :new }
         format.json { render json: @lot_provenance.errors, status: :unprocessable_entity }
@@ -48,11 +51,11 @@ class LotProvenancesController < ApplicationController
   # PATCH/PUT /lot_provenances/1.json
   def update
     authorize @lot_provenance
-
     respond_to do |format|
       if @lot_provenance.update(lot_provenance_params)
-        format.html { redirect_to @lot_provenance, notice: 'La procedencia se ha modificado correctamente.' }
-        format.json { render :show, status: :ok, location: @lot_provenance }
+        @lot_provenances = LotProvenance.all
+        flash[:notice] = 'La procedencia se ha modificado correctamente.'
+        format.js
       else
         format.html { render :edit }
         format.json { render json: @lot_provenance.errors, status: :unprocessable_entity }
