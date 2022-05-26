@@ -4,13 +4,23 @@ class LotsController < ApplicationController
   # GET /lots
   # GET /lots.json
   def index
-    authorize Lot
+    unless policy(:lot).sidebar_menu?
+      flash[:error] = 'Usted no está autorizado para realizar esta acción.'
+      redirect_back(fallback_location: root_path)
+    end
     @filterrific = initialize_filterrific(
       Lot,
       params[:filterrific],
       persistence_id: false,
     ) or return
     @lots = @filterrific.find.paginate(page: params[:page], per_page: 15)
+    respond_to do |format|
+      if policy(:lot).index?
+        format.html
+      else
+        format.html { redirect_to lot_provenances_path }
+      end
+    end
   end
 
   # GET /lots/1

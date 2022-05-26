@@ -1,4 +1,8 @@
 class LotPolicy < ApplicationPolicy
+  def sidebar_menu?
+    show? || user.has_permission?(:read_lots_provenance)
+  end
+  
   def index?
     show?
   end

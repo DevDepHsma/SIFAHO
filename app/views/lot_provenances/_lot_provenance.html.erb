@@ -1,4 +1,35 @@
-<a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-  <%= lot_provenance.name %>
-  <span class="badge badge-pill badge-secondary"><%= lot_provenance.lots_count %></span>
-</a>
+
+<div class="col-3 mt-1 mb-1">
+  <div class="border p-2 d-flex justify-content-between align-items-center">
+    <div>
+      <%= lot_provenance.name %>
+      <span class="badge badge-pill badge-secondary mr-1"><%= lot_provenance.lots_count %></span>
+    </div>
+    <div>
+      <% if policy(lot_provenance).edit? %>
+        <%= link_to edit_lot_provenance_path(lot_provenance), class: 'btn btn-warning btn-sm btn-edit', remote: true do %>
+          <%= fa_icon 'pen' %>
+        <% end %> 
+      <% end %> 
+      <% if policy(lot_provenance).destroy? %>
+        <button type="button" 
+          class="btn btn-danger btn-sm mr-1 ml-1 delete-item"
+          title="<%= t("actions.tooltip.delete") %>"
+          data-toggle="tooltip"
+          data-placement="top"
+          data-target="#delete-item" 
+          data-title="Eliminar procedencia"
+          data-body="¿Desea eliminar la procedencia <%= lot_provenance.name %>?"
+          data-href="<%= lot_provenance_path(lot_provenance) %>">
+          <%= fa_icon "trash" %>
+        </button>
+      <% end %>    
+    </div> 
+  </div> 
+</div> 
+
+<% content_for :modal do %>
+  <% if policy(lot_provenance).destroy? %>
+    <%= render(partial: 'shared/modals/delete_confirmation') %>
+  <%end%>
+<%end%>
