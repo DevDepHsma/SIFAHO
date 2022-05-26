@@ -86,7 +86,7 @@
       <% end %>
     <% end %>
 
-    <% if policy(Lot).index? %>
+    <% if policy(Lot).sidebar_menu? %>
       <%= link_to main_app.lots_path, class: "list-group-item list-group-item-action list-custom #{active_class('lots')}
         #{active_class('lot_provenances')}"  do %>
         <span class="sb-icon">
