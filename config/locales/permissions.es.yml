@@ -78,3 +78,7 @@ es:
       create_lots_provenance: 'Crear'
       update_lots_provenance: 'Editar'
       destroy_lots_provenance: 'Eliminar'
+      read_patients: 'Ver / Listar'
+      create_patients: 'Crear'
+      update_patients: 'Editar'
+      destroy_patients: 'Eliminar'

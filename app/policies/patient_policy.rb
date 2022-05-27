@@ -1,14 +1,14 @@
 class PatientPolicy < ApplicationPolicy
   def index?
-    user.has_any_role?(:admin, :farmaceutico, :auxiliar_farmacia, :enfermero, :abm_paciente)
+    show?
   end
-
+  
   def show?
-    index?
+    user.has_permission?(:read_patients)
   end
-
+  
   def create?
-    user.has_any_role?(:admin, :abm_paciente, :farmaceutico, :auxiliar_farmacia)
+    user.has_permission?(:create_patients)
   end
 
   def new?
@@ -16,7 +16,7 @@ class PatientPolicy < ApplicationPolicy
   end
 
   def update?
-    user.has_any_role?(:admin, :abm_paciente)
+    user.has_permission?(:update_patients)
   end
 
   def edit?
@@ -24,6 +24,6 @@ class PatientPolicy < ApplicationPolicy
   end
 
   def destroy?
-    user.has_any_role?(:admin)
+    user.has_permission?(:destroy_patients)
   end
 end
