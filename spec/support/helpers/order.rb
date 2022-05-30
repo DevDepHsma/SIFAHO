@@ -30,7 +30,7 @@ module Helpers
         page.execute_script("$('.ui-menu-item:contains(#{product[1]})').first().click()")
         if fields_args.include?(:request_quantity)
           page.execute_script %Q{
-            $('input.request-quantity').last().val(#{rand(100..750)}).keydown()
+            $('input.request-quantity').last().val(#{rand(100..250)}).keydown()
           }
         end
         if fields_args.include?(:observations)
@@ -57,7 +57,7 @@ module Helpers
           expect(page.has_css?('#table-lot-selection')).to be true
           within '#table-lot-selection' do
             page.execute_script %Q{
-              $($('input.quantity')[0]).val(#{rand(100..750)}).trigger('change')
+              $($('input.quantity')[0]).val(#{rand(100..250)}).trigger('change')
             }
           end
           click_button 'Guardar'
@@ -77,7 +77,7 @@ module Helpers
         expect(page.has_button?('Guardar')).to be true
         within '#table-lot-selection' do
           page.execute_script %Q{
-            $($('input.quantity')[0]).val(#{rand(100..750)}).trigger('change')
+            $($('input.quantity')[0]).val(#{rand(100..250)}).trigger('change')
           }
         end
         click_button 'Guardar'
