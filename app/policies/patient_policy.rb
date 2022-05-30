@@ -24,6 +24,6 @@ class PatientPolicy < ApplicationPolicy
   end
 
   def destroy?
-    user.has_permission?(:destroy_patients)
+    record.Temporal? && !record.chronic_prescriptions.any? && !record.outpatient_prescriptions.any? && user.has_permission?(:destroy_patients)
   end
 end
