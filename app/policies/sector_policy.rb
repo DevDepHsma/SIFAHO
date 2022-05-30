@@ -20,7 +20,7 @@ class SectorPolicy < ApplicationPolicy
   end
 
   def select_establishment?
-    user.has_permission?(:create_to_other_establishment)
+    user.has_permission?(:create_to_other_establishments)
   end
 
   def edit?
