@@ -25,4 +25,16 @@ module DataMock
       ]
     end
   end
+  
+  module Patients
+    def get_patients
+      [
+        ['57122312', 'Masculino', 'Quintulen Curruhinca', 'Gadiel Rafael', 'soltero'],
+        ['56757987', 'Otro', 'Aguirre', 'Verónica', 'soltero'],
+        ['29298088', 'Masculino', 'BAUER', 'GABRIEL', 'soltero'],
+        ['56757352', 'Masculino', 'CHEUQUEPAN', 'EMILIO MACIEL', 'soltero'],
+        ['57122317', 'Masculino', 'INAL SANGIULIANO', 'LORENZO NAHITAN', 'soltero']
+      ]
+    end
+  end
 end

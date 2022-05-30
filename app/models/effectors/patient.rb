@@ -6,7 +6,6 @@ class Patient < ApplicationRecord
   enum marital_status: { soltero: 1, casado: 2, separado: 3, divorciado: 4, viudo: 5, otro: 6 }
 
   # Relationships
-  belongs_to :patient_type, optional: true
   belongs_to :address, optional: true
   belongs_to :bed, optional: true
   has_many :outpatient_prescriptions, dependent: :destroy
@@ -25,7 +24,6 @@ class Patient < ApplicationRecord
 
   # Delegations
   delegate :country_name, :state_name, :city_name, :line, to: :address, prefix: :address
-  delegate :name, to: :patient_type, prefix: :patient_type
 
   accepts_nested_attributes_for :patient_phones,
                                 reject_if: proc { |attributes| attributes['number'].blank? },
@@ -37,10 +35,8 @@ class Patient < ApplicationRecord
       :sorted_by,
       :search_fullname,
       :search_dni,
-      :with_patient_type_id,
     ]
   )
-
   pg_search_scope :get_by_dni_and_fullname,
                   against: %i[dni first_name last_name],
                   using: { tsearch: { prefix: true } }, # Buscar coincidencia desde las primeras letras.
@@ -79,10 +75,6 @@ class Patient < ApplicationRecord
       # Si no existe la opcion de ordenamiento se levanta la excepcion
       raise(ArgumentError, "Invalid sort option: #{ sort_option.inspect }")
     end
-  }
-
-  scope :with_patient_type_id, lambda { |a_patient_type|
-    where('patients.patient_type_id = ?', a_patient_type)
   }
 
   # Método para establecer las opciones del select input del filtro

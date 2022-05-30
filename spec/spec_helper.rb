@@ -102,4 +102,5 @@ RSpec.configure do |config|
   config.include Helpers::Recipe, type: :feature
   config.include Helpers::Order, type: :feature
   config.include DataMock::Products, type: :feature
+  config.include DataMock::Patients, type: :feature
 end

@@ -7,9 +7,6 @@
         <%= patient.status %>
       </span>
     </td>
-    <td>
-      <%= patient.patient_type_name %>
-    </td>
     <td><%= patient.age_string %></td>
     <td><%= patient.sex.humanize %></td>
     <td><%= patient.outpatient_prescriptions.count %></td>
@@ -30,7 +27,6 @@
         }
       ) 
       %>
-
     </td>
   </div>
 </tr>
