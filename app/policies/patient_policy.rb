@@ -16,7 +16,7 @@ class PatientPolicy < ApplicationPolicy
   end
 
   def update?
-    user.has_permission?(:update_patients)
+    record.Temporal? && user.has_permission?(:update_patients)
   end
 
   def edit?
