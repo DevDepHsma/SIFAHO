@@ -24,9 +24,6 @@
   <div class="col-md-6">
     <h5><strong>Cantidad de prescripciones: </strong><span class="badge"><%= @patient.prescriptions.count %><span></h5>
 
-    <h5><strong>Tipo de paciente </strong></h5>
-    <%= @patient.patient_type.present? ? @patient.patient_type.name : "----" %>
-
     <% if @patient.created_at.present? %>
       <h5><strong>Se cargó el </strong></h5>
       <%= @patient.created_at %>

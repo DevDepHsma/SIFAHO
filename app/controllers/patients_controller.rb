@@ -4,21 +4,20 @@ class PatientsController < ApplicationController
   # GET /patients
   # GET /patients.json
   def index
+    authorize Patient
     @filterrific = initialize_filterrific(
       Patient,
       params[:filterrific],
       select_options: {
-        sorted_by: Patient.options_for_sorted_by,
-        with_patient_type_id: PatientType.options_for_select
+        sorted_by: Patient.options_for_sorted_by
       },
       persistence_id: false,
       default_filter_params: {sorted_by: 'created_at_desc'},
       available_filters: [
         :sorted_by,
         :search_fullname,
-        :search_dni,
-        :with_patient_type_id,
-      ],
+        :search_dni
+      ]
     ) or return
     @patients = @filterrific.find.page(params[:page]).per_page(15)
   end
@@ -26,6 +25,7 @@ class PatientsController < ApplicationController
   # GET /patients/1
   # GET /patients/1.json
   def show
+    authorize @patient
     @chronic_prescription_count = @patient.chronic_prescriptions.count
     @outpatient_prescription_count = @patient.outpatient_prescriptions.count
     respond_to do |format|
@@ -36,19 +36,20 @@ class PatientsController < ApplicationController
 
   # GET /patients/new
   def new
+    authorize Patient
     @patient = Patient.new
-    @patient_types = PatientType.all
     @patient.patient_phones.build
   end
 
   # GET /patients/1/edit
   def edit
-    @patient_types = PatientType.all
+    authorize @patient
   end
 
   # POST /patients
   # POST /patients.json
   def create
+    authorize Patient
     @patient = Patient.new(patient_params)
     if params[:patient][:address].present?
       @address = set_address(params[:patient][:address])
@@ -70,12 +71,10 @@ class PatientsController < ApplicationController
     respond_to do |format|
       begin
         @patient.save!
-
-
         # Eliminamos el archivo temporal
         File.delete(file.path) if File.exist?(file.path)
 
-        flash.now[:success] = @patient.full_info+" se ha creado correctamente."
+        flash.now[:success] = "#{@patient.full_info} se ha creado correctamente."
         format.html { redirect_to @patient }
         format.js
       rescue ArgumentError => e
@@ -91,12 +90,39 @@ class PatientsController < ApplicationController
   # PATCH/PUT /patients/1
   # PATCH/PUT /patients/1.json
   def update
+    authorize @patient
+    @patient.update(patient_params)
+    if params[:patient][:address].present?
+      @address = set_address(params[:patient][:address])
+      @patient.address = @address
+    end
+
+    file = Tempfile.new(['avatar', '.jpg'], Rails.root.join('tmp'))
+
+    if params[:patient][:andes_id].present? && params[:patient][:photo_andes_id].present?
+      patient_photo_res = get_patient_photo_from_andes(params[:patient][:andes_id], params[:patient][:photo_andes_id])
+      file.binmode
+      file.write(patient_photo_res)
+      file.rewind
+      @patient.avatar.attach(io: file, filename: "#{params[:patient][:photo_andes_id]}.jpg")
+    end
+
+    file.close
+
     respond_to do |format|
-      if @patient.update(patient_params)
-        flash.now[:success] = @patient.full_info+" se ha modificado correctamente."
+      begin
+        @patient.save!
+        # Eliminamos el archivo temporal
+        File.delete(file.path) if File.exist?(file.path)
+
+        flash.now[:success] = "#{@patient.full_info} se ha modificado correctamente."
+        format.html { redirect_to @patient }
         format.js
-      else
-        flash.now[:error] = @patient.full_info+" no se ha podido modificar."
+      rescue ArgumentError => e
+        flash[:alert] = e.message
+      rescue ActiveRecord::RecordInvalid
+      ensure
+        format.html { render :new }
         format.js
       end
     end
@@ -105,20 +131,21 @@ class PatientsController < ApplicationController
   # DELETE /patients/1
   # DELETE /patients/1.json
   def destroy
+    authorize @patient
     @full_info = @patient.full_info
     @patient.destroy
     respond_to do |format|
-      flash.now[:success] = "El paciente "+@full_info+" se ha eliminado correctamente."
+      flash.now[:success] = "El paciente #{@full_info} se ha eliminado correctamente."
       format.js
     end
   end
 
   # GET /patient/1/delete
-  def delete
-    respond_to do |format|
-      format.js
-    end
-  end
+  # def delete
+  #   respond_to do |format|
+  #     format.js
+  #   end
+  # end
 
   def search
     @patients = Patient.order(:first_name).search_query(params[:term]).limit(10)

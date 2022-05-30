@@ -2,11 +2,11 @@ class PatientPolicy < ApplicationPolicy
   def index?
     show?
   end
-  
+
   def show?
     user.has_permission?(:read_patients)
   end
-  
+
   def create?
     user.has_permission?(:create_patients)
   end

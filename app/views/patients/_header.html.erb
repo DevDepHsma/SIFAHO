@@ -7,10 +7,12 @@
       Pacientes
     <% end %>
   </li>
-  <li class="nav-item non-sel">
-    <%= link_to new_patient_path, class: "nav-link #{ active_action('new') }" do %>
-      <%= fa_icon "plus" %>
-      Agregar temporal
-    <% end %>
-  </li>
+  <% if policy(Patient).create? %>
+    <li class="nav-item non-sel">
+      <%= link_to new_patient_path, class: "nav-link #{ active_action('new') }" do %>
+        <%= fa_icon "plus" %>
+        Agregar
+      <% end %>
+    </li>
+  <% end %>
 <% end %>
