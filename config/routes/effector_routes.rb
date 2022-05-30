@@ -2,11 +2,6 @@ Rails.application.routes.draw do
   localized do
     # Patients
     resources :patients do
-      member do
-        get :delete
-        get :restore
-        get :restore_confirm
-      end
       collection do
         get :search
         get :get_by_dni_and_fullname
@@ -18,7 +13,6 @@ Rails.application.routes.draw do
     # Patients
     resources :professionals do
       member do
-        get :delete
         get :restore
         get :restore_confirm
       end
@@ -32,9 +26,6 @@ Rails.application.routes.draw do
 
     # Laboratories
     resources :laboratories do
-      member do
-        get :delete
-      end
       collection do
         get :search_by_name
       end

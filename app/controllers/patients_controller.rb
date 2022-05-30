@@ -140,13 +140,6 @@ class PatientsController < ApplicationController
     end
   end
 
-  # GET /patient/1/delete
-  # def delete
-  #   respond_to do |format|
-  #     format.js
-  #   end
-  # end
-
   def search
     @patients = Patient.order(:first_name).search_query(params[:term]).limit(10)
     render json: @patients.map{ |pat| { id: pat.id, dni: pat.dni, label: pat.fullname } }
