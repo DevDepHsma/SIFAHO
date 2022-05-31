@@ -52,7 +52,7 @@ RSpec.describe 'Patients API', type: :request do
   # Test suite for POST /patients
   describe 'POST /patients' do
     # valid payload
-    let(:valid_attributes) { { dni: '38601813', first_name: 'Eugenio', last_name: 'Gómez', birthdate: "31/10/1994", patient_type: '1' } }
+    let(:valid_attributes) { { dni: '38601813', first_name: 'Eugenio', last_name: 'Gómez', birthdate: "31/10/1994" } }
 
     context 'when the request is valid' do
       before { post '/patients', params: valid_attributes }

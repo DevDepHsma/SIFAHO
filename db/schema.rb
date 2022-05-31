@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_05_27_122719) do
+ActiveRecord::Schema.define(version: 2022_05_31_102125) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "fuzzystrmatch"
@@ -915,13 +915,6 @@ ActiveRecord::Schema.define(version: 2022_05_27_122719) do
     t.index ["product_id"], name: "index_patient_product_state_reports_on_product_id"
   end
 
-  create_table "patient_types", force: :cascade do |t|
-    t.string "name"
-    t.string "description"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   create_table "patients", force: :cascade do |t|
     t.string "first_name", limit: 100
     t.string "last_name", limit: 100
@@ -936,11 +929,9 @@ ActiveRecord::Schema.define(version: 2022_05_27_122719) do
     t.integer "status", default: 0
     t.string "andes_id"
     t.string "cuil"
-    t.bigint "patient_type_id", default: 1
     t.bigint "bed_id"
     t.index ["address_id"], name: "index_patients_on_address_id"
     t.index ["bed_id"], name: "index_patients_on_bed_id"
-    t.index ["patient_type_id"], name: "index_patients_on_patient_type_id"
   end
 
   create_table "permission_modules", force: :cascade do |t|
