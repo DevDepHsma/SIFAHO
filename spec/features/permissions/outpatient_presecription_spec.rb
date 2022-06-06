@@ -3,26 +3,27 @@ require 'rails_helper'
 RSpec.feature 'Permissions::OutpatientPrescriptions', type: :feature do
 
   before(:all) do
-    @user = create(:user_1)
+
     @permission_module = create(:permission_module, name: 'Recetas Ambulatorias')
     @read_outpatient_permission = create(:permission, name: 'read_outpatient_recipes', permission_module: @permission_module)
     @dispense_recipe_permission = create(:permission, name: 'dispense_outpatient_recipes', permission_module: @permission_module)
     @return_recipe_permission = create(:permission, name: 'return_outpatient_recipes', permission_module: @permission_module)
     @update_recipe_permission = create(:permission, name: 'update_outpatient_recipes', permission_module: @permission_module)
 
+    @patient_permission_module = create(:permission_module, name: 'Pacientes')
+    @create_patient_permission = create(:permission, name: 'create_patients', permission_module: @patient_permission_module)
+
     @professionals_permission_module = create(:permission_module, name: 'Profesionales')
     @create_professional_permission = create(:permission, name: 'create_professionals', permission_module: @professionals_permission_module)
     @read_professional_permission = create(:permission, name: 'read_professionals', permission_module: @professionals_permission_module)
-    PermissionUser.create(user: @user, sector: @user.sector, permission: @create_professional_permission)
-    PermissionUser.create(user: @user, sector: @user.sector, permission: @read_professional_permission)
-    product = create(:unidad_product)
-    lot = create(:province_lot_without_product, product: product)
-    stock = create(:stock, product: product, sector: @user.sector)
-    @lot_stock = LotStock.create(quantity: 1500, lot: lot, stock: stock)
+    PermissionUser.create(user: @provider_user, sector: @provider_user.sector, permission: @create_professional_permission)
+    PermissionUser.create(user: @provider_user, sector: @provider_user.sector, permission: @read_professional_permission)
+    PermissionUser.create(user: @provider_user, sector: @provider_user.sector, permission: @create_patient_permission)
+    
   end
 
   background do
-    sign_in_as(@user)
+    sign_in_as(@provider_user)
   end
 
   describe 'Outpatient Recipes ::', js: true do
@@ -34,9 +35,9 @@ RSpec.feature 'Permissions::OutpatientPrescriptions', type: :feature do
       expect(page).to_not have_selector(:css, "a[href='#{prescriptions_path}']")
     end
 
-    describe 'Permissions ::' do
+    describe 'Add permissions ::' do
       before(:each) do
-        PermissionUser.create(user: @user, sector: @user.sector, permission: @read_outpatient_permission)
+        PermissionUser.create(user: @provider_user, sector: @provider_user.sector, permission: @read_outpatient_permission)
       end
 
       it 'LIST' do
@@ -48,13 +49,11 @@ RSpec.feature 'Permissions::OutpatientPrescriptions', type: :feature do
         it 'FAIL' do
           visit '/recetas'
           expect(page.has_css?('#new-outpatient')).to be false
-        end
-
-        it 'SUCCESSFULLY' do
-          PermissionUser.create(user: @user, sector: @user.sector, permission: @dispense_recipe_permission)
+        
+          PermissionUser.create(user: @provider_user, sector: @provider_user.sector, permission: @dispense_recipe_permission)
           visit current_path
           find_or_create_patient_by_dni('Ambulatorias', '37458994')
-          find_or_create_professional_by_enrollment(@user, '#new-outpatient', 'Naval')
+          find_or_create_professional_by_enrollment(@provider_user, '#new-outpatient', 'Naval')
           expect(page).to have_content('Agregar receta ambulatoria')
           expect(page).to have_content('37458994')
           expect(page.has_css?('input#professional')).to be true
@@ -69,7 +68,8 @@ RSpec.feature 'Permissions::OutpatientPrescriptions', type: :feature do
           expect(page.has_button?('Dispensar')).to be true
           # Add product
           expect(page.has_css?('#professional')).to be true
-          add_product_by_code('0000', 100, 100)
+          @outpatient_product = @products.sample
+          add_product_by_code(@outpatient_product[1], 100, 100)
           # Dispense
           click_button 'Dispensar'
           expect(page).to have_content('Viendo receta ambulatoria')
@@ -79,7 +79,7 @@ RSpec.feature 'Permissions::OutpatientPrescriptions', type: :feature do
           expect(page.has_link?('Dispensar')).to be false
           expect(page.has_link?('Editar')).to be false
           # Add return permission
-          PermissionUser.create(user: @user, sector: @user.sector, permission: @return_recipe_permission)
+          PermissionUser.create(user: @provider_user, sector: @provider_user.sector, permission: @return_recipe_permission)
           visit current_path
           # Return recipe
           expect(page.has_button?('Retornar')).to be true
@@ -91,7 +91,7 @@ RSpec.feature 'Permissions::OutpatientPrescriptions', type: :feature do
           end
           expect(page.has_link?('Dispensar')).to be true
           # Add Edition action
-          PermissionUser.create(user: @user, sector: @user.sector, permission: @update_recipe_permission)
+          PermissionUser.create(user: @provider_user, sector: @provider_user.sector, permission: @update_recipe_permission)
           visit current_path
           expect(page.has_link?('Editar')).to be true
           click_link 'Editar'
