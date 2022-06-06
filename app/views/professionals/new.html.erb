@@ -1,3 +1,25 @@
 <%= render 'header' %>
 
-<%= render "form", professional: @professional %>
+<div class="card fixed-custom-card">
+  <div class="card-header bg-primary text-white d-flex align-items-center justify-content-between">
+    <div class="d-flex align-items-center ml-2">
+      <%= fa_icon "plus" %>
+      <h5 class="card-title mb-0 ml-2">
+        Agregar médico
+      </h5>
+    </div>
+    <%= link_to :back, class: 'btn text-white' do %>
+      <%= fa_icon "times" %>
+    <% end %>
+  </div>
+  <div class="card-body">
+    <%= render "form_remote", professional: @professional, url: :get_by_enrollment_and_fullname_html_professionals %>
+  </div>
+
+  <div class="card-footer d-flex justify-content-end">
+    <%= link_to 'Volver', professionals_path, class: 'btn btn-light mr-2' %>
+    <button type='submit' name='commit' class='btn btn-success' form="new_professional">
+      <%= fa_icon 'save' %> Guardar
+    </button>
+  </div>
+</div>

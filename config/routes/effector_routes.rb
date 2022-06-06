@@ -10,7 +10,7 @@ Rails.application.routes.draw do
       end
     end
 
-    # Patients
+    # Professionals
     resources :professionals do
       member do
         get :restore
@@ -18,6 +18,7 @@ Rails.application.routes.draw do
       end
       collection do
         get :doctors
+        get :get_by_enrollment_and_fullname_html
         get :get_by_enrollment_and_fullname
         get :get_by_unsigned_enrollment_fullname
         post :asign_user

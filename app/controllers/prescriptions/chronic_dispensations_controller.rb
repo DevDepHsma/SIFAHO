@@ -50,6 +50,7 @@ class Prescriptions::ChronicDispensationsController < ApplicationController
         @chronic_dispensation.return_dispensation
         @chronic_dispensation.destroy
         @chronic_prescription.return_dispense_by(current_user)
+        @chronic_prescription.pendiente! unless @chronic_prescription.chronic_dispensations.any?
         flash[:success] = "La receta de #{@chronic_dispensation.chronic_prescription.professional.fullname} se ha
                            retornado una dispensa correctamente."
       rescue ArgumentError => e

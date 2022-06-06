@@ -7,5 +7,13 @@
           Médicos
         <% end %>
     </li>
+    <% if policy(Professional).new? %>
+      <li class="nav-item">
+        <%= link_to new_professional_path, class: "nav-link #{ active_action_and_controller('new', 'profesisonals') }" do %>
+          <%= fa_icon "plus" %>
+          Agregar
+        <% end %>
+      </li>
+    <% end %>
   </ul>
 <% end %>

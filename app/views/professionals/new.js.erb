@@ -5,7 +5,7 @@ $('#dialog .modal-header').addClass('bg-primary text-white');
 $('#dialog .modal-title').html("<i class='fa fa-plus'></i>  Agregar nuevo médico");
 
 // Render the new form
-$('#dialog .modal-body').html('<%= j render("form_remote") %>');
+$('#dialog .modal-body').html('<%= j render("form_remote", url: :get_by_enrollment_and_fullname_professionals ) %>');
 
 // Add form button
 $('#dialog .modal-footer').html(
@@ -28,7 +28,6 @@ $("#dialog").on('show.bs.modal', function(){
 
   $("#professional-form-async").on('submit', function(e){
     e.preventDefault();
-
     professional_form = jQuery.ajax({
       type: $(e.target).attr('method'),
       dataType: "html",

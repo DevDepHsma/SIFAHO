@@ -36,6 +36,7 @@ class ProfessionalsController < ApplicationController
     authorize Professional
     @professional = params[:id].present? ? Professional.find(params[:id]) : Professional.new
     respond_to do |format|
+      format.html
       format.js
     end
   end
@@ -95,7 +96,14 @@ class ProfessionalsController < ApplicationController
   def get_by_enrollment_and_fullname
     @professionals = ProfessionalCreator.new(params).find_practitioner
     respond_to do |format|
-      format.js { render :professional_list }
+      format.js { render :professional_list, locals: { is_remote: true } }
+    end
+  end
+
+  def get_by_enrollment_and_fullname_html
+    @professionals = ProfessionalCreator.new(params).find_practitioner
+    respond_to do |format|
+      format.js { render :professional_list, locals: { is_remote: false } }
     end
   end
 

@@ -121,20 +121,6 @@ class Prescriptions::ChronicPrescriptionsController < ApplicationController
     end
   end
 
-  def return_dispensation
-    authorize @chronic_prescription
-    respond_to do |format|
-      begin
-        @chronic_prescription.return_dispensation(current_user)
-      rescue ArgumentError => e
-        flash[:error] = e.message
-      else
-        flash[:notice] = "La receta se ha retornado a #{@chronic_prescription.status}."
-      end
-      format.html { redirect_to @chronic_prescription }
-    end
-  end
-
   def finish
     authorize @chronic_prescription
     respond_to do |format|
