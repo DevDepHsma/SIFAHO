@@ -35,6 +35,10 @@ class ReceiptPolicy < ApplicationPolicy
     destroy?
   end
 
+  def rollback_order?
+    user.has_any_role?(:admin) && record.receipt_products.any?(&:has_available_lot_quantity?) && record.recibido?
+  end
+
   def receive?
     user.has_any_role?(:admin, :farmaceutico)
   end

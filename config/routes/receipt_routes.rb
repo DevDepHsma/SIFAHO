@@ -3,6 +3,7 @@ Rails.application.routes.draw do
     # Recibos
     resources :receipts do
       member do
+        patch :rollback_order
         get :delete
       end
     end

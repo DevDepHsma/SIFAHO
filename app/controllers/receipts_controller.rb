@@ -1,5 +1,5 @@
 class ReceiptsController < ApplicationController
-  before_action :set_receipt, only: [:show, :new, :edit, :update, :delete, :destroy]
+  before_action :set_receipt, only: [:show, :new, :edit, :update, :delete, :destroy, :rollback_order]
 
   # GET /receipts
   # GET /receipts.json
@@ -117,6 +117,15 @@ class ReceiptsController < ApplicationController
     respond_to do |format|
       flash.now[:success] = "Recibo de "+@sector_name+" se ha eliminado."
       format.js
+    end
+  end
+
+  def rollback_order
+    authorize @receipt
+    @receipt.return_remit
+    respond_to do |format|
+      flash.now[:success] = "Recibo de #{@receipt.remit_code} se ha retornado correctamente."
+      format.html { redirect_to receipt_path(@receipt) }
     end
   end
 

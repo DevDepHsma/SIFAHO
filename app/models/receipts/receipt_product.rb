@@ -44,6 +44,14 @@ class ReceiptProduct < ApplicationRecord
     self.save!
   end
 
+  def has_available_lot_quantity?
+    lot_stock.quantity >= quantity
+  end
+
+  def decrement_lot
+    lot_stock.decrement(quantity, receipt)
+  end
+
   def is_recibido? 
     self.receipt.recibido?
   end

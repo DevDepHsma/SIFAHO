@@ -1,4 +1,4 @@
-class Receipt < ApplicationRecord
+  class Receipt < ApplicationRecord
   include PgSearch::Model
 
   enum status: { auditoria: 0, recibido: 1}
@@ -140,6 +140,19 @@ class Receipt < ApplicationRecord
       end # End check if sector supply exists
     else 
       raise ArgumentError, 'El pedido está en'+ self.status.split('_').map(&:capitalize).join(' ')
+    end
+  end
+
+  # Return order
+  def return_remit
+    if self.receipt_products.any?(&:has_available_lot_quantity?) && self.recibido?
+      self.status = 'auditoria'
+      receipt_products.each { |r_product| r_product.decrement_lot }
+      self.received_date = nil
+      self.received_by = nil
+      self.save!
+    else
+      raise ArgumentError, 'El pedido no cuenta con el stock suficiente a retornar'
     end
   end
 
