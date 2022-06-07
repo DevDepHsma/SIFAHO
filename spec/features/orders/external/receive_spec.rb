@@ -41,8 +41,8 @@ RSpec.feature "Orders::External::Receives", type: :feature do
       expect(page).to have_content(@deposito.name)
       click_button 'Guardar y agregar productos'
 
-      prods = @products.sample(3)
-      add_products(prods, request_quantity: true, observations: true)
+      applicant_products = @products.sample(3)
+      add_products(applicant_products, request_quantity: true, observations: true)
       expect(page).to have_selector('input.product-code', count: 3)
       expect(page.has_button?('Enviar')).to be true
       click_button 'Enviar'
@@ -72,12 +72,12 @@ RSpec.feature "Orders::External::Receives", type: :feature do
         page.execute_script %Q{$('a.btn-edit-product')[0].click()}
       end
       sleep 1
-      fill_products_deliver_quantity(prods)
+      fill_products_deliver_quantity(applicant_products)
       expect(page.has_link?('Agregar producto')).to be true
       click_link 'Agregar producto'
       sleep 1
-      prov_prods = @products.sample(3)
-      add_products(prov_prods, request_quantity: true, observations: true, select_lot_stock: true)
+      provider_prods = (@products - applicant_products).sample(3)
+      add_products(provider_prods, request_quantity: true, observations: true, select_lot_stock: true)
       expect(page.has_button?('Aceptar')).to be true
       click_button 'Aceptar'
       expect(page).to have_content('La provision se ha aceptado correctamente.')

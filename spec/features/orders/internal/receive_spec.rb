@@ -32,9 +32,8 @@ RSpec.feature "Orders::Internal::Receives", type: :feature do
       end
       expect(page).to have_content(@deposito.name)
       click_button 'Guardar y agregar productos'
-      prods = @products.sample(3)
-      @products = @products - prods
-      add_products(prods, request_quantity: true, observations: true)
+      applicant_products = @products.sample(3)
+      add_products(applicant_products, request_quantity: true, observations: true)
       click_button 'Enviar'
       expect(page).to have_content('La solicitud se ha enviado correctamente.')
       expect(page).to have_content('Solicitud enviada')
@@ -60,12 +59,12 @@ RSpec.feature "Orders::Internal::Receives", type: :feature do
         page.execute_script %Q{$('a.btn-edit-product')[0].click()}
       end
       sleep 1
-      fill_products_deliver_quantity(prods)
+      fill_products_deliver_quantity(applicant_products)
       expect(page.has_link?('Agregar producto')).to be true
       click_link 'Agregar producto'
       sleep 1
-      prov_prods = @products.sample(3)
-      add_products(prov_prods, request_quantity: true, observations: true, select_lot_stock: true)
+      provider_products = (@products - applicant_products).sample(3)
+      add_products(provider_products, request_quantity: true, observations: true, select_lot_stock: true)
       click_button 'Enviar'
       sleep 1
       expect(page).to have_content('Enviando provisión de sector')

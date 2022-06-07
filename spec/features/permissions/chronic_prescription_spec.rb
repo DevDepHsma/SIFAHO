@@ -55,7 +55,6 @@ RSpec.feature 'Permissions::ChronicPrescriptions', type: :feature do
           find_or_create_professional_by_enrollment(@provider_user, '#new-chronic', 'Naval')
           # Add product
           @chronic_product = @products.sample
-          product_2 = @products.sample
           add_original_product_by_code(@chronic_product[1], 1)
           click_button 'Guardar'
           expect(page).to have_content('Viendo receta crónica')
@@ -68,6 +67,7 @@ RSpec.feature 'Permissions::ChronicPrescriptions', type: :feature do
           expect(page.has_link?('Dispensar')).to be true
 
           click_link 'Dispensar'
+          sleep 1
           expect(page).to have_content('Dispensar receta crónica:')
           expect(page).to have_content('Productos recetados')
 
@@ -117,10 +117,13 @@ RSpec.feature 'Permissions::ChronicPrescriptions', type: :feature do
           click_link 'Editar'
           expect(page).to have_content('Editando receta crónica')
           click_link 'Agregar insumo'
+          other_product = (@products - @chronic_product).sample
           # Add other product and with dispense permission
-          add_original_product_by_code(product_2[1], 10)
+          add_original_product_by_code(other_product[1], 10)
           click_button 'Guardar'
+          sleep 1
           expect(page).to have_content('Dispensar receta crónica')
+
           click_link 'Volver'
           # List filters
           expect(page.has_css?('#filterrific_filter')).to be true
