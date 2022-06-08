@@ -17,7 +17,7 @@ $(document).on('turbolinks:load', function(e){
   $('#provider-sector').selectpicker();
   
   // on change establishment input
-  $('#receipt-provider-id').on('change', function(e){
+  $('#effector-establishment').on('change', function(e){
     if(typeof e.target.value === 'undefined' || typeof e.target.value === null || e.target.value.length < 2){
       $('#provider-sector').find('option').remove();
       $('#provider-sector').selectpicker('refresh', {style: 'btn-sm btn-default'});
@@ -25,8 +25,8 @@ $(document).on('turbolinks:load', function(e){
   });
 
   // autocomplete establishment input
-  $('#receipt-provider-id').autocomplete({
-    source: $('#receipt-provider-id').data('autocomplete-source'),
+  $('#effector-establishment').autocomplete({
+    source: $('#effector-establishment').data('autocomplete-source'),
     minLength: 2,
     autoFocus:true,
     messages: {
@@ -74,7 +74,7 @@ $(document).on('turbolinks:load', function(e){
   // cocoon init
   $('#receipt-cocoon-container').on('cocoon:after-insert', function(e, inserted_item) {
     initExpiryDateCalendar();
-    $(inserted_item).find('input.receipt-product-code').first().focus();
+    $(inserted_item).find('input.product-code').first().focus();
   });
   
   // set expiry date calendar format
@@ -93,8 +93,8 @@ $(document).on('turbolinks:load', function(e){
     });
     
     // autocomplete product code input
-    $('.receipt-product-code').autocomplete({
-      source: $('.receipt-product-code').attr('data-autocomplete-source'),
+    $('.product-code').autocomplete({
+      source: $('.product-code').attr('data-autocomplete-source'),
       minLength: 1,
       autoFocus: true,
       messages: {
@@ -111,7 +111,7 @@ $(document).on('turbolinks:load', function(e){
       change: function (event, ui) {      
         onChangeOnSelectAutoCProductCode(event.target, ui.item);
         const tr = $(event.target).closest(".nested-fields");
-        tr.find("input.receipt-quantity").focus(); // changes focus to quantity input
+        tr.find("input.request-quantity").focus(); // changes focus to quantity input
       },
       response: function(event, ui) {
         $(event.target).parent().siblings('.with-loading').first().removeClass('visible');
@@ -134,7 +134,7 @@ $(document).on('turbolinks:load', function(e){
       select: function (event, ui) { 
         onSelectAutoCProductName(event.target, ui.item);
         const tr = $(event.target).closest(".nested-fields");
-        tr.find("input.receipt-quantity").focus(); // changes focus to quantity input
+        tr.find("input.request-quantity").focus(); // changes focus to quantity input
       },
       response: function(event, ui) {
         $(event.target).parent().siblings('.with-loading').first().removeClass('visible');
@@ -146,7 +146,7 @@ $(document).on('turbolinks:load', function(e){
       const _this = $(e.target);
       jQuery(function() {
         return $('.receipt-product-lot-code').autocomplete({
-          source: '/lotes/search_by_code?product_code='+_this.closest(".nested-fields").find(".receipt-product-code").val(),
+          source: '/lotes/search_by_code?product_code='+_this.closest(".nested-fields").find(".product-code").val(),
           minLength: 1,
           messages: {
             noResults: function(count) {
@@ -216,7 +216,7 @@ $(document).on('turbolinks:load', function(e){
   function onSelectAutoCProductName(target, item){
     if(item){
       const tr = $(target).closest(".nested-fields");
-      tr.find("input.receipt-product-code").val(item.code); // update product code input
+      tr.find("input.product-code").val(item.code); // update product code input
       tr.find("input.receipt-unity").val(item.unity); // update product unity input
       tr.find("input.receipt-product-id[type='hidden']").val(item.id); // update product id input      
     }

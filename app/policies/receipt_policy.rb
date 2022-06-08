@@ -1,14 +1,14 @@
 class ReceiptPolicy < ApplicationPolicy
   def index?
-    user.has_any_role?(:admin, :farmaceutico, :auxiliar_farmacia, :central_farmaceutico, :medic, :enfermero)
+    show?
   end
 
   def show?
-    index?
+    user.has_permission?(:read_receipts)
   end
 
   def create?
-    user.has_any_role?(:admin, :farmaceutico)
+    user.has_permission?(:create_receipts)
   end
 
   def new?
@@ -16,19 +16,19 @@ class ReceiptPolicy < ApplicationPolicy
   end
 
   def update?
-    edit?
+    if record.auditoria? && record.applicant_sector == user.sector
+      user.has_permission?(:update_receipts)
+    end
   end
 
   def edit?
-    if record.auditoria? && record.applicant_sector == user.sector
-      user.has_any_role?(:admin, :farmaceutico)
-    end
+    update?
   end
 
   def destroy?
     if user.has_any_role?(:admin, :farmaceutico) && record.auditoria?
       return record.applicant_sector == user.sector
-    end 
+    end
   end
 
   def delete?
@@ -40,6 +40,6 @@ class ReceiptPolicy < ApplicationPolicy
   end
 
   def receive?
-    user.has_any_role?(:admin, :farmaceutico)
+    user.has_permission?(:receive_receipts)
   end
 end

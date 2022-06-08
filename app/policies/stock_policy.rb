@@ -1,4 +1,8 @@
 class StockPolicy < ApplicationPolicy
+  def sidebar_menu?
+    user.has_permission?(:read_receipts) || index?
+  end
+
   def index?
     user.has_any_role?(:admin, :farmaceutico, :auxiliar_farmacia, :central_farmaceutico, :medic, :enfermero)
   end

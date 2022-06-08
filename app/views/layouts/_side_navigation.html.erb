@@ -77,7 +77,7 @@
       <% end %>
     <% end %>
 
-    <% if policy(Stock).index? %>
+    <% if policy(Stock).sidebar_menu? %>
       <%= link_to main_app.stocks_path, class: "list-group-item list-group-item-action list-custom #{active_class('stocks')} #{active_class('stock_movements')} #{active_class('receipts')} #{active_class('lot_stocks')}" do %>
         <span class="sb-icon">
           <%= fa_icon "cubes" %>

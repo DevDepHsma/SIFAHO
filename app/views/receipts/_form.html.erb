@@ -26,7 +26,7 @@
               hint: "Debe seleccionar un establecimiento para indicar el sector",
               :input_html => {
                 autocomplete: 'off',
-                id: "receipt-provider-id",
+                id: "effector-establishment",
                 data: { autocomplete_source: search_by_name_establishments_path },
                 size: 41,
                 value: f.object.provider_sector.present? ? f.object.provider_sector.establishment.name : '',
@@ -88,7 +88,7 @@
           <%= link_to_add_association f, :receipt_products, class: 'btn btn-primary btn-sm w-100',
             data: {"association-insertion-node" => "tbody#receipt-cocoon-container", "association-insertion-method" => "append"} do %>
             <%= fa_icon "plus" %>
-            Agregar insumo recibido
+            Agregar producto
           <% end %>
 
           <%# Mostramos el mensaje de validación, en el caso de que no tenga un insumo cargado. %>
@@ -120,16 +120,17 @@
       </div>
 
     </button>
-    <button type='submit' class='btn btn-primary' form="<%= @receipt.new_record? ? 'new_receipt' : 'edit_receipt_' + @receipt.id.to_s %>" data-value='receive'>
-      <div class="c-msg" style="pointer-events: none;">
-        <%= fa_icon "paper-plane" %> Guardar y recibir
-      </div>
-      <div class="d-none" style="pointer-events: none;">
-        Guardando...
-        <%= fa_icon "spinner", class: "fa-spin send-audit" %>
-      </div>
-    </button>
-
+    <% if policy(Receipt).receive? %>
+      <button type='submit' class='btn btn-primary' form="<%= @receipt.new_record? ? 'new_receipt' : 'edit_receipt_' + @receipt.id.to_s %>" data-value='receive'>
+        <div class="c-msg" style="pointer-events: none;">
+          <%= fa_icon "paper-plane" %> Recibir
+        </div>
+        <div class="d-none" style="pointer-events: none;">
+          Recibiendo...
+          <%= fa_icon "spinner", class: "fa-spin send-audit" %>
+        </div>
+      </button>
+    <% end %>
   </div>
 </div>
  

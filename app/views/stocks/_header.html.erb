@@ -46,17 +46,21 @@
     </div>
   </li>
 
-  <li class="nav-item non-sel">
-    <%= link_to receipts_path, class: "nav-link #{ active_action_and_controller(['index', 'show'], 'receipts') }" do %>
-      <%= fa_icon "receipt" %>
-      Recibos
-    <% end %>
-  </li>
+  <% if policy(Receipt).index? %>
+    <li class="nav-item non-sel">
+      <%= link_to receipts_path, class: "nav-link #{ active_action_and_controller(['index', 'show'], 'receipts') }" do %>
+        <%= fa_icon "receipt" %>
+        Recibos
+      <% end %>
+    </li>
+  <% end %>
   
-  <li class="nav-item non-sel">
-    <%= link_to new_receipt_path, class: "nav-link #{ active_action_and_controller('new', 'receipts') }" do %>
-      <%= fa_icon "receipt" %>
-      Cargar por recibo
-    <% end %>
-  </li>
+  <% if policy(Receipt).new? %>
+    <li class="nav-item non-sel">
+      <%= link_to new_receipt_path, class: "nav-link #{ active_action_and_controller('new', 'receipts') }" do %>
+        <%= fa_icon "receipt" %>
+        Cargar por recibo
+      <% end %>
+    </li>
+  <% end %>
 <% end %>

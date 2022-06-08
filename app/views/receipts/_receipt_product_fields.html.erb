@@ -6,7 +6,7 @@
           <input type="text" 
           name="product_code_fake" 
           value="<%= f.object.product.present? ? f.object.product.code : '' %>"
-          class="form-control fake optional receipt-product-code input-sm <%= ("is-invalid" if f.object.errors[:product_id].any? ) %> <%= ("is-valid" if f.object.product_id.present? && !f.object.errors[:product_id].any? ) %>" 
+          class="form-control fake optional product-code input-sm <%= ("is-invalid" if f.object.errors[:product_id].any? ) %> <%= ("is-valid" if f.object.product_id.present? && !f.object.errors[:product_id].any? ) %>" 
           data-autocomplete-source="<%= search_by_code_products_path %>"
           size="6" 
           autocomplete="off" 
@@ -69,7 +69,7 @@
     <!-- Cantidad a cargar -->
     <td>
       <%= f.input :quantity, placeholder: 'Cant', required: false,
-        label: false, :input_html => { class: 'receipt-quantity input-sm', min: '0', :style => 'width: 100px' }
+        label: false, :input_html => { class: 'request-quantity input-sm', min: '0', :style => 'width: 100px' }
       %>
     </td>
 

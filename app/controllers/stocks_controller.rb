@@ -4,7 +4,11 @@ class StocksController < ApplicationController
   # GET /stocks
   # GET /stocks.json
   def index
-    authorize Stock
+    unless policy(:stock).sidebar_menu?
+      flash[:error] = 'Usted no está autorizado para realizar esta acción.'
+      redirect_back(fallback_location: root_path)
+    end
+
     @filterrific = initialize_filterrific(
       Stock.to_sector(current_user.sector),
       params[:filterrific],
@@ -13,22 +17,23 @@ class StocksController < ApplicationController
       },
       persistence_id: false,
     ) or return
+
     @areas = Area.where(id: current_user.sector.stocks.joins(product: :area).pluck("areas.id").uniq)
-    if request.format.xlsx? || request.format.pdf?
-      @stocks = @filterrific.find
-    else
-      @stocks = @filterrific.find.paginate(page: params[:page], per_page: 20)
-    end
+    @stocks = (request.format.xlsx? || request.format.pdf?) ? @filterrific.find : @filterrific.find.page(params[:page]).per(15)
     respond_to do |format|
-      format.pdf do
-        send_data generate_order_report(@stocks),
-          filename: 'reporte_stock_'+DateTime.now.strftime("%d/%m/%Y")+'.pdf',
-          type: 'application/pdf',
-          disposition: 'inline'
+      if policy(:stock).index?
+        format.pdf do
+          send_data generate_order_report(@stocks),
+            filename: 'reporte_stock_'+DateTime.now.strftime("%d/%m/%Y")+'.pdf',
+            type: 'application/pdf',
+            disposition: 'inline'
+        end
+        format.html
+        format.js
+        format.xlsx { headers["Content-Disposition"] = "attachment; filename=\"ReporteListadoStock_#{DateTime.now.strftime('%d-%m-%Y')}.xlsx\"" }
+      elsif policy(:receipt).index?
+        format.html { redirect_to receipts_path }
       end
-      format.html
-      format.js
-      format.xlsx { headers["Content-Disposition"] = "attachment; filename=\"ReporteListadoStock_#{DateTime.now.strftime('%d-%m-%Y')}.xlsx\"" }
     end
   end
 
