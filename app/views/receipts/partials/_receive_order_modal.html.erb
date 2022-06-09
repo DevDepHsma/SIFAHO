@@ -1,0 +1,49 @@
+
+<div class="modal fade" id="receive-order" tabindex="-1" aria-labelledby="receive-orderLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content panel-warning">
+      <div class="modal-header panel-heading bg-success">
+        <h5 class="m-0 d-flex align-items-center text-white">
+          <%= fa_icon "check" %> 
+          <div class="ml-2 title">Recibir remito <%= @receipt.remit_code %></div>
+        </h5>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-2 body-title">Se recibirán los productos: </div>
+        <div>
+        <table class="table table-hover table-striped table-sm">
+          <thead>
+            <tr>
+              <th>Código</th>
+              <th>Producto</th>
+              <th>Cantidad</th>
+            </tr>
+          </thead>
+          <tbody id="products">
+            <% @receipt.receipt_products.each do |rp| %>
+              <tr>
+                <td><%= rp.product.code %></td>
+                <td><%= rp.product.name %></td>
+                <td><%= rp.quantity %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+        </div>            
+      </div>
+      <div class="modal-footer text-right">
+        <a href="#" data-dismiss="modal" class="btn btn-secondary">Cancelar</a>
+        <%= link_to receive_order_receipt_path(@receipt), method: :patch,
+          class: 'btn btn-success',
+          data: { 
+            "disable-with": "Recibiendo...<i class='fa fa-spinner fa-spin'></i>"
+          } do %>
+          Continuar
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

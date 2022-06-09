@@ -1,5 +1,5 @@
 class ReceiptsController < ApplicationController
-  before_action :set_receipt, only: [:show, :new, :edit, :update, :delete, :destroy, :rollback_order]
+  before_action :set_receipt, only: [:show, :new, :edit, :update, :delete, :destroy, :rollback_order, :receive_order]
 
   # GET /receipts
   # GET /receipts.json
@@ -47,18 +47,10 @@ class ReceiptsController < ApplicationController
       @receipt.applicant_sector = current_user.sector
       @receipt.created_by = current_user
       @receipt.code = "RE"+DateTime.now.to_s(:number)
-      
       begin
         @receipt.auditoria! #default status
-      
-        if receiving?
-          @receipt.receive_remit(current_user)
-          @receipt.create_notification(current_user, "creó y realizó")
-          message = 'El recibo se ha creado y realizado correctamente'
-        else
-          @receipt.create_notification(current_user, "creó")
-          message = 'El recibo se ha creado y se encuentra en auditoría.'
-        end
+        @receipt.create_notification(current_user, "creó")
+        message = 'El recibo se ha creado y se encuentra en auditoría.'
 
         format.html { redirect_to @receipt, notice: message }
         format.json { render :show, status: :created, location: @receipt }
@@ -69,7 +61,6 @@ class ReceiptsController < ApplicationController
         @sectors = @receipt.provider_sector.present? ? @receipt.provider_sector.establishment.sectors : []
         @receipt_products = @receipt.receipt_products.present? ? @receipt.receipt_products : @receipt.receipt_products.build
         @provenances = LotProvenance.all
-        
         format.html { render :new }
         format.json { render json: @receipt.errors, status: :unprocessable_entity }
       end
@@ -81,18 +72,11 @@ class ReceiptsController < ApplicationController
   def update
     authorize @receipt
     respond_to do |format|
-
       @receipt.update(receipt_params)
       begin
         @receipt.save!
-        if receiving?
-          @receipt.receive_remit(current_user)
-          @receipt.create_notification(current_user, "auditó y realizó")
-          message = 'El recibo se ha auditado y realizado correctamente'
-        else
-          @receipt.create_notification(current_user, "auditó")
-          message = 'El recibo se ha auditado correctamente'
-        end
+        @receipt.create_notification(current_user, "auditó")
+        message = 'El recibo se ha auditado correctamente'
         format.html { redirect_to @receipt, notice: message }
         format.json { render :show, status: :ok, location: @receipt }
       rescue ArgumentError => e
@@ -115,7 +99,7 @@ class ReceiptsController < ApplicationController
     @sector_name = @receipt.applicant_sector.name
     @receipt.destroy
     respond_to do |format|
-      flash.now[:success] = "Recibo de "+@sector_name+" se ha eliminado."
+      flash.now[:success] = "Recibo de #{@sector_name} se ha eliminado."
       format.js
     end
   end
@@ -129,11 +113,13 @@ class ReceiptsController < ApplicationController
     end
   end
 
-  # GET /external_order/1/delete
-  def delete
+  def receive_order
     authorize @receipt
+    @receipt.receive_remit(current_user)
+    @receipt.create_notification(current_user, 'recibió')
     respond_to do |format|
-      format.js
+      flash.now[:success] = "El recibo #{@receipt.remit_code} se ha realizado correctamente"
+      format.html { redirect_to @receipt }
     end
   end
 
@@ -166,10 +152,5 @@ class ReceiptsController < ApplicationController
         :_destroy
       ]
     )
-  end
-
-  def receiving?
-    submit = params[:commit]
-    return submit == "receive"
   end
 end

@@ -145,9 +145,9 @@
 
   <!-- Botones de acción footer -->
   <div class="card-footer d-flex justify-content-end">
-    <%= link_to 'Volver', receipts_path, class: "btn btn-secondary mr-1" %>
+    <%= link_to 'Volver', receipts_path, class: "btn btn-secondary mr-1 ml-1" %>
     <%= link_to receipt_path(@receipt, format: 'pdf'), :"data-turbolinks" => false,
-      class: "btn btn-info" do %>
+      class: "btn btn-info ml-1 mr-1" do %>
       <%= fa_icon "print" %>
       Imprimir
     <% end %>
@@ -157,10 +157,13 @@
         <%= fa_icon "pen" %>
         Editar
       <% end %>
+    <% end %>    
+    <% if policy(@receipt).receive_order? %>
+      <button type="button" class="btn btn-success mr-1 ml-1" data-toggle="modal" data-target="#receive-order">
+        <%= fa_icon "check" %>
+        Recibir
+      </button>
     <% end %>
-
-                    
-    
     <% if policy(@receipt).rollback_order? %>
       <button type="button" class="btn btn-warning mr-1 ml-1" data-toggle="modal" data-target="#rollback-order">
         <%= fa_icon "undo" %>
@@ -171,8 +174,12 @@
 </div>
 
 <% content_for :modal do %>
-  <%# Retornar a un estado anterior (solo prescripciones dispensadas)%>
+  <%# Return order to 'Auditoria' %>
   <% if policy(@receipt).rollback_order? %>
     <%= render( partial: 'receipts/partials/rollback_order_modal') %>
+  <% end %>
+  <%# Recive order %>
+  <% if policy(@receipt).receive_order? %>
+    <%= render( partial: 'receipts/partials/receive_order_modal') %>
   <% end %>
 <% end %>
