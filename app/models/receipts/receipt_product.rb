@@ -45,7 +45,7 @@ class ReceiptProduct < ApplicationRecord
   end
 
   def has_available_lot_quantity?
-    lot_stock.quantity >= quantity
+    lot_stock.present? && lot_stock.quantity >= quantity
   end
 
   def decrement_lot
