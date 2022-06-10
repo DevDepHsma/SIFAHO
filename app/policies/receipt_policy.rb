@@ -30,7 +30,7 @@ class ReceiptPolicy < ApplicationPolicy
   end
 
   def rollback_order?
-   user.has_permission?(:rollback_receipts) && record.receipt_products.any?(&:has_available_lot_quantity?) && record.recibido?
+   user.has_permission?(:rollback_receipts) && record.receipt_products.all?(&:has_available_lot_quantity?) && record.recibido?
   end
 
   def receive_order?
