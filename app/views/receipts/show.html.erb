@@ -73,7 +73,7 @@
         </ul>
       </div>
     </div>
-    <div class="col-md-12">
+    
       <div class="tab-content">
         <div id='products' class='tab-pane fade show active'>
           
@@ -89,6 +89,8 @@
                     <th>Lote</th>
                     <th>Laboratorio</th>
                     <th>Vencimiento</th>
+                    <th class="table-warning">Archivado</th>
+                    <th class="table-warning">Reservado</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -113,8 +115,10 @@
                           <%= r_product.product_name %>
                         <% end %>
                       </td>
-                      <td>
-                        <%= r_product.quantity %>
+                      <td class="text-center">
+                        <span class="badge badge-success">
+                          <%= r_product.quantity %>
+                        </span>
                       </td>
                       <td>
                         <%= r_product.provenance_name %>
@@ -128,6 +132,12 @@
                       <td>
                         <%= r_product.expiry_date.present? ? r_product.expiry_date.strftime("%m/%y") : 'No vence' %>
                       </td>
+                      <td class="table-warning text-center">
+                        <%= r_product.lot_stock.present? ? r_product.lot_stock.lot_archives.sum(:quantity) : 0%>
+                      </td>
+                      <td class="table-warning text-center">
+                        <%= r_product.lot_stock.present? ? r_product.lot_stock.reserved_quantity : 0 %>
+                      </td>
                     </tr>
                   <% end %>
                 </tbody>
@@ -140,7 +150,7 @@
           <%= render '/shared/movements_table', order: @receipt %>
         </div> <!-- End last movements tab pane -->
       </div> <!-- End Tab content-->
-    </div> <!-- End col-md-12 -->
+    
   </div>
 
   <!-- Botones de acción footer -->
