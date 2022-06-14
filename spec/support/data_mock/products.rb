@@ -13,7 +13,7 @@ module DataMock
         ['Acido Folico 5 mg/ml gotas', '10004'],
         ['Acido Salicilico 10% Lanovaselina (magistral)', '20813'],
         ['Sonda Urinaria lubricada para uso intermitente 6 Fr pediatrica Nelaton', '11312'],
-        ['Bisoprolol 2.5 mg ', '11332'],
+        ['Bisoprolol 2.5 mg', '11332'],
         ['Ciproterona + Etiniliestradiol por 21 comp', '10587'],
         ['Bolsa para ostomía', '20814'],
         ['Sonda Foley de 3 vías hematurica, con alma de acero N° 20', '11143'],

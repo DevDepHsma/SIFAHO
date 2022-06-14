@@ -54,8 +54,8 @@ RSpec.feature 'Permissions::ChronicPrescriptions', type: :feature do
           expect(page.has_css?('#new-chronic')).to be true
           find_or_create_professional_by_enrollment(@provider_user, '#new-chronic', 'Naval')
           # Add product
-          @chronic_product = @products.sample
-          add_original_product_by_code(@chronic_product[1], 1)
+          chronic_product = @products.sample
+          add_original_product_by_code(chronic_product[1], 1)
           click_button 'Guardar'
           expect(page).to have_content('Viendo receta crónica')
           expect(page.has_link?('Volver')).to be true
@@ -76,10 +76,10 @@ RSpec.feature 'Permissions::ChronicPrescriptions', type: :feature do
           expect(page).to have_content('Por favor revise los campos en el formulario')
 
           # Add a product to original product to dispense
-          page.execute_script %Q{$("td:contains(#{@chronic_product[0]})").first().closest('tr').find('a.add_fields').first().click()}
+          page.execute_script %Q{$("td:contains(#{chronic_product[0]})").first().closest('tr').find('a.add_fields').first().click()}
 
           # Select lot quantity
-          page.execute_script %Q{$("td:contains(#{@chronic_product[0]})").first().closest('tr').next('tr').find('button.select-lot-btn').first().click()}
+          page.execute_script %Q{$("td:contains(#{chronic_product[0]})").first().closest('tr').next('tr').find('button.select-lot-btn').first().click()}
           sleep 1
           expect(page).to have_content('Seleccionar lote en stock')
           page.execute_script %Q{$("input[name='lot-quantity[0]']").val(1).click()}
@@ -117,7 +117,7 @@ RSpec.feature 'Permissions::ChronicPrescriptions', type: :feature do
           click_link 'Editar'
           expect(page).to have_content('Editando receta crónica')
           click_link 'Agregar insumo'
-          other_product = (@products - @chronic_product).sample
+          other_product = (@products - chronic_product).sample
           # Add other product and with dispense permission
           add_original_product_by_code(other_product[1], 10)
           click_button 'Guardar'
