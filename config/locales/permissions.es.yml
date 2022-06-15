@@ -88,3 +88,7 @@ es:
       destroy_receipts: 'Eliminar'
       receive_receipts: 'Recibir'
       rollback_receipts: 'Retornar'
+      read_stocks: 'Ver / Listar'
+      read_archive_stocks: 'Ver archivado'
+      create_archive_stocks: 'Archivar'
+      return_archive_stocks: 'Retornar archivado'
