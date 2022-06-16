@@ -61,11 +61,13 @@
     <% end %>
 
     <ul class="nav nav-tabs nav-justified mt-4" id="myStockTab" role="tablist">
-      <li class="nav-item" role="presentation">
-        <a class="nav-link active" id="lots-tab" data-toggle="tab" href="#lots" role="tab" aria-controls="lots" aria-selected="true">
-          <%= fa_icon "barcode" %> Lotes <span class="badge badge-secondary"><%= @stock.lot_stocks.greater_than_zero.count %></span>
-        </a>
-      </li>
+      <% if policy(LotStock).index? %>
+        <li class="nav-item" role="presentation">
+          <a class="nav-link active" id="lots-tab" data-toggle="tab" href="#lots" role="tab" aria-controls="lots" aria-selected="true">
+            <%= fa_icon "barcode" %> Lotes <span class="badge badge-secondary"><%= @stock.lot_stocks.greater_than_zero.count %></span>
+          </a>
+        </li>
+      <% end %>
       <li class="nav-item" role="presentation">
         <a class="nav-link" id="movements-tab" data-toggle="tab" href="#movements" role="tab" aria-controls="movements" aria-selected="false">
           <%= fa_icon "exchange-alt" %> Últimos movimientos
@@ -78,54 +80,58 @@
 
     <%# LOTS %>
     <div class="tab-content" id="myTabContent">
-      <div class="tab-pane fade show active" id="lots" role="tabpanel" aria-labelledby="lots-tab">
-        <table class="table table-hover table-sm">
-          <thead >
-            <tr>
-              <th scope="col">Lote</th>
-              <th scope="col">Laboratorio</th>
-              <th scope="col"></th>
-              <th scope="col">Vencimiento</th>
-              <th scope="col">Estado</th>
-              <th scope="col">Movimientos</th>
-              <th scope="col" class="text-right">Disponible</th>
-              <th scope="col" class="text-right">
-                <span tabindex="0"class="btn btn-link p-0" data-toggle="popover" data-placement="top" data-trigger="hover" title="Cantidad reservada" data-content="Corresponde a las cantidades seleccionadas en los pedidos de establecimientos que se encuentran en estado Aceptado.">
-                  Reservada
-                </span>
-              </th>
-              <th scope="col" class="text-right">Total</th>
-              <th scope="col">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% @stock.lot_stocks.greater_than_zero.order(quantity: :desc).each do |lot_stock| %>
+      <% if policy(LotStock).index? %>
+        <div class="tab-pane fade show active" id="lots" role="tabpanel" aria-labelledby="lots-tab">
+          <table class="table table-hover table-sm">
+            <thead >
               <tr>
-                <td class="font-weight-bold" scope="row"><%= lot_stock.lot_code %></td>
-                <td><%= lot_stock.lot_laboratory_name %></td>
-                <td><span class="badge badge-secondary"><%= lot_stock.lot_provenance_name %></span></td>
-                <td><%= lot_stock.lot_short_expiry_date_string %></td>
-                <td><span class="badge badge-<%= lot_status_label(lot_stock.lot) %>"><%= lot_stock.lot_status.humanize %></span></td>
-                <td><%= lot_stock.movements.count %></td>
-                <td class="table-success text-right"><%= lot_stock.quantity %></td>
-                <td class="table-warning text-right"><%= lot_stock.reserved_quantity %></td>
-                <td class="text-right"><%= lot_stock.quantity + lot_stock.reserved_quantity %></td>
-                <td class="actions-col">
-                  <% if policy(lot_stock).show? %>
-                    <%= link_to stock_show_lot_stocks_path(@stock, lot_stock), class: 'btn btn-light btn-sm',
-                      title: 'Ver detalles', data: { toggle: 'tooltip', placement: 'top' } do %>
-                      <%= fa_icon "eye" %>
-                    <% end %>
-                  <% end %>
-                </td>
+                <th scope="col">Lote</th>
+                <th scope="col">Laboratorio</th>
+                <th scope="col"></th>
+                <th scope="col">Vencimiento</th>
+                <th scope="col">Estado</th>
+                <th scope="col">Movimientos</th>
+                <th scope="col" class="text-right">Disponible</th>
+                <th scope="col" class="text-right">
+                  <span tabindex="0"class="btn btn-link p-0" data-toggle="popover" data-placement="top" data-trigger="hover" title="Cantidad reservada" data-content="Corresponde a las cantidades seleccionadas en los pedidos de establecimientos que se encuentran en estado Aceptado.">
+                    Reservada
+                  </span>
+                </th>
+                <th scope="col" class="text-right">Total</th>
+                <% if policy(Lot).show? %>
+                  <th scope="col">Acciones</th>
+                <% end %>
               </tr>
-            <% end %>
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              <% @stock.lot_stocks.greater_than_zero.order(quantity: :desc).each do |lot_stock| %>
+                <tr>
+                  <td class="font-weight-bold" scope="row"><%= lot_stock.lot_code %></td>
+                  <td><%= lot_stock.lot_laboratory_name %></td>
+                  <td><span class="badge badge-secondary"><%= lot_stock.lot_provenance_name %></span></td>
+                  <td><%= lot_stock.lot_short_expiry_date_string %></td>
+                  <td><span class="badge badge-<%= lot_status_label(lot_stock.lot) %>"><%= lot_stock.lot_status.humanize %></span></td>
+                  <td><%= lot_stock.movements.count %></td>
+                  <td class="table-success text-right"><%= lot_stock.quantity %></td>
+                  <td class="table-warning text-right"><%= lot_stock.reserved_quantity %></td>
+                  <td class="text-right"><%= lot_stock.quantity + lot_stock.reserved_quantity %></td>
+                  <% if policy(Lot).show? %>
+                    <td class="actions-col text-center">
+                      <%= link_to stock_show_lot_stocks_path(@stock, lot_stock), class: 'btn btn-light btn-sm btn-detail-lot',
+                        title: 'Ver detalles', data: { toggle: 'tooltip', placement: 'top' } do %>
+                        <%= fa_icon "eye" %>
+                      <% end %>
+                    </td>
+                  <% end %>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% end %>
 
       <%# MOVEMENTS %>
-      <div class="tab-pane fade" id="movements" role="tabpanel" aria-labelledby="movements-tab">
+      <div class="tab-pane fade <%= 'show active' unless policy(LotStock).index? %>" id="movements" role="tabpanel" aria-labelledby="movements-tab">
         <table class="table table-hover table-sm">
           <thead >
             <tr>

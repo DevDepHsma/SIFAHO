@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   localized do
     # Stocks
-    resources :stocks do
+    resources :stocks, only: %i[index show] do
       collection do
         resources :lot_stocks, only: %i[index show] do
           member do

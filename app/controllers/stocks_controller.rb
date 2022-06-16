@@ -53,59 +53,6 @@ class StocksController < ApplicationController
     end
   end
 
-  # GET /stocks/new
-  def new
-    authorize Stock
-    @stock = Stock.new
-  end
-
-  # GET /stocks/1/edit
-  def edit
-  end
-
-  # POST /stocks
-  # POST /stocks.json
-  def create
-    @stock = Stock.new(stock_params)
-    authorize @stock
-
-    respond_to do |format|
-      if @stock.save
-        format.html { redirect_to @stock, notice: 'El stock se ha creado correctamente.' }
-        format.json { render :show, status: :created, location: @stock }
-      else
-        format.html { render :new }
-        format.json { render json: @stock.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  # PATCH/PUT /stocks/1
-  # PATCH/PUT /stocks/1.json
-  def update
-    authorize @stock
-    respond_to do |format|
-      if @stock.update(stock_params)
-        format.html { redirect_to @stock, notice: 'El stock se ha modificado correctamente.' }
-        format.json { render :show, status: :ok, location: @stock }
-      else
-        format.html { render :edit }
-        format.json { render json: @stock.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  # DELETE /stocks/1
-  # DELETE /stocks/1.json
-  def destroy
-    authorize @stock
-    @stock.destroy
-    respond_to do |format|
-      format.html { redirect_to stocks_url, notice: 'Stock was successfully destroyed.' }
-      format.json { head :no_content }
-    end
-  end
-
   def find_lots   
     # Buscamos los lot_stocks que pertenezcan al sector del usuario y ademas tengan stock
     @lot_stocks = LotStock.joins(:stock)
