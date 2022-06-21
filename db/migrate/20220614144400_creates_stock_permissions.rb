@@ -6,5 +6,6 @@ class CreatesStockPermissions < ActiveRecord::Migration[5.2]
     Permission.create(name: 'read_archive_stocks', permission_module: stocks)
     Permission.create(name: 'create_archive_stocks', permission_module: stocks)
     Permission.create(name: 'return_archive_stocks', permission_module: stocks)
+    Permission.create(name: 'read_movement_stocks', permission_module: stocks)
   end
 end
