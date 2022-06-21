@@ -1,41 +1,6 @@
-<div class="container-fluid ml-auto mr-auto">
+<div id="session-page" class="container-fluid ml-auto mr-auto">
   <div class="row">
-    <div class="col-9">
-      <div class="jumbotron pb-4 pt-5">
-        <div >
-          <h3 class="border-bottom">Hola, te damos la bienvenida al Sistema Farmacéutico Hospitalario!</h3>
-          <p class="lead">Somos un grupo de personas que crece día a día. Nos especializamos en facilitar el control y seguimiento de los insumos que llegan todos los días a cada uno de los efectores de salud. Llevamos más de 2 años de funcionamiento en Neuquén y queremos seguir creciendo para brindar cada vez más y mejores respuestas a nuestros usuarios.</p>
-          <hr class="my-4">
-        </div>
-        <div class="container-news">
-          <%= render '/welcome/update_notifications/notifcation_2021_09_21' %>
-          <%= render '/welcome/update_notifications/notifcation_2021_09_13' %>
-          <%= render '/welcome/update_notifications/notifcation_2021_09_10' %>
-          <%= render '/welcome/update_notifications/notifcation_2021_08_05' %>
-          <%= render '/welcome/update_notifications/notifcation_2021_06_28' %>
-          <%= render '/welcome/update_notifications/notifcation_2021_06_03' %>
-          <%= render '/welcome/update_notifications/notifcation_2021_05_05' %>
-          <%= render '/welcome/update_notifications/notifcation_2021_04_28' %>
-          <%= render '/welcome/update_notifications/notifcation_2021_04_07' %>
-          <%= render '/welcome/update_notifications/notifcation_2021_03_29' %>
-          <%= render '/welcome/update_notifications/notifcation_2021_03_16' %>
-          <%= render '/welcome/update_notifications/notifcation_2021_03_12' %>
-          <%= render '/welcome/update_notifications/notifcation_2021_03_08' %>
-          <%= render '/welcome/update_notifications/notifcation_2021_03_02' %>
-          <%= render '/welcome/update_notifications/notifcation_2021_02_24' %>
-          <%= render '/welcome/update_notifications/notifcation_2021_02_23' %>
-          <%= render '/welcome/update_notifications/notifcation_2021_02_17' %>
-          <%= render '/welcome/update_notifications/notifcation_2021_02_12' %>
-          <%= render '/welcome/update_notifications/notifcation_2021_02_11' %>
-          <%= render '/welcome/update_notifications/notifcation_2021_02_09' %>
-          <%= render '/welcome/update_notifications/notifcation_2021_02_08' %>
-          <%= render '/welcome/update_notifications/notifcation_2021_02_04' %>
-          <%= render '/welcome/update_notifications/notifcation_old' %>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-3 ml-auto">
+    <div class="col-3 ml-auto mr-auto mt-5">
       <div class="jumbotron ml-auto pb-4 pt-5">
         <p class="text-center pb-4">
           <%= image_tag("sifaho-logo.svg", size: "180x55", align: "center", alt: "Logo Sifaho") %>
@@ -59,30 +24,22 @@
             <%= f.label :password, 'Contraseña' %>
             <%= f.password_field :password, class: 'form-control' %>
           </div>
-            <%= button_tag(type: 'submit', class: "btn btn-success btn-md btn-block", 'data-disable-with' => "Iniciando <i class='fa fa-circle-notch fa-spin'></i>".html_safe) do %>
-    
-              Iniciar sesión
-            <% end %>
+          <%= button_tag(type: 'submit', class: "btn btn-success btn-md btn-block mt-2", 'data-disable-with' => "Iniciando <i class='fa fa-circle-notch fa-spin'></i>".html_safe) do %>
+            Iniciar sesión
+          <% end %>
         <% end %>
-
-        <div class="mt-3">
-          Soporte: <a href="https://wa.me/+5492944408853" target="_blank"><i class="fab fa-whatsapp"></i> +54 9 2972 40-8853</a>
-        </div>
-      </div>
-      <div class="card-body">
-      <div class="d-flex max-width-100 flex-column align-items-center">
-        <div class="prov-logo-container">
-          <%= image_tag("logo_01.svg", alt: "Logo Sifaho", class: "mw-100") %>
-        </div>
-        <div class="prov-logo-container">
-          <%= image_tag("logo_02.svg", alt: "Logo Sifaho", class: "mw-100") %>
-        </div>
-        <div class="prov-logo-container">
-          <%= image_tag("logo_03.svg", alt: "Logo Sifaho", class: "mw-100") %>
-        </div>
-
       </div>
     </div>
-    
+  </div>
+</div>
+
+<div id="province-logo" class="d-flex align-items-center justify-content-between ml-3 mr-3">
+  <div class="d-flex">
+    <%= image_tag("logo_01.svg", alt: "Logo Sifaho", class: "province-logo") %>
+    <%= image_tag("logo_02.svg", alt: "Logo Sifaho", class: "province-logo") %>
+    <%= image_tag("logo_03.svg", alt: "Logo Sifaho", class: "province-logo") %>
+  </div>
+  <div class="ml-2 mr-2 support-wpp">
+    <a href="https://wa.me/+5492944408853" target="_blank" title="Soporte"><i class="fab fa-whatsapp"></i> <span>+54 9 2972 40-8853</span></a>
   </div>
 </div>

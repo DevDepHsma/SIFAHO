@@ -99,6 +99,8 @@ body{
   font-style: normal;
 }
 
+
+
 .lato {
   font-family: Lato;
 }
@@ -316,3 +318,40 @@ a {
   width: 40px;
   height: 40px;
 }
+
+#session-wrapper{
+  width: 100%;
+  height: 100vh;
+  #session-page{
+    height: calc(100vh - 37.84px);
+  }
+  #province-logo{
+    height: 32.84px;
+    padding-bottom: 5px;
+    .province-logo{
+      margin: 0px 10px;
+      width: 100px;
+    }
+    
+    .support-wpp{
+      width: 1.5rem;
+      transition: width .3s ease-out;
+      overflow: hidden;
+      &:hover { width: 215px; }
+      a{
+        font-size: 1.5rem;
+        white-space: nowrap;
+        display: block;
+        color: #00a884;
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+        span {
+          font-size: 1.3rem;
+          margin-left: 5px;
+        }
+      }
+    }
+  }
+}
+

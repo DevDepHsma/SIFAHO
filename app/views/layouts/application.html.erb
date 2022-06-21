@@ -12,39 +12,39 @@
     <%= csrf_meta_tags %>
   </head>
   <body>
-    <div id="wrapper" class="<%="#{current_user.profile.theme}" if user_signed_in? %> <%= user_signed_in? && current_user.profile.hide? ? 'toggled' : '' %>">
-      <% if user_signed_in? %>
+    <% if user_signed_in? %>
+      <div id="wrapper" class="<%= current_user.profile.theme%> <%= 'toggled' if current_user.profile.hide? %>">
         <!-- General Navbar -->
         <%= render 'layouts/navigation' %>
-      <% end %>
-
-      <!-- Flash message -->
-      <div id="flash_messages" class="alert-container">
-        <%= render "layouts/flash_notices" %>
-      </div>
-      <!-- Page Content -->
-      <div class="d-flex" id="wrapper-2">
-
-         <!-- Sidebar -->
-        <% if user_signed_in? %>
+        <!-- Flash message -->
+        <div id="flash_messages" class="alert-container">
+          <%= render "layouts/flash_notices" %>
+        </div>
+        <!-- Page Content -->
+        <div class="d-flex" id="wrapper-2">
+          <!-- Sidebar -->
           <% if policy(:dashboard).sidebar? %>
             <%= render 'layouts/side_navigation' %>
           <% end %>
-        <% end %>
 
-        <div id="page-content-wrapper" class="<%= user_signed_in? ? '' : 'w-100' %>">
-          <div class="pt-3 container-fluid h-100">
+          <div id="page-content-wrapper">
+            <div class="pt-3 container-fluid h-100">
+              <!-- Main yield -->
+              <%= yield %>
 
-            <!-- Main yield -->
-            <%= yield %>
-
-            <div class="request-loading" id="loading">
-              <%= fa_icon 'spinner', class: 'fa-spin' %>
+              <div class="request-loading" id="loading">
+                <%= fa_icon 'spinner', class: 'fa-spin' %>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    <% else %>
+      <!-- Sign in Content -->
+      <div id="session-wrapper">
+        <%= yield %>
+      </div>
+    <% end %>
   </body>
   <footer>
     <!-- Modal -->
