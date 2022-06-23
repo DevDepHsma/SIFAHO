@@ -1,13 +1,13 @@
 class LotStockPolicy < ApplicationPolicy
   def index?
-    user.has_any_role?(:admin, :farmaceutico, :auxiliar_farmacia)
+    show?
   end
-  
+
   def lot_stocks_by_stock?
-    user.has_any_role?(:admin, :farmaceutico, :auxiliar_farmacia)
+    show?
   end
 
   def show?
-    index?
+    user.has_permission?(:read_lot_stocks)
   end
 end

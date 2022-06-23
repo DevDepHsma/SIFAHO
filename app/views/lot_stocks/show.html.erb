@@ -38,14 +38,16 @@
     </div>
 
     <ul class="nav nav-tabs nav-justified mt-4" id="myStockTab" role="tablist">
-      <li class="nav-item" role="presentation">
-        <a class="nav-link active" id="movements-tab" data-toggle="tab" href="#movements" role="tab" aria-controls="movements">
-          <%= fa_icon "exchange-alt" %> Últimos movimientos
-          <span class="badge badge-secondary">
-            <%= @lot_stock.movements.count %>
-          </span>
-        </a>
-      </li>
+      <% if policy(Stock).movements? %>
+        <li class="nav-item" role="presentation">
+          <a class="nav-link active" id="movements-tab" data-toggle="tab" href="#movements" role="tab" aria-controls="movements">
+            <%= fa_icon "exchange-alt" %> Últimos movimientos
+            <span class="badge badge-secondary">
+              <%= @lot_stock.movements.count %>
+            </span>
+          </a>
+        </li>
+      <% end %>
       <li class="nav-item" role="presentation">
         <a class="nav-link" id="reserved-tab" data-toggle="tab" href="#reserved" role="tab" aria-controls="reserved">
           <%= fa_icon "bookmark" %> Reservado
@@ -54,55 +56,58 @@
           </span>
         </a>
       </li>
-      <li class="nav-item" role="presentation">
-        <a class="nav-link" id="lots-archive-tab" data-toggle="tab" href="#lot-archives" role="tab" aria-controls="lots-archive">
-          <%= fa_icon "archive" %> Archivos
-          <span class="badge badge-secondary">
-            <%= @lot_stock.lot_archives.count %>
-          </span>
-        </a>
-      </li>
+      <% if policy(LotArchive).index? %>
+        <li class="nav-item" role="presentation">
+          <a class="nav-link" id="lots-archive-tab" data-toggle="tab" href="#lot-archives" role="tab" aria-controls="lots-archive">
+            <%= fa_icon "archive" %> Archivos
+            <span class="badge badge-secondary">
+              <%= @lot_stock.lot_archives.count %>
+            </span>
+          </a>
+        </li>
+      <% end %>
     </ul>
-    <div class="tab-content" id="myTabContent">
-      <div class="tab-pane fade show active" id="movements" role="tabpanel" aria-labelledby="movements-tab">
-        <table class="table table-hover table-sm">
-          <thead >
-            <tr>
-              <th scope="col">Fecha</th>
-              <th scope="col">Movimiento</th>
-              <th scope="col">Origen</th>
-              <th scope="col">Destino</th>
-              <th scope="col">Estado</th>
-              <th scope="col">Cantidad</th>
-              <th scope="col"></th>
-            </tr>
-          </thead>
-          <tbody>
-            <% @lot_stock.movements.sort_by{|e| e[:created_at]}.last(10).reverse.each do |movement| %>
+    <% if policy(Stock).movements? %>
+      <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="movements" role="tabpanel" aria-labelledby="movements-tab">
+          <table class="table table-hover table-sm">
+            <thead >
               <tr>
-                <td><%= movement.created_at.strftime("%d/%m/%Y") %></td>
-                <td><%= movement.order_human_name_string %></td>
-                <td class="text-truncate" style="max-width: 150px;"><%= movement.order_origin_name %></td>
-                <td class="text-truncate" style="max-width: 150px;"><%= movement.order_destiny_name %></td>
-                <td><%= movement.order_status %></td>
-                <td class="text-<%= movement.adds? ? 'success' : 'danger' %>"><%= movement.quantity %></td>
-                <td>
-                  <% if movement.order.present? %>
-                    <%= link_to polymorphic_url([movement.order.class.name.underscore.pluralize.to_sym, 
-                                  (movement.order.custom_notification_url.to_sym if movement.order.class.method_defined?(:custom_notification_url)) ], 
-                                  resaltar: @lot_stock.stock.product_id,
-                                  id: movement.order.id), 
-                                  target: :_blank, class: "btn btn-sm btn-light" do %>
-                      <%= fa_icon 'external-link-alt' %>
-                    <% end %>
-                  <% end %>
-                </td>
+                <th scope="col">Fecha</th>
+                <th scope="col">Movimiento</th>
+                <th scope="col">Origen</th>
+                <th scope="col">Destino</th>
+                <th scope="col">Estado</th>
+                <th scope="col">Cantidad</th>
+                <th scope="col"></th>
               </tr>
-            <% end %>
-          </tbody>
-        </table>
-        
-      </div>
+            </thead>
+            <tbody>
+              <% @lot_stock.movements.sort_by{|e| e[:created_at]}.last(10).reverse.each do |movement| %>
+                <tr>
+                  <td><%= movement.created_at.strftime("%d/%m/%Y") %></td>
+                  <td><%= movement.order_human_name_string %></td>
+                  <td class="text-truncate" style="max-width: 150px;"><%= movement.order_origin_name %></td>
+                  <td class="text-truncate" style="max-width: 150px;"><%= movement.order_destiny_name %></td>
+                  <td><%= movement.order_status %></td>
+                  <td class="text-<%= movement.adds? ? 'success' : 'danger' %>"><%= movement.quantity %></td>
+                  <td>
+                    <% if movement.order.present? %>
+                      <%= link_to polymorphic_url([movement.order.class.name.underscore.pluralize.to_sym, 
+                                    (movement.order.custom_notification_url.to_sym if movement.order.class.method_defined?(:custom_notification_url)) ], 
+                                    resaltar: @lot_stock.stock.product_id,
+                                    id: movement.order.id), 
+                                    target: :_blank, class: "btn btn-sm btn-light" do %>
+                        <%= fa_icon 'external-link-alt' %>
+                      <% end %>
+                    <% end %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% end %>
       <div class="tab-pane fade" id="reserved" role="tabpanel" aria-labelledby="reserved">
         <% if @reserved_lots.present? %>
           <table class="table table-hover table-sm">
@@ -140,60 +145,58 @@
           </div>
         <% end %>
       </div>
-      <div class="tab-pane fade" id="lot-archives" role="tabpanel" aria-labelledby="lots-tab">
-        <% if @lot_stock.lot_archives.present? %>
-          <table class="table table-hover table-sm">
-            <thead >
-              <tr>
-                <th scope="col">Fecha</th>
-                <th scope="col">Usuario</th>
-                <th scope="col">Estado</th>
-                <th scope="col">Cantidad</th>
-                <th scope="col">Observaciones</th>
-                <th scope="col" class="actions-col">Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              <% @lot_stock.lot_archives.order(created_at: :desc).each do |lot_archive| %>
+      <% if policy(LotArchive).index? %>
+        <div class="tab-pane fade" id="lot-archives" role="tabpanel" aria-labelledby="lots-tab">
+          <% if @lot_stock.lot_archives.present? %>
+            <table class="table table-hover table-sm">
+              <thead >
                 <tr>
-                  <th scope="row"><%= lot_archive.created_at.strftime("%d/%m/%Y") %></th>
-                  <td><%= lot_archive.user.full_name %></td>
-                  <td><%= lot_archive.status.humanize %></td>
-                  <td><%= lot_archive.quantity %></td>
-                  <td><%= lot_archive.observation %></td>
-                  <td class="actions-col">
-                    <% if policy(lot_archive).show? %>
-                      <%= link_to lot_archive_path(lot_archive), class: "btn btn-light btn-sm",
-                        title: 'Ver detalle', tabindex: "-1", data: { toggle: 'tooltip', placement: 'top' } do %>
-                        <%= fa_icon 'eye' %>
-                      <% end %>
-                    <% end %>
-                    <% if policy(lot_archive).return_archive? %>
-                      <%= link_to return_archive_modal_path(lot_archive), class: "btn btn-warning btn-sm", remote: true, 
-                        title: 'Retornar', tabindex: "-1", data: { toggle: 'tooltip', placement: 'top' } do %>
-                        <%= fa_icon 'undo' %>
-                      <% end %>
-                    <% end %>
-                  </td>
+                  <th scope="col">Fecha</th>
+                  <th scope="col">Usuario</th>
+                  <th scope="col">Estado</th>
+                  <th scope="col">Cantidad</th>
+                  <th scope="col">Observaciones</th>
+                  <th scope="col" class="actions-col">Acciones</th>
                 </tr>
-              <% end %>
-            </tbody>
-          </table>
-        <% else %>
-          <div class="d-flex justify-content-center mt-5">
-            Aún no se ha archivado de este lote
-          </div>
-        <% end %>
-      </div>
+              </thead>
+              <tbody>
+                <% @lot_stock.lot_archives.order(created_at: :desc).each do |lot_archive| %>
+                  <tr>
+                    <th scope="row"><%= lot_archive.created_at.strftime("%d/%m/%Y") %></th>
+                    <td><%= lot_archive.user.full_name %></td>
+                    <td><%= lot_archive.status.humanize %></td>
+                    <td><%= lot_archive.quantity %></td>
+                    <td><%= lot_archive.observation %></td>
+                    <td class="actions-col text-center">
+                      <% if policy(lot_archive).show? %>
+                        <%= link_to lot_archive_path(lot_archive), class: "btn btn-light btn-sm btn-detail-archive",
+                          title: 'Ver detalle', tabindex: "-1", data: { toggle: 'tooltip', placement: 'top' } do %>
+                          <%= fa_icon 'eye' %>
+                        <% end %>
+                      <% end %>
+                      <% if policy(lot_archive).return_archive? %>
+                        <%= link_to return_archive_modal_path(lot_archive), class: "btn btn-warning btn-sm btn-return-archive", remote: true, 
+                          title: 'Retornar', tabindex: "-1", data: { toggle: 'tooltip', placement: 'top' } do %>
+                          <%= fa_icon 'undo' %>
+                        <% end %>
+                      <% end %>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          <% else %>
+            <div class="d-flex justify-content-center mt-5">
+              Aún no se ha archivado de este lote
+            </div>
+          <% end %>
+        </div>
+      <% end %>
     </div>
   </div>
 
   <!-- Botones de acción footer -->
   <div class="card-footer d-flex justify-content-end">
     <%= link_to 'Volver', :back, class: "btn btn-secondary mr-2" %>
-    <%= link_to stock_path(@lot_stock.stock), class: 'btn btn-secondary' do %>
-      <%= fa_icon "arrow-left" %>
-      Volver a producto
-    <% end %>
   </div>
 </div>

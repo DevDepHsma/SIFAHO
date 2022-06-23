@@ -10,4 +10,8 @@ class StockPolicy < ApplicationPolicy
   def show?
     user.has_permission?(:read_stocks)
   end
+
+  def movements?
+    user.has_permission?(:read_movement_stocks)
+  end
 end

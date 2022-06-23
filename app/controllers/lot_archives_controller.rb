@@ -7,8 +7,9 @@ class LotArchivesController < ApplicationController
   end
 
   def new
-    authorize LotArchive
-
+    unless policy(LotArchive).new?(@lot_stock)
+      flash[:error] = 'Usted no está autorizado para realizar esta acción.'
+    end
     @lot_archive = LotArchive.new
     respond_to do |format|
       format.js

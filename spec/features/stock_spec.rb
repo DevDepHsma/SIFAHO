@@ -8,12 +8,10 @@ RSpec.feature "Stocks", type: :feature do
     @create_archive_stocks = create(:permission, name: 'create_archive_stocks', permission_module: @permission_module)
     @return_archive_stocks = create(:permission, name: 'return_archive_stocks', permission_module: @permission_module)
     @read_lot_stocks = create(:permission, name: 'read_lot_stocks', permission_module: @permission_module)
+    @read_movement_stocks = create(:permission, name: 'read_movement_stocks', permission_module: @permission_module)
 
     @pm_lots = create(:permission_module, name: 'Lotes')
     @read_lots = create(:permission, name: 'read_lots', permission_module: @pm_lots)
-    # @create_lots = create(:permission, name: 'create_lots', permission_module: @pm_lots)
-    # @update_lots = create(:permission, name: 'update_lots', permission_module: @pm_lots)
-    # @destroy_lots = create(:permission, name: 'destroy_lots', permission_module: @pm_lots)
   end
 
   background do
@@ -51,8 +49,9 @@ RSpec.feature "Stocks", type: :feature do
 
         expect(page).to have_content('Viendo stock de')
         expect(page).not_to have_selector('#lots-tab')
-        expect(page).to have_selector('#movements-tab')
-        expect(page).to have_selector('#statistics-tab')
+        expect(page).not_to have_selector('#movements-tab')
+        expect(page).not_to have_selector('#statistics-tab')
+        expect(page).not_to have_selector('#lot-archives')
         expect(page.has_link?('Volver')).to be true
         expect(page.has_link?('Imprimir')).to be true
         expect(page.has_link?('Ver Lotes')).to be false
@@ -64,10 +63,81 @@ RSpec.feature "Stocks", type: :feature do
         PermissionUser.create(user: @provider_user, sector: @provider_user.sector, permission: @read_lots)
         visit current_path
         expect(page).to have_selector('.btn-detail-lot')
-        # Lot detail
-        # PermissionUser.create(user: @provider_user, sector: @provider_user.sector, permission: @read_lots)
-        # Lot Movements
-        # Lot stocks
+
+        # ======= Lot detail ==========
+        within '#page-content-wrapper' do
+          click_link 'Lotes'
+        end
+        page.execute_script %Q{$('a.btn-detail-lot')[0].click()}
+        expect(page).to have_content('Viendo lote')
+        expect(page).to have_content('Reservado')
+        expect(page).not_to have_content('Archivos')
+        expect(page.has_link?('Volver')).to be true
+        # Archived
+        PermissionUser.create(user: @provider_user, sector: @provider_user.sector, permission: @read_archive_stocks)
+        visit current_path
+        expect(page).to have_content('Archivos')
+        expect(page).to have_selector('#lot-archives', visible: false)
+        # Lot stock Movements
+        PermissionUser.create(user: @provider_user, sector: @provider_user.sector, permission: @read_movement_stocks)
+        visit current_path
+        expect(page).to have_content('Últimos movimientos')
+        expect(page).to have_selector('#movements-tab')
+        click_link 'Volver'
+
+        # ======= Lot stocks list =========
+        expect(page).to have_content('Últimos movimientos')
+        expect(page).not_to have_selector('.btn-archive')
+        PermissionUser.create(user: @provider_user, sector: @provider_user.sector, permission: @create_archive_stocks)
+        visit current_path
+        expect(page).to have_selector('.btn-archive')
+        page.execute_script %Q{$('a.btn-archive')[0].click()}
+        sleep 1
+        expect(page).to have_selector('#lot_archive_quantity')
+        expect(page).to have_selector('#lot_archive_observation')
+        expect(page).to have_content('Archivando lote')
+        within '#new_lot_archive' do
+          fill_in 'lot_archive_quantity', with: 10
+          fill_in 'lot_archive_observation', with: 'Archive test'
+        end
+        expect(page.has_button?('Volver')).to be true
+        expect(page.has_button?('Archivar')).to be true
+        click_button 'Archivar'
+        expect(page).to have_content('Viendo archivo de lote')
+        within '#dropdown-menu-header' do
+          click_link 'Stock'
+        end
+        sleep 1
+        page.execute_script %Q{$('a.btn-detail')[0].click()}
+        sleep 1
+        page.execute_script %Q{$('a.btn-detail-lot')[0].click()}
+        expect(page).to have_content('Archivos')
+        click_link 'Archivos'
+        expect(page).to have_selector('#lot-archives')
+        within '#lot-archives' do
+          expect(page).to have_selector('.btn-detail-archive')
+          expect(page).not_to have_selector('.btn-return-archive')
+        end
+        PermissionUser.create(user: @provider_user, sector: @provider_user.sector, permission: @return_archive_stocks)
+        visit current_path
+        click_link 'Archivos'
+        expect(page).to have_selector('#lot-archives')
+        within '#lot-archives' do
+          expect(page).to have_selector('.btn-detail-archive')
+          expect(page).to have_selector('.btn-return-archive')
+          page.execute_script %Q{$('a.btn-return-archive')[0].click()}
+          sleep 1
+        end
+        expect(page).to have_content('Se retornarán 10 unidades al stock')
+        expect(page).to have_content('Esta seguro de retornar este archivo?')
+        expect(page.has_button?('Cancelar')).to be true
+        expect(page.has_link?('Confirmar')).to be true
+        click_link 'Confirmar'
+        sleep 1
+        click_link 'Archivos'
+        within '#lot-archives' do
+          expect(page).not_to have_selector('.btn-return-archive')
+        end
       end
     end
   end

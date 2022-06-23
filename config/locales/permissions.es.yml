@@ -92,3 +92,5 @@ es:
       read_archive_stocks: 'Ver archivado'
       create_archive_stocks: 'Archivar'
       return_archive_stocks: 'Retornar archivado'
+      read_lot_stocks: 'Ver / Listar lotes'
+      read_movement_stocks: 'Ver / Listar movimientos'
