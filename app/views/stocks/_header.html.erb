@@ -10,12 +10,14 @@
     </li>
   <% end %>
   
-  <li class="nav-item">
-    <%= link_to lot_stocks_path, class: "nav-link #{active_action_and_controller('index', 'lot_stocks')}" do %>
-      <%= fa_icon "barcode" %>
-      Lotes
-    <% end %>
-  </li>
+  <% if policy(LotStock).index? %>
+    <li class="nav-item">
+      <%= link_to lot_stocks_path, class: "nav-link #{active_action_and_controller('index', 'lot_stocks')}" do %>
+        <%= fa_icon "barcode" %>
+        Lotes
+      <% end %>
+    </li>
+  <% end %>
 
   <% if policy(Receipt).index? %>
     <li class="nav-item non-sel">
