@@ -1,7 +1,8 @@
 class AddUserPermissionsToStocks < ActiveRecord::Migration[5.2]
   def up
-    @users = User.joins(:roles).where('roles.name': ['admin', 'farmaceutico', 'auxiliar_farmacia'])
+    @users = User.distinct.joins(:roles).where('roles.name': ['admin', 'farmaceutico', 'auxiliar_farmacia'])
     @permissions = Permission.where(name: ['read_stocks', 'read_lot_stocks', 'read_archive_stocks', 'create_archive_stocks', 'return_archive_stocks', 'read_movement_stocks'])
+
     @users.each do |user|
       user.sectors.each do |sector|
         @permissions.each do |permission|
@@ -12,7 +13,7 @@ class AddUserPermissionsToStocks < ActiveRecord::Migration[5.2]
   end
 
   def down
-    @users = User.joins(:roles).where('roles.name': ['admin', 'farmaceutico', 'auxiliar_farmacia'])
+    @users = User.distinct.joins(:roles).where('roles.name': ['admin', 'farmaceutico', 'auxiliar_farmacia'])
     @permissions = Permission.where(name: ['read_stocks', 'read_lot_stocks', 'read_archive_stocks', 'create_archive_stocks', 'return_archive_stocks', 'read_movement_stocks'])
     @users.each do |user|
       user.sectors.each do |sector|
