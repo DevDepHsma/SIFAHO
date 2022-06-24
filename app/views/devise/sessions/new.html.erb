@@ -11,11 +11,15 @@
         <%= form_for(resource, :as => resource_name, :url => session_path(resource_name), :html => { :role => 'form'}) do |f| %>
           <%= render "devise/shared/error_messages", resource: resource %>
           <div class="form-group">
-            <%- if devise_mapping.registerable? %>
-              <%= link_to 'Registrarse', new_registration_path(resource_name), class: 'right'  %>
-            <% end -%>
             <%= f.label :username, "Usuario provincial OneLogin" %>
-            <%= f.number_field :username, :autofocus => true, class: 'form-control' %>
+            <div class="input-group mb-3">
+              <%= f.number_field :username, :autofocus => true, class: 'form-control', autocomplete: 'off' %>
+              <div class="input-group-append">
+                <button type="button" class="btn btn-outline-secondary" data-toggle="modal" data-target="#exampleModal">
+                  <%= fa_icon 'info-circle' %>
+                </button>
+              </div>
+            </div>
           </div>
           <div class="form-group">
             <%- if devise_mapping.recoverable? %>
@@ -40,6 +44,27 @@
     <%= image_tag("logo_03.svg", alt: "Logo Sifaho", class: "province-logo") %>
   </div>
   <div class="ml-2 mr-2 support-wpp">
-    <a href="https://wa.me/+5492944408853" target="_blank" title="Soporte"><i class="fab fa-whatsapp"></i> <span>+54 9 2972 40-8853</span></a>
+    <a href="https://wa.me/+5492944408853" target="_blank" title="Soporte"><i class="fab fa-whatsapp"></i> <span>Soporte +54 9 2972 40-8853</span></a>
   </div>
 </div>
+
+<%= content_for :modal do %>
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">OneLogin</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          One Login es una herramienta de autenticación centralizada que se corresponde con el segundo nivel en la escala de niveles de Integrabilidad. Todas las personas que quieran hacer uso de los servicios, aplicaciones Web, desktop, y sistemas de Gobierno ligados a integrabilidad deben autenticarse en One Login. 
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
