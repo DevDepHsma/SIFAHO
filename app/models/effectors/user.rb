@@ -6,6 +6,7 @@ class User < ApplicationRecord
   devise :rememberable, :trackable, :database_authenticatable
   devise :ldap_authenticatable, authentication_keys: [:username]
 
+  enum status: { permission_req: 0, active: 1, inactive: 2 }
   # Relaciones
   has_many :permission_users
   has_many :permissions, through: :permission_users

@@ -12,7 +12,7 @@
     <%= csrf_meta_tags %>
   </head>
   <body>
-    <% if user_signed_in? %>
+    <% if user_signed_in? && policy(:welcome).index? %>
       <div id="wrapper" class="<%= current_user.profile.theme%> <%= 'toggled' if current_user.profile.hide? %>">
         <!-- General Navbar -->
         <%= render 'layouts/navigation' %>

@@ -31,6 +31,7 @@ class PermissionRequestsController < ApplicationController
 
   # GET /permission_requests/new
   def new
+    authorize PermissionRequest
     @permission_request = PermissionRequest.new
   end
 

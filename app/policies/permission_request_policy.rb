@@ -5,7 +5,7 @@ class PermissionRequestPolicy < ApplicationPolicy
   end
 
   def create?
-    true
+    user.permissions.none? && user.permission_requests.none?
   end
 
   def new?
