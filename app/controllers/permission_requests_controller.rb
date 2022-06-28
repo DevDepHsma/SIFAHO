@@ -69,25 +69,25 @@ class PermissionRequestsController < ApplicationController
     end
   end
 
-  # DELETE /permission_requests/1
-  # DELETE /permission_requests/1.json
-  def destroy
-    @permission_request.destroy
-    respond_to do |format|
-      format.html { redirect_to permission_requests_url, notice: 'Permission request was successfully destroyed.' }
-      format.json { head :no_content }
-    end
-  end
+  # # DELETE /permission_requests/1
+  # # DELETE /permission_requests/1.json
+  # def destroy
+  #   @permission_request.destroy
+  #   respond_to do |format|
+  #     format.html { redirect_to permission_requests_url, notice: 'Permission request was successfully destroyed.' }
+  #     format.json { head :no_content }
+  #   end
+  # end
 
-  def end
-    respond_to do |format|
-      if @permission_request.terminada!
-        format.html { redirect_to @permission_request, notice: 'Se marcó la solicitud como terminada.'}
-      else
-        format.html { redirect_to @permission_request, notice: 'Hubo un problema con la solicitud.'}
-      end
-    end
-  end
+  # def end
+  #   respond_to do |format|
+  #     if @permission_request.terminada!
+  #       format.html { redirect_to @permission_request, notice: 'Se marcó la solicitud como terminada.'}
+  #     else
+  #       format.html { redirect_to @permission_request, notice: 'Hubo un problema con la solicitud.'}
+  #     end
+  #   end
+  # end
 
   private
     # Use callbacks to share common setup or constraints between actions.
