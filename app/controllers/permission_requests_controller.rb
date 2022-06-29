@@ -32,6 +32,7 @@ class PermissionRequestsController < ApplicationController
   # GET /permission_requests/new
   def new
     authorize PermissionRequest
+    @establishments = Establishment.select(:id, :name).order(:name)
     @permission_request = PermissionRequest.new
   end
 
