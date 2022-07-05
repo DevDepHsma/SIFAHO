@@ -1,6 +1,9 @@
 class PermissionRequest < ApplicationRecord
   include PgSearch::Model
 
+  belongs_to :establishment
+  belongs_to :sector
+
   enum status: { nueva: 0, terminada: 1, rechazada: 2 }
 
   # Relationships
