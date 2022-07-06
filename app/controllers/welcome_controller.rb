@@ -51,8 +51,10 @@ class WelcomeController < ApplicationController
         @external_orders_destination = ExternalOrder.other_orders(current_user.sector)
 
         format.html
-      else
+      elsif policy(:permission_request).new?
         format.html { redirect_to new_permission_request_path }
+      else
+        format.html { redirect_to request_in_progress_permission_requests_path }
       end
     end
   end

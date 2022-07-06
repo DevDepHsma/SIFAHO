@@ -1,0 +1,26 @@
+<% if @sectors %>
+  <% js = escape_javascript(
+    render(partial: 'permission_requests/partials/sector_select')
+  ) %>
+<% else %>
+  <% js = escape_javascript(
+    render(partial: 'permission_requests/partials/establishment_and_sector_inputs')
+  ) %>
+<% end %>
+
+$("#sector-selector").html("<%= js %>");
+
+$('.selectpicker').selectpicker({
+  style: 'btn-light'
+}); // Selectpicker init
+
+$("#permission_request_sector_id").on('change', function(e){
+  if(e.target.value == -1){
+    <% sector_input = escape_javascript(
+      render(partial: 'permission_requests/partials/sector_inputs')
+    ) %>
+    $("#sector-input").html("<%= sector_input %>");
+  }else{
+    $("#sector-input").html("");
+  }
+});

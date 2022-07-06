@@ -12,14 +12,14 @@
     <%= csrf_meta_tags %>
   </head>
   <body>
+    <div id="flash_messages" class="alert-container">
+      <%= render "layouts/flash_notices" %>
+    </div>
     <% if user_signed_in? && policy(:welcome).index? %>
       <div id="wrapper" class="<%= current_user.profile.theme%> <%= 'toggled' if current_user.profile.hide? %>">
         <!-- General Navbar -->
         <%= render 'layouts/navigation' %>
         <!-- Flash message -->
-        <div id="flash_messages" class="alert-container">
-          <%= render "layouts/flash_notices" %>
-        </div>
         <!-- Page Content -->
         <div class="d-flex" id="wrapper-2">
           <!-- Sidebar -->

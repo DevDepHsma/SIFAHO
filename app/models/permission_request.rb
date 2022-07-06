@@ -1,8 +1,8 @@
 class PermissionRequest < ApplicationRecord
   include PgSearch::Model
 
-  belongs_to :establishment
-  belongs_to :sector
+  belongs_to :establishment, optional: true
+  belongs_to :sector, optional: true
 
   enum status: { nueva: 0, terminada: 1, rechazada: 2 }
 
@@ -11,7 +11,9 @@ class PermissionRequest < ApplicationRecord
   has_one :profile, through: :user
 
   # Validations
-  validates_presence_of :user, :establishment, :sector, :role
+  validates_presence_of :user #, :establishment, :sector, :role
+  validates_presence_of :other_establishment, if: none_establishment?
+  validates_presence_of :other_sector, if: none_establishment? || none_sector?
 
   filterrific(
     default_filter_params: { sorted_by: 'fecha_desc' },
@@ -66,6 +68,14 @@ class PermissionRequest < ApplicationRecord
   scope :for_statuses, ->(values) do
     return all if values.blank?
     where(status: statuses.values_at(*Array(values)))
+  end
+
+  def none_establishment?
+    establishment_id.none?
+  end
+  
+  def none_sector?
+    sector_id.none?
   end
 
 end

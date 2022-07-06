@@ -1,19 +1,13 @@
 Rails.application.routes.draw do
   localized do
-    # devise_for :users, :controllers => { registrations: 'registrations' }
     devise_for :users, skip: [:registrations], controllers: { sessions: :sessions }
 
-    # as :user do
-    #   get 'users/edit', to: 'devise/registrations#edit', as: 'edit_user_registration'
-    #   put 'users', to: 'devise/registrations#update', as: 'user_registration'
-    # end
-
-    resources :permission_requests, except: [:destroy]
-    # resources :permission_requests do
-      # member do
-      #   get :end
-      # end
-    # end
+    resources :permission_requests, except: [:destroy] do
+      collection do
+        get :request_sectors
+        get :request_in_progress
+      end
+    end
 
     # Con esta ruta marcamos una notificacion como leida
     post '/notifications/:id/set-as-read', to: 'notifications/notifications#set_as_read', as: 'notifications_set_as_read'
