@@ -81,7 +81,7 @@ class PermissionRequest < ApplicationRecord
   end
 
   def none_sector?
-    sector_id.present? && sector_id.zero?
+    self.none_establishment? || sector_id.present? && sector_id.zero?
   end
 
   def clean_establishment
