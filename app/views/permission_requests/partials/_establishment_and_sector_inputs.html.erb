@@ -1,6 +1,4 @@
-<div class="form-group string required permission_request_establishment">
-  <label class="form-control-label string required" for="permission_request_establishment">Especifique el establecimiento <abbr title="required">*</abbr></label>
-  <input class="form-control string required" placeholder="Ej. Hospital Dr. Ramón Carrillo" type="text" name="permission_request[establishment]" id="permission_request_establishment" required="">
-</div>
-
+<%= simple_fields_for @permission_request do |f|%>
+  <%= f.input :other_establishment, label: "Especifique el establecimiento", placeholder: "Ej. Hospital Dr. Ramón Carrillo" %>
+<% end %>
 <%= render(partial: 'permission_requests/partials/sector_inputs') %>

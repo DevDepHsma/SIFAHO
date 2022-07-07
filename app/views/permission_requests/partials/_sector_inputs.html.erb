@@ -1,4 +1,3 @@
-<div class="form-group string required permission_request_sector">
-  <label class="form-control-label string required" for="permission_request_sector">Especifique el sector <abbr title="required">*</abbr></label>
-  <input class="form-control string required" placeholder="Ej. Farmacia" type="text" name="permission_request[sector]" id="permission_request_sector" required="">
-</div>
+<%= simple_fields_for @permission_request do |f|%>
+  <%= f.input :other_sector, label: "Especifique el sector", placeholder: "Ej. Farmacia" %>
+<% end %>

@@ -202,6 +202,11 @@ es:
         permission_module: 'Módulo'
       permission_users:
         sector: 'Sector'
+      permission_request:
+        establishment_id: 'Establecimiento'
+        sector_id: 'Sector'
+        other_establishment: 'Establecimiento'
+        other_sector: 'Sector'
   helpers:
     select:
       prompt: Por favor seleccione

@@ -48,13 +48,16 @@ class PermissionRequestsController < ApplicationController
     @permission_request.user = current_user
 
     respond_to do |format|
-      if @permission_request.save!
+      if @permission_request.save
         format.html { redirect_to root_url, notice: 'Solicitud enviada.' }
         format.json { render :show, status: :created, location: @permission_request }
       else
         @establishments = Establishment.select(:id, :name).order(:name)
+        if @permission_request.establishment_id.to_i.positive?
+          @sectors = Sector.select(:id, :name).where(establishment_id: @permission_request.establishment_id).order(:name)
+        end
         format.html { render :new }
-        format.json { render json: @permission_request.errors, status: :unprocessable_entity }
+        # format.json { render json: @permission_request.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -74,10 +77,14 @@ class PermissionRequestsController < ApplicationController
   end
 
   def request_sectors
-    @sectors = Sector.select(:id, :name).where(establishment_id: params[:term]).order(:name) if params[:term].present?
+    if params[:term].present? && params[:term].to_i.positive?
+      @sectors = Sector.select(:id, :name).where(establishment_id: params[:term]).order(:name)
+    end
+    @permission_request = PermissionRequest.new
   end
 
   def request_in_progress
+    authorize PermissionRequest
   end
 
   # # DELETE /permission_requests/1

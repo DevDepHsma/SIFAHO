@@ -1,19 +1,26 @@
-<div class="form-group integer optional permission_request_sector_id">
-  <label class="form-control-label integer optional" for="permission_request_sector_id">¿A cuál sector pertenece?</label>
-  <select class="selectpicker custom-select-pick" 
-          data-width="100%" 
-          data-size="10"
-          title="Seleccionar sector"
-          data-live-search="true"
-          data-none-results-text="No se encontró el sector"
-          name="permission_request[sector_id]"
-          id="permission_request_sector_id"
-          tabindex="-98">
-    <% @sectors.each do |sector| %>
-      <option value="<%= sector.id %>"><%= sector.name%></option>
-    <% end %>
-    <option value="-1">Otro...</option>
-  </select>
-</div>
+<%= simple_fields_for @permission_request do |f|%>
+  <%= f.input :sector_id,
+    as: :select,
+    label: '¿A cuál sector pertenece?',
+    include_blank: false,
+    collection: @sectors.map {|sector|  [sector.name, sector.id]} + [["Otro...", 0]],
+    :input_html => {
+      placeholder: 'Seleccionar sector',
+      required: true,
+      class: 'selectpicker custom-select-pick',
+      "title"=>"Seleccionar sector",
+      "data-width"=>"100%",
+      "data-size"=>"10",
+      "data-live-search"=>true,
+      "data-none-results-text" => "No se encontró el sector",
+      value: f.object.sector_id.present? ? f.object.sector_id : ""
+    }
+  %>
+<%end%>
 
-<div id="sector-input"></div>
+
+<div id="sector-input">
+  <% if @sectors.present? %>
+    <%= render(partial: 'permission_requests/partials/sector_inputs') %>
+  <% end %>
+</div>

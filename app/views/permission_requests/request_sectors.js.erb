@@ -15,7 +15,7 @@ $('.selectpicker').selectpicker({
 }); // Selectpicker init
 
 $("#permission_request_sector_id").on('change', function(e){
-  if(e.target.value == -1){
+  if(e.target.value == 0){
     <% sector_input = escape_javascript(
       render(partial: 'permission_requests/partials/sector_inputs')
     ) %>
