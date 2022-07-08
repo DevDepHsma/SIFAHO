@@ -51,5 +51,6 @@ es:
     edit: 'editar'
     create: 'crear'
     tree_view: 'vista_arbol'
-    notifications: "notificaciones"
-    edit_products: "editar_productos"
+    notifications: 'notificaciones'
+    edit_products: 'editar_productos'
+    request_in_progress: 'en_progreso'
