@@ -1,4 +1,4 @@
-<%= simple_form_for(@permission_request) do |f| %>
+<%= simple_form_for @permission_request, url: create_permission_requests_path do |f| %>
   <%= f.error_notification %>
 
   <%= f.input :establishment_id,

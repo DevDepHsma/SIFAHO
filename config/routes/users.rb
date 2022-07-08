@@ -4,9 +4,9 @@ Rails.application.routes.draw do
 
     resources :permission_requests, except: [:create, :destroy] do
       collection do
-        post '/new', to: 'permission_requests#create', as: ''
         get :request_sectors
         get :request_in_progress
+        post '/new', to: 'permission_requests#create', as: :create
       end
     end
 
