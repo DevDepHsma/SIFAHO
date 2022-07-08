@@ -42,7 +42,19 @@
     <% else %>
       <!-- Sign in Content -->
       <div id="session-wrapper">
-        <%= yield %>
+        <div id="session-page" class="container-fluid ml-auto mr-auto">
+          <%= yield %>
+        </div>
+        <div id="province-logo" class="d-flex align-items-center justify-content-between ml-3 mr-3">
+          <div class="d-flex">
+            <%= image_tag("logo_01.svg", alt: "Logo Sifaho", class: "province-logo") %>
+            <%= image_tag("logo_02.svg", alt: "Logo Sifaho", class: "province-logo") %>
+            <%= image_tag("logo_03.svg", alt: "Logo Sifaho", class: "province-logo") %>
+          </div>
+          <!--div class="ml-2 mr-2 support-wpp">
+            <a href="https://wa.me/+5492944408853" target="_blank" title="Soporte"><i class="fab fa-whatsapp"></i> <span>Soporte +54 9 2972 40-8853</span></a>
+          </div-->
+        </div>
       </div>
     <% end %>
   </body>

@@ -20,7 +20,7 @@
 
 
 <div id="sector-input">
-  <% if @sectors.present? %>
+  <% if @permission_request.sector_id.present? %>
     <%= render(partial: 'permission_requests/partials/sector_inputs') %>
   <% end %>
 </div>

@@ -1,51 +1,38 @@
-<div id="session-page" class="container-fluid ml-auto mr-auto">
-  <div class="row h-100 align-items-center">
-    <div class="col-lg-3 col-md-5 ml-auto mr-auto">
-      <div class="jumbotron mb-0">
-        <p class="text-center pb-4">
-          <%= image_tag("sifaho-logo.svg", size: "180x55", align: "center", alt: "Logo Sifaho") %>
-          <% if ENV['DEMO_RIBBON'] %>
-            <span class="badge badge-warning badge-demo"><strong>DEMO</strong></span>
-          <% end %>
-        </p>
-        <%= form_for(resource, :as => resource_name, :url => session_path(resource_name), :html => { :role => 'form'}) do |f| %>
-          <%= render "devise/shared/error_messages", resource: resource %>
-          <div class="form-group">
-            <%= f.label :username, "Usuario provincial OneLogin" %>
-            <div class="input-group mb-3">
-              <div class="input-group-prepend">
-                <button type="button" class="btn btn-outline-secondary" data-toggle="modal" data-target="#exampleModal">
-                  <%= fa_icon 'info-circle' %>
-                </button>
-              </div>
-              <%= f.number_field :username, :autofocus => true, class: 'form-control', autocomplete: 'off' %>
-            </div>
-          </div>
-          <div class="form-group">
-            <%- if devise_mapping.recoverable? %>
-              <%= link_to "Olvidaste tu contraseña?", new_password_path(resource_name), class: 'right' %>
-            <% end -%>
-            <%= f.label :password, 'Contraseña' %>
-            <%= f.password_field :password, class: 'form-control' %>
-          </div>
-          <%= button_tag(type: 'submit', class: "btn btn-success btn-md btn-block mt-4", 'data-disable-with' => "Iniciando <i class='fa fa-circle-notch fa-spin'></i>".html_safe) do %>
-            Iniciar sesión
-          <% end %>
+<div class="row h-100 align-items-center">
+  <div class="col-lg-3 col-md-5 ml-auto mr-auto">
+    <div class="jumbotron mb-0">
+      <p class="text-center pb-4">
+        <%= image_tag("sifaho-logo.svg", size: "180x55", align: "center", alt: "Logo Sifaho") %>
+        <% if ENV['DEMO_RIBBON'] %>
+          <span class="badge badge-warning badge-demo"><strong>DEMO</strong></span>
         <% end %>
-      </div>
+      </p>
+      <%= form_for(resource, :as => resource_name, :url => session_path(resource_name), :html => { :role => 'form'}) do |f| %>
+        <%= render "devise/shared/error_messages", resource: resource %>
+        <div class="form-group">
+          <%= f.label :username, "Usuario provincial OneLogin" %>
+          <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <button type="button" class="btn btn-outline-secondary" data-toggle="modal" data-target="#exampleModal">
+                <%= fa_icon 'info-circle' %>
+              </button>
+            </div>
+            <%= f.number_field :username, :autofocus => true, class: 'form-control', autocomplete: 'off' %>
+          </div>
+        </div>
+        <div class="form-group">
+          <%- if devise_mapping.recoverable? %>
+            <%= link_to "Olvidaste tu contraseña?", new_password_path(resource_name), class: 'right' %>
+          <% end -%>
+          <%= f.label :password, 'Contraseña' %>
+          <%= f.password_field :password, class: 'form-control' %>
+        </div>
+        <%= button_tag(type: 'submit', class: "btn btn-success btn-md btn-block mt-4", 'data-disable-with' => "Iniciando <i class='fa fa-circle-notch fa-spin'></i>".html_safe) do %>
+          Iniciar sesión
+        <% end %>
+      <% end %>
     </div>
   </div>
-</div>
-
-<div id="province-logo" class="d-flex align-items-center justify-content-between ml-3 mr-3">
-  <div class="d-flex">
-    <%= image_tag("logo_01.svg", alt: "Logo Sifaho", class: "province-logo") %>
-    <%= image_tag("logo_02.svg", alt: "Logo Sifaho", class: "province-logo") %>
-    <%= image_tag("logo_03.svg", alt: "Logo Sifaho", class: "province-logo") %>
-  </div>
-  <!--div class="ml-2 mr-2 support-wpp">
-    <a href="https://wa.me/+5492944408853" target="_blank" title="Soporte"><i class="fab fa-whatsapp"></i> <span>Soporte +54 9 2972 40-8853</span></a>
-  </div-->
 </div>
 
 <%= content_for :modal do %>

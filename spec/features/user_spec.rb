@@ -148,16 +148,5 @@ RSpec.feature 'Users', type: :feature, js: true do
       click_button 'Enviar'
       expect(page).to have_content('Sector no puede estar en blanco')
     end
-
-    # sleep 10
-    # expect(find('ul.ui-autocomplete')).to have_content(product[1].to_s)
-    # page.execute_script("$('.ui-menu-item:contains(#{product[1]})').first().click()")
-
-    # expect(page.has_css?('#sector', visible: false)).to be true
-    # expect(page).to have_content('Dispensar recetas')
-    # expect(page).to have_content('Ordenes internas')
-    # expect(page).to have_content('Ordenes externas')
-    # expect(page).to have_content('Recibos')
-    # expect(page).to have_content('Reportes')
   end
 end
