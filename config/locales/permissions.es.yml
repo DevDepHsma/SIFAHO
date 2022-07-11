@@ -2,7 +2,8 @@ es:
   permissions:
     name:
       read_users: 'Ver / Listar'
-      update_permissions: 'Editar'
+      update_permissions: 'Editar permisos'
+      answer_permission_request: 'Responder solicitud de permisos'
       read_outpatient_recipes: 'Ver / Listar'
       update_outpatient_recipes: 'Editar'
       destroy_outpatient_recipes: 'Eliminar'

@@ -207,6 +207,13 @@ es:
         sector_id: 'Sector'
         other_establishment: 'Establecimiento'
         other_sector: 'Sector'
+  user_status:
+    permission_req: 'Solicitud'
+    active: 'Activo'
+    inactvie: 'Inactivo'
+  permission_request_status:
+    in_progress: 'En progreso'
+    done: 'Terminado'
   helpers:
     select:
       prompt: Por favor seleccione

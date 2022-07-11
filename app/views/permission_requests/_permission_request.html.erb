@@ -1,6 +1,10 @@
 <tr class="table-row <%= permission_request.in_progress? ? "info" : ""%>" data-href="<%= permission_request_path(permission_request) %>">
   <td><%= permission_request.user.full_name %></td>
-  <td><span class="badge badge-<%= permission_request_status_label(permission_request) %>"><%= permission_request.status.humanize %></span></td>
+  <td> 
+    <span class="badge badge-<%= permission_request_status_label(permission_request) %>">
+      <%= t("permission_request_status.#{permission_request.status}").humanize %>
+    </span>
+  </td>
   <td><%= permission_request.establishment.present? ? permission_request.establishment.name.titleize : permission_request.other_establishment %></td>
   <td><%= permission_request.sector.present? ? permission_request.sector.name.titleize : permission_request.other_sector %></td>
   <td><%= permission_request.created_at.strftime("%d/%m/%Y") %></td>
