@@ -61,8 +61,8 @@ class PermissionRequest < ApplicationRecord
 
   def self.options_for_status
     [
-      ['Nueva', 'nueva', 'info'],
-      ['Terminada', 'terminada', 'success'],
+      ['Nueva', 'in_progress', 'info'],
+      ['Terminada', 'done', 'success'],
       ['Rechazada', 'rechazada', 'danger'],
     ]
   end

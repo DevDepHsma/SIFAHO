@@ -4,7 +4,7 @@ class UsersController < ApplicationController
   def index
     authorize User
     @filterrific = initialize_filterrific(
-      User,
+      User.where(status: [1, 2]),
       params[:filterrific],
       select_options: {
         with_status: InternalOrder.options_for_status

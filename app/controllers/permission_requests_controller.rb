@@ -6,7 +6,7 @@ class PermissionRequestsController < ApplicationController
   def index
     authorize PermissionRequest
     @filterrific = initialize_filterrific(
-      PermissionRequest.order(created_at: :desc),
+      PermissionRequest.where(status: 0).order(created_at: :desc),
       params[:filterrific],
       select_options: {
         sorted_by: PermissionRequest.options_for_sorted_by,
