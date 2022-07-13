@@ -14,7 +14,10 @@ class PermissionsController < ApplicationController
   end
 
   def edit
-    authorize Permission
+    unless policy(:permission).edit?(@user)
+      flash[:error] = 'Usted no está autorizado para realizar esta acción.'
+      redirect_back(fallback_location: root_path)
+    end
     @filterrific = initialize_filterrific(
       PermissionModule.eager_load(:permissions),
       params[:remote_form],
@@ -29,6 +32,10 @@ class PermissionsController < ApplicationController
   end
 
   def update
+    unless policy(:permission).update?(@user)
+      flash[:error] = 'Usted no está autorizado para realizar esta acción.'
+      redirect_back(fallback_location: root_path)
+    end
     respond_to do |format|
       begin
         @user.update!(permission_params)

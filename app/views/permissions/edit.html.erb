@@ -5,14 +5,19 @@
       <div class="d-flex align-items-center">
         <%= fa_icon "lock" %>
         <h5 class="card-title mb-0 ml-2">
-          Editando permisos
+          <% if @user.permission_requests.any? && @user.permission_requests.first.in_progress? %>
+            Solicitud de permisos <span class="badge badge-primary"> <%=
+              t("permission_request_status.#{@user.permission_requests.first.status}").downcase
+            %> </span>
+          <% else %>
+            Editando permisos
+          <% end %>
         </h5>
       </div>
       <%= link_to users_admin_index_path, class: 'btn btn-light' do %>
         <%= fa_icon 'times' %>
       <% end %>
     </div>
-
       
     <div class="card-body">
       <div class="row">
@@ -60,7 +65,7 @@
     </div>
     
     <div class="card-footer d-flex justify-content-end">
-      <%= link_to 'Volver', users_admin_index_path, class: 'btn btn-light mr-2' %>
+      <%= link_to 'Volver', :back, class: 'btn btn-light mr-2' %>
       <button type='submit' name='commit' class='btn btn-success' form='permission_users'>
         <%= fa_icon 'save' %> Guardar
       </button>
