@@ -20,7 +20,7 @@
     </span>
   </td>
   <td><%= user.sectors.count %></td>
-  <td><%= user.last_sign_in_at.strftime("%d/%m/%Y")%> </td>
+  <td><%= user.last_sign_in_at.present? ? user.last_sign_in_at.strftime("%d/%m/%Y") : '---' %> </td>
   <td class="text-left actions-col">
     <% if policy(user).show? %>
       <%= link_to users_admin_path(user), class: 'btn btn-secondary btn-sm', 
