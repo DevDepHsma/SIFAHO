@@ -29,4 +29,8 @@ $(document).on('turbolinks:load', function() {
   });
   
 });
+$(document).on('turbolinks:load', function() {
+  if(!(_PAGE.controller === 'permissions' && (['edit'].includes(_PAGE.action))) ) return false;
+  $("#permission_req_in_progress").modal('show');
+});
 

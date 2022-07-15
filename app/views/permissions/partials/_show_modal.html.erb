@@ -1,0 +1,28 @@
+<div class="modal" tabindex="-1" id="permission_req_in_progress">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Solicitud de permisos 
+          <span class="badge badge-primary">
+            <%= t("permission_request_status.#{@user.permission_requests.first.status}").downcase %> 
+          </span>
+        </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Solicitud de permisos de:</p>
+        <p>Nombre y Apellido: <%= @user.profile.full_name %></p>
+        <p>DNI: <%= @user.profile.dni %></p>
+
+        <p>Establecimiento indicado: <%= @user.permission_requests.first.establishment.present? ? @user.permission_requests.first.establishment.name : @user.permission_requests.first.other_establishment %>.</p>
+        <p>Sector indicado: <%= @user.permission_requests.first.sector.present? ? @user.permission_requests.first.sector.name : @user.permission_requests.first.other_sector %>.</p>
+        <p>Observaciones: <%= @user.permission_requests.first.observation %>.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>

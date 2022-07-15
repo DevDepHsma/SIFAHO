@@ -26,7 +26,9 @@ class User < ApplicationRecord
 
   validates :username, presence: true, uniqueness: true
 
-  after_create :create_profile # Comment in development
+  after_create :create_profile
+  before_update :update_permission_request
+  after_save :verify_profile
 
   # Delegaciones
   delegate :full_name, :first_name, :dni, :email, to: :profile
@@ -59,7 +61,12 @@ class User < ApplicationRecord
     profile.save!
   end
 
-  after_save :verify_profile
+  def update_permission_request
+    if permission_req?
+      permission_requests.find_by(status: 'in_progress').done!
+      self.status = 'active'
+    end
+  end
 
   def verify_profile
     unless profile.present?

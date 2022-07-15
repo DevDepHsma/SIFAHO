@@ -30,12 +30,12 @@ FactoryBot.define do
       association :sector, factory: :sector_1
       status { 'active' }
     end
-    
+
     trait :u_5 do
       username { 00006666 }
       password { 'password' }
     end
-    
+
     trait :u_6 do
       username { 00007777 }
       password { 'password' }

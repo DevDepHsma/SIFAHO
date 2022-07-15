@@ -5,6 +5,7 @@ RSpec.feature 'Users', type: :feature, js: true do
     @permission_module = create(:permission_module, name: 'Usuarios')
     @read_users = create(:permission, name: 'read_users', permission_module: @permission_module)
     @answer_permission_request = create(:permission, name: 'answer_permission_request', permission_module: @permission_module)
+    @update_permissions = create(:permission, name: 'update_permissions', permission_module: @permission_module)
   end
 
   background do
@@ -40,13 +41,48 @@ RSpec.feature 'Users', type: :feature, js: true do
           expect(page.has_link?('Solicitud de permisos')).to be true
           click_link 'Solicitud de permisos'
         end
-        create(:permission_req_1)
+        user_requested = create(:user_6)
+        create(:permission_req_1, user: user_requested)
         visit current_path
         within '#permission_requests' do
           expect(page).to have_selector('tr', count: 1)
           page.execute_script %Q{$('tr.info')[0].click()}
         end
         expect(page).to have_content('Solicitud de permisos en progreso')
+        expect(page.has_css?('#permission_req_in_progress')).to be true
+        expect(page.has_button?('Cerrar')).to be true
+        click_button 'Cerrar'
+        sleep 1
+        find('#open-sectors-select-modal').click
+        sleep 1
+        expect(page).to have_content('Selección de sectores')
+        expect(page).to have_content('Sectores activos')
+        expect(page.has_button?('Cerrar')).to be true
+        page.execute_script %Q{
+          const button = $('select#remote_form_sector_selector').next('button');
+          button.click();
+          button.next('.dropdown-menu').find('input').first().val('carrillo').trigger('propertychange');
+          button.next('.dropdown-menu').find('a.dropdown-item').first().click();
+        }
+        click_button 'Cerrar'
+        sleep 1
+        page.execute_script %Q{
+          $('input#remote_form_search_name').val('Usuario').keyup();
+        }
+        sleep 1
+        page.execute_script %Q{
+          $('label:contains("Ver / Listar")').click();
+        }
+        click_button 'Guardar'
+        expect(page).to have_content('Viendo usuario')
+        expect(page).to have_content('Sectores habilitados')
+        sign_out_as(@user)
+        sleep 1
+        sign_in_as(user_requested)
+
+        expect(page.has_link?('Usuarios')).to be true
+        expect(page).to have_content('Farmacia HSMA')
+
         sleep 10
       end
     end
