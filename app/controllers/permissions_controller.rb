@@ -47,6 +47,9 @@ class PermissionsController < ApplicationController
           params[:remote_form],
           persistence_id: false
         )
+        @sectors = Sector.includes(:establishment)
+                     .order('establishments.name ASC', 'sectors.name ASC')
+                     .where.not(id: @user.sectors.pluck(:id))
         @permission_modules = @filterrific.find
         @sector = params[:remote_form].present? ? Sector.find(params[:remote_form][:sector]) : @user.sector
         @enable_permissions = @user.permission_users.where(sector: @sector).pluck(:permission_id)

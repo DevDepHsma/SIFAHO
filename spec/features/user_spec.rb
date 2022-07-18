@@ -73,6 +73,7 @@ RSpec.feature 'Users', type: :feature, js: true do
         page.execute_script %Q{
           $('label:contains("Ver / Listar")').click();
         }
+        sleep 1
         click_button 'Guardar'
         expect(page).to have_content('Viendo usuario')
         expect(page).to have_content('Sectores habilitados')
@@ -81,9 +82,7 @@ RSpec.feature 'Users', type: :feature, js: true do
         sign_in_as(user_requested)
 
         expect(page.has_link?('Usuarios')).to be true
-        expect(page).to have_content('Farmacia HSMA')
-
-        sleep 10
+        expect(page).to have_content('Depósito')
       end
     end
   end

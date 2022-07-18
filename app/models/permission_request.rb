@@ -8,11 +8,11 @@ class PermissionRequest < ApplicationRecord
   belongs_to :sector, optional: true
 
   enum status: { in_progress: 0, done: 1 }
-  # enum status: { nueva: 0, terminada: 1, rechazada: 2 }
   before_create :clean_establishment
 
   # Validations
-  validates_presence_of :user, :establishment_id
+  validates_presence_of :user
+  validates_presence_of :establishment_id, on: :create
   validates_presence_of :sector_id, if: :positive_establishment?
   validates_presence_of :other_establishment, if: :none_establishment?
   validates_presence_of :other_sector, if: :none_sector?
