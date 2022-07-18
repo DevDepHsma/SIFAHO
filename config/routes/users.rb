@@ -2,7 +2,7 @@ Rails.application.routes.draw do
   localized do
     devise_for :users, skip: [:registrations], controllers: { sessions: :sessions }
 
-    resources :permission_requests, except: [:create, :destroy] do
+    resources :permission_requests, except: [:edit, :update, :create, :destroy] do
       collection do
         get :request_sectors
         get :request_in_progress

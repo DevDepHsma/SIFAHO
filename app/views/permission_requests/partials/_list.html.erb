@@ -13,7 +13,7 @@
       </thead>
       
       <tbody id="permission_requests">
-        <%= render @permission_requests %>
+        <%= render(partial: 'permission_requests/partials/permission_request', collection: @permission_requests, as: :permission_request) %>
       </tbody>
     </table>
   </div>
