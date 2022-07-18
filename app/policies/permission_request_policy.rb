@@ -1,7 +1,7 @@
 class PermissionRequestPolicy < ApplicationPolicy
 
   def index?
-    update?
+    user.has_permission?(:answer_permission_request)
   end
 
   def create?
@@ -13,7 +13,7 @@ class PermissionRequestPolicy < ApplicationPolicy
   end
 
   def update?
-    user.has_permission?(:answer_permission_request)
+    record.in_progress? && user.has_permission?(:answer_permission_request)
   end
 
   def edit?

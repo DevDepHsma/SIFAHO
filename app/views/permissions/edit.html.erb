@@ -88,7 +88,9 @@
 
 <% content_for :modal do %>
   <%= render "shared/modals/sector_selection" %>
-  <%= render "permissions/partials/show_modal" %>  
+  <% if policy(@user.permission_requests.first).update? %>
+    <%= render "permissions/partials/show_modal" %>  
+  <% end %>
 <% end %>
 
 <% content_for :modal do %>
