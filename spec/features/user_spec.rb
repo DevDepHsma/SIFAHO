@@ -83,6 +83,28 @@ RSpec.feature 'Users', type: :feature, js: true do
 
         expect(page.has_link?('Usuarios')).to be true
         expect(page).to have_content('Depósito')
+        sign_out_as(user_requested)
+        sleep 1
+        sign_in_as(@user)
+
+        within '#sidebar-wrapper' do
+          click_link 'Usuarios'
+        end
+
+        expect(page).to have_content(user_requested.username.to_s)
+        expect(page).not_to have_selector('a.btn-permission-edit')
+        PermissionUser.create(user: @user, sector: @user.sector, permission: @update_permissions)
+        visit current_path
+        expect(page).to have_selector('a.btn-permission-edit')
+
+        page.execute_script %Q{
+          const tr = $('td:contains("#{user_requested.username}")').closest('tr');
+          tr.find('a.btn-permission-edit')[0].click();
+        }
+        expect(page).to have_content('Editando permisos')
+        within '#page-content-wrapper' do
+          expect(page).not_to have_content('Solicitud de permisos')
+        end
       end
     end
   end

@@ -29,7 +29,7 @@
       <% end %>
     <% end %>
     <% if policy(:user).edit_permissions? %>
-      <%= link_to edit_permissions_users_admin_path(user), class: 'btn btn-warning btn-sm', 
+      <%= link_to edit_permissions_users_admin_path(user), class: 'btn btn-warning btn-sm btn-permission-edit', 
         title: 'Editar permisos', data: { toggle: 'tooltip', placement: 'top', permissions: 'view' } do %>
         <%= fa_icon "lock" %>
       <% end %>
