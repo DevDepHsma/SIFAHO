@@ -42,11 +42,18 @@ FactoryBot.define do
       status { 'permission_req' }
     end
 
+    trait :u_7 do
+      username { 12234555 }
+      password { 'password' }
+      status { 'active' }
+    end
+
     factory :user_1, traits: %i[u_1]
     factory :user_2, traits: %i[u_2]
     factory :user_3, traits: %i[u_3]
     factory :user_4, traits: %i[u_4]
     factory :user_5, traits: %i[u_5]
     factory :user_6, traits: %i[u_6]
+    factory :user_7, traits: %i[u_7]
   end
 end

@@ -10,36 +10,41 @@
       <% end %>
     </button>
     <div class="dropdown-menu dropdown-menu-right" id="dropdown-header-login" aria-labelledby="dropdown-btn-header-login">
-      <% if current_user.has_role? :admin %>
-        <%= link_to main_app.rails_admin_path, class: "dropdown-item" do %>
-          <%= fa_icon "users-cog" %>
-          Administración
+      <%# if current_user.has_role? :admin %>
+        <%#= link_to main_app.rails_admin_path, class: "dropdown-item" do %>
+          <%#= fa_icon "users-cog" %>
+          <%# Administración %>
+        <%# end %>
+      <%# end %>
+      <% if current_user.sector.present? %>
+        <%= link_to main_app.edit_profile_path(current_user.profile), class: "dropdown-item" do %>
+          <%= fa_icon "user-edit" %>
+          Editar perfil
         <% end %>
-      <% end %>
-      <%= link_to main_app.edit_profile_path(current_user.profile), class: "dropdown-item" do %>
-        <%= fa_icon "user-edit" %>
-        Editar perfil
+
+        <div class="dropdown-divider"></div>
+        <div class="theme-change d-flex justify-content-between">
+          <span>Tema</span>
+          <input type="checkbox" 
+                name="theme" 
+                data-url="<%= main_app.profile_path(current_user.profile) %>"
+                data-toggle="switchbutton" <%= (current_user.profile.dark? ? "checked" : true) %> 
+                data-onlabel='<%= fa_icon "sun", class: "text-warning" %>'
+                data-offlabel='<%= fa_icon "moon" %>' 
+                data-onstyle="primary" 
+                data-offstyle="dark" 
+                data-size="xs">
+        </div>
+        <div class="dropdown-divider"></div>
       <% end %>
       <% if policy(current_user).change_sector? %>
         <%= link_to main_app.change_sector_users_admin_path(current_user), remote: true, class: "dropdown-item" do %>
           <%= fa_icon "street-view" %>
           Cambiar ubicación
         <% end %>
+        <div class="dropdown-divider"></div>
       <% end %>
-      <div class="dropdown-divider"></div>
-        <div class="theme-change d-flex justify-content-between">
-          <span>Tema</span>
-          <input type="checkbox" 
-                 name="theme" 
-                 data-url="<%= main_app.profile_path(current_user.profile) %>"
-                 data-toggle="switchbutton" <%= (current_user.profile.dark? ? "checked" : true) %> 
-                 data-onlabel='<%= fa_icon "sun", class: "text-warning" %>'
-                 data-offlabel='<%= fa_icon "moon" %>' 
-                 data-onstyle="primary" 
-                 data-offstyle="dark" 
-                 data-size="xs">
-        </div>
-      <div class="dropdown-divider"></div>
+      
       <%= link_to main_app.destroy_user_session_path, :method => :delete, class: "dropdown-item" do %>
         <%= fa_icon "power-off" %>
         Cerrar sesión

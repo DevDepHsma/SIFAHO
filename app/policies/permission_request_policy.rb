@@ -1,11 +1,10 @@
 class PermissionRequestPolicy < ApplicationPolicy
-
   def index?
     user.has_permission?(:answer_permission_request)
   end
 
   def create?
-    user.permissions.none? && user.permission_requests.none?
+    user.permissions.none? && user.permission_requests.none?(&:in_progress?)
   end
 
   def new?

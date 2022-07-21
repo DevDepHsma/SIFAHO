@@ -1,0 +1,20 @@
+<%= render 'header' %>
+  
+
+<div class="row h-100 align-items-center">
+  <div class="col-5 mx-auto">
+    <div class="card bg-light">
+      <div class="card-header bg-info text-white d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center">
+          <%= fa_icon "hourglass-half" %>
+          <h5 class="card-title mb-0 ml-2">
+            No tiene establecimiento asignado
+          </h5>
+        </div>
+      </div>
+      <div class="card-body">
+        <p><h5>Debe solicitar un establecimiento y sector <a href="<%= new_permission_request_path %>">aquí.</a></h5></p>
+      </div>
+    </div>
+  </div>
+</div>

@@ -9,6 +9,7 @@ class PermissionRequest < ApplicationRecord
 
   enum status: { in_progress: 0, done: 1 }
   before_create :clean_establishment
+  after_create :set_permission_req_to_user
 
   # Validations
   validates_presence_of :user
@@ -86,5 +87,9 @@ class PermissionRequest < ApplicationRecord
 
   def clean_establishment
     self.establishment_id = nil if establishment_id.zero?
+  end
+
+  def set_permission_req_to_user
+    self.user.permission_req! if self.user.active?
   end
 end

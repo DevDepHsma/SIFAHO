@@ -15,7 +15,7 @@
     <div id="flash_messages" class="alert-container">
       <%= render "layouts/flash_notices" %>
     </div>
-    <% if user_signed_in? && policy(:welcome).index? %>
+    <% if user_signed_in? %>
       <div id="wrapper" class="<%= current_user.profile.theme%> <%= 'toggled' if current_user.profile.hide? %>">
         <!-- General Navbar -->
         <%= render 'layouts/navigation' %>
@@ -23,11 +23,11 @@
         <!-- Page Content -->
         <div class="d-flex" id="wrapper-2">
           <!-- Sidebar -->
-          <% if policy(:dashboard).sidebar? %>
+          <% if policy(:dashboard).sidebar? && policy(:welcome).index?%>
             <%= render 'layouts/side_navigation' %>
           <% end %>
 
-          <div id="page-content-wrapper">
+          <div id="page-content-wrapper" class="<%= 'w-100' unless policy(:welcome).index?%>">
             <div class="pt-3 container-fluid h-100">
               <!-- Main yield -->
               <%= yield %>
