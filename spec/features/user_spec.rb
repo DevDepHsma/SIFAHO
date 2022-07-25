@@ -83,10 +83,12 @@ RSpec.feature 'Users', type: :feature, js: true do
         sign_out_as(@user)
         sleep 1
         # Sign in as user_requested and check user list permission
+        user_requested = User.find(user_requested.id)
+        user_requested.password = 'password'
         sign_in_as(user_requested)
-
         expect(page.has_link?('Usuarios')).to be true
         expect(page).to have_content('Depósito')
+        expect(user_requested.active?).to be true
         sign_out_as(user_requested)
         sleep 1
         # Edit user_requested permissions
@@ -95,7 +97,6 @@ RSpec.feature 'Users', type: :feature, js: true do
         within '#sidebar-wrapper' do
           click_link 'Usuarios'
         end
-
         expect(page).to have_content(user_requested.username.to_s)
         expect(page).not_to have_selector('a.btn-permission-edit')
         PermissionUser.create(user: @user, sector: @user.sector, permission: @update_permissions)
@@ -132,6 +133,32 @@ RSpec.feature 'Users', type: :feature, js: true do
         sign_in_as(user_requested)
         # User with more than 1 permission_request
         expect(page).to have_content('Debe solicitar un establecimiento y sector aquí.')
+        expect(page.has_link?('aquí.')).to be true
+        click_link 'aquí.'
+        expect(page).to have_content('Solicitud de permisos')
+        within '#new_permission_request' do
+          page.execute_script %Q{
+            const button = $('select#permission_request_establishment_id').next('button');
+            button.click();
+            button.next('.dropdown-menu').find('input').first().val('carrillo').trigger('propertychange');
+            button.next('.dropdown-menu').find('a.dropdown-item').first().click();
+          }
+          sleep 1
+          page.execute_script %Q{
+            const button = $('select#permission_request_sector_id').next('button');
+            button.click();
+            button.next('.dropdown-menu').find('input').first().val('farmacia').trigger('propertychange');
+            button.next('.dropdown-menu').find('a.dropdown-item').first().click();
+          }
+          sleep 1
+          fill_in 'permission_request_observation', with: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. "
+        end
+        click_button 'Enviar'
+        expect(page).to have_content('Solicitud enviada.')
+        expect(page).to have_content('Espere una respuesta')
+        expect(page).to have_content('El equipo de gestión evaluará su solicitud y tomará las medidas correspondientes.')
+        user_requested = User.find(user_requested.id)
+        expect(user_requested.permission_req?).to be true
       end
     end
   end
