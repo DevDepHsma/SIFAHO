@@ -44,6 +44,7 @@ RSpec.feature 'Users', type: :feature, js: true do
         user_requested = create(:user_6)
         create(:permission_req_1, user: user_requested)
         visit current_path
+        # Answer request
         within '#permission_requests' do
           expect(page).to have_selector('tr', count: 1)
           page.execute_script %Q{$('tr.info')[0].click()}
@@ -58,6 +59,7 @@ RSpec.feature 'Users', type: :feature, js: true do
         expect(page).to have_content('Selección de sectores')
         expect(page).to have_content('Sectores activos')
         expect(page.has_button?('Cerrar')).to be true
+        # Assign Establishment & sector
         page.execute_script %Q{
           const button = $('select#remote_form_sector_selector').next('button');
           button.click();
@@ -66,6 +68,7 @@ RSpec.feature 'Users', type: :feature, js: true do
         }
         click_button 'Cerrar'
         sleep 1
+        # Set user list permission
         page.execute_script %Q{
           $('input#remote_form_search_name').val('Usuario').keyup();
         }
@@ -79,12 +82,14 @@ RSpec.feature 'Users', type: :feature, js: true do
         expect(page).to have_content('Sectores habilitados')
         sign_out_as(@user)
         sleep 1
+        # Sign in as user_requested and check user list permission
         sign_in_as(user_requested)
 
         expect(page.has_link?('Usuarios')).to be true
         expect(page).to have_content('Depósito')
         sign_out_as(user_requested)
         sleep 1
+        # Edit user_requested permissions
         sign_in_as(@user)
 
         within '#sidebar-wrapper' do
@@ -105,6 +110,28 @@ RSpec.feature 'Users', type: :feature, js: true do
         within '#page-content-wrapper' do
           expect(page).not_to have_content('Solicitud de permisos')
         end
+        # Remove sector to user_requested
+        find('#open-sectors-select-modal').click
+        sleep 1
+        within '#select_sector_container' do
+          page.execute_script %Q{
+            $('button.delete-item').first().click();
+          }
+        end
+        sleep 1
+        within '#delete-item' do
+          click_link 'Confirmar'
+        end
+        sleep 1
+        within '#sector-selection' do
+          click_button 'Cerrar'
+        end
+        sleep 1
+        sign_out_as(@user)
+        sleep 1
+        sign_in_as(user_requested)
+        # User with more than 1 permission_request
+        expect(page).to have_content('Debe solicitar un establecimiento y sector aquí.')
       end
     end
   end
