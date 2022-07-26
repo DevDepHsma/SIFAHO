@@ -42,6 +42,7 @@ es:
     lot_archives: 'archivos'
     chronic_dispensations: 'dispensar'
     edit_permissions: 'permisos'
+    users: 'usuarios'
     # Actions
     new: 'nuevo'
     provider_index: 'entregas'
@@ -54,3 +55,4 @@ es:
     notifications: 'notificaciones'
     edit_products: 'editar_productos'
     request_in_progress: 'en_progreso'
+    sign_in: 'iniciar_sesion'
