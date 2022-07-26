@@ -78,8 +78,7 @@ RSpec.feature 'Users', type: :feature, js: true do
         }
         sleep 1
         click_button 'Guardar'
-        expect(page).to have_content('Viendo usuario')
-        expect(page).to have_content('Sectores habilitados')
+        expect(page).to have_content('Permisos asignados correctamente.')
         sign_out_as(@user)
         sleep 1
         # Sign in as user_requested and check user list permission

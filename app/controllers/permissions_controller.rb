@@ -39,6 +39,8 @@ class PermissionsController < ApplicationController
     respond_to do |format|
       begin
         @user.update!(permission_params)
+        flash.now[:success] = 'Permisos asignados correctamente.'
+        format.js
         format.html { redirect_to users_admin_url(@user) }
       rescue
         flash[:error] = "No se pudo actualizar los permisos del usuario #{@user.full_name}"

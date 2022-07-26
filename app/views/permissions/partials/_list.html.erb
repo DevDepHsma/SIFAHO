@@ -1,4 +1,4 @@
-<%= simple_form_for 'permission_users', url: update_permissions_users_admin_path(@user), method: 'PUT', html: { name: 'permission_users', id: 'permission_users', novalidate: true} do |f| %>
+<%= simple_form_for 'permission_users', url: update_permissions_users_admin_path(@user), remote: true, html: { method: 'PUT', name: 'permission_users', id: 'permission_users', novalidate: true} do |f| %>
   <% @permission_modules.each do |permission_mod| %> 
     <div class="card">
       <div class="card-header permission-mod-items" id="per-mod-header-<%= permission_mod.id %>">
