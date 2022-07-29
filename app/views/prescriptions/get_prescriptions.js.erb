@@ -1,6 +1,8 @@
 $("div#chronic-prescriptions").html('<%= j render("prescriptions/chronic_prescriptions/prescription_list", prescriptions: @chronic_prescriptions) %>');
 $("div#outpatient-prescriptions").html('<%= j render("prescriptions/outpatient_prescriptions/prescription_list", prescriptions: @outpatient_prescriptions) %>');
+$("#modals").html('<%= j render(partial: 'shared/modals/delete_confirmation') %>');
 $("#chronic-tab").find('span.badge-secondary').first().html('<%= @chronic_prescriptions.count %>');
+
 $("#outpatient-tab").find('span.badge-secondary').first().html('<%= @outpatient_prescriptions.count %>');
 
 // Mostramos los botones de crear recetas ambulatoria / cronicas
@@ -27,4 +29,16 @@ if(<%= @last_prescription.present? %>){
 $('[data-toggle="tooltip"]').tooltip({
   'selector': '',
   'container':'body'
+});
+  
+$('.delete-item, .btn-delete-confirm').on('click', function(e) {
+  const modal = $(e.target).attr('data-target');
+  const title = $(e.target).attr('data-title');
+  const body = $(e.target).attr('data-body');
+  const href = $(e.target).attr('data-href');
+
+  $(modal).find('.modal-title').text(title);
+  $(modal).find('.modal-body').text(body);
+  $(modal).find('.btn[data-method="delete"]').attr('href', href);
+  $(modal).modal('toggle');
 });

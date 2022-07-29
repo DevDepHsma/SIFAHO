@@ -56,13 +56,12 @@
                           visible: true, 
                           title: "Eliminar prescripción",
                           body: "Esta seguro que desea eliminar la prescripción de #{ chronic_prescription.professional.fullname }?",
-                          path: "/recetas_cronicas/#{chronic_prescription.id}"
+                          path: chronic_prescription_path(chronic_prescription.id)
                         }
                         
                     }
                   ) 
                   %>
-                
                 </div>
               </td>
             </tr>

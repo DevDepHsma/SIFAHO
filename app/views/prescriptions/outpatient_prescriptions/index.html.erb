@@ -11,3 +11,9 @@
     ) %>
   </div>
 </div>
+
+<% content_for :modal do %>
+  <div id="modals">
+    <%= render(partial: 'shared/modals/delete_confirmation') %>
+  </div>
+<% end %>
