@@ -1,13 +1,26 @@
 <%= render 'header' %>
-
 <div class="card fixed-custom-card">
   <div class="card-header position-relative">
     <%= render( partial: 'filters' ) %>
   </div>
   <div class="card-body fixed-panel-index">
-    <%= render(
-      partial: 'professionals/list',
-      locals: { professionals: @professionals }
-    ) %>
+    <% if @professionals.present? %>
+      <div id="filterrific_results">
+        <%= render(
+          partial: 'professionals/list',
+          locals: { professionals: @professionals }
+        ) %>
+      </div>
+    <% else %>
+      <%= render(
+        partial: 'shared/not_found_filter',
+        locals: { object_name: 'médicos' }
+      ) %>
+    <% end %>
   </div>
 </div>
+<% content_for :modal do %>
+  <div id="modals">
+    <%= render(partial: 'shared/modals/delete_confirmation') %>
+  </div>
+<% end %>

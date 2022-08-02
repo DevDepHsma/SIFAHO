@@ -1,26 +1,17 @@
-<div id="filterrific_results">
-  <% if @laboratories.present? %>
-    <div class="card">
-      <table class="table table-hover table-striped table-sm">
-        <thead>
-          <tr>
-            <th><%= filterrific_sorting_link(@filterrific, :razon_social) %></th>
-            <th>CUIT</th>
-            <th class="text-center">Acciones</th>
-          </tr>
-        </thead>
-        <tbody id=laboratories>
-          <%= render @laboratories %>
-        </tbody>
-      </table>
-    </div>
-    <div class="d-flex align-items-center justify-content-center" style="height: 50px">
-      <%= will_paginate @laboratories, list_classes: %w(pagination mb-0), renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
-    </div>
-  <% else %>
-    <%= render(
-      partial: 'shared/not_found_filter',
-      locals: { object_name: 'laboratorios' }
-    ) %>
-  <% end %>
+<div class="card">
+  <table class="table table-hover table-striped table-sm">
+    <thead>
+      <tr>
+        <th><%= filterrific_sorting_link(@filterrific, :razon_social) %></th>
+        <th>CUIT</th>
+        <th class="text-center">Acciones</th>
+      </tr>
+    </thead>
+    <tbody id=laboratories>
+      <%= render @laboratories %>
+    </tbody>
+  </table>
+</div>
+<div class="d-flex align-items-center justify-content-center" style="height: 50px">
+  <%= will_paginate @laboratories, list_classes: %w(pagination mb-0), renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
 </div>

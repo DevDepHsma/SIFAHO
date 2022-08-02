@@ -1,23 +1,26 @@
 <% render 'header' %>
-
 <div class="card fixed-custom-card">
   <div class="card-header">
     <%= render 'filter' %>
   </div>
   <div class="card-body fixed-panel-index">
-  <% if @lots.present? %>
-    <div id="filterrific_results">
+    <% if @lots.present? %>
+      <div id="filter_results">
+        <%= render(
+          partial: 'lots/list',
+          locals: { lots: @lots }
+        ) %>
+      </div>
+    <% else %>
       <%= render(
-        partial: 'lots/list',
-        locals: { lots: @lots }
+        partial: 'shared/not_found_filter',
+        locals: { object_name: 'lotes' }
       ) %>
-    </div>
-  <% else %>
-    <%= render(
-      partial: 'shared/not_found_filter',
-      locals: { object_name: 'lotes' }
-    ) %>
-  <% end %>
-
+    <% end %>
   </div>
 </div>
+<% content_for :modal do %>
+  <div id="modals">
+    <%= render(partial: 'shared/modals/delete_confirmation') %>
+  </div>
+<% end %>

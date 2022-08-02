@@ -1,31 +1,22 @@
-<div id="filterrific_results">
-  <% if @patients.present? %>
-    <div class="card">
-      <table class="table table-hover table-striped table-sm">
-        <thead >
-          <tr>
-            <th><%= filterrific_sorting_link(@filterrific, :dni) %></th>
-            <th><%= filterrific_sorting_link(@filterrific, :apellido_y_nombre) %></th>
-            <th>Estado</th>
-            <th>Edad</th>
-            <th>Sexo</th>
-            <th>Recetas ambulatorias</th>
-            <th>Recetas crónicas</th>
-            <th class="text-center">Acciones</th>
-          </tr>
-        </thead>
-        <tbody id="patients">
-          <%= render @patients %>
-        </tbody>
-      </table>
-    </div>
-    <div class="d-flex align-items-center justify-content-center" style="height: 50px">
-      <%= will_paginate @patients, list_classes: %w(pagination mb-0), renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
-    </div>
-  <% else %>
-    <%= render(
-      partial: 'shared/not_found_filter',
-      locals: { object_name: 'pacientes' }
-    ) %>
-  <% end %>
+<div class="card">
+  <table class="table table-hover table-striped table-sm">
+    <thead >
+      <tr>
+        <th><%= filterrific_sorting_link(@filterrific, :dni) %></th>
+        <th><%= filterrific_sorting_link(@filterrific, :apellido_y_nombre) %></th>
+        <th>Estado</th>
+        <th>Edad</th>
+        <th>Sexo</th>
+        <th>Recetas ambulatorias</th>
+        <th>Recetas crónicas</th>
+        <th class="text-center">Acciones</th>
+      </tr>
+    </thead>
+    <tbody id="patients">
+      <%= render @patients %>
+    </tbody>
+  </table>
+</div>
+<div class="d-flex align-items-center justify-content-center" style="height: 50px">
+  <%= will_paginate @patients, list_classes: %w(pagination mb-0), renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
 </div>

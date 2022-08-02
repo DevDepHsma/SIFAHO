@@ -1,22 +1,26 @@
 <%= render 'stocks/header' %>
-
-<% if @receipts.present? %>
-
-    <div class="card fixed-custom-card">
-      <div class="card-header">
-        <%= render 'filter'%>
-      </div>
-      <div class="card-body fixed-panel-index">
+<div class="card fixed-custom-card">
+  <div class="card-header">
+    <%= render 'filter'%>
+  </div>
+  <div class="card-body fixed-panel-index">
+    <% if @receipts.present? %>
+      <div id="filterrific_results">
         <%= render(
           partial: 'receipts/list',
           locals: { receipts: @receipts }
         ) %>
       </div>
-    </div>
-
-<% else %>
-  <%= render(
-    partial: 'shared/not_found',
-    locals: { object_name: 'recibos' }
-  ) %>
+    <% else %>
+      <%= render(
+        partial: 'shared/not_found_filter',
+        locals: { object_name: 'reportes' }
+      ) %>
+    <% end %>
+  </div>
+</div>
+<% content_for :modal do %>
+  <div id="modals">
+    <%= render(partial: 'shared/modals/delete_confirmation') %>
+  </div>
 <% end %>

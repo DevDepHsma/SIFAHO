@@ -1,49 +1,54 @@
 <%= render 'header' %>
-
-  <% if @laboratories.present? %>
-    <%= form_for_filterrific @filterrific do |f| %>
-      <div class="card fixed-custom-card">
-        <div class="card-header">
-          <div class="row justify-content-between">
-            <div class="col-4">
-              <label>Razón social</label>
-              <%# give the search field the 'filterrific-periodically-observed' class for live updates %>
-              <%= f.text_field(
+<%= form_for_filterrific @filterrific do |f| %>
+  <div class="card fixed-custom-card">
+    <div class="card-header">
+      <div class="row justify-content-between">
+        <div class="col-4">
+          <label>Razón social</label>
+          <%# give the search field the 'filterrific-periodically-observed' class for live updates %>
+          <%= f.text_field(
                 :search_name,
                 class: 'filterrific-periodically-observed form-control',
                 placeholder: 'Nombre'
               ) %>
-            </div>
-            <div class="col-3">
-              <label>CUIT</label>
-              <%= f.text_field(
+        </div>
+        <div class="col-3">
+          <label>CUIT</label>
+          <%= f.text_field(
                 :search_cuit,
                 class: 'filterrific-periodically-observed form-control',
                   placeholder: 'Número'
                 ) %>
-            </div>
-            <div class="col-3">
-              <label>GLN</label>
-              <%= f.text_field(
+        </div>
+        <div class="col-3">
+          <label>GLN</label>
+          <%= f.text_field(
                 :search_gln,
                 class: 'filterrific-periodically-observed form-control',
                   placeholder: 'Número'
                 ) %>
-            </div>
-          </div>
         </div>
-      <% end %>
-      <div class="card-body fixed-panel-index">
+      </div>
+    </div>
+  <% end %>
+  <div class="card-body fixed-panel-index">
+    <% if @laboratories.present? %>
+      <div id="filter_results">
         <%= render(
           partial: 'laboratories/list',
           locals: { laboratories: @laboratories }
         ) %>
       </div>
-    </div>
-  <% else %>
-    <%= render(
-      partial: 'shared/not_found',
-      locals: { object_name: 'laboratorios' }
-    ) %>
-  <% end %>
+    <% else %>
+      <%= render(
+        partial: 'shared/not_found_filter',
+        locals: { object_name: 'laboratorios' }
+      ) %>
+    <% end %>
+  </div>
 </div>
+<% content_for :modal do %>
+  <div id="modals">
+    <%= render(partial: 'shared/modals/delete_confirmation') %>
+  </div>
+<% end %>

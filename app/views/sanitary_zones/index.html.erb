@@ -1,33 +1,37 @@
 <%= render 'header' %>
-
-<% if @sanitary_zones.present? %>
-
-    <div class="card fixed-custom-card">
-      <div class="card-header">
-        <%= form_for_filterrific @filterrific do |f| %>
-          <div class="d-flex align-items-center">
-            <%= fa_icon "filter" %>
-            <%= f.text_field(
+<div class="card fixed-custom-card">
+  <div class="card-header">
+    <%= form_for_filterrific @filterrific do |f| %>
+      <div class="d-flex align-items-center">
+        <%= fa_icon "filter" %>
+        <%= f.text_field(
                 :search_name,
                 class: 'filterrific-periodically-observed form-control input-sm ml-2 w-25',
                 placeholder: 'Nombre'
                   ) %>
-            <%= %>
-            <%= render_filterrific_spinner %>
-          </div>
-        <% end %>
+        <%= %>
+        <%= render_filterrific_spinner %>
       </div>
-      <div class="card-body fixed-panel-index">
+    <% end %>
+  </div>
+  <div class="card-body fixed-panel-index">
+    <% if @sanitary_zones.present? %>
+      <div id="filterrific_results">
         <%= render(
           partial: 'list',
           locals: { sanitary_zones: @sanitary_zones }
         ) %>
       </div>
-    </div>
-
-<% else %>
-  <%= render(
-    partial: 'shared/not_found',
-    locals: { object_name: 'establecimientos' }
-  ) %>
+    <% else %>
+      <%= render(
+        partial: 'shared/not_found_filter',
+        locals: { object_name: 'zonas sanitarias' }
+      ) %>
+    <% end %>
+  </div>
+</div>
+<% content_for :modal do %>
+  <div id="modals">
+    <%= render(partial: 'shared/modals/delete_confirmation') %>
+  </div>
 <% end %>
