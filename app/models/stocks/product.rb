@@ -73,10 +73,10 @@ class Product < ApplicationRecord
     case sort_option.to_s
     when /^codigo_/
       # Ordenamiento por id de insumo
-      order("code::integer #{direction}")
+      order(code: "#{direction}".to_sym)
     when /^nombre_/
       # Ordenamiento por nombre de insumo
-      order("products.name #{direction}")
+      order(name: "#{direction}".to_sym)
     when /^unidad_/
       # Ordenamiento por la unidad
       # order("LOWER(unities.name) #{direction}").joins(:unity)

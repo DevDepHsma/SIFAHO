@@ -161,6 +161,16 @@ $(document).on('turbolinks:load', function() {
   /* new version */
   $('[data-toggle="popover"]').popover();
   
+  setEventDestroyItem();
+
+  // Inicializamos todos los switch buttons
+  $('input[type=checkbox][data-toggle="switchbutton"]').each(function( index, element ) {
+    element.switchButton();
+  });
+
+});
+
+function setEventDestroyItem(){
   $('.delete-item, .btn-delete-confirm').on('click', function(e) {
     const modal = $(e.target).attr('data-target');
     const title = $(e.target).attr('data-title');
@@ -172,13 +182,7 @@ $(document).on('turbolinks:load', function() {
     $(modal).find('.btn[data-method="delete"]').attr('href', href);
     $(modal).modal('toggle');
   });
-
-  // Inicializamos todos los switch buttons
-  $('input[type=checkbox][data-toggle="switchbutton"]').each(function( index, element ) {
-    element.switchButton();
-  });
-
-});
+}
 
 function loadImage(e, img_path){
   e.target.src = img_path;

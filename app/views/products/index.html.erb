@@ -1,13 +1,26 @@
 <% render 'header' %>
-
 <div class="card fixed-custom-card">
   <div class="card-header">
     <%= render 'filter' %>
   </div>
   <div class="card-body fixed-panel-index">
-    <%= render(
-      partial: 'products/list',
-      locals: { products: @products }
-    ) %>
+    <% if @products.present? %>
+      <div id="filter_results">
+        <%= render(
+          partial: 'products/list',
+          locals: { products: @products }
+        ) %>
+      </div>
+    <% else %>
+      <%= render(
+        partial: 'shared/not_found_filter',
+        locals: { object_name: 'productos' }
+      ) %>
+    <% end %>
   </div>
 </div>
+<% content_for :modal do %>
+  <div id="modals">
+    <%= render(partial: 'shared/modals/delete_confirmation') %>
+  </div>
+<% end %>
