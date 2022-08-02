@@ -1,17 +1,24 @@
 <%= render 'prescriptions/header' %>
-
 <div class="card fixed-custom-card">
   <div class="card-header">
     <%= render 'filter' %>
   </div>
   <div class="card-body fixed-panel-index">
-    <%= render(
-      partial: 'list',
-      locals: { outpatient_prescriptions: @outpatient_prescriptions }
-    ) %>
+    <% if @outpatient_prescriptions.present? %>
+      <div id="filterrific_results">
+        <%= render(
+          partial: 'list',
+          locals: { outpatient_prescriptions: @outpatient_prescriptions }
+        ) %>
+      </div>
+    <% else %>
+      <%= render(
+        partial: 'shared/not_found_filter',
+        locals: { object_name: 'recetas' }
+      ) %>
+    <% end %>
   </div>
 </div>
-
 <% content_for :modal do %>
   <div id="modals">
     <%= render(partial: 'shared/modals/delete_confirmation') %>

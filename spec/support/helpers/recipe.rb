@@ -1,6 +1,6 @@
 module Helpers
   module Recipe
-    def find_or_create_patient_by_dni(link, patient_dni)
+    def find_or_create_patient_by_dni(link, patient_dni, type)
       visit '/'
       within '#sidebar-wrapper' do
         click_link 'Recetas'
@@ -14,7 +14,13 @@ module Helpers
       expect(find('ul.ui-autocomplete')).to have_content("#{patient_dni}")
       page.execute_script("$('.ui-menu-item:contains(#{patient_dni})').first().click()")
       sleep 2
-      find_button('Guardar paciente').click
+      if page.has_button?('Guardar paciente')
+        find_button('Guardar paciente').click
+      else
+        within '#new-receipt-buttons' do
+          click_link type
+        end
+      end
     end
 
     def find_or_create_professional_by_enrollment(user, recipe_link_new, professional_ident)

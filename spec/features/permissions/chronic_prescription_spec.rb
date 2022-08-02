@@ -50,7 +50,7 @@ RSpec.feature 'Permissions::ChronicPrescriptions', type: :feature do
           expect(page.has_css?('#new-chronic')).to be false
           PermissionUser.create(user: @provider_user, sector: @provider_user.sector, permission: @create_chronic_recipe_permission)
           visit current_path
-          find_or_create_patient_by_dni('Crónicas', '37458994')
+          find_or_create_patient_by_dni('Crónicas', '37458994', 'Crónica')
           expect(page.has_css?('#new-chronic')).to be true
           find_or_create_professional_by_enrollment(@provider_user, '#new-chronic', 'Naval')
           # Add product
@@ -196,6 +196,57 @@ RSpec.feature 'Permissions::ChronicPrescriptions', type: :feature do
           expect(page.has_css?('#chronic_prescriptions')).to be true
           within '#chronic_prescriptions' do
             expect(page.has_css?('tr')).to be false
+          end
+
+          # Destroy with js render
+          visit '/recetas'
+          find_or_create_patient_by_dni('Crónicas', '37458994', 'Crónica')
+          expect(page.has_css?('#new-chronic')).to be true
+          find_or_create_professional_by_enrollment(@provider_user, '#new-chronic', 'Naval')
+          # Add product
+          chronic_product = @products.sample
+          add_original_product_by_code(chronic_product[1], 1)
+          click_button 'Guardar'
+          expect(page).to have_content('Dispensar receta crónica')
+          within '#dropdown-menu-header' do
+            click_link 'Recetas'
+          end
+          within '#new_patient' do
+            page.execute_script %Q{$('#patient-dni').focus().val("37458994").keydown()}
+          end
+          sleep 1
+          page.execute_script("$('.ui-menu-item:contains(37458994)').first().click()")
+          within '#container-receipts-list' do
+            expect(page).to have_content('Recetas')
+            expect(page).to have_selector('#chronic-prescriptions')
+            expect(page).to have_selector('button.delete-item')
+            page.execute_script %Q{$('button.delete-item').first().click()}
+          end
+          sleep 1
+          expect(page).to have_content('Eliminar prescripción')
+          expect(page).to have_selector('#delete-item')
+          within '#delete-item' do
+            expect(page.has_button?('Volver')).to be true
+            expect(page.has_link?('Confirmar')).to be true
+            click_button 'Volver'
+          end
+          within '#dropdown-menu-header' do
+            click_link 'Crónicas'
+          end
+          within '#filterrific_filter' do
+            fill_in 'filterrific[search_by_patient]', with: '37458994'
+          end
+          sleep 1
+          within '#filterrific_results' do
+            expect(page).to have_selector('button.delete-item')
+            page.execute_script %Q{$('button.delete-item').first().click()}
+          end
+          expect(page).to have_content('Eliminar prescripción')
+          expect(page).to have_selector('#delete-item')
+          within '#delete-item' do
+            expect(page.has_button?('Volver')).to be true
+            expect(page.has_link?('Confirmar')).to be true
+            click_button 'Volver'
           end
         end
       end
