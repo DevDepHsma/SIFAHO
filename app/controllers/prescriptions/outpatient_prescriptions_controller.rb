@@ -8,16 +8,20 @@ class Prescriptions::OutpatientPrescriptionsController < ApplicationController
   # GET /outpatient_prescriptions.json
   def index
     authorize OutpatientPrescription
-    @filterrific = initialize_filterrific(
-      OutpatientPrescription.with_establishment(current_user.establishment),
-      params[:filterrific],
-      select_options: {
-        sorted_by: OutpatientPrescription.options_for_sorted_by,
-        for_statuses: OutpatientPrescription.options_for_status
-      },
-      persistence_id: false
-    ) or return
-    @outpatient_prescriptions = @filterrific.find.paginate(page: params[:page], per_page: 15)
+    @outpatient_prescriptions = []
+    # @outpatient_prescriptions = OutpatientPrescription.filter_by_params(params[:filter]).paginate(page: params[:page], per_page: 15)
+
+    # @outpatient_prescriptions = OutpatientPrescription.where(establishment: current_user.establishment).paginate(page: params[:page], per_page: 15)
+    # @filterrific = initialize_filterrific(
+    #   OutpatientPrescription.with_establishment(current_user.establishment),
+    #   params[:filterrific],
+    #   select_options: {
+    #     sorted_by: OutpatientPrescription.options_for_sorted_by,
+    #     for_statuses: OutpatientPrescription.options_for_status
+    #   },
+    #   persistence_id: false
+    # ) or return
+    # @outpatient_prescriptions = @filterrific.find.paginate(page: params[:page], per_page: 15)
   end
 
   # GET /outpatient_prescriptions/1

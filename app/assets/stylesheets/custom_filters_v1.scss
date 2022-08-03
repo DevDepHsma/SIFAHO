@@ -1,0 +1,27 @@
+.custom-filters-v1{
+  .custom-col-input{
+    .form-group{
+      margin: 1.2rem 0 0 0;
+      position: relative;
+      label {
+        position: absolute;
+        pointer-events: none;
+        margin: 0;
+        left: 0.8rem;
+        top: 0.5rem;
+        color: #a7a7a7;
+        z-index: 10;
+        transition: top .3s ease-out, left .3s ease-out, font-size .3s ease-out, color .3s ease-out;
+      }
+      input::placeholder {
+        color: transparent;
+      }
+      input:focus ~ label, input:not(:placeholder-shown) ~ label{
+        top: -1.2rem;
+        left: 0rem;
+        font-size: 0.8rem;
+        color: #29abe1;
+      }
+    }
+  }
+}

@@ -1,52 +1,54 @@
-<%= form_for_filterrific @filterrific do |f| %>
-  <div class="row justify-content-between">
-    <div class="col d-flex justify-content-end align-items-center">
-      <%= render_filterrific_spinner %>
+<%= simple_form_for  outpatient_prescriptions_path, remote: true, html: { method: 'GET', class: 'custom-filters-v1' } do |f| %>
+  <div class="row">
+    <%# <div class="col d-flex justify-content-end align-items-center">
       <%= link_to outpatient_prescriptions_path(reset: true), class: 'btn btn-secondary ml-2',
         title: 'Reiniciar', data: { toggle: 'tooltip', placement: 'top' }, 
-        'data-disable-with' => "<i class='fa fa-redo fa-spin'></i>".html_safe do %>
-        <%= fa_icon 'redo' %>
-      <% end %>
-    </div>
-    <div class="col">
-      <label>Código</label>
+        'data-disable-with' => "<i class='fa fa-redo fa-spin'></i>".html_safe do 
+        <%= fa_icon 'redo'
+      <% end 
+    </div> %>
+    <div class="col custom-col-input">
+      <div class="form-group">
+        <input class="form-control" autocomplete="off" type="text" name="filter[code]" id="filter_code" placeholder="Código">
+        <label>Código</label>
+      </div>
       <%# give the search field the 'filterrific-periodically-observed' class for live updates %>
-      <%= f.text_field(
+      <%#= f.text_field(
         :search_by_remit_code,
         class: 'filterrific-periodically-observed form-control input-sm',
         placeholder: 'Un código',
         autocomplete: 'off',
       ) %>
     </div>
-    <div class="col">
-      <label>Profesional</label>
+    <%# <div class="col"> %>
+      <%# <label>Profesional</label> %>
       <%# give the search field the 'filterrific-periodically-observed' class for live updates %>
-      <%= f.text_field(
+      <%#= f.text_field(
         :search_by_professional,
         class: 'filterrific-periodically-observed form-control input-sm',
         placeholder: 'Nombre o apellido',
         autocomplete: 'off',
       ) %>
-    </div>
-    <div class="col">
-      <label>Paciente</label>
+    <%# </div> %>
+    <%# <div class="col"> %>
+      <%# <label>Paciente</label> %>
       <%# give the search field the 'filterrific-periodically-observed' class for live updates %>
-      <%= f.text_field(
+      <%#= f.text_field(
         :search_by_patient,
         class: 'filterrific-periodically-observed form-control input-sm',
         placeholder: 'Nombre/Apellido/DNI',
         autocomplete: 'off',
       ) %>
-    </div>
-    <div class="col">
-      <label>Recetado desde</label>
-      <%= f.text_field(:date_prescribed_since, autocomplete: 'off',
+    <%# </div> %>
+    <%# <div class="col"> %>
+      <%# <label>Recetado desde</label> %>
+      <%#= f.text_field(:date_prescribed_since, autocomplete: 'off',
         class: 'datepicker form-control filterrific-periodically-observed input-sm',
         placeholder: "Una fecha", data: { date_format: 'DD/MM/YYYY'}) %>
-    </div>
-    <div class="col">
-      <label>Estado</label>
-        <%= f.select(:for_statuses,
+    <%# </div> %>
+    <%# <div class="col"> %>
+      <%# <label>Estado</label> %>
+        <%#= f.select(:for_statuses,
           @filterrific.select_options[:for_statuses].map {
             |status| [status.first, status.second, data: {'content': "<span class='badge badge-"+status.third+"'>"+status.first+"</span>"}]
           },{ include_blank: false, include_hidden: false },
@@ -58,14 +60,14 @@
             "data-width"=>"100%"
           }
         ) %>
-    </div>
-    <div class="col">
-      <label>Ordernar por</label>
-      <%= f.select(:sorted_by,
+    <%# </div> %>
+    <%# <div class="col"> %>
+      <%# <label>Ordernar por</label> %>
+      <%#= f.select(:sorted_by,
         @filterrific.select_options[:sorted_by].map {
           |status| [status.first, status.second]
         },{},
         { class: "selectpicker-md show-tick custom-select-pick", "data-width"=>"100%"}) %>
-    </div>
+    <%# </div> %>
   </div>
 <% end %>

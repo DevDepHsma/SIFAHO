@@ -30,17 +30,24 @@ class OutpatientPrescription < ApplicationRecord
   delegate :fullname, :last_name, :dni, :age_string, to: :patient, prefix: :patient, allow_nil: true
   delegate :qualifications, :fullname, to: :professional, prefix: :professional
 
-  filterrific(
-    default_filter_params: { sorted_by: 'updated_at_desc' },
-    available_filters: %i[search_by_remit_code search_by_professional search_by_patient sorted_by with_order_type
-                          date_prescribed_since for_statuses]
-  )
+  # filterrific(
+  #   default_filter_params: { sorted_by: 'updated_at_desc' },
+  #   available_filters: %i[search_by_remit_code search_by_professional search_by_patient sorted_by with_order_type
+  #                         date_prescribed_since for_statuses]
+  # )
 
   # SCOPES #--------------------------------------------------------------------
 
+  # pg_search_scope :search_name,
+  # against: :name,
+  # :using => {
+  #   :tsearch => { :prefix => true } # Buscar coincidencia desde las primeras letras.
+  # },
+  # :ignoring => :accents # Ignorar tildes.
+
   pg_search_scope :search_by_remit_code,
-                  against: [:remit_code],
-                  using: { tsearch: { prefix: true }, trigram: {} }, # Buscar coincidencia en cualquier parte del string
+                  against: :remit_code,
+                  using: { tsearch: { prefix: true } }, # Buscar coincidencia en cualquier parte del string
                   ignoring: :accents # Ignorar tildes.
 
   pg_search_scope :search_by_professional,
@@ -53,36 +60,36 @@ class OutpatientPrescription < ApplicationRecord
                   using: { tsearch: { prefix: true } }, # Buscar coincidencia desde las primeras letras.
                   ignoring: :accents # Ignorar tildes.
 
-  scope :sorted_by, lambda { |sort_option|
-    # extract the sort direction from the param value.
-    direction = sort_option =~ /desc$/ ? 'desc' : 'asc'
-    case sort_option.to_s
-    when /^updated_at_/s
-      # Ordenamiento por fecha de modificacion en la BD
-      reorder("outpatient_prescriptions.updated_at #{direction}")
-    when /^created_at_/s
-      # Ordenamiento por fecha de creacion en la BD
-      reorder("outpatient_prescriptions.created_at #{direction}")
-    when /^medico_/
-      # Ordenamiento por nombre de droga
-      reorder("LOWER(professionals.last_name) #{direction}").joins(:professional)
-    when /^paciente_/
-      # Ordenamiento por marca de medicamento
-      reorder("LOWER(patients.last_name) #{direction}").joins(:patient)
-    when /^estado_/
-      # Ordenamiento por nombre de estado
-      reorder("outpatient_prescriptions.status #{direction}")
-    when /^recetada_/
-      # Ordenamiento por la fecha de recepcion
-      reorder("outpatient_prescriptions.date_prescribed #{direction}")
-    when /^creado_/
-      # Ordenamiento por la fecha de recepcion
-      reorder("outpatient_prescriptions.created_at #{direction}")
-    else
-      # Si no existe la opcion de ordenamiento se levanta la excepcion
-      raise(ArgumentError, "Invalid sort option: #{sort_option.inspect}")
-    end
-  }
+  # scope :sorted_by, lambda { |sort_option|
+  #   # extract the sort direction from the param value.
+  #   direction = sort_option =~ /desc$/ ? 'desc' : 'asc'
+  #   case sort_option.to_s
+  #   when /^updated_at_/s
+  #     # Ordenamiento por fecha de modificacion en la BD
+  #     reorder("outpatient_prescriptions.updated_at #{direction}")
+  #   when /^created_at_/s
+  #     # Ordenamiento por fecha de creacion en la BD
+  #     reorder("outpatient_prescriptions.created_at #{direction}")
+  #   when /^medico_/
+  #     # Ordenamiento por nombre de droga
+  #     reorder("LOWER(professionals.last_name) #{direction}").joins(:professional)
+  #   when /^paciente_/
+  #     # Ordenamiento por marca de medicamento
+  #     reorder("LOWER(patients.last_name) #{direction}").joins(:patient)
+  #   when /^estado_/
+  #     # Ordenamiento por nombre de estado
+  #     reorder("outpatient_prescriptions.status #{direction}")
+  #   when /^recetada_/
+  #     # Ordenamiento por la fecha de recepcion
+  #     reorder("outpatient_prescriptions.date_prescribed #{direction}")
+  #   when /^creado_/
+  #     # Ordenamiento por la fecha de recepcion
+  #     reorder("outpatient_prescriptions.created_at #{direction}")
+  #   else
+  #     # Si no existe la opcion de ordenamiento se levanta la excepcion
+  #     raise(ArgumentError, "Invalid sort option: #{sort_option.inspect}")
+  #   end
+  # }
 
   # Metodo para establecer las opciones del select sorted_by
   # Es llamado por el controlador como parte de `initialize_filterrific`.
@@ -113,6 +120,21 @@ class OutpatientPrescription < ApplicationRecord
     ]
   end
 
+  scope :filter_by_params, lambda { |params|
+    query = self.eager_load(:establishment)
+    puts "=========================".colorize(background: :red)
+    if params.present? && params['code'].present?
+      puts params['code']
+      query = query.search_by_remit_code(params['code'])
+    end
+
+    query = query.order(created_at: :desc)
+    return query
+    # params.each do |param|
+    # end
+    # where('outpatient_prescriptions.date_prescribed >= ?', reference_time)
+  }
+  
   # Prescripciones prescritas desde una fecha
   scope :date_prescribed_since, lambda { |reference_time|
     where('outpatient_prescriptions.date_prescribed >= ?', reference_time)
@@ -136,6 +158,10 @@ class OutpatientPrescription < ApplicationRecord
     where('outpatient_prescriptions.establishment_id = ?', a_establishment)
   }
 
+  scope :with_patient_id, lambda { |an_id|
+    where(patient_id: [*an_id])
+  }
+  
   scope :with_patient_id, lambda { |an_id|
     where(patient_id: [*an_id])
   }
