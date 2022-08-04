@@ -1,7 +1,7 @@
 <% content_for :title, "Inicio" %>
 
 <% content_for :page_header do %>
-  <% if current_user.sector.present? %>
+  <% if @current_user.sector.present? %>
     <li class="nav-item">
       <%= link_to root_path, class: "nav-link #{active_action('index')}" do %>
         <%= fa_icon "home" %>
@@ -54,7 +54,7 @@
                 <span class="mr-1"> <%= fa_icon "file-prescription" %> </span>
                 <span> Recibos </span>
               </div>
-              <div class="label label-info"><%= InternalOrder.applicant(current_user.sector).provision_en_camino.count %></div>
+              <div class="label label-info"><%= InternalOrder.applicant(@current_user.sector).provision_en_camino.count %></div>
             <% end %>
           <% end %>
           <%= link_to internal_orders_providers_path, class: "dropdown-item d-flex justify-content-between aling-items" do %>
@@ -64,7 +64,7 @@
             </div>
             <%# count =   %>
             <%# if count > 0 %>
-              <div class="label label-info pull-right"><%= InternalOrder.provider(current_user.sector).solicitud_enviada.count %></div>
+              <div class="label label-info pull-right"><%= InternalOrder.provider(@current_user.sector).solicitud_enviada.count %></div>
             <%# end %>
           <% end %>
           <%= link_to new_internal_orders_applicant_path, class: "dropdown-item d-flex justify-content-between align-items-center" do %>
@@ -106,7 +106,7 @@
             <%= link_to external_orders_providers_path, class: "dropdown-item" do %>
               <%= content_tag(:span, '', class: 'glyphicon glyphicon-send') %>
               <span class="hidden-xs">Despachos</span>
-              <% count =  ExternalOrder.provider(current_user.sector).solicitud_enviada.count %>
+              <% count =  ExternalOrder.provider(@current_user.sector).solicitud_enviada.count %>
               <% if count > 0 %>
                 <div class="label label-info pull-right"><%= count %></div>
               <% end %>
@@ -141,6 +141,6 @@
       </li>
     <% end %>
   <% else %>
-    Bienvenido <%= current_user.full_name.titleize %>
+    Bienvenido <%= @current_user.full_name.titleize %>
   <% end %>
 <% end %>

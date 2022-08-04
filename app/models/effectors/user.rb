@@ -40,9 +40,10 @@ class User < ApplicationRecord
   delegate :full_info, to: :professional, prefix: true, allow_nil: true
 
   def create_profile
-    #first_name = Devise::LDAP::Adapter.get_ldap_param("Test", "givenname").first # Uncomment in test
+    # first_name = Devise::LDAP::Adapter.get_ldap_param("Test", "givenname").first # Uncomment in test
     if Rails.env.test?
-      profile = Profile.new(user: self, first_name: 'Test', last_name: 'Reimann', email: 'reimann@example.com', dni: 00001111)
+      profile = Profile.new(user: self, first_name: 'Test', last_name: 'Reimann', email: 'reimann@example.com',
+                            dni: 0o0001111)
     else
       # Comment in production
       first_name = Devise::LDAP::Adapter.get_ldap_param(username, 'givenname').first.encode('Windows-1252',
@@ -51,8 +52,20 @@ class User < ApplicationRecord
       last_name = Devise::LDAP::Adapter.get_ldap_param(username, 'sn').first.encode('Windows-1252',
                                                                                     invalid: :replace,
                                                                                     undef: :replace)
-      email = Devise::LDAP::Adapter.get_ldap_param(username, 'mail').present? ? Devise::LDAP::Adapter.get_ldap_param(username, 'mail').first : 'Sin email'
-      dni = Devise::LDAP::Adapter.get_ldap_param(username, 'uid').present? ? Devise::LDAP::Adapter.get_ldap_param(username, 'uid').first : 'Sin DNI'
+      email = if Devise::LDAP::Adapter.get_ldap_param(username,
+                                                      'mail').present?
+                Devise::LDAP::Adapter.get_ldap_param(username,
+                                                     'mail').first
+              else
+                'Sin email'
+              end
+      dni = if Devise::LDAP::Adapter.get_ldap_param(username,
+                                                    'uid').present?
+              Devise::LDAP::Adapter.get_ldap_param(username,
+                                                   'uid').first
+            else
+              'Sin DNI'
+            end
       profile = Profile.new(user: self, first_name: first_name, last_name: last_name, email: email, dni: dni)
     end
 
@@ -72,11 +85,9 @@ class User < ApplicationRecord
     unless profile.present?
       create_profile # Comment in development
     end
-    unless sector.present?
-      if sectors.present?
-        self.sector = sectors.first
-        self.save
-      end
+    if !sector.present? && sectors.present?
+      self.sector = sectors.first
+      save
     end
   end
 
@@ -84,9 +95,9 @@ class User < ApplicationRecord
     Devise::Encryptor.compare(self.class, encrypted_password, password)
   end
 
-  # hack for remember_token
+  # HACK: for remember_token
   def authenticatable_salt
-    Digest::SHA1.hexdigest(username)[0,29]
+    Digest::SHA1.hexdigest(username)[0, 29]
   end
 
   filterrific(
@@ -110,7 +121,7 @@ class User < ApplicationRecord
 
   scope :sorted_by, lambda { |sort_option|
     # extract the sort direction from the param value.
-    direction = (sort_option =~ /desc$/) ? 'desc' : 'asc'
+    direction = sort_option =~ /desc$/ ? 'desc' : 'asc'
     case sort_option.to_s
     when /^created_at_/s
       # Ordenamiento por fecha de creación en la BD
@@ -142,6 +153,9 @@ class User < ApplicationRecord
   end
 
   def has_permission?(permissions_target)
-    permissions.joins(:permission_users).where(name: permissions_target, 'permission_users.sector_id': sector_id).any?
+    permissions.each do |permission|
+      permission.name == permissions_target && permission.permission_users.any { |pu| pu.sector_id == sector_id }
+    end
+    # permissions.joins(:permission_users).where(name: permissions_target, 'permission_users.sector_id': sector_id).any?
   end
 end

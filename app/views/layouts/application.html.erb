@@ -16,7 +16,7 @@
       <%= render "layouts/flash_notices" %>
     </div>
     <% if user_signed_in? %>
-      <div id="wrapper" class="<%= current_user.profile.theme%> <%= 'toggled' if current_user.profile.hide? %>">
+      <div id="wrapper" class="<%= @current_user.profile.theme%> <%= 'toggled' if @current_user.profile.hide? %>">
         <!-- General Navbar -->
         <%= render 'layouts/navigation' %>
         <!-- Flash message -->
