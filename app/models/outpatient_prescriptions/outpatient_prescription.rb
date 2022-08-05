@@ -121,18 +121,14 @@ class OutpatientPrescription < ApplicationRecord
   end
 
   scope :filter_by_params, lambda { |params|
-    query = self.eager_load(:establishment)
+    query = self.select(:id, :remit_code, :status, :date_prescribed, 'professionals.fullname AS pr_fullname', 'patients.first_name AS pa_first_name', 'patients.last_name AS pa_last_name', 'patients.dni AS pa_dni').joins(:establishment, :professional, :patient)
     puts "=========================".colorize(background: :red)
     if params.present? && params['code'].present?
       puts params['code']
       query = query.search_by_remit_code(params['code'])
     end
-
-    query = query.order(created_at: :desc)
+    query = query.reorder(date_prescribed: :desc, status: :desc)
     return query
-    # params.each do |param|
-    # end
-    # where('outpatient_prescriptions.date_prescribed >= ?', reference_time)
   }
   
   # Prescripciones prescritas desde una fecha
@@ -266,6 +262,10 @@ class OutpatientPrescription < ApplicationRecord
     if self.pendiente? && self.date_prescribed < Date.today.months_ago(1)
       self.status = 'vencida'
     end
+  end
+
+  def pa_full_info
+    "#{pa_last_name} #{pa_first_name} #{pa_dni}"
   end
 
   private
