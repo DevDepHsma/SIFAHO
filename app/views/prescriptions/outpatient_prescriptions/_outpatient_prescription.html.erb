@@ -13,9 +13,9 @@
   <td>
     <%= outpatient_prescription.outpatient_prescription_products.count %>
   </td>
-  <td>
-    <%= outpatient_prescription.movements.count %>
-  </td>
+  <!--td>
+    <%#= outpatient_prescription.movements.count %>
+  </td-->
   <td>
     <% if outpatient_prescription.date_prescribed.present? %>
       <%= outpatient_prescription.date_prescribed.strftime("%d/%m/%Y") %>

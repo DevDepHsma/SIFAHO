@@ -9,7 +9,13 @@
     </div> %>
     <div class="col custom-col-input">
       <div class="form-group">
-        <input class="form-control" autocomplete="off" type="text" name="filter[code]" id="filter_code" placeholder="Código">
+        <input class="form-control" 
+               autocomplete="off" 
+               type="text" 
+               name="filter[code]" 
+               id="filter_code" 
+               placeholder="Código"
+               value="<%= params["filter"]["code"] if params["filter"].present? && params["filter"]["code"].present?%>">
         <label>Código</label>
       </div>
       <%# give the search field the 'filterrific-periodically-observed' class for live updates %>

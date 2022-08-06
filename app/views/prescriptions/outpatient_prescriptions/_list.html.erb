@@ -7,7 +7,7 @@
         <th>Paciente</th>
         <th>Estado</th>
         <th>Productos</th>
-        <th>Movimientos</th>
+        <%# <th>Movimientos</th> %>
         <th>Recetada</th>
         <th class="text-center">Acciones</th>
       </tr>
@@ -19,10 +19,10 @@
 </div>
 <div class="row d-flex align-items-center" style="height: 50px">
   <div class="col-5">
-    <%= will_paginate @outpatient_prescriptions, list_classes: %w(pagination mb-0), 
+    <%= js_will_paginate @outpatient_prescriptions, list_classes: %w(pagination mb-0),
       previous_label: '<i class="fa fa-angle-left"></i>',
-      next_label: '<i class="fa fa-angle-right"></i>', 
-      renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+      next_label: '<i class="fa fa-angle-right"></i>'
+    %>
   </div>
   <div class="col-5 d-flex justify-content-around align-items-center">
     <div>

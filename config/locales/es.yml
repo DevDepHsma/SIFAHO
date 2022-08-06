@@ -230,4 +230,6 @@ es:
     all_notifications: "Todas las notificaciones"
     no_records: "No hay notificaciones"
     clean_all: "Limpiar todas"
+  will_paginate:
+    page_gap: '...'
  
