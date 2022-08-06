@@ -45,13 +45,9 @@ class OutpatientPrescription < ApplicationRecord
   # },
   # :ignoring => :accents # Ignorar tildes.
 
-  pg_search_scope :search_by_remit_code,
-                  against: :remit_code,
-                  using: { tsearch: { prefix: true } }, # Buscar coincidencia en cualquier parte del string
-                  ignoring: :accents # Ignorar tildes.
 
   pg_search_scope :search_by_professional,
-                  associated_against: { professional: %i[last_name first_name] },
+                  associated_against: { professional: %i[pr_fullname] },
                   using: { tsearch: { prefix: true } }, # Buscar coincidencia desde las primeras letras.
                   ignoring: :accents # Ignorar tildes.
 
@@ -125,13 +121,21 @@ class OutpatientPrescription < ApplicationRecord
     puts "=========================".colorize(background: :red)
     if params.present? && params['code'].present?
       puts params['code']
-      query = query.search_by_remit_code(params['code'])
+      query = query.like_remit_code(params['code'])
     end
+    # if params.present? && params['professional_full_name'].present?
+    #   puts params['professional_full_name']
+    #   query = query.search_by_professional(params['professional_full_name'])
+    # end
     query = query.reorder(date_prescribed: :desc, status: :desc)
     return query
   }
   
-  # Prescripciones prescritas desde una fecha
+  # Where string match with %...% (unsupport accents)
+  scope :like_remit_code, lambda { |word|
+    where('lower(remit_code) LIKE ?', "%#{word.downcase}%")
+  }
+  
   scope :date_prescribed_since, lambda { |reference_time|
     where('outpatient_prescriptions.date_prescribed >= ?', reference_time)
   }

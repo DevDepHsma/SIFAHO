@@ -1,6 +1,6 @@
 RSpec.configure do |config|
 
-  config.before(:all) do
+  config.before(:all, type: :feature) do
     @establishment_type = create(:hospital_establishment_type)
     @iv_zone = create(:iv_sanitary_zone)
     @establishment = create(:establishment_1, sanitary_zone: @iv_zone, establishment_type: @establishment_type)
