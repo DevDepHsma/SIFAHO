@@ -1,6 +1,6 @@
 <tr id="outpatient_prescription_<%= outpatient_prescription.id %>">
   <td><%= highlight(outpatient_prescription.remit_code, get_value_from_filter(:code)) %></th>
-  <td class="pres-col-pro"><%= outpatient_prescription.pr_fullname %></td>
+  <td class="pres-col-pro"><%= highlight(outpatient_prescription.pr_fullname, get_value_from_filter(:professional_full_name), ignore_special_chars: true) %></td>
   <%# Si esta definida la variable y esta en true debemos ocultar el campo%>
   <% if !defined?(hide_patient) || (defined?(hide_patient) && !hide_patient) %>
     <td class="pres-col-pat"><%= outpatient_prescription.pa_full_info %> </td>

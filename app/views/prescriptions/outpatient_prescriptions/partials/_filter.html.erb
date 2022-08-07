@@ -1,4 +1,4 @@
-<%= simple_form_for  outpatient_prescriptions_path, remote: true, html: { method: 'GET', class: 'custom-filters-v1' } do |f| %>
+<%= simple_form_for  outpatient_prescriptions_path, remote: true, html: { method: 'GET', class: 'custom-filters-v1', id: 'outpatient-prescriptions-filter'} do |f| %>
   <div class="row">
     <%# <div class="col d-flex justify-content-end align-items-center">
       <%= link_to outpatient_prescriptions_path(reset: true), class: 'btn btn-secondary ml-2',
@@ -15,16 +15,21 @@
                name="filter[code]" 
                id="filter_code" 
                placeholder="Código"
-               value="<%= params["filter"]["code"] if params["filter"].present? && params["filter"]["code"].present?%>">
+               value="<%= get_value_from_filter(:code) %>">
         <label>Código</label>
       </div>
-      <%# give the search field the 'filterrific-periodically-observed' class for live updates %>
-      <%#= f.text_field(
-        :search_by_remit_code,
-        class: 'filterrific-periodically-observed form-control input-sm',
-        placeholder: 'Un código',
-        autocomplete: 'off',
-      ) %>
+    </div>
+    <div class="col custom-col-input">
+      <div class="form-group">
+        <input class="form-control" 
+               autocomplete="off" 
+               type="text" 
+               name="filter[professional_full_name]" 
+               id="filter_professional_full_name" 
+               placeholder="Médico"
+               value="<%= get_value_from_filter(:professional_full_name) %>">
+        <label>Médico</label>
+      </div>
     </div>
     <%# <div class="col"> %>
       <%# <label>Profesional</label> %>
@@ -77,3 +82,6 @@
     <%# </div> %>
   </div>
 <% end %>
+<button class="btn btn-primary" type="submit" form="outpatient-prescriptions-filter">
+  Buscar
+</button>

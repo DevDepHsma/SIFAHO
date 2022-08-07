@@ -47,7 +47,7 @@ class OutpatientPrescription < ApplicationRecord
 
 
   pg_search_scope :search_by_professional,
-                  associated_against: { professional: %i[pr_fullname] },
+                  associated_against: { professional: %i[fullname] },
                   using: { tsearch: { prefix: true } }, # Buscar coincidencia desde las primeras letras.
                   ignoring: :accents # Ignorar tildes.
 
@@ -123,10 +123,10 @@ class OutpatientPrescription < ApplicationRecord
       puts params['code']
       query = query.like_remit_code(params['code'])
     end
-    # if params.present? && params['professional_full_name'].present?
-    #   puts params['professional_full_name']
-    #   query = query.search_by_professional(params['professional_full_name'])
-    # end
+    if params.present? && params['professional_full_name'].present?
+      puts params['professional_full_name']
+      query = query.like_professional_full_name(params['professional_full_name'])
+    end
     query = query.reorder(date_prescribed: :desc, status: :desc)
     return query
   }
@@ -134,6 +134,10 @@ class OutpatientPrescription < ApplicationRecord
   # Where string match with %...% (unsupport accents)
   scope :like_remit_code, lambda { |word|
     where('lower(remit_code) LIKE ?', "%#{word.downcase}%")
+  }
+  
+  scope :like_professional_full_name, lambda { |word|
+    where('unaccent(lower(professionals.fullname)) LIKE ?', "%#{word.downcase.parameterize}%")
   }
   
   scope :date_prescribed_since, lambda { |reference_time|
