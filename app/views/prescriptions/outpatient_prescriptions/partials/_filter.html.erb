@@ -26,9 +26,46 @@
                type="text" 
                name="filter[professional_full_name]" 
                id="filter_professional_full_name" 
-               placeholder="Médico"
+               placeholder="Médico: Apellido / Nombre"
                value="<%= get_value_from_filter(:professional_full_name) %>">
-        <label>Médico</label>
+        <label>Médico: Apellido / Nombre</label>
+      </div>
+    </div>
+    <div class="col custom-col-input">
+      <div class="form-group">
+        <input class="form-control" 
+               autocomplete="off" 
+               type="text" 
+               name="filter[patient_full_name]" 
+               id="filter_patient_full_name" 
+               placeholder="Paciente: Apellido / Nombre / DNI"
+               value="<%= get_value_from_filter(:patient_full_name) %>">
+        <label>Paciente: Apellido / Nombre / DNI</label>
+      </div>
+    </div>
+    
+    <div class="col custom-col-input">
+      <div class="form-group">
+        <input class="form-control datepicker" 
+               autocomplete="off" 
+               type="text" 
+               name="filter[date_prescribed_since]" 
+               id="filter_date_prescribed_since" 
+               placeholder="Prescripta desde: dd/mm/aaaa"
+               value="<%= get_value_from_filter(:date_prescribed_since) %>">
+        <label>Prescripta desde: dd/mm/aaaa</label>
+      </div>
+    </div>
+    <div class="col custom-col-input">
+      <div class="form-group">
+        <input class="form-control datepicker" 
+               autocomplete="off" 
+               type="text" 
+               name="filter[date_prescribed_to]" 
+               id="filter_date_prescribed_to" 
+               placeholder="Prescripta hasta: dd/mm/aaaa"
+               value="<%= get_value_from_filter(:date_prescribed_to) %>">
+        <label>Prescripta hasta: dd/mm/aaaa</label>
       </div>
     </div>
     <%# <div class="col"> %>

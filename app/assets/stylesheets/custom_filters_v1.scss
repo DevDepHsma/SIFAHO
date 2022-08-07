@@ -14,7 +14,7 @@
         transition: top .3s ease-out, left .3s ease-out, font-size .3s ease-out, color .3s ease-out;
       }
       input::placeholder {
-        color: transparent;
+        color: transparent!important;
       }
       input:focus ~ label, input:not(:placeholder-shown) ~ label{
         top: -1.2rem;
@@ -24,4 +24,20 @@
       }
     }
   }
+}
+
+// Default
+mark {
+  padding: 0;
+  background-color: #ffe664;
+}
+
+mark.highlight-1 {
+  padding: 0;
+  background-color: #54eb5b;
+}
+
+mark.highlight-2 {
+  padding: 0;
+  background-color: #54cdeb;
 }

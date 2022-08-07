@@ -116,16 +116,23 @@ class OutpatientPrescription < ApplicationRecord
     ]
   end
 
-  scope :filter_by_params, lambda { |params|
+  scope :filter_by_params, lambda { |filter_params|
     query = self.select(:id, :remit_code, :status, :date_prescribed, 'professionals.fullname AS pr_fullname', 'patients.first_name AS pa_first_name', 'patients.last_name AS pa_last_name', 'patients.dni AS pa_dni').joins(:establishment, :professional, :patient)
     puts "=========================".colorize(background: :red)
-    if params.present? && params['code'].present?
-      puts params['code']
-      query = query.like_remit_code(params['code'])
+    if filter_params.present? && filter_params['code'].present?
+      query = query.like_remit_code(filter_params['code'])
     end
-    if params.present? && params['professional_full_name'].present?
-      puts params['professional_full_name']
-      query = query.like_professional_full_name(params['professional_full_name'])
+    if filter_params.present? && filter_params['professional_full_name'].present?
+      query = query.like_professional_full_name(filter_params['professional_full_name'])
+    end
+    if filter_params.present? && filter_params['patient_full_name'].present?
+      query = query.like_patient_full_name(filter_params['patient_full_name'])
+    end
+    if filter_params.present? && filter_params['date_prescribed_since'].present?
+      query = query.like_date_prescribed_since(filter_params['date_prescribed_since'])
+    end
+    if filter_params.present? && filter_params['date_prescribed_to'].present?
+      query = query.like_date_prescribed_to(filter_params['date_prescribed_to'])
     end
     query = query.reorder(date_prescribed: :desc, status: :desc)
     return query
@@ -136,21 +143,31 @@ class OutpatientPrescription < ApplicationRecord
     where('lower(remit_code) LIKE ?', "%#{word.downcase}%")
   }
   
+  # Where string match with %...% (support accents / unaccents)
   scope :like_professional_full_name, lambda { |word|
     where('unaccent(lower(professionals.fullname)) LIKE ?', "%#{word.downcase.parameterize}%")
   }
   
-  scope :date_prescribed_since, lambda { |reference_time|
-    where('outpatient_prescriptions.date_prescribed >= ?', reference_time)
+  # Where string match with %...% (support accents / unaccents)
+  scope :like_patient_full_name, lambda { |word|
+    where('unaccent(lower(patients.first_name)) LIKE ? OR unaccent(lower(patients.last_name)) LIKE ?', "%#{word.downcase.parameterize}%", "%#{word.downcase.parameterize}%")
+  }
+  
+  scope :like_date_prescribed_since, lambda { |reference_time|
+    where('date_prescribed >= ?', reference_time)
+  }
+  
+  scope :like_date_prescribed_to, lambda { |reference_time|
+    where('date_prescribed <= ?', reference_time)
   }
 
-  scope :with_order_type, lambda { |a_order_type|
-    where('outpatient_prescriptions.order_type = ?', a_order_type)
-  }
+  # scope :with_order_type, lambda { |a_order_type|
+  #   where('outpatient_prescriptions.order_type = ?', a_order_type)
+  # }
 
-  scope :search_by_status, lambda { |status|
-    where('outpatient_prescriptions.status = ?', status)
-  }
+  # scope :search_by_status, lambda { |status|
+  #   where('outpatient_prescriptions.status = ?', status)
+  # }
 
   scope :for_statuses, ->(values) do
     return all if values.blank?
@@ -158,17 +175,17 @@ class OutpatientPrescription < ApplicationRecord
     where(status: statuses.values_at(*Array(values)))
   end
 
-  scope :with_establishment, lambda { |a_establishment|
-    where('outpatient_prescriptions.establishment_id = ?', a_establishment)
-  }
+  # scope :with_establishment, lambda { |a_establishment|
+  #   where('outpatient_prescriptions.establishment_id = ?', a_establishment)
+  # }
 
-  scope :with_patient_id, lambda { |an_id|
-    where(patient_id: [*an_id])
-  }
+  # scope :with_patient_id, lambda { |an_id|
+  #   where(patient_id: [*an_id])
+  # }
   
-  scope :with_patient_id, lambda { |an_id|
-    where(patient_id: [*an_id])
-  }
+  # scope :with_patient_id, lambda { |an_id|
+  #   where(patient_id: [*an_id])
+  # }
 
   # Metodos públicos #----------------------------------------------------------
   def sum_to?(a_sector)

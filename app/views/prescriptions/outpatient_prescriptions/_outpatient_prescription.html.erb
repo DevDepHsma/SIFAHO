@@ -1,9 +1,19 @@
 <tr id="outpatient_prescription_<%= outpatient_prescription.id %>">
   <td><%= highlight(outpatient_prescription.remit_code, get_value_from_filter(:code)) %></th>
-  <td class="pres-col-pro"><%= highlight(outpatient_prescription.pr_fullname, get_value_from_filter(:professional_full_name), ignore_special_chars: true) %></td>
+  <td class="pres-col-pro">
+    <%= highlight(outpatient_prescription.pr_fullname, 
+                  get_value_from_filter(:professional_full_name), 
+                  highlighter: '<mark class="highlight-1">\1</mark>',
+                  ignore_special_chars: true) %>
+    </td>
   <%# Si esta definida la variable y esta en true debemos ocultar el campo%>
   <% if !defined?(hide_patient) || (defined?(hide_patient) && !hide_patient) %>
-    <td class="pres-col-pat"><%= outpatient_prescription.pa_full_info %> </td>
+    <td class="pres-col-pat">
+      <%= highlight(outpatient_prescription.pa_full_info, 
+                    get_value_from_filter(:patient_full_name),
+                    highlighter: '<mark class="highlight-2">\1</mark>',
+                    ignore_special_chars: true) %> 
+    </td>
   <% end %>
   <td>
     <span class="badge badge-<%= outpatient_prescription_status_label(outpatient_prescription) %>">
@@ -13,15 +23,13 @@
   <td>
     <%= outpatient_prescription.outpatient_prescription_products.count %>
   </td>
-  <!--td>
-    <%#= outpatient_prescription.movements.count %>
-  </td-->
   <td>
     <% if outpatient_prescription.date_prescribed.present? %>
       <%= outpatient_prescription.date_prescribed.strftime("%d/%m/%Y") %>
     <% else %>
       ------
     <% end %>
+  </td>
   <td class="text-left actions-col">
     <div class="d-flex">
       <% if policy(outpatient_prescription).dispense? %>
