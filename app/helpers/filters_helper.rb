@@ -1,15 +1,12 @@
 module FiltersHelper
-
   def get_value_from_filter(param)
     params[:filter].present? && params[:filter][param].present? ? params[:filter][param] : ''
   end
 
   def highlight(text, phrases, *args)
     options = args.extract_options!
-      unless args.empty?
-        options[:highlighter] = args[0] || '<mark class="highlight">\1</mark>'
-      end
-      options.reverse_merge!(:highlighter => '<mark class="highlight">\1</mark>')
+    options[:highlighter] = args[0] || '<mark class="highlight">\1</mark>' unless args.empty?
+    options.reverse_merge!(highlighter: '<mark class="highlight">\1</mark>')
 
     if text.blank? || phrases.blank?
       text

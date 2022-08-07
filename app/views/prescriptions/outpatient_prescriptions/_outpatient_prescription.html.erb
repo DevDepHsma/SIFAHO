@@ -4,15 +4,15 @@
     <%= highlight(outpatient_prescription.pr_fullname, 
                   get_value_from_filter(:professional_full_name), 
                   highlighter: '<mark class="highlight-1">\1</mark>',
-                  ignore_special_chars: true) %>
-    </td>
+                  ignore_special_chars: true ) %>
+  </td>
   <%# Si esta definida la variable y esta en true debemos ocultar el campo%>
   <% if !defined?(hide_patient) || (defined?(hide_patient) && !hide_patient) %>
     <td class="pres-col-pat">
       <%= highlight(outpatient_prescription.pa_full_info, 
                     get_value_from_filter(:patient_full_name),
                     highlighter: '<mark class="highlight-2">\1</mark>',
-                    ignore_special_chars: true) %> 
+                    ignore_special_chars: true) %>
     </td>
   <% end %>
   <td>
@@ -41,7 +41,6 @@
           <%= fa_icon "paper-plane" %>
         <% end %>
       <% end %>
-      
       <%= render(
         partial: 'shared/action_buttons',
         locals:{ 
@@ -54,9 +53,8 @@
               body: "Esta seguro que desea eliminar la prescripción de #{ outpatient_prescription.pr_fullname }?",
               path: "#{outpatient_prescription_path(outpatient_prescription)}"
             }
-            
-        }
-      ) 
+          }
+        ) 
       %>
     </div>
   </td>

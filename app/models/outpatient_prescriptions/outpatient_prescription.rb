@@ -45,7 +45,6 @@ class OutpatientPrescription < ApplicationRecord
   # },
   # :ignoring => :accents # Ignorar tildes.
 
-
   pg_search_scope :search_by_professional,
                   associated_against: { professional: %i[fullname] },
                   using: { tsearch: { prefix: true } }, # Buscar coincidencia desde las primeras letras.
@@ -104,29 +103,26 @@ class OutpatientPrescription < ApplicationRecord
       ['Movimientos (mayor primero)', 'movimientos_desc'],
       ['Movimientos (menor primero)', 'movimientos_asc'],
       ['Fecha recetada (nueva primero)', 'recetada_asc'],
-      ['Fecha recetada (antigua primero)', 'recetada_desc'],
+      ['Fecha recetada (antigua primero)', 'recetada_desc']
     ]
   end
 
   def self.options_for_status
     [
-      ['Pendiente', 'pendiente', 'secondary'],
-      ['Dispensada', 'dispensada', 'success'],
-      ['Vencida', 'vencida', 'danger']
+      %w[Pendiente pendiente secondary],
+      %w[Dispensada dispensada success],
+      %w[Vencida vencida danger]
     ]
   end
 
   scope :filter_by_params, lambda { |filter_params|
     query = self.select(:id, :remit_code, :status, :date_prescribed, 'professionals.fullname AS pr_fullname', 'patients.first_name AS pa_first_name', 'patients.last_name AS pa_last_name', 'patients.dni AS pa_dni').joins(:establishment, :professional, :patient)
-    puts "=========================".colorize(background: :red)
-    if filter_params.present? && filter_params['code'].present?
-      query = query.like_remit_code(filter_params['code'])
-    end
+    query = query.like_remit_code(filter_params['code']) if filter_params.present? && filter_params['code'].present?
     if filter_params.present? && filter_params['professional_full_name'].present?
       query = query.like_professional_full_name(filter_params['professional_full_name'])
     end
     if filter_params.present? && filter_params['patient_full_name'].present?
-      query = query.like_patient_full_name(filter_params['patient_full_name'])
+      query = query.like_patient_full_name_and_dni(filter_params['patient_full_name'])
     end
     if filter_params.present? && filter_params['date_prescribed_since'].present?
       query = query.like_date_prescribed_since(filter_params['date_prescribed_since'])
@@ -137,43 +133,40 @@ class OutpatientPrescription < ApplicationRecord
     query = query.reorder(date_prescribed: :desc, status: :desc)
     return query
   }
-  
+
   # Where string match with %...% (unsupport accents)
   scope :like_remit_code, lambda { |word|
     where('lower(remit_code) LIKE ?', "%#{word.downcase}%")
   }
-  
+
   # Where string match with %...% (support accents / unaccents)
   scope :like_professional_full_name, lambda { |word|
     where('unaccent(lower(professionals.fullname)) LIKE ?', "%#{word.downcase.parameterize}%")
   }
-  
+
   # Where string match with %...% (support accents / unaccents)
-  scope :like_patient_full_name, lambda { |word|
-    where('unaccent(lower(patients.first_name)) LIKE ? OR unaccent(lower(patients.last_name)) LIKE ?', "%#{word.downcase.parameterize}%", "%#{word.downcase.parameterize}%")
+  scope :like_patient_full_name_and_dni, lambda { |word|
+    where('unaccent(lower(patients.first_name)) LIKE ? OR unaccent(lower(patients.last_name)) LIKE ? OR unaccent(lower(patients.dni)) LIKE ?', "%#{word.downcase.parameterize}%", "%#{word.downcase.parameterize}%", "%#{word.downcase.parameterize}%")
   }
-  
+
   scope :like_date_prescribed_since, lambda { |reference_time|
     where('date_prescribed >= ?', reference_time)
   }
-  
+
   scope :like_date_prescribed_to, lambda { |reference_time|
     where('date_prescribed <= ?', reference_time)
   }
 
-  # scope :with_order_type, lambda { |a_order_type|
-  #   where('outpatient_prescriptions.order_type = ?', a_order_type)
-  # }
 
   # scope :search_by_status, lambda { |status|
   #   where('outpatient_prescriptions.status = ?', status)
   # }
 
-  scope :for_statuses, ->(values) do
+  scope :for_statuses, lambda { |values|
     return all if values.blank?
 
     where(status: statuses.values_at(*Array(values)))
-  end
+  }
 
   # scope :with_establishment, lambda { |a_establishment|
   #   where('outpatient_prescriptions.establishment_id = ?', a_establishment)
@@ -182,101 +175,97 @@ class OutpatientPrescription < ApplicationRecord
   # scope :with_patient_id, lambda { |an_id|
   #   where(patient_id: [*an_id])
   # }
-  
-  # scope :with_patient_id, lambda { |an_id|
-  #   where(patient_id: [*an_id])
-  # }
 
   # Metodos públicos #----------------------------------------------------------
   def sum_to?(a_sector)
-    if self.dispensada?
-      return true unless self.provider_sector == a_sector
-    end
+    return true if dispensada? && !(provider_sector == a_sector)
   end
 
   def delivered_with_sector?(a_sector)
-    if self.dispensada? || self.dispensada_parcial?
-      return self.provider_sector == a_sector
-    end
+    return provider_sector == a_sector if dispensada? || dispensada_parcial?
   end
 
   def professional_fullname
-    self.professional.full_name
+    professional.full_name
   end
 
   # Cambia estado a "dispensada" y descuenta la cantidad a los lotes de insumos
   def dispense_by(a_user)
-    if self.expiry_date < Date.today
-      raise ArgumentError, "No es posible dispensar recetas vencidas."
-    end
+    raise ArgumentError, 'No es posible dispensar recetas vencidas.' if expiry_date < Date.today
 
-    self.outpatient_prescription_products.each do |opp|
+    outpatient_prescription_products.each do |opp|
       opp.decrement_stock
     end
-    self.create_notification(a_user, "dispensó")
+    create_notification(a_user, 'dispensó')
   end
 
   # Método para retornar pedido a estado anterior
   def return_dispensation(a_user)
-    if self.dispensada?
-      self.status = "pendiente"
-      self.outpatient_prescription_products.each do |opp|
+    if dispensada?
+      self.status = 'pendiente'
+      outpatient_prescription_products.each do |opp|
         opp.increment_stock
       end
-      self.save!(validate: false)
-      self.create_notification(a_user, "retornó a un estado anterior")
+      save!(validate: false)
+      create_notification(a_user, 'retornó a un estado anterior')
     else
-      raise ArgumentError, "No es posible retornar a un estado anterior"
+      raise ArgumentError, 'No es posible retornar a un estado anterior'
     end
   end
 
   # Label del estado para vista.
   def status_label
-    if self.dispensada?; return 'success';
-    elsif self.pendiente?; return 'default';
-    elsif self.vencida?; return 'danger'; end
+    if dispensada?
+      'success'
+    elsif pendiente?
+      'default'
+    elsif vencida?
+      'danger'
+    end
   end
 
   def sent_date
-    self.dispensed_at
+    dispensed_at
   end
 
   # Returns the name of the efetor who deliver the products
   def origin_name
-    self.professional.full_info
+    professional.full_info
   end
 
   # Returns the name of the efetor who receive the products
   def destiny_name
-    self.patient.dni.to_s+" "+self.patient.fullname
+    patient.dni.to_s + ' ' + patient.fullname
   end
 
   # Return the i18n model name
   def human_name
     self.class.model_name.human
   end
-  
+
   # Métodos de clase #----------------------------------------------------------
   def self.current_day
-    where("date_prescribed >= :today", { today: DateTime.now.beginning_of_day })
+    where('date_prescribed >= :today', { today: DateTime.now.beginning_of_day })
   end
 
   def self.last_week
-    where("date_prescribed >= :last_week", { last_week: 1.weeks.ago.midnight })
+    where('date_prescribed >= :last_week', { last_week: 1.weeks.ago.midnight })
   end
 
   def self.current_year
-    where("date_prescribed >= :year", { year: DateTime.now.beginning_of_year })
+    where('date_prescribed >= :year', { year: DateTime.now.beginning_of_year })
   end
 
   def self.current_month
-    where("date_prescribed >= :month", { month: DateTime.now.beginning_of_month })
+    where('date_prescribed >= :month', { month: DateTime.now.beginning_of_month })
   end
 
   def create_notification(of_user, action_type)
-    OutpatientPrescriptionMovement.create(user: of_user, outpatient_prescription: self, action: action_type, sector: of_user.sector)
+    OutpatientPrescriptionMovement.create(user: of_user, outpatient_prescription: self, action: action_type,
+                                          sector: of_user.sector)
     (of_user.sector.users.uniq - [of_user]).each do |user|
-      @not = Notification.where( actor: of_user, user: user, target: self, notify_type: "ambulatoria", action_type: action_type, actor_sector: of_user.sector ).first_or_create
+      @not = Notification.where(actor: of_user, user: user, target: self, notify_type: 'ambulatoria',
+                                action_type: action_type, actor_sector: of_user.sector).first_or_create
       @not.updated_at = DateTime.now
       @not.read_at = nil
       @not.save
@@ -284,9 +273,7 @@ class OutpatientPrescription < ApplicationRecord
   end
 
   def update_status
-    if self.pendiente? && self.date_prescribed < Date.today.months_ago(1)
-      self.status = 'vencida'
-    end
+    self.status = 'vencida' if pendiente? && date_prescribed < Date.today.months_ago(1)
   end
 
   def pa_full_info
@@ -294,17 +281,18 @@ class OutpatientPrescription < ApplicationRecord
   end
 
   private
+
   def presence_of_products_into_the_order
-    if self.outpatient_prescription_products.size == 0
-      errors.add(:presence_of_products_into_the_order, "Debe agregar almenos 1 producto")      
+    if outpatient_prescription_products.size == 0
+      errors.add(:presence_of_products_into_the_order, 'Debe agregar almenos 1 producto')
     end
   end
-  
+
   def date_prescribed_in_range
     # validamos que la fecha de la prescripcion se encuentre en un rango de menor igual a HOY
     # y HOY - 1 MES atras.
-    unless self.date_prescribed >= (Date.today.months_ago(1)) && self.date_prescribed <= Date.today
-      errors.add(:date_prescribed_in_range, "Debe seleccionar una fecha válida ")   
+    unless date_prescribed >= (Date.today.months_ago(1)) && date_prescribed <= Date.today
+      errors.add(:date_prescribed_in_range, 'Debe seleccionar una fecha válida ')
     end
   end
 end
