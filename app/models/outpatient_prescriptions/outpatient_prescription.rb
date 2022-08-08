@@ -1,5 +1,6 @@
 class OutpatientPrescription < ApplicationRecord
   include PgSearch::Model
+  include QuerySort
 
   # Statuses
   enum status: { pendiente: 0, dispensada: 1, vencida: 2 }
@@ -55,37 +56,6 @@ class OutpatientPrescription < ApplicationRecord
                   using: { tsearch: { prefix: true } }, # Buscar coincidencia desde las primeras letras.
                   ignoring: :accents # Ignorar tildes.
 
-  # scope :sorted_by, lambda { |sort_option|
-  #   # extract the sort direction from the param value.
-  #   direction = sort_option =~ /desc$/ ? 'desc' : 'asc'
-  #   case sort_option.to_s
-  #   when /^updated_at_/s
-  #     # Ordenamiento por fecha de modificacion en la BD
-  #     reorder("outpatient_prescriptions.updated_at #{direction}")
-  #   when /^created_at_/s
-  #     # Ordenamiento por fecha de creacion en la BD
-  #     reorder("outpatient_prescriptions.created_at #{direction}")
-  #   when /^medico_/
-  #     # Ordenamiento por nombre de droga
-  #     reorder("LOWER(professionals.last_name) #{direction}").joins(:professional)
-  #   when /^paciente_/
-  #     # Ordenamiento por marca de medicamento
-  #     reorder("LOWER(patients.last_name) #{direction}").joins(:patient)
-  #   when /^estado_/
-  #     # Ordenamiento por nombre de estado
-  #     reorder("outpatient_prescriptions.status #{direction}")
-  #   when /^recetada_/
-  #     # Ordenamiento por la fecha de recepcion
-  #     reorder("outpatient_prescriptions.date_prescribed #{direction}")
-  #   when /^creado_/
-  #     # Ordenamiento por la fecha de recepcion
-  #     reorder("outpatient_prescriptions.created_at #{direction}")
-  #   else
-  #     # Si no existe la opcion de ordenamiento se levanta la excepcion
-  #     raise(ArgumentError, "Invalid sort option: #{sort_option.inspect}")
-  #   end
-  # }
-
   # Metodo para establecer las opciones del select sorted_by
   # Es llamado por el controlador como parte de `initialize_filterrific`.
   def self.options_for_sorted_by
@@ -117,20 +87,32 @@ class OutpatientPrescription < ApplicationRecord
 
   scope :filter_by_params, lambda { |filter_params|
     query = self.select(:id, :remit_code, :status, :date_prescribed, 'professionals.fullname AS pr_fullname', 'patients.first_name AS pa_first_name', 'patients.last_name AS pa_last_name', 'patients.dni AS pa_dni').joins(:establishment, :professional, :patient)
-    query = query.like_remit_code(filter_params['code']) if filter_params.present? && filter_params['code'].present?
-    if filter_params.present? && filter_params['professional_full_name'].present?
-      query = query.like_professional_full_name(filter_params['professional_full_name'])
+    if filter_params.present?
+      # Remit_code
+      query = query.like_remit_code(filter_params['code']) if filter_params['code'].present?
+      # Profesisonal
+      if filter_params['professional_full_name'].present?
+        query = query.like_professional_full_name(filter_params['professional_full_name'])
+      end
+      # Patient
+      if filter_params['patient_full_name'].present?
+        query = query.like_patient_full_name_and_dni(filter_params['patient_full_name'])
+      end
+      # Prescribed since
+      if filter_params['date_prescribed_since'].present?
+        query = query.like_date_prescribed_since(filter_params['date_prescribed_since'])
+      end
+      # Prescribed to
+      if filter_params['date_prescribed_to'].present?
+        query = query.like_date_prescribed_to(filter_params['date_prescribed_to'])
+      end
     end
-    if filter_params.present? && filter_params['patient_full_name'].present?
-      query = query.like_patient_full_name_and_dni(filter_params['patient_full_name'])
-    end
-    if filter_params.present? && filter_params['date_prescribed_since'].present?
-      query = query.like_date_prescribed_since(filter_params['date_prescribed_since'])
-    end
-    if filter_params.present? && filter_params['date_prescribed_to'].present?
-      query = query.like_date_prescribed_to(filter_params['date_prescribed_to'])
-    end
-    query = query.reorder(date_prescribed: :desc, status: :desc)
+
+    query = if filter_params.present? && filter_params['sort'].present?
+              query.sorted_by(filter_params['sort'])
+            else
+              query.reorder(date_prescribed: :desc, status: :desc)
+            end
     return query
   }
 
@@ -157,7 +139,6 @@ class OutpatientPrescription < ApplicationRecord
     where('date_prescribed <= ?', reference_time)
   }
 
-
   # scope :search_by_status, lambda { |status|
   #   where('outpatient_prescriptions.status = ?', status)
   # }
@@ -168,9 +149,9 @@ class OutpatientPrescription < ApplicationRecord
     where(status: statuses.values_at(*Array(values)))
   }
 
-  # scope :with_establishment, lambda { |a_establishment|
-  #   where('outpatient_prescriptions.establishment_id = ?', a_establishment)
-  # }
+  scope :with_establishment, lambda { |a_establishment|
+    where('outpatient_prescriptions.establishment_id = ?', a_establishment)
+  }
 
   # scope :with_patient_id, lambda { |an_id|
   #   where(patient_id: [*an_id])
