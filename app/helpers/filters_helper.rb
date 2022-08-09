@@ -39,4 +39,35 @@ module FiltersHelper
       'asc'
     end
   end
+
+  # Acepted attributes:
+  # :name => Label string - important
+  # :field => Field sort: should be on the query select - important
+  # :form => Filter form id - important
+  # :class => Extra classes - optional
+  # :icon_type => FontAwesome icon - optional: default "amount"
+  def sort_label(**args)
+    if args[:name].present?
+      method = get_sort_value(args[:field].to_s)
+      "<button class='custom-sort-v1 btn-list-sort #{args[:class]}'
+               type='button'
+               onclick='sort_by(\"#{args[:field]}\", \"#{method}\", event.target);'
+               data-form='#{args[:form]}'>
+        #{args[:name]}
+        #{sort_icon(method, args[:icon_type])}
+      </button>"
+    end.html_safe
+  end
+
+  def sort_icon(method, type)
+    type = type.nil? ? 'amount' : type
+    case method
+    when 'asc'
+      ''
+    when 'desc'
+      fa_icon "sort-#{type}-down"
+    else
+      fa_icon "sort-#{type}-up"
+    end.html_safe
+  end
 end
