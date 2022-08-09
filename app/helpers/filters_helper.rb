@@ -22,4 +22,21 @@ module FiltersHelper
       highlighted
     end.html_safe
   end
+
+  def get_sort_value(target)
+    if params[:filter].present? && params[:filter]['sort'].present? && target.present?
+      pairs = params[:filter]['sort'].split(/[:;]/).map(&:strip).each_slice(2).map { |k, v| [k.strip.to_sym, v.strip] }
+      match = pairs.detect { |n| n[0] == target.to_sym }
+
+      if !match.nil? && match.any?('asc')
+        'desc'
+      elsif !match.nil? && match.any?('desc')
+        ''
+      else
+        'asc'
+      end
+    else
+      'asc'
+    end
+  end
 end

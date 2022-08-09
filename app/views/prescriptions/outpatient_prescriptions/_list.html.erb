@@ -4,11 +4,15 @@
       <tr>
         <th>Código</th>
         <th>
-          <a href="#" class="custom-sort-v1" data-form="outpatient-prescriptions-filter" data-column="pr_fullname" data-sort-method="asc">
+          <a href="#" class="custom-sort-v1" data-form="outpatient-prescriptions-filter" data-column="pr_fullname" data-sort-method="<%=get_sort_value("pr_fullname")%>">
             Médico
           </a>          
         </th>
-        <th>Paciente</th>
+        <th>
+          <a href="#" class="custom-sort-v1" data-form="outpatient-prescriptions-filter" data-column="pa_last_name" data-sort-method="<%=get_sort_value("pa_last_name")%>">
+            Paciente
+          </a>
+        </th>
         <th>Estado</th>
         <th>Productos</th>
         <%# <th>Movimientos</th> %>

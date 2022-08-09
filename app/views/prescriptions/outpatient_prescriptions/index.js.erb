@@ -6,4 +6,11 @@ $("#filterrific_results").html("<%= js %>");
 
 $("#modals").html('<%= j render(partial: 'shared/modals/delete_confirmation') %>');
 
+
+$("a.custom-sort-v1").on('click', function(e){
+    e.stopPropagation();
+    e.preventDefault();
+    sort_by($(e.target).attr('data-column'), $(e.target).attr('data-sort-method'), $(e.target));
+  });
+
 setEventDestroyItem();
