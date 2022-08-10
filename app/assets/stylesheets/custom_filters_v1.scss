@@ -1,27 +1,47 @@
 .custom-filters-v1{
-  .custom-col-input{
-    .form-group{
-      margin: 1.2rem 0 0 0;
+  .filter-form-row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-right: -5px;
+    margin-left: -5px;
+    .filter-form-col{
+      flex-basis: 0;
+      flex-grow: 1;
+      max-width: 100%;
+      padding-right: 2.5px;
+      padding-left: 2.5px;
       position: relative;
-      label {
-        position: absolute;
-        pointer-events: none;
-        margin: 0;
-        left: 0.8rem;
-        top: 0.5rem;
-        color: #a7a7a7;
-        z-index: 10;
-        transition: top .3s ease-out, left .3s ease-out, font-size .3s ease-out, color .3s ease-out;
+      width: 100%;
+      .form-group{
+        margin: 1.2rem 0 0 0;
+        position: relative;
+        label {
+          position: absolute;
+          pointer-events: none;
+          margin: 0;
+          left: 0.8rem;
+          top: 0.5rem;
+          color: #a7a7a7;
+          z-index: 10;
+          transition: top .3s ease-out, left .3s ease-out, font-size .3s ease-out, color .3s ease-out;
+          text-overflow: ellipsis;
+          max-width: calc(100% - 0.8rem);
+          overflow: hidden;
+          white-space: nowrap;
+        }
+        input::placeholder {
+          color: transparent!important;
+        }
+        input:focus ~ label, input:not(:placeholder-shown) ~ label{
+          top: -1.2rem;
+          left: 0rem;
+          font-size: 0.8rem;
+          color: #29abe1;
+        }
       }
-      input::placeholder {
-        color: transparent!important;
-      }
-      input:focus ~ label, input:not(:placeholder-shown) ~ label{
-        top: -1.2rem;
-        left: 0rem;
-        font-size: 0.8rem;
-        color: #29abe1;
-      }
+    }
+    .filter-form-btn-group{
+      padding: 1.2rem 2.5px 0;
     }
   }
 }
