@@ -106,6 +106,10 @@ class OutpatientPrescription < ApplicationRecord
       if filter_params['date_prescribed_to'].present?
         query = query.like_date_prescribed_to(filter_params['date_prescribed_to'])
       end
+      # Status
+      if filter_params['status'].present?
+        query = query.like_status(filter_params['status'])
+      end
     end
 
     query = if filter_params.present? && filter_params['sort'].present?
@@ -135,8 +139,8 @@ class OutpatientPrescription < ApplicationRecord
     where('date_prescribed >= ?', reference_time)
   }
 
-  scope :like_date_prescribed_to, lambda { |reference_time|
-    where('date_prescribed <= ?', reference_time)
+  scope :like_status, lambda { |status|
+    where('outpatient_prescriptions.status = ?', status)
   }
 
   # scope :search_by_status, lambda { |status|

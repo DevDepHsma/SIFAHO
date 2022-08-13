@@ -61,26 +61,30 @@
         <label>Prescripta hasta: dd/mm/aaaa</label>
       </div>
     </div>
-    <input type="hidden" name="filter[sort]" value="<%= get_value_from_filter(:sort) %>">
-    <input type="hidden" name="per_page" value="<%= params[:per_page] %>">
    
-    <%# <div class="col"> %>
-      <%# <label>Ordernar por</label> %>
-      <%#= f.select(:sorted_by,
-        @filterrific.select_options[:sorted_by].map {
-          |status| [status.first, status.second]
-        },{},
-        { class: "selectpicker-md show-tick custom-select-pick", "data-width"=>"100%"}) %>
-    <%# </div> %>
     
-  <div class="filter-form-btn-group">
-      <button class="btn btn-primary" type="submit" form="outpatient-prescriptions-filter">
-        Buscar
-      </button>
+    <div class="filter-form-col">
+      <div class="form-group">
+        <select class="form-control custom-select <%= 'filled' if get_value_from_filter(:status) != '' %>" name="filter[status]" onChange="mark_selected(event)">
+          <option value=""></option>
+          <option value="1">Dispensada</option>
+          <option value="0">Pendiente</option>
+          <option value="2">Vencida</option>
+        </select>
+        <label>Estado</label>
+      </div>
+    </div>
+    <input type="hidden" name="filter[sort]" value="<%= get_value_from_filter(:sort) %>">
+    <input type="hidden" name="per_page" value="<%= params[:per_page] || 15 %>">
 
-      <%= link_to outpatient_prescriptions_path(reset: :y), class: 'btn btn-danger' do %>
-        <%= fa_icon 'times' %>
-      <% end %>
-  </div>
+    <div class="filter-form-btn-group">
+        <button class="btn btn-primary" type="submit" form="outpatient-prescriptions-filter">
+          Buscar
+        </button>
+
+        <%= link_to outpatient_prescriptions_path(reset: :y), class: 'btn btn-danger' do %>
+          <%= fa_icon 'times' %>
+        <% end %>
+    </div>
   </div>
 <% end %>

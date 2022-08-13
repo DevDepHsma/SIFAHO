@@ -21,3 +21,11 @@ function page_size_selection(e, formId){
   $("form#"+formId).find('input[name="per_page"]').val(e.target.value);
   $("form#"+formId).submit();
 }
+
+function mark_selected(e){
+  if($(e.target).val() != ''){
+    $(e.target).addClass('filled');
+  }else{
+    $(e.target).removeClass('filled');
+  }
+}
