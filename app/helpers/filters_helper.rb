@@ -1,8 +1,12 @@
 module FiltersHelper
+  # Get filter value if it present
   def get_value_from_filter(param)
     params[:filter].present? && params[:filter][param].present? ? params[:filter][param] : ''
   end
 
+  # Custom highlight for ignore special chars
+  # :highliter => string as HTML tags
+  # :ignore_special_chars => boolean
   def highlight(text, phrases, *args)
     options = args.extract_options!
     options[:highlighter] = args[0] || '<mark class="highlight">\1</mark>' unless args.empty?
@@ -23,6 +27,8 @@ module FiltersHelper
     end.html_safe
   end
 
+  # get next sort option 'ASC' | 'DESC' | ''
+  # accept empty option for remove sort
   def get_sort_value(target)
     if params[:filter].present? && params[:filter]['sort'].present? && target.present?
       pairs = params[:filter]['sort'].split(/[:;]/).map(&:strip).each_slice(2).map { |k, v| [k.strip.to_sym, v.strip] }
@@ -69,5 +75,9 @@ module FiltersHelper
     else
       fa_icon "sort-#{type}-up"
     end.html_safe
+  end
+
+  def per_page_options
+    [15, 30, 50, 100]
   end
 end

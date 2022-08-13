@@ -9,7 +9,7 @@ class Prescriptions::OutpatientPrescriptionsController < ApplicationController
   def index
     authorize OutpatientPrescription
     # @outpatient_prescriptions = []
-    @outpatient_prescriptions = OutpatientPrescription.filter_by_params(params[:filter]).paginate(page: params[:page], per_page: 15)
+    @outpatient_prescriptions = OutpatientPrescription.filter_by_params(params[:filter]).paginate(page: params[:page], per_page: params[:per_page] || 15)
 
     # @outpatient_prescriptions = OutpatientPrescription.where(establishment: current_user.establishment).paginate(page: params[:page], per_page: 15)
     # @filterrific = initialize_filterrific(

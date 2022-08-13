@@ -16,3 +16,8 @@ function sort_by(sortColumn, sortMethod, target){
   $(sortedInput).val(newSortedString);
   $(form).submit();
 }
+
+function page_size_selection(e, formId){
+  $("form#"+formId).find('input[name="per_page"]').val(e.target.value);
+  $("form#"+formId).submit();
+}

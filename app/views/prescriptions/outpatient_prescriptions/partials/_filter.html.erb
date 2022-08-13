@@ -62,6 +62,7 @@
       </div>
     </div>
     <input type="hidden" name="filter[sort]" value="<%= get_value_from_filter(:sort) %>">
+    <input type="hidden" name="per_page" value="<%= params[:per_page] %>">
    
     <%# <div class="col"> %>
       <%# <label>Ordernar por</label> %>
@@ -77,7 +78,7 @@
         Buscar
       </button>
 
-      <%= link_to outpatient_prescriptions_path, class: 'btn btn-danger' do %>
+      <%= link_to outpatient_prescriptions_path(reset: :y), class: 'btn btn-danger' do %>
         <%= fa_icon 'times' %>
       <% end %>
   </div>
