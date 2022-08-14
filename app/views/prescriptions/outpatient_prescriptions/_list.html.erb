@@ -11,7 +11,6 @@
         </th>
         <th>Estado</th>
         <th>Productos</th>
-        <%# <th>Movimientos</th> %>
         <th>
           <%= sort_label name: 'Recetada', form: 'outpatient-prescriptions-filter', field: 'date_prescribed' %>
         </th>
@@ -32,33 +31,20 @@
       %>
       <div class="ml-3">
         <span>Por página:</span>
-          <select class="custom-select w-auto ml-2" onChange="page_size_selection(event, 'outpatient-prescriptions-filter')">
-            <% per_page_options.each do |option| %>
-              <option value='<%=option%>' <%= 'selected' if params[:per_page].to_i == option %>><%=option%></option>
-            <% end %>
-          </select>
+        <select class="custom-select w-auto ml-2" onChange="page_size_selection(event, 'outpatient-prescriptions-filter')">
+          <% per_page_options.each do |option| %>
+            <option value='<%=option%>' <%= 'selected' if params[:per_page].to_i == option %>><%=option%></option>
+          <% end %>
+        </select>
       </div>
     </div>
   </div>
-  <div class="col-5 d-flex justify-content-around align-items-center">
+  <div class="col-3  d-flex justify-content-around align-items-center">
     <div>
-      Recetas <span class="badge badge-secondary"><%#= @outpatient_prescriptions.count %></span>
+      Recetas <span class="badge badge-secondary"><%= @total %></span>
     </div>
     <div>
-      <%#= link_to outpatient_prescriptions_path(filterrific: {:for_statuses => ['pendiente']}), 
-        class: 'tn btn-link text-dark text-left p-0',
-        title: "Ver recetas pendientes", data: { toggle: 'tooltip', placement: 'bottom' } do %>
-        Pendientes <span class="badge badge-secondary"><%#= @outpatient_prescriptions.pendiente.count %></span>
-      <%# end %>
+      Pendientes <span class="badge badge-secondary"><%= @total_pending %></span>
     </div>
-    <div>
-      <%#= link_to outpatient_prescriptions_path(filterrific: {:for_statuses => ['dispensada']}), 
-        class: 'tn btn-link text-dark text-left p-0',
-        title: "Ver recetas dispensadas", data: { toggle: 'tooltip', placement: 'bottom' } do %>
-        Dispensadas <span class="badge badge-success"><%#= @outpatient_prescriptions.dispensada.count %></span>
-      <%# end %>
-    </div>
-  </div>
-  <div class="col-2 d-flex justify-content-end align-items-center">
   </div>
 </div>

@@ -36,7 +36,6 @@
         <label>Paciente: Apellido / Nombre / DNI</label>
       </div>
     </div>
-    
     <div class="filter-form-col">
       <div class="form-group">
         <input class="form-control datepicker" 
@@ -61,8 +60,6 @@
         <label>Prescripta hasta: dd/mm/aaaa</label>
       </div>
     </div>
-   
-    
     <div class="filter-form-col">
       <div class="form-group">
         <select class="form-control custom-select <%= 'filled' if get_value_from_filter(:status) != '' %>" name="filter[status]" onChange="mark_selected(event)">
@@ -76,15 +73,13 @@
     </div>
     <input type="hidden" name="filter[sort]" value="<%= get_value_from_filter(:sort) %>">
     <input type="hidden" name="per_page" value="<%= params[:per_page] || 15 %>">
-
     <div class="filter-form-btn-group">
-        <button class="btn btn-primary" type="submit" form="outpatient-prescriptions-filter">
-          Buscar
-        </button>
-
-        <%= link_to outpatient_prescriptions_path(reset: :y), class: 'btn btn-danger' do %>
-          <%= fa_icon 'times' %>
-        <% end %>
+      <button class="btn btn-primary" type="submit" form="outpatient-prescriptions-filter">
+        Buscar
+      </button>
+      <%= link_to outpatient_prescriptions_path(reset: :y), class: 'btn btn-danger' do %>
+        <%= fa_icon 'times' %>
+      <% end %>
     </div>
   </div>
 <% end %>

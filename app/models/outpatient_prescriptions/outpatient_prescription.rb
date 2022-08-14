@@ -31,60 +31,6 @@ class OutpatientPrescription < ApplicationRecord
   delegate :fullname, :last_name, :dni, :age_string, to: :patient, prefix: :patient, allow_nil: true
   delegate :qualifications, :fullname, to: :professional, prefix: :professional
 
-  # filterrific(
-  #   default_filter_params: { sorted_by: 'updated_at_desc' },
-  #   available_filters: %i[search_by_remit_code search_by_professional search_by_patient sorted_by with_order_type
-  #                         date_prescribed_since for_statuses]
-  # )
-
-  # SCOPES #--------------------------------------------------------------------
-
-  # pg_search_scope :search_name,
-  # against: :name,
-  # :using => {
-  #   :tsearch => { :prefix => true } # Buscar coincidencia desde las primeras letras.
-  # },
-  # :ignoring => :accents # Ignorar tildes.
-
-  pg_search_scope :search_by_professional,
-                  associated_against: { professional: %i[fullname] },
-                  using: { tsearch: { prefix: true } }, # Buscar coincidencia desde las primeras letras.
-                  ignoring: :accents # Ignorar tildes.
-
-  pg_search_scope :search_by_patient,
-                  associated_against: { patient: %i[last_name first_name dni] },
-                  using: { tsearch: { prefix: true } }, # Buscar coincidencia desde las primeras letras.
-                  ignoring: :accents # Ignorar tildes.
-
-  # Metodo para establecer las opciones del select sorted_by
-  # Es llamado por el controlador como parte de `initialize_filterrific`.
-  def self.options_for_sorted_by
-    [
-      ['Modificación (nueva primero)', 'updated_at_desc'],
-      ['Modificación (antigua primero)', 'updated_at_asc'],
-      ['Creación (nueva primero)', 'created_at_desc'],
-      ['Creación (antigua primero)', 'created_at_asc'],
-      ['Medico (a-z)', 'medico_asc'],
-      ['Medico (z-a)', 'medico_desc'],
-      ['Paciente (a-z)', 'paciente_asc'],
-      ['Estado (a-z)', 'estado_asc'],
-      ['Productos (mayor primero)', 'productos_desc'],
-      ['Productos (menor primero)', 'productos_asc'],
-      ['Movimientos (mayor primero)', 'movimientos_desc'],
-      ['Movimientos (menor primero)', 'movimientos_asc'],
-      ['Fecha recetada (nueva primero)', 'recetada_asc'],
-      ['Fecha recetada (antigua primero)', 'recetada_desc']
-    ]
-  end
-
-  def self.options_for_status
-    [
-      %w[Pendiente pendiente secondary],
-      %w[Dispensada dispensada success],
-      %w[Vencida vencida danger]
-    ]
-  end
-
   scope :filter_by_params, lambda { |filter_params|
     query = self.select(:id, :remit_code, :status, :date_prescribed, 'professionals.fullname AS pr_fullname', 'patients.first_name AS pa_first_name', 'patients.last_name AS pa_last_name', 'patients.dni AS pa_dni').joins(:establishment, :professional, :patient)
     if filter_params.present?
@@ -107,9 +53,7 @@ class OutpatientPrescription < ApplicationRecord
         query = query.like_date_prescribed_to(filter_params['date_prescribed_to'])
       end
       # Status
-      if filter_params['status'].present?
-        query = query.like_status(filter_params['status'])
-      end
+      query = query.like_status(filter_params['status']) if filter_params['status'].present?
     end
 
     query = if filter_params.present? && filter_params['sort'].present?
@@ -124,42 +68,24 @@ class OutpatientPrescription < ApplicationRecord
   scope :like_remit_code, lambda { |word|
     where('lower(remit_code) LIKE ?', "%#{word.downcase}%")
   }
-
   # Where string match with %...% (support accents / unaccents)
   scope :like_professional_full_name, lambda { |word|
     where('unaccent(lower(professionals.fullname)) LIKE ?', "%#{word.downcase.parameterize}%")
   }
-
   # Where string match with %...% (support accents / unaccents)
   scope :like_patient_full_name_and_dni, lambda { |word|
     where('unaccent(lower(patients.first_name)) LIKE ? OR unaccent(lower(patients.last_name)) LIKE ? OR unaccent(lower(patients.dni)) LIKE ?', "%#{word.downcase.parameterize}%", "%#{word.downcase.parameterize}%", "%#{word.downcase.parameterize}%")
   }
-
   scope :like_date_prescribed_since, lambda { |reference_time|
     where('date_prescribed >= ?', reference_time)
   }
-
   scope :like_status, lambda { |status|
     where('outpatient_prescriptions.status = ?', status)
   }
-
-  # scope :search_by_status, lambda { |status|
-  #   where('outpatient_prescriptions.status = ?', status)
-  # }
-
-  scope :for_statuses, lambda { |values|
-    return all if values.blank?
-
-    where(status: statuses.values_at(*Array(values)))
-  }
-
+  scope :pending_count, -> { where('outpatient_prescriptions.status = 0').count }
   scope :with_establishment, lambda { |a_establishment|
     where('outpatient_prescriptions.establishment_id = ?', a_establishment)
   }
-
-  # scope :with_patient_id, lambda { |an_id|
-  #   where(patient_id: [*an_id])
-  # }
 
   # Metodos públicos #----------------------------------------------------------
   def sum_to?(a_sector)
