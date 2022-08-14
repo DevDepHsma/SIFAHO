@@ -171,6 +171,7 @@ GEM
       activesupport (>= 5.2)
     highcharts-rails (6.0.3)
       railties (>= 3.1)
+    htmlbeautifier (1.4.2)
     htmlentities (4.3.4)
     http-accept (1.7.0)
     http-cookie (1.0.4)
@@ -539,6 +540,7 @@ DEPENDENCIES
   groupdate
   has_scope
   highcharts-rails
+  htmlbeautifier
   inline_svg
   jbuilder (~> 2.5)
   jquery-ui-rails
@@ -585,4 +587,4 @@ RUBY VERSION
    ruby 2.7.5p203
 
 BUNDLED WITH
-   2.3.5
+   2.3.6
