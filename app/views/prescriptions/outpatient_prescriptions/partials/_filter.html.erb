@@ -63,10 +63,10 @@
     <div class="filter-form-col">
       <div class="form-group">
         <select class="form-control custom-select <%= 'filled' if get_value_from_filter(:status) != '' %>" name="filter[status]" onChange="mark_selected(event)">
-          <option value=""></option>
-          <option value="1">Dispensada</option>
-          <option value="0">Pendiente</option>
-          <option value="2">Vencida</option>
+          <option value="" ></option>
+          <% OutpatientPrescription.statuses.each do |option| %>
+            <option value='<%=option[1] %>' <%= 'selected' if get_value_from_filter(:status) == option[1].to_s %>><%=option[0]%></option>
+          <% end %>
         </select>
         <label>Estado</label>
       </div>
