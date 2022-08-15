@@ -1,0 +1,19 @@
+<div class="row d-flex align-items-center">
+  <div class="col-6">
+    <div class="d-flex align-items-center w-100">
+      <%= js_will_paginate @model, list_classes: %w(pagination mb-0),
+        previous_label: '<i class="fa fa-angle-left"></i>',
+        next_label: '<i class="fa fa-angle-right"></i>'
+      %>
+      <div class="ml-3">
+        <span>Por página:</span>
+        <select class="custom-select w-auto ml-2" onChange="page_size_selection(event, 'outpatient-prescriptions-filter')">
+          <% per_page_options.each do |option| %>
+            <option value='<%=option%>' <%= 'selected' if params[:per_page].to_i == option %>><%=option%></option>
+          <% end %>
+        </select>
+      </div>
+    </div>
+  </div>  
+  <%= yield(:footer_extra_info) %>
+</div>

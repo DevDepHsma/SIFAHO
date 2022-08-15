@@ -1,9 +1,23 @@
-<% js = escape_javascript(
-  render(partial: 'prescriptions/outpatient_prescriptions/list', locals: { outpatient_prescriptions: @outpatient_prescriptions })
+<% content_for :footer_extra_info do %>
+  <div class="col-3 d-flex justify-content-around align-items-center">
+    <div>
+      Recetas <span class="badge badge-secondary"><%= @total %></span>
+    </div>
+    <div>
+      Pendientes <span class="badge badge-secondary"><%= @total_pending %></span>
+    </div>
+  </div>
+<% end %>
+
+<% list = escape_javascript(
+  render(partial: 'prescriptions/outpatient_prescriptions/partials/list', locals: { outpatient_prescriptions: @outpatient_prescriptions })
 ) %>
 
-$("#filterrific_results").html("<%= js %>");
-
-$("#modals").html('<%= j render(partial: 'shared/modals/delete_confirmation') %>');
-
+<% paginate = escape_javascript( 
+  render( partial: 'shared/paginate_index',
+          locals: { model: @outpatient_prescriptions }
+        )
+) %>
+$("#table_results").html("<%= list %>");
+$("#paginate_footer").html("<%= paginate %>");
 setEventDestroyItem();
