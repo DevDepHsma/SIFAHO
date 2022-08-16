@@ -153,8 +153,8 @@ class User < ApplicationRecord
   end
 
   def has_permission?(permissions_target)
-    permissions.each do |permission|
-      permission.name == permissions_target && permission.permission_users.any { |pu| pu.sector_id == sector_id }
+    permissions.any? do |permission|
+      permission.name == permissions_target.to_s && permission.permission_users.any? { |pu| pu.sector_id == sector_id }
     end
     # permissions.joins(:permission_users).where(name: permissions_target, 'permission_users.sector_id': sector_id).any?
   end
