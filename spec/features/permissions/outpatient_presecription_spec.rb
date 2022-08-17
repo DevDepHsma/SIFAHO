@@ -150,11 +150,12 @@ RSpec.feature 'Permissions::OutpatientPrescriptions', type: :feature do
           within '#dropdown-menu-header' do
             click_link 'Ambulatorias'
           end
-          within '#filterrific_filter' do
-            fill_in 'filterrific[search_by_patient]', with: '37458994'
+          within '#outpatient-prescriptions-filter' do
+            fill_in 'filter[patient_full_name]', with: '37458994'
+            click_button 'Buscar'
           end
           sleep 1
-          within '#filterrific_results' do
+          within '#table_results' do
             expect(page).to have_selector('button.delete-item')
             page.execute_script %Q{$('button.delete-item').first().click()}
           end
