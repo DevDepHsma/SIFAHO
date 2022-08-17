@@ -4,7 +4,7 @@ class ApplicationController < ActionController::Base
   before_action :authenticate_user!, :keep_params
   before_action :clean_params
   before_action :keep_params, only: [:index]
-  before_action :set_current_user, if: :not_excluded_path?
+  before_action :set_current_user, if: :except_path?
   include Pundit::Authorization
 
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
@@ -22,11 +22,13 @@ class ApplicationController < ActionController::Base
   end
 
   def pundit_user
-    User.includes(:permission_users).includes(:permissions).includes(:sector).find(@current_user.id)
+    User.includes(:permission_users, :permissions, :sector).find(@current_user.id)
   end
 
-  def not_excluded_path?
-    request.path != user_session_path && request.method != 'POST'
+  # Exclede Init sessions path, because on login form and create a session current_user
+  # doesn't exists.
+  def except_path?
+    !(controller_name == 'sessions' && %w[new create].include?(action_name))
   end
 
   protected
