@@ -49,33 +49,35 @@ RSpec.feature 'Permissions::OutpatientPrescriptions', type: :feature do
           visit '/recetas'
           expect(page.has_css?('#new-outpatient')).to be false
           PermissionUser.create(user: @provider_user, sector: @provider_user.sector, permission: @dispense_recipe_permission)
-          visit current_path
-          find_or_create_patient_by_dni('Ambulatorias', '37458994', 'Ambulatoria')
-          find_or_create_professional_by_enrollment(@provider_user, '#new-outpatient', 'Naval')
-          expect(page).to have_content('Agregar receta ambulatoria')
-          expect(page).to have_content('37458994')
-          expect(page.has_css?('input#professional')).to be true
-          expect(page.has_css?('input#outpatient_prescription_date_prescribed')).to be true
-          expect(page.has_css?('textarea#outpatient_prescription_observation')).to be true
-          expect(page.has_css?('#order-product-cocoon-container')).to be true
-          expect(page.has_field?('Código', type: 'text')).to be true
-          expect(page.has_field?('Nombre', type: 'text')).to be true
-          expect(page.has_css?('input#outpatient_prescription_outpatient_prescription_products_attributes_0_request_quantity')).to be true
-          expect(page.has_css?('input#outpatient_prescription_outpatient_prescription_products_attributes_0_delivery_quantity')).to be true
-          expect(page.has_link?('Agregar insumo')).to be true
-          expect(page.has_button?('Dispensar')).to be true
-          # Add product
-          expect(page.has_css?('#professional')).to be true
-          @outpatient_product = @products.sample
-          add_product_by_code(@outpatient_product[1], 100, 100)
-          # Dispense
-          click_button 'Dispensar'
-          expect(page).to have_content('Viendo receta ambulatoria')
-          expect(page.has_link?('Volver')).to be true
-          expect(page.has_link?('Imprimir')).to be true
-          expect(page.has_button?('Retornar')).to be false
-          expect(page.has_link?('Dispensar')).to be false
-          expect(page.has_link?('Editar')).to be false
+          30.times do |prescription|
+            visit '/recetas'
+            find_or_create_patient_by_dni('Ambulatorias', '37458994', 'Ambulatoria')
+            find_or_create_professional_by_enrollment(@provider_user, '#new-outpatient', 'Naval')
+            expect(page).to have_content('Agregar receta ambulatoria')
+            expect(page).to have_content('37458994')
+            expect(page.has_css?('input#professional')).to be true
+            expect(page.has_css?('input#outpatient_prescription_date_prescribed')).to be true
+            expect(page.has_css?('textarea#outpatient_prescription_observation')).to be true
+            expect(page.has_css?('#order-product-cocoon-container')).to be true
+            expect(page.has_field?('Código', type: 'text')).to be true
+            expect(page.has_field?('Nombre', type: 'text')).to be true
+            expect(page.has_css?('input#outpatient_prescription_outpatient_prescription_products_attributes_0_request_quantity')).to be true
+            expect(page.has_css?('input#outpatient_prescription_outpatient_prescription_products_attributes_0_delivery_quantity')).to be true
+            expect(page.has_link?('Agregar insumo')).to be true
+            expect(page.has_button?('Dispensar')).to be true
+            # Add product
+            expect(page.has_css?('#professional')).to be true
+            @outpatient_product = @products.sample(2)
+            add_product_by_code(@outpatient_product[1], 100, 100)
+            # Dispense
+            click_button 'Dispensar'
+            expect(page).to have_content('Viendo receta ambulatoria')
+            expect(page.has_link?('Volver')).to be true
+            expect(page.has_link?('Imprimir')).to be true
+            expect(page.has_button?('Retornar')).to be false
+            expect(page.has_link?('Dispensar')).to be false
+            expect(page.has_link?('Editar')).to be false
+          end
           # Add return permission
           PermissionUser.create(user: @provider_user, sector: @provider_user.sector, permission: @return_recipe_permission)
           visit current_path
