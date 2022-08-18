@@ -39,27 +39,31 @@ module Helpers
       sleep 2
     end
 
-    def add_product_by_code(product_code, product_req_quantity, product_del_quantity)
-      within '#order-product-cocoon-container' do
-        page.execute_script %Q{$('input[name="product_code_fake-"]').val("#{product_code}").keydown()}
-        sleep 2
-      end
-      expect(find('ul.ui-autocomplete')).to have_content("#{product_code}")
-      page.execute_script("$('.ui-menu-item:contains(#{product_code})').first().click()")
-      sleep 1
-      within '#order-product-cocoon-container' do
-        page.execute_script %Q{$('input.request-quantity').first().val("#{product_req_quantity}").keydown()}
-        page.execute_script %Q{$('input.deliver-quantity').first().val("#{product_del_quantity}").keydown()}
-        page.execute_script %Q{$('button.select-lot-btn').first().click()}
+    def add_products_to_recipe(product_size, product_req_quantity, product_del_quantity)
+      products = @products.sample(product_size)
+      products.each_with_index do |product, index|
+        within '#order-product-cocoon-container' do
+          page.execute_script %Q{$('input[name="product_code_fake-"]').last().val("#{product.code}").keydown()}
+          sleep 2
+        end
+        expect(find('ul.ui-autocomplete')).to have_content("#{product.code}")
+        page.execute_script("$('.ui-menu-item:contains(#{product.code})').first().click()")
         sleep 1
+        within '#order-product-cocoon-container' do
+          page.execute_script %Q{$('input.request-quantity').last().val("#{product_req_quantity}").keydown()}
+          page.execute_script %Q{$('input.deliver-quantity').last().val("#{product_del_quantity}").keydown()}
+          page.execute_script %Q{$('button.select-lot-btn').last().click()}
+          sleep 1
+        end
+        # Select a lot
+        expect(page.has_css?('#table-lot-selection')).to be true
+        within '#lot-selection' do
+          page.execute_script %Q{$('input[name="lot-quantity[0]"]').last().click().val("#{product_del_quantity}")}
+          click_button 'Volver'
+        end
+        sleep 1
+        click_link 'Agregar producto' unless (index + 1).eql?(product_size)
       end
-      # Select a lot
-      expect(page.has_css?('#table-lot-selection')).to be true
-      within '#lot-selection' do
-        page.execute_script %Q{$('input[name="lot-quantity[0]"]').click().val("#{product_del_quantity}")}
-        click_button 'Volver'
-      end
-      sleep 1
     end
 
     def add_original_product_by_code(product_code, product_req_quantity)

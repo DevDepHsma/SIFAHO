@@ -23,7 +23,6 @@ FactoryBot.define do
       short_name { 'HJA' }
     end
 
-    factory :hospital_establishment, traits: %i[hospital_type iv_zone]
     factory :establishment_1, traits: %i[hospital_type iv_zone est_1]
     factory :establishment_2, traits: %i[hospital_type iv_zone est_2]
   end
