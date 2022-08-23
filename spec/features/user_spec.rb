@@ -2,14 +2,14 @@ require 'rails_helper'
 
 RSpec.feature 'Users', type: :feature, js: true do
   before(:all) do
-    @permission_module = create(:permission_module, name: 'Usuarios')
-    @read_users = create(:permission, name: 'read_users', permission_module: @permission_module)
-    @answer_permission_request = create(:permission, name: 'answer_permission_request', permission_module: @permission_module)
-    @update_permissions = create(:permission, name: 'update_permissions', permission_module: @permission_module)
+    permission_module = PermissionModule.includes(:permissions).find_by(name: 'Usuarios')
+    @read_users = permission_module.permissions.find_by(name: 'read_users')
+    @answer_permission_request = permission_module.permissions.find_by(name: 'answer_permission_request')
+    @update_permissions = permission_module.permissions.find_by(name: 'update_permissions')
   end
 
   background do
-    sign_in_as(@user)
+    sign_in_as(@farm_applicant)
   end
   describe '', js: true do
     subject { page }
@@ -20,7 +20,7 @@ RSpec.feature 'Users', type: :feature, js: true do
 
     describe "Add permission:" do
       before(:each) do
-        PermissionUser.create(user: @user, sector: @user.sector, permission: @read_users)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @read_users)
         visit '/'
       end
 
@@ -35,14 +35,13 @@ RSpec.feature 'Users', type: :feature, js: true do
           expect(page.has_link?('Solicitud de permisos')).to be false
         end
         # Permission Request list
-        PermissionUser.create(user: @user, sector: @user.sector, permission: @answer_permission_request)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @answer_permission_request)
         visit current_path
         within '#dropdown-menu-header' do
           expect(page.has_link?('Solicitud de permisos')).to be true
           click_link 'Solicitud de permisos'
         end
-        user_requested = create(:user_6)
-        create(:permission_req_1, user: user_requested)
+        create(:permission_req_1, user: @user_requested)
         visit current_path
         # Answer request
         within '#permission_requests' do
@@ -79,38 +78,38 @@ RSpec.feature 'Users', type: :feature, js: true do
         sleep 1
         click_button 'Guardar'
         expect(page).to have_content('Permisos asignados correctamente.')
-        sign_out_as(@user)
+        sign_out_as(@farm_applicant)
         sleep 1
-        # Sign in as user_requested and check user list permission
-        user_requested = User.find(user_requested.id)
-        user_requested.password = 'password'
-        sign_in_as(user_requested)
+        # Sign in as @user_requested and check user list permission
+        @user_requested = User.find(@user_requested.id)
+        @user_requested.password = 'password'
+        sign_in_as(@user_requested)
         expect(page.has_link?('Usuarios')).to be true
         expect(page).to have_content('Depósito')
-        expect(user_requested.active?).to be true
-        sign_out_as(user_requested)
+        expect(@user_requested.active?).to be true
+        sign_out_as(@user_requested)
         sleep 1
-        # Edit user_requested permissions
-        sign_in_as(@user)
+        # Edit @user_requested permissions
+        sign_in_as(@farm_applicant)
 
         within '#sidebar-wrapper' do
           click_link 'Usuarios'
         end
-        expect(page).to have_content(user_requested.username.to_s)
+        expect(page).to have_content(@user_requested.username.to_s)
         expect(page).not_to have_selector('a.btn-permission-edit')
-        PermissionUser.create(user: @user, sector: @user.sector, permission: @update_permissions)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @update_permissions)
         visit current_path
         expect(page).to have_selector('a.btn-permission-edit')
 
         page.execute_script %Q{
-          const tr = $('td:contains("#{user_requested.username}")').closest('tr');
+          const tr = $('td:contains("#{@user_requested.username}")').closest('tr');
           tr.find('a.btn-permission-edit')[0].click();
         }
         expect(page).to have_content('Editando permisos')
         within '#page-content-wrapper' do
           expect(page).not_to have_content('Solicitud de permisos')
         end
-        # Remove sector to user_requested
+        # Remove sector to @user_requested
         find('#open-sectors-select-modal').click
         sleep 1
         within '#select_sector_container' do
@@ -127,9 +126,9 @@ RSpec.feature 'Users', type: :feature, js: true do
           click_button 'Cerrar'
         end
         sleep 1
-        sign_out_as(@user)
+        sign_out_as(@farm_applicant)
         sleep 1
-        sign_in_as(user_requested)
+        sign_in_as(@user_requested)
         # User with more than 1 permission_request
         expect(page).to have_content('Debe solicitar un establecimiento y sector aquí.')
         expect(page.has_link?('aquí.')).to be true
@@ -156,8 +155,8 @@ RSpec.feature 'Users', type: :feature, js: true do
         expect(page).to have_content('Solicitud enviada.')
         expect(page).to have_content('Espere una respuesta')
         expect(page).to have_content('El equipo de gestión evaluará su solicitud y tomará las medidas correspondientes.')
-        user_requested = User.find(user_requested.id)
-        expect(user_requested.permission_req?).to be true
+        @user_requested = User.find(@user_requested.id)
+        expect(@user_requested.permission_req?).to be true
       end
     end
   end

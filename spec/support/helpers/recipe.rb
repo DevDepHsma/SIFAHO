@@ -66,18 +66,22 @@ module Helpers
       end
     end
 
-    def add_original_product_by_code(product_code, product_req_quantity)
-      within '#original-order-product-cocoon-container' do
-        page.execute_script %Q{$('tr.nested-fields').last().find('input[name="product_code_fake-"]').last().val("#{product_code}").keydown()}
+    def add_original_product_to_recipe(product_size, product_req_quantity)
+      products = @products.sample(product_size)
+      products.each_with_index do |product, index|
+        within '#original-order-product-cocoon-container' do
+          page.execute_script %Q{$('tr.nested-fields').last().find('input[name="product_code_fake-"]').last().val("#{product.code}").keydown()}
+        end
+        sleep 2
+        expect(find('ul.ui-autocomplete')).to have_content("#{product.code}")
+        page.execute_script("$('.ui-menu-item:contains(#{product.code})').first().click()")
+        sleep 2
+        within '#original-order-product-cocoon-container' do
+          page.execute_script %Q{$('tr.nested-fields').last().find('input.request-quantity').first().val("#{product_req_quantity}").trigger('change')}
+        end
+        sleep 1
+        click_link 'Agregar producto' unless (index + 1).eql?(product_size)
       end
-      sleep 2
-      expect(find('ul.ui-autocomplete')).to have_content("#{product_code}")
-      page.execute_script("$('.ui-menu-item:contains(#{product_code})').first().click()")
-      sleep 2
-      within '#original-order-product-cocoon-container' do
-        page.execute_script %Q{$('tr.nested-fields').last().find('input.request-quantity').first().val("#{product_req_quantity}").trigger('change')}
-      end
-      sleep 1
     end
   end
 end

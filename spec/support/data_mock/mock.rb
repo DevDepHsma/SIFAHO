@@ -110,7 +110,7 @@ module DataMock
     def get_permissions
       [
         [
-          'Usuario',
+          'Usuarios',
           %w[update_permissions read_users answer_permission_request]
         ],
         [
