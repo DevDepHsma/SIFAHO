@@ -1,17 +1,17 @@
 require 'rails_helper'
 
-RSpec.feature "Patients", type: :feature do
+RSpec.feature 'Patients', type: :feature do
   before(:all) do
-    @patient_module = create(:permission_module, name: 'Pacientes')
-    @read_patients = create(:permission, name: 'read_patients', permission_module: @patient_module)
-    @create_patients = create(:permission, name: 'create_patients', permission_module: @patient_module)
-    @update_patients = create(:permission, name: 'update_patients', permission_module: @patient_module)
-    @destroy_patients = create(:permission, name: 'destroy_patients', permission_module: @patient_module)
-    @patients = get_patients()
+    patient_module = PermissionModule.includes(:permissions).find_by(name: 'Pacientes')
+    @read_patients = patient_module.permissions.find_by(name: 'read_patients')
+    @create_patients = patient_module.permissions.find_by(name: 'create_patients')
+    @update_patients = patient_module.permissions.find_by(name: 'update_patients')
+    @destroy_patients = patient_module.permissions.find_by(name: 'destroy_patients')
+    @patients = Patient.all
   end
 
   background do
-    sign_in_as(@user)
+    sign_in_as(@farm_applicant)
   end
   describe '', js: true do
     subject { page }
@@ -22,7 +22,7 @@ RSpec.feature "Patients", type: :feature do
 
     describe 'Add permission:' do
       before(:each) do
-        PermissionUser.create(user: @user, sector: @user.sector, permission: @read_patients)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @read_patients)
         visit '/'
       end
 
@@ -36,14 +36,7 @@ RSpec.feature "Patients", type: :feature do
           expect(page.has_link?('Pacientes')).to be true
         end
 
-        # within '#patients' do
-        #   expect(page).to have_selector('.btn-detail')
-        #   page.execute_script %Q{$('a.btn-detail')[0].click()}
-        # end
-        # expect(page).to have_content('Viendo paciente')
-        # expect(page.has_link?('Volver')).to be true
-        # click_link 'Volver'
-        PermissionUser.create(user: @user, sector: @user.sector, permission: @create_patients)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @create_patients)
         visit current_path
         within '#dropdown-menu-header' do
           expect(page.has_link?('Agregar')).to be true
@@ -56,24 +49,24 @@ RSpec.feature "Patients", type: :feature do
         expect(page.has_css?('#patient_first_name')).to be true
         expect(page.has_css?('#patient_marital_status', visible: false)).to be true
         within '#new_patient' do
-          fill_in 'patient_dni', with: @patient[0]
+          fill_in 'patient_dni', with: 37_458_995
           click_button 'Otro'
-          find('button', text: 'Otro').sibling('div', class: 'dropdown-menu').find('a', text: @patient[1]).click
-          fill_in 'patient_last_name', with: @patient[2]
-          fill_in 'patient_first_name', with: @patient[3]
+          find('button', text: 'Otro').sibling('div', class: 'dropdown-menu').find('a', text: 'Femenino').click
+          fill_in 'patient_last_name', with: 'BUGANEM'
+          fill_in 'patient_first_name', with: 'MICAELA ESTER'
           click_button 'soltero'
-          find('button', text: 'soltero').sibling('div', class: 'dropdown-menu').find('a', text: @patient[4]).click
+          find('button', text: 'soltero').sibling('div', class: 'dropdown-menu').find('a', text: 'soltero').click
         end
         click_button 'Guardar'
         click_link 'Volver'
         within '#patients' do
           expect(page).to have_selector('.btn-detail', count: 1)
         end
-        PermissionUser.create(user: @user, sector: @user.sector, permission: @update_patients)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @update_patients)
         visit current_path
         within '#patients' do
           expect(page).to have_selector('.btn-edit', count: 1)
-          page.execute_script %Q{$('a.btn-edit')[0].click()}
+          page.execute_script %{$('a.btn-edit')[0].click()}
         end
         expect(page).to have_content('Editando paciente')
         expect(page.has_link?('Volver')).to be true
@@ -83,11 +76,11 @@ RSpec.feature "Patients", type: :feature do
         expect(page).to have_content('Gadiel Rafael Pedro')
         click_link 'Volver'
 
-        PermissionUser.create(user: @user, sector: @user.sector, permission: @destroy_patients)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @destroy_patients)
         visit current_path
         within '#patients' do
           expect(page).to have_selector('.delete-item', count: 1)
-          page.execute_script %Q{$('td:contains("Gadiel Rafael Pedro")').closest('tr').find('button.delete-item').click()}
+          page.execute_script %{$('td:contains("Gadiel Rafael Pedro")').closest('tr').find('button.delete-item').click()}
         end
         sleep 1
         expect(page).to have_content('Eliminar paciente')
@@ -97,7 +90,7 @@ RSpec.feature "Patients", type: :feature do
         sleep 1
         within '#patients' do
           expect(page).to have_selector('.delete-item', count: 0)
-          page.execute_script %Q{$('button.delete-item')[0].click()}
+          page.execute_script %{$('button.delete-item')[0].click()}
         end
       end
     end

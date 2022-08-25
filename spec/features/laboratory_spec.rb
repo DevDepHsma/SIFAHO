@@ -2,15 +2,15 @@ require 'rails_helper'
 
 RSpec.feature "Laboratories", type: :feature do
   before(:all) do
-    @permission_module = create(:permission_module, name: 'Laboratorios')
-    @read_laboratories = create(:permission, name: 'read_laboratories', permission_module: @permission_module)
-    @create_laboratories = create(:permission, name: 'create_laboratories', permission_module: @permission_module)
-    @update_laboratories = create(:permission, name: 'update_laboratories', permission_module: @permission_module)
-    @destroy_laboratories = create(:permission, name: 'destroy_laboratories', permission_module: @permission_module)
+    permission_module = PermissionModule.includes(:permissions).find_by(name: 'Laboratorios')
+    @read_laboratories = permission_module.permissions.find_by(name: 'read_laboratories')
+    @create_laboratories = permission_module.permissions.find_by(name: 'create_laboratories')
+    @update_laboratories = permission_module.permissions.find_by(name: 'update_laboratories')
+    @destroy_laboratories = permission_module.permissions.find_by(name: 'destroy_laboratories')
   end
 
   background do
-    sign_in_as(@user)
+    sign_in_as(@farm_applicant)
   end
   describe '', js: true do
     subject { page }
@@ -21,7 +21,7 @@ RSpec.feature "Laboratories", type: :feature do
 
     describe "Add permission:" do
       before(:each) do
-        PermissionUser.create(user: @user, sector: @user.sector, permission: @read_laboratories)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @read_laboratories)
         visit '/'
       end
 
@@ -42,7 +42,7 @@ RSpec.feature "Laboratories", type: :feature do
         expect(page).to have_content('Viendo laboratorio')
         expect(page.has_link?('Volver')).to be true
         click_link 'Volver'
-        PermissionUser.create(user: @user, sector: @user.sector, permission: @create_laboratories)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @create_laboratories)
         visit current_path
         within '#dropdown-menu-header' do
           expect(page.has_link?('Agregar')).to be true
@@ -62,7 +62,7 @@ RSpec.feature "Laboratories", type: :feature do
         within '#laboratories' do
           expect(page).to have_selector('.btn-detail', count: 2)
         end
-        PermissionUser.create(user: @user, sector: @user.sector, permission: @update_laboratories)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @update_laboratories)
         visit current_path
         within '#laboratories' do
           expect(page).to have_selector('.btn-edit', count: 2)
@@ -72,7 +72,7 @@ RSpec.feature "Laboratories", type: :feature do
         expect(page.has_link?('Volver')).to be true
         expect(page.has_button?('Guardar')).to be true
         click_link 'Volver'
-        PermissionUser.create(user: @user, sector: @user.sector, permission: @destroy_laboratories)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @destroy_laboratories)
         visit current_path
         within '#laboratories' do
           expect(page).to have_selector('.delete-item', count: 1)

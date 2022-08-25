@@ -7,6 +7,4 @@ def users_populate
 
   @farm_provider = create(:user, username: '23654789', sector: est_2.sectors.first)
   @depo_provider = create(:user, username: '24654789', sector: est_2.sectors.second)
-
-  @user_requested = create(:user_1)
 end

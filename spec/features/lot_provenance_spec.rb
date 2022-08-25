@@ -2,15 +2,15 @@ require 'rails_helper'
 
 RSpec.feature "LotProvenances", type: :feature do
   before(:all) do
-    @permission_module = create(:permission_module, name: 'Procedencia de lotes')
-    @read_lots_provenance = create(:permission, name: 'read_lots_provenance', permission_module: @permission_module)
-    @create_lots_provenance = create(:permission, name: 'create_lots_provenance', permission_module: @permission_module)
-    @update_lots_provenance = create(:permission, name: 'update_lots_provenance', permission_module: @permission_module)
-    @destroy_lots_provenance = create(:permission, name: 'destroy_lots_provenance', permission_module: @permission_module)
+    permission_module = PermissionModule.includes(:permissions).find_by(name: 'Procedencia de lotes')
+    @read_lots_provenance = permission_module.permissions.find_by(name: 'read_lots_provenance')
+    @create_lots_provenance = permission_module.permissions.find_by(name: 'create_lots_provenance')
+    @update_lots_provenance = permission_module.permissions.find_by(name: 'update_lots_provenance')
+    @destroy_lots_provenance = permission_module.permissions.find_by(name: 'destroy_lots_provenance')
   end
 
   background do
-    sign_in_as(@user)
+    sign_in_as(@farm_applicant)
   end
   describe '', js: true do
     subject { page }
@@ -21,7 +21,7 @@ RSpec.feature "LotProvenances", type: :feature do
 
     describe "Add permission:" do
       before(:each) do
-        PermissionUser.create(user: @user, sector: @user.sector, permission: @read_lots_provenance)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @read_lots_provenance)
         visit '/'
       end
 
@@ -35,7 +35,7 @@ RSpec.feature "LotProvenances", type: :feature do
           expect(page.has_link?('Procedencia')).to be true
         end
         expect(page).to have_content('Procedencias')
-        PermissionUser.create(user: @user, sector: @user.sector, permission: @create_lots_provenance)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @create_lots_provenance)
         visit current_path
         expect(page).to have_selector('.btn-create')
         page.execute_script %Q{$('a.btn-create').first().click()}
@@ -53,7 +53,7 @@ RSpec.feature "LotProvenances", type: :feature do
         sleep 1
         expect(page).to have_content('La procedencia se ha creado correctamente.')
         expect(page).to have_content('SUMAR')
-        PermissionUser.create(user: @user, sector: @user.sector, permission: @update_lots_provenance)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @update_lots_provenance)
         visit current_path
         within '#lots_provenance' do
           expect(page).to have_selector('.btn-edit')
@@ -68,7 +68,7 @@ RSpec.feature "LotProvenances", type: :feature do
         sleep 1
         expect(page).to have_content('La procedencia se ha modificado correctamente.')
         expect(page).to have_content('SUMAR T')
-        PermissionUser.create(user: @user, sector: @user.sector, permission: @destroy_lots_provenance)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @destroy_lots_provenance)
         visit current_path
         sleep 1
         within '#lots_provenance' do

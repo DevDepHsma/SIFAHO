@@ -2,15 +2,15 @@ require 'rails_helper'
 
 RSpec.feature "Lots", type: :feature do
   before(:all) do
-    @permission_module = create(:permission_module, name: 'Lotes')
-    @read_lots = create(:permission, name: 'read_lots', permission_module: @permission_module)
-    @create_lots = create(:permission, name: 'create_lots', permission_module: @permission_module)
-    @update_lots = create(:permission, name: 'update_lots', permission_module: @permission_module)
-    @destroy_lots = create(:permission, name: 'destroy_lots', permission_module: @permission_module)
+    permission_module = PermissionModule.includes(:permissions).find_by(name: 'Lotes')
+    @read_lots = permission_module.permissions.find_by(name: 'read_lots')
+    @create_lots = permission_module.permissions.find_by(name: 'create_lots')
+    @update_lots = permission_module.permissions.find_by(name: 'update_lots')
+    @destroy_lots = permission_module.permissions.find_by(name: 'destroy_lots')
   end
 
   background do
-    sign_in_as(@user)
+    sign_in_as(@farm_applicant)
   end
   describe '', js: true do
     subject { page }
@@ -21,7 +21,7 @@ RSpec.feature "Lots", type: :feature do
 
     describe "Add permission:" do
       before(:each) do
-        PermissionUser.create(user: @user, sector: @user.sector, permission: @read_lots)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @read_lots)
         visit '/'
       end
 
@@ -41,28 +41,28 @@ RSpec.feature "Lots", type: :feature do
         expect(page).to have_content('Viendo lote')
         expect(page.has_link?('Volver')).to be true
         click_link 'Volver'
-        PermissionUser.create(user: @user, sector: @user.sector, permission: @create_lots)
+        # Create
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @create_lots)
         visit current_path
         within '#dropdown-menu-header' do
           expect(page.has_link?('Agregar')).to be true
           click_link 'Agregar'
         end
-
         expect(page.has_css?('#lot_product_code_fake')).to be true
         expect(page.has_css?('#lot_product_name_fake')).to be true
         expect(page.has_css?('#lot_code')).to be true
         expect(page.has_css?('#lot_laboratory_id', visible: false)).to be true
+        product = Product.first
         within '#new_lot' do
-          page.execute_script %Q{$('#lot_product_code_fake').val("11332").keydown()}
+          page.execute_script %Q{$('#lot_product_code_fake').val("#{product.code}").keydown()}
         end
         sleep 1
-        page.execute_script("$('.ui-menu-item:contains(11332)').first().click()")
+        page.execute_script("$('.ui-menu-item:contains(#{product.code})').first().click()")
         within '#new_lot' do
           fill_in 'lot_code', with: 'BC456'
           page.execute_script %Q{$('#lot_laboratory_id').siblings('button').first().click()}
           expect(page.has_css?('ul.dropdown-menu')).to be true
           expect(page.has_css?('span', text: 'ABBOTT LABORATORIES ARGENTINA S.A.')).to be true
-          sleep 10
           page.execute_script %Q{$('a>span:contains(ABBOTT LABORATORIES ARGENTINA S.A.)').first().click()}
         end
         click_button 'Guardar'
@@ -70,7 +70,7 @@ RSpec.feature "Lots", type: :feature do
         within '#lots' do
           expect(page).to have_selector('.btn-detail')
         end
-        PermissionUser.create(user: @user, sector: @user.sector, permission: @update_lots)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @update_lots)
         visit current_path
         within '#lots' do
           expect(page).to have_selector('.btn-edit')
@@ -80,7 +80,7 @@ RSpec.feature "Lots", type: :feature do
         expect(page.has_link?('Volver')).to be true
         expect(page.has_button?('Guardar')).to be true
         click_link 'Volver'
-        PermissionUser.create(user: @user, sector: @user.sector, permission: @destroy_lots)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @destroy_lots)
         visit current_path
         sleep 1
         page.execute_script %Q{$('#filterrific_search_lot_code').val('BC456').keydown()}

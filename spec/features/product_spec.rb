@@ -1,16 +1,16 @@
 require 'rails_helper'
 
-RSpec.feature "Products", type: :feature do
+RSpec.feature 'Products', type: :feature do
   before(:all) do
-    @permission_module = create(:permission_module, name: 'Productos')
-    @read_products = create(:permission, name: 'read_products', permission_module: @permission_module)
-    @create_products = create(:permission, name: 'create_products', permission_module: @permission_module)
-    @update_products = create(:permission, name: 'update_products', permission_module: @permission_module)
-    @destroy_products = create(:permission, name: 'destroy_products', permission_module: @permission_module)
+    permission_module = PermissionModule.includes(:permissions).find_by(name: 'Productos')
+    @read_products = permission_module.permissions.find_by(name: 'read_products')
+    @create_products = permission_module.permissions.find_by(name: 'create_products')
+    @update_products = permission_module.permissions.find_by(name: 'update_products')
+    @destroy_products = permission_module.permissions.find_by(name: 'destroy_products')
   end
 
   background do
-    sign_in_as(@user)
+    sign_in_as(@farm_applicant)
   end
   describe '', js: true do
     subject { page }
@@ -19,9 +19,9 @@ RSpec.feature "Products", type: :feature do
       expect(page.has_css?('#sidebar-wrapper')).to be false
     end
 
-    describe "Add permission:" do
+    describe 'Add permission:' do
       before(:each) do
-        PermissionUser.create(user: @user, sector: @user.sector, permission: @read_products)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @read_products)
         visit '/'
       end
 
@@ -37,35 +37,34 @@ RSpec.feature "Products", type: :feature do
 
         within '#products' do
           expect(page).to have_selector('.btn-detail')
-          page.execute_script %Q{$('a.btn-detail')[0].click()}
+          page.execute_script %{$('a.btn-detail')[0].click()}
         end
         expect(page).to have_content('Viendo producto')
         expect(page.has_link?('Volver')).to be true
         click_link 'Volver'
-        PermissionUser.create(user: @user, sector: @user.sector, permission: @create_products)
+        # Create
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @create_products)
         visit current_path
         within '#dropdown-menu-header' do
           expect(page.has_link?('Agregar')).to be true
           click_link 'Agregar'
         end
-
         expect(page.has_css?('#product_code')).to be true
         expect(page.has_css?('#product_name')).to be true
         expect(page.has_css?('#product_unity_id', visible: false)).to be true
         expect(page.has_css?('#product_area_id', visible: false)).to be true
         expect(page.has_css?('#product_description')).to be true
         expect(page.has_css?('#product_observation')).to be true
-        # expect(page.has_css?('#product_name_fake-', visible: false)).to be true
         within '#new_product' do
-          fill_in 'product_code', with: '106'
-          fill_in 'product_name', with: 'Alcohol Etílico 96º x 500 ml'
-          page.execute_script %Q{$('button:contains(Seleccionar unidad)').first().click()}
-          page.execute_script %Q{$('button:contains(Seleccionar unidad)').first().siblings('.dropdown-menu').first().keydown('unidad')}
-          page.execute_script %Q{$('a:contains(Unidad)').first().click()}
+          fill_in 'product_code', with: '20818'
+          fill_in 'product_name', with: 'Hidroclorotiazida 0.5% suspensión 100 ml (Magistral)'
+          page.execute_script %{$('button:contains(Seleccionar unidad)').first().click()}
+          page.execute_script %{$('button:contains(Seleccionar unidad)').first().siblings('.dropdown-menu').first().keydown('unidad')}
+          page.execute_script %{$('a:contains(Unidad)').first().click()}
 
-          page.execute_script %Q{$('button:contains(Seleccionar rubro)').first().click()}
-          page.execute_script %Q{$('button:contains(Seleccionar rubro)').first().siblings('.dropdown-menu').first().keydown('Medicamentos')}
-          page.execute_script %Q{$('a:contains(Medicamentos)').first().click()}
+          page.execute_script %{$('button:contains(Seleccionar rubro)').first().click()}
+          page.execute_script %{$('button:contains(Seleccionar rubro)').first().siblings('.dropdown-menu').first().keydown('Medicamentos')}
+          page.execute_script %{$('a:contains(Medicamentos)').first().click()}
         end
         click_button 'Guardar'
         click_link 'Volver'
@@ -73,21 +72,23 @@ RSpec.feature "Products", type: :feature do
           expect(page).to have_selector('.btn-detail')
           expect(page).not_to have_selector('.btn-edit')
         end
-        PermissionUser.create(user: @user, sector: @user.sector, permission: @update_products)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @update_products)
         visit current_path
         within '#products' do
           expect(page).to have_selector('.btn-edit')
-          page.execute_script %Q{$('a.btn-edit')[0].click()}
+          page.execute_script %{$('a.btn-edit')[0].click()}
         end
         expect(page).to have_content('Editando producto')
         expect(page.has_link?('Volver')).to be true
         expect(page.has_button?('Guardar')).to be true
         click_link 'Volver'
-        PermissionUser.create(user: @user, sector: @user.sector, permission: @destroy_products)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @destroy_products)
         visit current_path
+        page.execute_script %{$('#filterrific_search_code').val('20818').keydown()}
+        sleep 1
         within '#products' do
           expect(page).to have_selector('.delete-item')
-          page.execute_script %Q{$('td:contains(Alcohol Etílico 96º x 500 ml)').closest('tr').find('button.delete-item').first().click()}
+          page.execute_script %{$('td:contains(Hidroclorotiazida 0.5% suspensión 100 ml (Magistral))').closest('tr').find('button.delete-item').first().click()}
         end
         sleep 1
         expect(page).to have_content('Eliminar producto')
@@ -97,7 +98,7 @@ RSpec.feature "Products", type: :feature do
         sleep 1
         within '#products' do
           expect(page).to have_selector('.delete-item', count: 0)
-          page.execute_script %Q{$('button.delete-item')[0].click()}
+          page.execute_script %{$('button.delete-item')[0].click()}
         end
       end
     end

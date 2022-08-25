@@ -2,13 +2,13 @@ require 'rails_helper'
 
 RSpec.feature 'PermissionRequests', type: :feature, js: true do
   before(:all) do
-    @req_user = create(:user_5)
-    @user_without_sector = create(:user_7)
+    @user_requested = create(:user_1)
+    @user_active_without_sector = create(:user, username: '25654789')
   end
 
   describe 'Permission Requests' do
     background do
-      sign_in_as(@req_user)
+      sign_in_as(@user_requested)
     end
 
     subject { page }
@@ -20,7 +20,7 @@ RSpec.feature 'PermissionRequests', type: :feature, js: true do
       expect(page.has_css?('#permission_request_establishment_id', visible: false)).to be true
     end
     after(:each) do
-      pr = PermissionRequest.find_by(user_id: @req_user.id)
+      pr = PermissionRequest.find_by(user_id: @user_requested.id)
       pr.destroy if pr.present?
     end
 
@@ -152,7 +152,7 @@ RSpec.feature 'PermissionRequests', type: :feature, js: true do
 
   describe 'Permission Requests Active User' do
     background do
-      sign_in_as(@user_without_sector)
+      sign_in_as(@user_active_without_sector)
     end
 
     it 'Active user without sector' do

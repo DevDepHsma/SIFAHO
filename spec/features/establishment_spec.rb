@@ -2,15 +2,15 @@ require 'rails_helper'
 
 RSpec.feature "Establishments", type: :feature do
   before(:all) do
-    @permission_module = create(:permission_module, name: 'Establecimientos')
-    @read_establishments = create(:permission, name: 'read_establishments', permission_module: @permission_module)
-    @create_establishments = create(:permission, name: 'create_establishments', permission_module: @permission_module)
-    @update_establishments = create(:permission, name: 'update_establishments', permission_module: @permission_module)
-    @destroy_establishments = create(:permission, name: 'destroy_establishments', permission_module: @permission_module)
+    permission_module = PermissionModule.includes(:permissions).find_by(name: 'Establecimientos')
+    @read_establishments = permission_module.permissions.find_by(name: 'read_establishments')
+    @create_establishments = permission_module.permissions.find_by(name: 'create_establishments')
+    @update_establishments = permission_module.permissions.find_by(name: 'update_establishments')
+    @destroy_establishments = permission_module.permissions.find_by(name: 'destroy_establishments')
   end
 
   background do
-    sign_in_as(@user)
+    sign_in_as(@farm_applicant)
   end
   describe '', js: true do
     subject { page }
@@ -21,7 +21,7 @@ RSpec.feature "Establishments", type: :feature do
 
     describe "Add permission:" do
       before(:each) do
-        PermissionUser.create(user: @user, sector: @user.sector, permission: @read_establishments)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @read_establishments)
         visit '/'
       end
 
@@ -46,7 +46,8 @@ RSpec.feature "Establishments", type: :feature do
         expect(page).to have_content('Usuarios')
         expect(page.has_link?('Volver')).to be true
         click_link 'Volver'
-        PermissionUser.create(user: @user, sector: @user.sector, permission: @create_establishments)
+        # Create
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @create_establishments)
         visit current_path
         within '#dropdown-menu-header' do
           expect(page.has_link?('Agregar')).to be true
@@ -61,16 +62,16 @@ RSpec.feature "Establishments", type: :feature do
           fill_in 'establishment_name', with: 'Hospital Villa La Angostura'
           fill_in 'establishment_short_name', with: 'HVLA'
           click_button 'Seleccionar zona sanitaria'
-          find('button', text: 'Seleccionar zona sanitaria').sibling('div', class: 'dropdown-menu').find('a', text: 'Zona Sanitaria IV').click
+          find('button', text: 'Seleccionar zona sanitaria').sibling('div', class: 'dropdown-menu').first('a', text: 'Zona Sanitaria IV').click
           click_button 'Seleccionar tipo'
-          find('button', text: 'Seleccionar tipo').sibling('div', class: 'dropdown-menu').find('a', text: 'Hospital').click
+          find('button', text: 'Seleccionar tipo').sibling('div', class: 'dropdown-menu').first('a', text: 'Hospital').click
         end
         click_button 'Guardar'
         click_link 'Volver'
         within '#establishments' do
           expect(page).to have_selector('.btn-detail', count: 3)
         end
-        PermissionUser.create(user: @user, sector: @user.sector, permission: @update_establishments)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @update_establishments)
         visit current_path
         within '#establishments' do
           expect(page).to have_selector('.btn-edit', count: 3)
@@ -80,7 +81,7 @@ RSpec.feature "Establishments", type: :feature do
         expect(page.has_link?('Volver')).to be true
         expect(page.has_button?('Guardar')).to be true
         click_link 'Volver'
-        PermissionUser.create(user: @user, sector: @user.sector, permission: @destroy_establishments)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @destroy_establishments)
         visit current_path
         within '#establishments' do
           expect(page).to have_selector('.delete-item', count: 1)

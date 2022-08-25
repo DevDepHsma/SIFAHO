@@ -6,6 +6,7 @@ RSpec.feature 'Users', type: :feature, js: true do
     @read_users = permission_module.permissions.find_by(name: 'read_users')
     @answer_permission_request = permission_module.permissions.find_by(name: 'answer_permission_request')
     @update_permissions = permission_module.permissions.find_by(name: 'update_permissions')
+    @user_requested = create(:user_1)
   end
 
   background do

@@ -1,6 +1,8 @@
+# encoding: UTF-8
 module Helpers
   module Order
     def select_sector(sector_name, select_id, *establishment)
+      sleep 1
       if establishment.count.positive?
         page.execute_script %{
           $('input#effector-establishment').val("#{establishment.first.name}").keydown()
@@ -19,14 +21,15 @@ module Helpers
     # products => array of products (should be persisted)
     # products_size => number of products that sample will rake
     #  **fields => filds that should been fill it
-    def add_products(products, **fields_args)
+    def add_products(product_size, **fields_args)
+      products = @products.sample(product_size)
       products.each_with_index do |product, index|
         page.execute_script %{
-          $('input.product-code').last().val("#{product[1]}").keydown()
+          $('input.product-code').last().val("#{product.code}").keydown()
         }
         sleep 1
-        expect(find('ul.ui-autocomplete')).to have_content(product[1].to_s)
-        page.execute_script("$('.ui-menu-item:contains(#{product[1]})').first().click()")
+        expect(find('ul.ui-autocomplete')).to have_content(product.code)
+        page.execute_script("$('.ui-menu-item:contains(#{product.code})').first().click()")
         if fields_args.include?(:request_quantity)
           page.execute_script %{
             $('input.request-quantity').last().val(#{rand(100..250)}).keydown()
@@ -57,7 +60,7 @@ module Helpers
         page.execute_script %{$('button.btn-save').first().click()}
         if fields_args.include?(:select_lot_stock)
           expect(page).to have_content('Seleccionar lote en stock')
-          expect(page).to have_content(product[0].to_s)
+          expect(page).to have_content(product.name)
           expect(page).to have_content('Cantidad seleccionada')
           expect(page.has_button?('Volver')).to be true
           expect(page.has_button?('Guardar')).to be true
@@ -78,14 +81,15 @@ module Helpers
           click_button 'Guardar'
           sleep 1
         end
-        click_link 'Agregar producto' unless (index + 1).eql?(products.size)
+        click_link 'Agregar producto' unless (index + 1).eql?(product_size)
         sleep 1
       end
     end
 
-    def fill_products_deliver_quantity(products)
-      products.each_with_index do |_btn, index|
-        page.execute_script %{$($('a.btn-lot-selection')[#{index}]).click()}
+    def fill_products_deliver_quantity
+      page.all(:css, 'a.btn-lot-selection').each do |btn|
+        btn.click
+        # page.execute_script %{$($('a.btn-lot-selection')[#{index}]).click()}
         expect(page).to have_content('Seleccionar lote en stock')
         expect(page).to have_content('Cantidad seleccionada')
         expect(page.has_button?('Volver')).to be true

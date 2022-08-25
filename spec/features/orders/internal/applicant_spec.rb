@@ -2,7 +2,14 @@ require 'rails_helper'
 
 RSpec.feature 'Orders::Internal::Applicants', type: :feature do
   background do
-    sign_in_as(@applicant_user)
+    perimssion_module = PermissionModule.includes(:permissions).find_by(name: 'Ordenes Internas Solicitud')
+    @read_internal_order_applicant = perimssion_module.permissions.find_by(name: 'read_internal_order_applicant')
+    @create_internal_order_applicant = perimssion_module.permissions.find_by(name: 'create_internal_order_applicant')
+    @update_internal_order_applicant = perimssion_module.permissions.find_by(name: 'update_internal_order_applicant')
+    @send_internal_order_applicant = perimssion_module.permissions.find_by(name: 'send_internal_order_applicant')
+    @return_internal_order_applicant = perimssion_module.permissions.find_by(name: 'return_internal_order_applicant')
+    @destroy_internal_order_applicant = perimssion_module.permissions.find_by(name: 'destroy_internal_order_applicant')
+    sign_in_as(@farm_applicant)
   end
 
   describe 'Permissions', js: true do
@@ -14,7 +21,7 @@ RSpec.feature 'Orders::Internal::Applicants', type: :feature do
 
     describe '' do
       before(:each) do
-        PermissionUser.create(user: @applicant_user, sector: @applicant_user.sector, permission: @read_internal_order_applicant)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @read_internal_order_applicant)
         visit '/'
       end
 
@@ -45,7 +52,7 @@ RSpec.feature 'Orders::Internal::Applicants', type: :feature do
 
           describe '' do
             before(:each) do
-              PermissionUser.create(user: @applicant_user, sector: @applicant_user.sector, permission: @create_internal_order_applicant)
+              PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @create_internal_order_applicant)
             end
 
             it ':: visit create form' do
@@ -59,15 +66,15 @@ RSpec.feature 'Orders::Internal::Applicants', type: :feature do
               expect(page.has_button?('Guardar y agregar productos')).to be true
 
               within '#order-form' do
-                select_sector(@deposito.name, 'select#provider-sector')
+                select_sector(@depo_applicant.sector.name, 'select#provider-sector')
               end
-              expect(page).to have_content(@deposito.name)
+              expect(page).to have_content(@depo_applicant.sector.name)
               click_button 'Guardar y agregar productos'
               expect(page).to have_content('Editando productos de solicitud de sector código')
               expect(page).to have_content('Solicitante')
-              expect(page).to have_content(@farmacia.name)
+              expect(page).to have_content(@farm_applicant.sector.name)
               expect(page).to have_content('Proveedor')
-              expect(page).to have_content(@deposito.name)
+              expect(page).to have_content(@depo_applicant.sector.name)
               expect(page).to have_content('Código')
               expect(page).to have_content('Producto')
               expect(page).to have_content('Unidad')
@@ -77,15 +84,14 @@ RSpec.feature 'Orders::Internal::Applicants', type: :feature do
               expect(page.has_link?('Volver')).to be true
               expect(page.has_button?('Enviar')).to be false
 
-              PermissionUser.create(user: @applicant_user, sector: @applicant_user.sector, permission: @update_internal_order_applicant)
+              PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @update_internal_order_applicant)
               visit current_path
-              prods = @products.sample(3)
-              add_products(prods, request_quantity: true, observations: true)
-              expect(page).to have_selector('input.product-code', count: 3)
+              add_products(rand(1..3), request_quantity: true, observations: true)
+              expect(page).to have_selector('input.product-code')
               click_link 'Volver'
               within '#applicant_orders' do
-                expect(page).to have_selector('tr', count: 1)
-                expect(page).to have_selector('.btn-edit', count: 1)
+                expect(page).to have_selector('tr')
+                expect(page).to have_selector('.btn-edit')
                 page.execute_script %Q{$('a.btn-edit')[0].click()}
               end
 
@@ -100,18 +106,18 @@ RSpec.feature 'Orders::Internal::Applicants', type: :feature do
               expect(page.has_button?('Enviar')).to be false
 
               # Add send permission
-              PermissionUser.create(user: @applicant_user, sector: @applicant_user.sector, permission: @send_internal_order_applicant)
+              PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @send_internal_order_applicant)
               visit current_path
               expect(page.has_button?('Enviar')).to be true
               click_button 'Enviar'
               expect(page).to have_content('La solicitud se ha enviado correctamente.')
               expect(page).to have_content('Solicitud enviada')
-              expect(page).to have_content('Productos 3')
+              expect(page).to have_content('Productos')
               expect(page.has_link?('Volver')).to be true
               expect(page.has_link?('Imprimir')).to be true
               expect(page.has_button?('Retornar')).to be false
               # Add return permission
-              PermissionUser.create(user: @applicant_user, sector: @applicant_user.sector, permission: @return_internal_order_applicant)
+              PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @return_internal_order_applicant)
               visit current_path
               expect(page.has_button?('Retornar')).to be true
               click_button 'Retornar'
@@ -123,13 +129,13 @@ RSpec.feature 'Orders::Internal::Applicants', type: :feature do
               expect(page).to have_content('Solicitud auditoria')
               click_link 'Volver'
               within '#applicant_orders' do
-                expect(page).not_to have_selector('.delete-item', count: 1)
+                expect(page).not_to have_selector('.delete-item')
               end
               # Add destroy permission
-              PermissionUser.create(user: @applicant_user, sector: @applicant_user.sector, permission: @destroy_internal_order_applicant)
+              PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @destroy_internal_order_applicant)
               visit current_path
               within '#applicant_orders' do
-                expect(page).to have_selector('.delete-item', count: 1)
+                expect(page).to have_selector('.delete-item')
                 page.execute_script %Q{$('button.delete-item')[0].click()}
                 sleep 1
               end
@@ -138,9 +144,6 @@ RSpec.feature 'Orders::Internal::Applicants', type: :feature do
               expect(page.has_link?('Confirmar')).to be true
               click_link 'Confirmar'
               sleep 1
-              within '#applicant_orders' do
-                expect(page).to have_selector('.delete-item', count: 0)
-              end
             end
           end
         end
