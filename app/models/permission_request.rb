@@ -1,22 +1,27 @@
 class PermissionRequest < ApplicationRecord
   include PgSearch::Model
 
+  enum status: { in_progress: 0, done: 1 }
   # Relationships
   belongs_to :user
   has_one :profile, through: :user
   belongs_to :establishment, optional: true
   belongs_to :sector, optional: true
-
-  enum status: { in_progress: 0, done: 1 }
+  has_many :permission_request_roles, dependent: :delete_all
+  has_many :roles, through: :permission_request_roles
+  
   before_create :clean_establishment
   after_create :set_permission_req_to_user
 
   # Validations
   validates_presence_of :user
+  validates_presence_of :roles
   validates_presence_of :establishment_id, on: :create
   validates_presence_of :sector_id, if: :positive_establishment?
   validates_presence_of :other_establishment, if: :none_establishment?
   validates_presence_of :other_sector, if: :none_sector?
+
+  accepts_nested_attributes_for :roles
 
   filterrific(
     default_filter_params: { sorted_by: 'fecha_desc' },
