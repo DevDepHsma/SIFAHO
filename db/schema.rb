@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_07_11_182311) do
+ActiveRecord::Schema.define(version: 2022_08_27_215518) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "fuzzystrmatch"
@@ -940,6 +940,15 @@ ActiveRecord::Schema.define(version: 2022_07_11_182311) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "permission_request_roles", force: :cascade do |t|
+    t.bigint "role_id"
+    t.bigint "permission_request_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["permission_request_id"], name: "index_permission_request_roles_on_permission_request_id"
+    t.index ["role_id"], name: "index_permission_request_roles_on_role_id"
+  end
+
   create_table "permission_requests", force: :cascade do |t|
     t.bigint "user_id"
     t.integer "status", default: 0
@@ -1476,6 +1485,8 @@ ActiveRecord::Schema.define(version: 2022_07_11_182311) do
   add_foreign_key "lots", "products"
   add_foreign_key "patient_phones", "patients"
   add_foreign_key "patients", "addresses"
+  add_foreign_key "permission_request_roles", "permission_requests"
+  add_foreign_key "permission_request_roles", "roles"
   add_foreign_key "permission_requests", "users"
   add_foreign_key "prescriptions", "establishments"
   add_foreign_key "prescriptions", "patients"

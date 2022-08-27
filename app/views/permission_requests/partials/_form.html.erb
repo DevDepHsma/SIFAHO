@@ -1,6 +1,5 @@
 <%= simple_form_for @permission_request, url: create_permission_requests_path do |f| %>
   <%= f.error_notification %>
-
   <%= f.input :establishment_id,
     as: :select,
     label: '¿A cuál establecimiento pertenece?',
@@ -19,23 +18,6 @@
       value: f.object.establishment_id.present? ? f.object.establishment_id : ""
     }
   %>
-
-  <%#= f.input :establishment_id, label: '¿A cuál establecimiento pertenece?' do %>
-    <%#= f.select :establishment_id, @establishments.map {|establishment|  [establishment.name, establishment.id]} + [["Otro...", nil]],
-      {},
-      {
-        class: 'selectpicker custom-select-pick',
-        "data-width"=>"100%",
-        "data-size"=>"10",
-        "title"=>"Seleccionar establecimiento",
-        "data-live-search"=>true,
-        "data-none-results-text" => "No se encontró el establecimiento",
-        "data-request-url" => request_sectors_permission_requests_path,
-        selected: f.object.establishment_id.present? ? f.object.establishment_id : ""
-      }
-    %>
-  <%# end %>
-  
   <div id="sector-selector">
     <% if @sectors.present? %>
       <%= render('permission_requests/partials/sector_select') %>
@@ -43,9 +25,14 @@
       <%= render(partial: 'permission_requests/partials/establishment_and_sector_inputs') %>
     <% end %>
   </div>
-  
+  <%= f.input :role_ids, 
+                as: :check_boxes, 
+                collection: @roles.map{|role| [role.id, role.name]}, 
+                label_method: :second, 
+                value_method: :first, 
+                include_hidden: false,
+                label: 'Modulo' %>
   <div class="form-inputs">
-    <%#= f.input :role, label: "¿Qué rol cumple?", placeholder: "Ej. Farmacéutico" %>
     <%= f.input :observation, label: "Observaciones" %>
   </div>
 <% end %>
