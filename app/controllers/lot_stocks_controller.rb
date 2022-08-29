@@ -14,7 +14,7 @@ class LotStocksController < ApplicationController
         search_by_status: LotStock.options_for_status,
         search_by_quantity: LotStock.options_for_quantity
       },
-      persistence_id: false,
+      persistence_id: true,
     ) or return
     @stocks = ''
 
