@@ -25,13 +25,24 @@
       <%= render(partial: 'permission_requests/partials/establishment_and_sector_inputs') %>
     <% end %>
   </div>
-  <%= f.input :role_ids, 
-                as: :check_boxes, 
-                collection: @roles.map{|role| [role.id, role.name]}, 
-                label_method: :second, 
-                value_method: :first, 
-                include_hidden: false,
-                label: 'Modulo' %>
+
+  <legend class="col-form-label pt-0">¿Qué funciones requiere?</legend>
+  <% @roles.map do |role| %>
+    <div class="custom-control custom-checkbox mb-1">
+      <input type="checkbox" 
+              class="custom-control-input <%= "is-invalid" if f.object.errors[:roles].any?  %>" 
+              value="<%= role.id %>" 
+              name="permission_request[role_ids][]" 
+              id="permission_request_role_ids_<%= role.id %>"
+              <%= 'checked' if f.object.roles.present? && f.object.roles.any? { |rol| rol.id == role.id }%>>
+      <label class="custom-control-label" for="permission_request_role_ids_<%= role.id %>"><%= role.name %></label>
+    </div>
+  <% end %>
+
+  <% if f.object.errors[:roles].any?  %>
+    <div class="invalid-feedback d-block">Debe seleccionar una función</div>
+  <% end %>
+
   <div class="form-inputs">
     <%= f.input :observation, label: "Observaciones" %>
   </div>
