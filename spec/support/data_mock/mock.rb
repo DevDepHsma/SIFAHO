@@ -209,4 +209,14 @@ module DataMock
       ]
     end
   end
+
+  module Roles
+    def get_roles
+      [
+        'Dispensa de recetas',
+        'Pedidos Internos',
+        'Pedidos Externos'
+      ]
+    end
+  end
 end
