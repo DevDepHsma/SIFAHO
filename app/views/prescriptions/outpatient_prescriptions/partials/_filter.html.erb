@@ -66,20 +66,20 @@
           <option value="" ></option>
           <% OutpatientPrescription.statuses.each do |option| %>
             <option value='<%=option[1] %>' <%= 'selected' if get_value_from_filter(:status) == option[1].to_s %>><%=option[0]%></option>
-          <% end %>
-        </select>
-        <label>Estado</label>
+            <% end %>
+          </select>
+          <label>Estado</label>
+        </div>
+      </div>
+      <input type="hidden" name="filter[sort]" value="<%= get_value_from_filter(:sort) %>">
+      <input type="hidden" name="per_page" value="<%= params[:per_page] || 15 %>">
+      <div class="filter-form-btn-group">
+        <button class="btn btn-primary" type="submit" form="outpatient-prescriptions-filter">
+          Buscar
+        </button>
+        <button class="btn btn-danger btn-clean-filters" type="button" form="outpatient-prescriptions-filter">
+          <%= fa_icon 'times' %>
+        </button>
       </div>
     </div>
-    <input type="hidden" name="filter[sort]" value="<%= get_value_from_filter(:sort) %>">
-    <input type="hidden" name="per_page" value="<%= params[:per_page] || 15 %>">
-    <div class="filter-form-btn-group">
-      <button class="btn btn-primary" type="submit" form="outpatient-prescriptions-filter">
-        Buscar
-      </button>
-      <%= link_to outpatient_prescriptions_path(reset: :y), class: 'btn btn-danger' do %>
-        <%= fa_icon 'times' %>
-      <% end %>
-    </div>
-  </div>
-<% end %>
+  <% end %>
