@@ -28,6 +28,7 @@
           <% end %>
 
           <div id="page-content-wrapper" class="<%= 'w-100' unless policy(:welcome).index?%>">
+            <%= render('shared/loading') %>
             <div class="pt-3 container-fluid h-100">
               <!-- Main yield -->
               <%= yield %>
