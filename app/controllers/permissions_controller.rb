@@ -29,6 +29,7 @@ class PermissionsController < ApplicationController
     @sectors = Sector.includes(:establishment)
                      .order('establishments.name ASC', 'sectors.name ASC')
                      .where.not(id: @user.sectors.pluck(:id))
+    @roles = Role.all.order(name: :asc)
   end
 
   def update
