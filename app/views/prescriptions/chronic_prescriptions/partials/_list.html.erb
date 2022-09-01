@@ -1,0 +1,18 @@
+<div class="card fixed-panel-list">
+  <table class="table table-hover table-striped table-sm">
+    <thead >
+      <tr>
+        <%= th_label name: 'Código' %>
+        <%= th_label name: 'Médico', form: 'outpatient-prescriptions-filter', sort_field: 'pr_fullname', icon_type: 'alpha' %>
+        <%= th_label name: 'Paciente', form: 'outpatient-prescriptions-filter', sort_field: 'pa_last_name', icon_type: 'alpha' %>
+        <%= th_label name: 'Estado' %>
+        <%= th_label name: 'Productos' %>
+        <%= th_label name: 'Recetada', form: 'outpatient-prescriptions-filter', sort_field: 'date_prescribed' %>
+        <%= th_label name: 'Acciones' %>
+      </tr>
+    </thead>
+    <tbody id="chronic_prescriptions">
+      <%= render(partial: 'prescriptions/chronic_prescriptions/partials/chronic_prescription', collection: @chronic_prescriptions, as: :chronic_prescription) %>
+    </tbody>
+  </table>
+</div>
