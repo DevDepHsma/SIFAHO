@@ -47,19 +47,7 @@
   }
 }
 
-.custom-sort-v1.btn-list-sort{
-  padding: 0 1rem 0 0;
-  border: none;
-  background: none;
-  width: 100%;
-  text-align: left;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  &:focus{
-    outline: none;
-  }
-}
+
 
 // Default
 mark {
@@ -75,4 +63,35 @@ mark.highlight-1 {
 mark.highlight-2 {
   padding: 0;
   background-color: #54cdeb;
+}
+
+th.sort{
+  background-color:#f8f9fa;
+  transition: background-color 0.2s ease-out;
+  .custom-sort-v1.btn-list-sort{
+    color: #393E46;
+  }
+
+  &:hover, &.active{
+    background-color: #28ABE1;
+    .custom-sort-v1.btn-list-sort{
+      color: #fff;
+    }
+  }
+
+  .custom-sort-v1.btn-list-sort{
+    padding: 0 1rem 0 0;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: color 0.2s ease-out;
+    font-weight: 700;
+    &:focus{
+      outline: none;
+    }
+  }
 }

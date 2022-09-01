@@ -48,20 +48,26 @@ module FiltersHelper
 
   # Acepted attributes:
   # :name => Label string - important
-  # :field => Field sort: should be on the query select - important
+  # :sort_field => Field sort: should be on the query select - important
   # :form => Filter form id - important
   # :class => Extra classes - optional
   # :icon_type => FontAwesome icon - optional: default "amount"
-  def sort_label(**args)
-    if args[:name].present?
-      method = get_sort_value(args[:field].to_s)
-      "<button class='custom-sort-v1 btn-list-sort #{args[:class]}'
-               type='button'
-               onclick='sort_by(\"#{args[:field]}\", \"#{method}\", event.target);'
-               data-form='#{args[:form]}'>
+  def th_label(**args)
+    if args[:name].present? && args[:sort_field].present? && args[:form].present?
+      method = get_sort_value(args[:sort_field].to_s)
+      "<th class='sort #{'active' unless %w[asc].include?(method)}'>
+        <button class='custom-sort-v1 btn-list-sort #{args[:class]}'
+                type='button'
+                onclick='sort_by(\"#{args[:sort_field]}\", \"#{method}\", event.target);'
+                data-form='#{args[:form]}'>
+          #{args[:name]}
+          #{sort_icon(method, args[:icon_type])}
+        </button>
+      </th>"
+    elsif args[:name].present?
+      "<th>
         #{args[:name]}
-        #{sort_icon(method, args[:icon_type])}
-      </button>"
+      </th>"
     end.html_safe
   end
 
