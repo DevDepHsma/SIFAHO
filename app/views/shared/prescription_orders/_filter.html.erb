@@ -1,4 +1,4 @@
-<%= simple_form_for  outpatient_prescriptions_path, remote: true, html: { method: 'GET', class: 'custom-filters-v1', id: 'outpatient-prescriptions-filter'} do |f| %>
+<%= simple_form_for form_pathx, remote: true, html: { method: 'GET', class: 'custom-filters-v1', id: form_id } do |f| %>
   <div class="filter-form-row">
     <div class="filter-form-col">
       <div class="form-group">
@@ -64,7 +64,7 @@
       <div class="form-group">
         <select class="form-control custom-select <%= 'filled' if get_value_from_filter(:status) != '' %>" name="filter[status]" onChange="mark_selected(event)">
           <option value="" ></option>
-          <% OutpatientPrescription.statuses.each do |option| %>
+          <% statuses.each do |option| %>
             <option value='<%=option[1] %>' <%= 'selected' if get_value_from_filter(:status) == option[1].to_s %>><%=option[0]%></option>
             <% end %>
           </select>
@@ -74,10 +74,10 @@
       <input type="hidden" name="filter[sort]" value="<%= get_value_from_filter(:sort) %>">
       <input type="hidden" name="per_page" value="<%= params[:per_page] || 15 %>">
       <div class="filter-form-btn-group">
-        <button class="btn btn-primary" type="submit" form="outpatient-prescriptions-filter">
+        <button class="btn btn-primary" type="submit" form="<%= form_id %>">
           Buscar
         </button>
-        <button class="btn btn-danger btn-clean-filters" type="button" form="outpatient-prescriptions-filter">
+        <button class="btn btn-danger btn-clean-filters" type="button" form="<%= form_id %>">
           <%= fa_icon 'times' %>
         </button>
       </div>

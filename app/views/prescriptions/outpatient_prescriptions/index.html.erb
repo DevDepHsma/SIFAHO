@@ -15,7 +15,7 @@
 <%= render 'prescriptions/header' %>
 <div class="card fixed-custom-card">
   <div class="card-header">
-    <%= render 'prescriptions/outpatient_prescriptions/partials/filter' %>
+    <%= render 'shared/prescription_orders/filter', form_pathx: outpatient_prescriptions_path, statuses: OutpatientPrescription.statuses, form_id: 'outpatient-prescriptions-filter' %>
   </div>
   <div class="card-body fixed-panel-index">
     <% if @outpatient_prescriptions.present? %>
@@ -35,7 +35,7 @@
   <div class="card-footer" id="paginate_footer">
     <%= render(
           partial: 'shared/paginate_index',
-          locals: { model: @outpatient_prescriptions }
+          locals: { model: @outpatient_prescriptions, form_id: 'outpatient-prescriptions-filter' }
         ) %>
   </div>
 </div>

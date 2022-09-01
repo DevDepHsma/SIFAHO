@@ -15,7 +15,7 @@
 
 <% paginate = escape_javascript( 
   render( partial: 'shared/paginate_index',
-          locals: { model: @outpatient_prescriptions }
+          locals: { model: @outpatient_prescriptions, form_id: 'chronic-prescriptions-filter' }
         )
 ) %>
 $("#table_results").html("<%= list %>");
