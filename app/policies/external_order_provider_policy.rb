@@ -8,14 +8,6 @@ class ExternalOrderProviderPolicy < ApplicationPolicy
     user.has_permission?(:read_external_order_provider)
   end
 
-  def index?
-    show?
-  end
-
-  def show?
-    user.has_permission?(:read_external_order_provider)
-  end
-
   def new?
     user.has_permission?(:create_external_order_provider)
   end
