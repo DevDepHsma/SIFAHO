@@ -1,14 +1,14 @@
 class ExternalOrderTemplatePolicy < ApplicationPolicy
   def index?
-    user.has_any_role?(:admin, :farmaceutico, :auxiliar_farmacia, :medic, :enfermero)
+    show?
   end
 
   def show?
-    index?
+    user.has_permission?(:read_external_order_applicant) || user.has_permission?(:read_external_order_provider)
   end
 
   def create?
-    user.has_any_role?(:admin, :farmaceutico, :auxiliar_farmacia, :medic, :enfermero)
+    user.has_permission?(:create_external_order_provider) || user.has_permission?(:create_external_order_provider)
   end
 
   def new?
