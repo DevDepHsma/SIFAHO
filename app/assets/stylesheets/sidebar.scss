@@ -25,7 +25,7 @@ body {
         }
         #page-content-wrapper{
             width: calc(100% - #{$sidebar-width-hidden})!important;
-            position: absolute;
+            position: absolute!important;
             right: 0;
             height: calc(100vh - #{$navbar-height});
         }
