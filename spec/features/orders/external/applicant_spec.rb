@@ -43,7 +43,7 @@ RSpec.feature 'Orders::External::Applicants', type: :feature do
           expect(page.has_link?('Despachos')).not_to be true
           expect(page.has_link?('Solicitar')).not_to be true
           expect(page.has_link?('Despachar')).not_to be true
-          expect(page.has_link?('Plantillas')).not_to be true
+          expect(page.has_link?('Plantillas')).to be true
         end
 
         describe ':: CREATE' do
