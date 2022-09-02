@@ -43,6 +43,7 @@
     }
     .filter-form-btn-group{
       padding: 1.2rem 2.5px 0;
+      button.btn-clean-filters > svg { pointer-events: none; }
     }
   }
 }

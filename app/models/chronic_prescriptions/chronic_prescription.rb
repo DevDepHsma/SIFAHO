@@ -77,6 +77,9 @@ class ChronicPrescription < ApplicationRecord
   scope :like_date_prescribed_since, lambda { |reference_time|
     where('date_prescribed >= ?', reference_time)
   }
+  scope :like_date_prescribed_to, lambda { |reference_time|
+    where('date_prescribed <= ?', reference_time)
+  }
   scope :like_status, lambda { |status|
     where('chronic_prescriptions.status = ?', status)
   }
