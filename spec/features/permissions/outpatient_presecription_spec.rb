@@ -53,11 +53,12 @@ RSpec.feature 'Permissions::OutpatientPrescriptions', type: :feature do
           PermissionUser.create(user: @farm_provider, sector: @farm_provider.sector,
                                 permission: @dispense_recipe_permission)
           5.times do |_prescription|
-            visit '/recetas'
-            find_or_create_patient_by_dni('Ambulatorias', '37458994', 'Ambulatoria')
-            find_or_create_professional_by_enrollment(@farm_provider, '#new-outpatient', 'Naval')
+            patient = @patients.sample
+            qualification = @qualifications.sample
+            find_or_create_patient_by_dni('Ambulatorias', patient.dni, 'Ambulatoria')
+            find_or_create_professional_by_enrollment(qualification)
             expect(page).to have_content('Agregar receta ambulatoria')
-            expect(page).to have_content('37458994')
+            expect(page).to have_content(patient.dni)
             expect(page.has_css?('input#professional')).to be true
             expect(page.has_css?('input#outpatient_prescription_date_prescribed')).to be true
             expect(page.has_css?('textarea#outpatient_prescription_observation')).to be true
@@ -119,9 +120,11 @@ RSpec.feature 'Permissions::OutpatientPrescriptions', type: :feature do
           PermissionUser.create(user: @farm_provider, sector: @farm_provider.sector,
                                 permission: @destroy_recipe_permission)
           visit '/recetas'
-          find_or_create_patient_by_dni('Ambulatorias', '37458994', 'Ambulatoria')
+          patient = @patients.sample
+          qualification = @qualifications.sample
+          find_or_create_patient_by_dni('Ambulatorias', patient.dni, 'Ambulatoria')
           expect(page.has_css?('#new-outpatient')).to be true
-          find_or_create_professional_by_enrollment(@farm_provider, '#new-outpatient', 'Naval')
+          find_or_create_professional_by_enrollment(qualification)
           # Add product
           expect(page.has_css?('#professional')).to be true
           @outpatient_product = @products.sample
@@ -136,10 +139,10 @@ RSpec.feature 'Permissions::OutpatientPrescriptions', type: :feature do
             click_link 'Recetas'
           end
           within '#new_patient' do
-            page.execute_script %{$('#patient-dni').focus().val("37458994").keydown()}
+            page.execute_script %{$('#patient-dni').focus().val("#{patient.dni}").keydown()}
           end
           sleep 1
-          page.execute_script("$('.ui-menu-item:contains(37458994)').first().click()")
+          page.execute_script("$('.ui-menu-item:contains(#{patient.dni})').first().click()")
           sleep 10
           within '#container-receipts-list' do
             expect(page).to have_content('Recetas')
@@ -159,7 +162,7 @@ RSpec.feature 'Permissions::OutpatientPrescriptions', type: :feature do
             click_link 'Ambulatorias'
           end
           within '#outpatient-prescriptions-filter' do
-            fill_in 'filter[patient_full_name]', with: '37458994'
+            fill_in 'filter[patient_full_name]', with: patient.dni
             click_button 'Buscar'
           end
           sleep 1
