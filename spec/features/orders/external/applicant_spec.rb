@@ -153,6 +153,46 @@ RSpec.feature 'Orders::External::Applicants', type: :feature do
               click_link 'Confirmar'
               sleep 1
             end
+
+            it 'Templates' do
+              within '#dropdown-menu-header' do
+                expect(page.has_link?('Plantillas')).to be true
+                click_link 'Plantillas'
+              end
+              expect(page).to have_content('Plantillas de solicitud')
+              expect(page).not_to have_content('Plantillas de despacho')
+              expect(page.has_css?('#btn-applicant-template')).to be true
+              find('#btn-applicant-template').click
+              expect(page).to have_content('Agregar plantilla de solicitud a establecimiento')
+              expect(page.has_css?('#new_external_order_template')).to be true
+
+              fill_order_template(
+                form_id: '#new_external_order_template',
+                template_name_input: 'external_order_template_name',
+                template_name: 'Template Test',
+                establishment_input: 'provider-establishment',
+                sector_input: 'provider-sector',
+                sector: @depo_provider.sector,
+                products_size: 3
+              )
+
+              expect(page.has_button?('Guardar')).to be true
+              click_button 'Guardar'
+              sleep 10
+              expect(page).to have_content('Viendo plantilla de solicitud')
+              expect(page.has_css?('.delete-item')).to be true
+              expect(page.has_link?('Volver')).to be true
+              expect(page.has_link?('Imprimir')).to be true
+              expect(page.has_link?('Editar')).to be true
+              expect(page.has_link?('Crear solicitud')).to be true
+              click_link 'Editar'
+              expect(page).to have_content('Editar plantilla de solicitud a establecimiento')
+              expect(page.has_link?('Volver')).to be true
+              expect(page.has_button?('Guardar')).to be true
+              click_link 'Volver'
+              expect(page).to have_content('Template Test')
+              sleep 15
+            end
           end
         end
       end
