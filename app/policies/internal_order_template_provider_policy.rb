@@ -1,14 +1,29 @@
 class InternalOrderTemplateProviderPolicy < InternalOrderTemplatePolicy
+  def index?
+    show?
+  end
+
+  def show?
+    user.has_permission?(:read_internal_order_provider)
+  end
+
+  def create?
+    user.has_permission?(:create_internal_order_provider)
+  end
+
+  def new?
+    create?
+  end
+
+  def update?(resource)
+    edit?(resource)
+  end
 
   def edit?(resource)
-    if resource.owner_sector == user.sector && resource.provision?
-      user.has_any_role?(:admin, :farmaceutico, :auxiliar_farmacia, :medic, :enfermero)
-    end
+    user.has_permission?(:update_internal_order_provider) if resource.owner_sector == user.sector && resource.provision?
   end
 
   def use_template?(resource)
-    if resource.provision? && resource.owner_sector == user.sector
-      user.has_any_role?(:admin, :farmaceutico, :auxiliar_farmacia, :medic, :enfermero)
-    end
+    user.has_permission?(:create_internal_order_provider) if resource.provision? && resource.owner_sector == user.sector
   end
 end

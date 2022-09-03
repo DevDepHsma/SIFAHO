@@ -3,7 +3,7 @@
     <div class="d-flex align-items-center">
       <h5 class="card-title mb-0 ml-2">
         <%= fa_icon (@internal_order_template.new_record? ?  "plus" : "pen") %>
-        <%= @internal_order_template.new_record? ? "Agregar" : "Editando" %> plantilla de <%= @internal_order_template.order_type %> a sector
+        <%= @internal_order_template.new_record? ? "Agregar" : "Editar" %> plantilla de <%= @internal_order_template.order_type %> a sector
       </h5>
     </div>
     <%= link_to internal_orders_templates_applicants_path, class: "btn #{@internal_order_template.new_record? ? 'text-white' : ''}" do %>
@@ -68,7 +68,7 @@
                                           "association-insertion-method" => "append"
                                         } do %>
               <%= fa_icon "plus" %>
-              Agregar insumo
+              Agregar producto
             <% end %>
           </div>
         </div>
