@@ -219,4 +219,28 @@ module DataMock
       ]
     end
   end
+
+  module Professionals
+    def get_professionals
+      [
+        ['ROSALIA MARIELA', 'FERRO', 'FERRO ROSALIA MARIELA', 25_403_491, true, 'female'],
+        ['CINTIA LORENA', 'RODAS', 'RODAS CINTIA LORENA', 30_176_719, true, 'female'],
+        ['ANTONELA', 'SANCHOTENA', 'SANCHOTENA ANTONELA', 34_717_578, true, 'female'],
+        ['DENISE YASMIN', 'PERVANAS', 'PERVANAS DENISE YASMIN', 23_069_643, true, 'female'],
+        ['FABIOLA', 'RODRIGUEZ SOMOZA', 'RODRIGUEZ SOMOZA FABIOLA', 18_361_139, true, 'female'],
+        ['EDUARDO ANDRES', 'SERER', 'SERER EDUARDO ANDRES', 22_287_673, true, 'male']
+      ]
+    end
+
+    def get_qualifications
+      [
+        %w[OFTALMOLOGIA 1610],
+        %w[MEDICO 3369],
+        %w[MEDICO 5334],
+        %w[PSIQUIATRIA 3239],
+        %w[OBSTETRICO 165],
+        %w[MEDICO 2136]
+      ]
+    end
+  end
 end
