@@ -30,20 +30,6 @@ module Helpers
       expect(find('ul.ui-autocomplete')).to have_content(qualification.code.to_s)
       page.execute_script("$('.ui-menu-item:contains(#{qualification.code})').first().click()")
       sleep 1
-
-      # find(:css, recipe_link_new).click
-      # sleep 1
-      # expect(page.has_css?('#add-professional-btn')).to be true
-      # page.execute_script %Q{$('#add-professional-btn').click()}
-      # sleep 1
-      # within '#professional-form-async' do
-      #   page.execute_script %Q{$('#last-name').focus().val("#{professional}").keyup()}
-      #   sleep 2
-      # end
-      # within '#professionals-list' do
-      #   find('.btn-success', match: :first).click
-      # end
-      # sleep 2
     end
 
     def add_products_to_recipe(product_size, product_req_quantity, product_del_quantity)

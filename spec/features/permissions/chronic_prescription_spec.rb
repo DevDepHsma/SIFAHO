@@ -56,11 +56,9 @@ RSpec.feature 'Permissions::ChronicPrescriptions', type: :feature do
           5.times do |_prescription|
             patient = @patients.sample
             qualification = @qualifications.sample
-            sleep 1
             find_or_create_patient_by_dni('Crónicas', patient.dni, 'Crónica')
             expect(page.has_css?('#new-chronic')).to be true
             find_or_create_professional_by_enrollment(qualification)
-            # find_or_create_professional_by_enrollment(@farm_provider, '#new-chronic', professional)
             # Add product
             add_original_product_to_recipe(rand(1..3), 1)
             click_button 'Guardar'
