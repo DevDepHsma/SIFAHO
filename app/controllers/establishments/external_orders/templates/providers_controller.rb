@@ -1,7 +1,7 @@
 class Establishments::ExternalOrders::Templates::ProvidersController < Establishments::ExternalOrders::Templates::TemplatesController
   # GET /external_order_templates/new
   def new
-    authorize ExternalOrderTemplate
+    policy(:external_order_template_provider).new?
     @external_order_template = ExternalOrderTemplate.new(order_type: 'provision')
     @external_order_template.external_order_product_templates.build
     @sectors = []
@@ -16,7 +16,7 @@ class Establishments::ExternalOrders::Templates::ProvidersController < Establish
   # POST /external_order_templates
   # POST /external_order_templates.json
   def create
-    authorize ExternalOrderTemplate
+    policy(:external_order_template_provider).create?
     @external_order_template = ExternalOrderTemplate.new(external_order_template_params)
     @external_order_template.owner_sector = current_user.sector
     @external_order_template.created_by = current_user
@@ -38,7 +38,7 @@ class Establishments::ExternalOrders::Templates::ProvidersController < Establish
   # PATCH/PUT /external_order_templates/1
   # PATCH/PUT /external_order_templates/1.json
   def update
-    authorize @external_order_template
+    policy(:external_order_template_provider).update?(@external_order_template)
 
     respond_to do |format|
       begin
