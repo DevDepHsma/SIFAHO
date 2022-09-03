@@ -189,7 +189,6 @@ RSpec.feature 'Orders::External::Providers', type: :feature do
 
               expect(page.has_button?('Guardar')).to be true
               click_button 'Guardar'
-              sleep 10
               expect(page).to have_content('Viendo plantilla de provision')
               expect(page.has_css?('.delete-item')).to be true
               expect(page.has_link?('Volver')).to be true
@@ -202,7 +201,6 @@ RSpec.feature 'Orders::External::Providers', type: :feature do
               expect(page.has_button?('Guardar')).to be true
               click_link 'Volver'
               expect(page).to have_content('Template Test')
-              sleep 15
             end
           end
         end
