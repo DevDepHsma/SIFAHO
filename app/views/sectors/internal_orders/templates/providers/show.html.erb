@@ -1,10 +1,6 @@
-
-
-
 <% content_for :internal_order_template_show_title do %>
   <h5>Sector solicitante</h5>
 <% end %>
-
 <% content_for :action_buttons do %>
   <div>
     <% if policy(@internal_order_template).destroy? %>
@@ -17,7 +13,7 @@
         data-title="Eliminar plantilla"
         data-body="Esta seguro que desea eliminar la plantilla <%= @internal_order_template.name %>?"
         data-href="<%= internal_orders_templates_provider_url(@internal_order_template) %>">
-          <%= fa_icon "trash" %>
+        <%= fa_icon "trash" %>
       </button>
     <% end %>
   </div>
@@ -38,10 +34,9 @@
     <% if policy(:internal_order_template_provider).use_template?(@internal_order_template) %>
       <%= link_to build_from_template_internal_orders_templates_provider_path(@internal_order_template), method: :post, class: "btn btn-primary", target: :_blank do %>
         <%= fa_icon "plus" %>
-        Crear provisión
+        Crear despacho
       <% end %>
     <% end %>
   </div>
 <% end %>
-
 <%= render 'sectors/internal_orders/templates/show' %>

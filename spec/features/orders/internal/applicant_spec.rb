@@ -169,7 +169,7 @@ RSpec.feature 'Orders::Internal::Applicants', type: :feature do
                 template_name_input: 'internal_order_template_name',
                 template_name: 'Template Test',
                 sector_input: 'provider-sector',
-                sector: @depo_provider.sector,
+                sector: @depo_applicant.sector,
                 products_size: 3
               )
 

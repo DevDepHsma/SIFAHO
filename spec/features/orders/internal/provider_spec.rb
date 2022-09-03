@@ -42,7 +42,7 @@ RSpec.feature 'Orders::Internal::Providers', type: :feature do
           expect(page.has_link?('Entregas')).to be true
           expect(page.has_link?('Solicitar')).not_to be true
           expect(page.has_link?('Entregar')).not_to be true
-          expect(page.has_link?('Plantillas')).not_to be true
+          expect(page.has_link?('Plantillas')).to be true
         end
 
         describe ':: CREATE' do
@@ -136,7 +136,7 @@ RSpec.feature 'Orders::Internal::Providers', type: :feature do
               expect(page.has_link?('Volver')).to be true
               expect(page.has_link?('Imprimir')).to be true
               expect(page.has_button?('Retornar')).to be false
-            
+
               # Destroy
               click_link 'Volver'
               click_link 'Entregar'
@@ -165,6 +165,43 @@ RSpec.feature 'Orders::Internal::Providers', type: :feature do
               expect(page.has_link?('Confirmar')).to be true
               click_link 'Confirmar'
               sleep 1
+            end
+
+            it 'Templates' do
+              within '#dropdown-menu-header' do
+                expect(page.has_link?('Plantillas')).to be true
+                click_link 'Plantillas'
+              end
+              expect(page).not_to have_content('Plantillas de solicitud')
+              expect(page).to have_content('Plantillas de despacho')
+              expect(page.has_css?('#btn-provider-template')).to be true
+              find('#btn-provider-template').click
+              expect(page).to have_content('Agregar plantilla de provision a sector')
+              expect(page.has_css?('#new_internal_order_template')).to be true
+
+              fill_order_template(
+                form_id: '#new_internal_order_template',
+                template_name_input: 'internal_order_template_name',
+                template_name: 'Template Test',
+                sector_input: 'provider-sector',
+                sector: @farm_provider.sector,
+                products_size: 3
+              )
+
+              expect(page.has_button?('Guardar')).to be true
+              click_button 'Guardar'
+              expect(page).to have_content('Viendo plantilla de provision')
+              expect(page.has_css?('.delete-item')).to be true
+              expect(page.has_link?('Volver')).to be true
+              expect(page.has_link?('Imprimir')).to be true
+              expect(page.has_link?('Editar')).to be true
+              expect(page.has_link?('Crear despacho')).to be true
+              click_link 'Editar'
+              expect(page).to have_content('Editar plantilla de provision a sector')
+              expect(page.has_link?('Volver')).to be true
+              expect(page.has_button?('Guardar')).to be true
+              click_link 'Volver'
+              expect(page).to have_content('Template Test')
             end
           end
         end
