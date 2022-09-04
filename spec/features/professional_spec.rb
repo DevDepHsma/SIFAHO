@@ -50,7 +50,7 @@ RSpec.feature 'Professionals', type: :feature do
         end
         sleep 2
         expect(page).to have_content('GONZALES GABRIELA INES | 26231509 | MP 1937')
-        page.execute_script %{$('a.btn-success').first().click()}
+        page.execute_script %{$("span:contains('GONZALES GABRIELA')").siblings('a.btn-success').first().click()}
         sleep 1
         expect(page).to have_content('Viendo médico')
         expect(page).to have_content('GONZALES')
