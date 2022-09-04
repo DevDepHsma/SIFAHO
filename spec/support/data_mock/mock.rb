@@ -71,7 +71,7 @@ module DataMock
         ['Seda negra 4/0 c/1 aguja T/SH ó HR-26 ó V-20', '82'],
         ['Catgut cromado estéril calibre 4/0 con aguja SH-1', '85'],
         ['Catgut cromado estéril calibre 3/0', '86'],
-        ['Catgut  cromado estéril calibre 0', '87'],
+        ['Catgut cromado estéril calibre 0', '87'],
         ['Catgut cromado estéril calibre 1', '88'],
         ['Catgut cromado estéril calibre 2', '89'],
         ['Catgut simple estéril calibre 4/0 con aguja SH-1', '90'],

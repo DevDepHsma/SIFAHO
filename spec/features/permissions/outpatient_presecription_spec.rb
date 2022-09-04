@@ -52,7 +52,7 @@ RSpec.feature 'Permissions::OutpatientPrescriptions', type: :feature do
           expect(page.has_css?('#new-outpatient')).to be false
           PermissionUser.create(user: @farm_provider, sector: @farm_provider.sector,
                                 permission: @dispense_recipe_permission)
-          5.times do |_prescription|
+          10.times do |_prescription|
             patient = @patients.sample
             qualification = @qualifications.sample
             find_or_create_patient_by_dni('Ambulatorias', patient.dni, 'Ambulatoria')
@@ -72,7 +72,7 @@ RSpec.feature 'Permissions::OutpatientPrescriptions', type: :feature do
             # Add product
             expect(page.has_css?('#professional')).to be true
 
-            add_products_to_recipe(rand(1..2), rand(5..20), rand(5..20))
+            add_products_to_recipe(rand(3..9), rand(5..20), rand(5..20))
             # Dispense
             click_button 'Dispensar'
             expect(page).to have_content('Viendo receta ambulatoria')
@@ -128,7 +128,7 @@ RSpec.feature 'Permissions::OutpatientPrescriptions', type: :feature do
           # Add product
           expect(page.has_css?('#professional')).to be true
           @outpatient_product = @products.sample
-          add_products_to_recipe(rand(1..2), rand(5..20), rand(5..20))
+          add_products_to_recipe(rand(3..9), rand(5..20), rand(5..20))
           click_button 'Dispensar'
           expect(page).to have_content('Viendo receta ambulatoria')
           click_button 'Retornar'
@@ -143,7 +143,7 @@ RSpec.feature 'Permissions::OutpatientPrescriptions', type: :feature do
           end
           sleep 1
           page.execute_script("$('.ui-menu-item:contains(#{patient.dni})').first().click()")
-          sleep 10
+          sleep 1
           within '#container-receipts-list' do
             expect(page).to have_content('Recetas')
             expect(page).to have_selector('#outpatient-prescriptions')

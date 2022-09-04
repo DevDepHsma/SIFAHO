@@ -36,18 +36,18 @@ module Helpers
       products = @products.sample(product_size)
       products.each_with_index do |product, index|
         within '#order-product-cocoon-container' do
-          page.execute_script %{$('input[name="product_code_fake-"]').last().val("#{product.code}").keydown()}
-          sleep 2
+          page.execute_script %{$('input[name="product_name_fake-"]').last().val("#{product.name}").keydown()}
         end
-        expect(find('ul.ui-autocomplete')).to have_content(product.code.to_s)
-        page.execute_script("$('.ui-menu-item:contains(#{product.code})').first().click()")
+        sleep 1
+        expect(find('ul.ui-autocomplete')).to have_content(product.name)
+        page.execute_script("$('.ui-menu-item:contains(#{product.name})').first().click()")
         sleep 1
         within '#order-product-cocoon-container' do
           page.execute_script %{$('input.request-quantity').last().val("#{product_req_quantity}").keydown()}
           page.execute_script %{$('input.deliver-quantity').last().val("#{product_del_quantity}").keydown()}
           page.execute_script %{$('button.select-lot-btn').last().click()}
-          sleep 1
         end
+        sleep 1
         # Select a lot
         expect(page.has_css?('#table-lot-selection')).to be true
         within '#lot-selection' do
@@ -63,12 +63,12 @@ module Helpers
       products = @products.sample(product_size)
       products.each_with_index do |product, index|
         within '#original-order-product-cocoon-container' do
-          page.execute_script %{$('tr.nested-fields').last().find('input[name="product_code_fake-"]').last().val("#{product.code}").keydown()}
+          page.execute_script %{$('tr.nested-fields').last().find('input[name="product_name_fake-"]').last().val("#{product.name}").keydown()}
         end
-        sleep 2
-        expect(find('ul.ui-autocomplete')).to have_content(product.code.to_s)
-        page.execute_script("$('.ui-menu-item:contains(#{product.code})').first().click()")
-        sleep 2
+        sleep 1
+        expect(find('ul.ui-autocomplete')).to have_content(product.name)
+        page.execute_script("$('.ui-menu-item:contains(#{product.name})').first().click()")
+        sleep 1
         within '#original-order-product-cocoon-container' do
           page.execute_script %{$('tr.nested-fields').last().find('input.request-quantity').first().val("#{product_req_quantity}").trigger('change')}
         end
