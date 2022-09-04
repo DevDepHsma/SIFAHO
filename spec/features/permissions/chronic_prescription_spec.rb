@@ -53,14 +53,14 @@ RSpec.feature 'Permissions::ChronicPrescriptions', type: :feature do
           PermissionUser.create(user: @farm_provider, sector: @farm_provider.sector,
                                 permission: @create_chronic_recipe_permission)
 
-          5.times do |_prescription|
+          10.times do |_prescription|
             patient = @patients.sample
             qualification = @qualifications.sample
             find_or_create_patient_by_dni('Crónicas', patient.dni, 'Crónica')
             expect(page.has_css?('#new-chronic')).to be true
             find_or_create_professional_by_enrollment(qualification)
             # Add product
-            add_original_product_to_recipe(rand(1..3), 1)
+            add_original_product_to_recipe(rand(5..8), 1)
             click_button 'Guardar'
             expect(page).to have_content('Viendo receta crónica')
             expect(page.has_link?('Volver')).to be true
@@ -204,7 +204,15 @@ RSpec.feature 'Permissions::ChronicPrescriptions', type: :feature do
           expect(page.has_css?('#chronic_prescriptions')).to be true
 
           # Destroy with js render: on main recipe page
+          # Before add a receipt
           patient = @patients.sample
+          qualification = @qualifications.sample
+          find_or_create_patient_by_dni('Crónicas', patient.dni, 'Crónica')
+          expect(page.has_css?('#new-chronic')).to be true
+          find_or_create_professional_by_enrollment(qualification)
+          # Add product
+          add_original_product_to_recipe(rand(1..3), 1)
+          click_button 'Guardar'
           visit '/recetas'
           within '#new_patient' do
             page.execute_script %{$('#patient-dni').focus().val("#{patient.dni}").keydown()}
