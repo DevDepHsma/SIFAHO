@@ -9,7 +9,9 @@
   <td><%= bed_order.bed.name %></td>
   <td><%= bed_order.bedroom_name %></td>
   <td>
-    <span class="badge"><%= bed_order.quantity_ord_supply_lots.count %></span>
+    <span class="badge">
+      <%# Remove deprecated code: user relations with products as OutpatientPrescription %>
+    </span>
   </td>
   <td>
     <span class="badge"><%= bed_order.movements.count %></span>

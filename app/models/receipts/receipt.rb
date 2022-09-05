@@ -71,9 +71,6 @@
     when /^tipo_/
       # Ordenamiento por nombre de estado
       order("receipts.order_type #{direction}")
-    when /^ins_/
-      # Ordenamiento por nombre de insumo solicitado
-      order("quantity_ord_supply_lots.count #{direction}")
     when /^solicitado_/
       # Sort by requested date
       order("receipts.requested_date #{direction}")

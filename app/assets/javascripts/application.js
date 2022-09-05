@@ -110,11 +110,6 @@ $(document).on('turbolinks:load', function() {
     autoclose: true
   });
 
-
-  $('.quantity_ord_supply_lots').on('cocoon:after-insert', function(e, insertedItem) {
-    $('.selectpicker').selectpicker({style: 'btn-sm btn-default'}); // Se inicializa selectpicker luego de agregar form
-  });
-
   $('.selectpicker').selectpicker({
     style: 'btn-light'
   }); // Se inicializa selectpicker
