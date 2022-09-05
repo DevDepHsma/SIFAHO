@@ -143,14 +143,6 @@ class Prescriptions::OutpatientPrescriptionsController < ApplicationController
     end
   end
 
-  def get_by_patient_id
-    @outpatient_prescriptions = Prescription.with_patient_id(params[:term]).order(created_at: :desc).limit(10)
-    render json: @outpatient_prescriptions.map { |pre|
-                   { id: pre.id, order_type: pre.order_type.humanize, status: pre.status.humanize, professional: pre.professional_fullname,
-                     supply_count: pre.quantity_ord_supply_lots.count, created_at: pre.created_at.strftime('%d/%m/%Y') }
-                 }
-  end
-
   def set_order_product
     @order_product = params[:order_product_id].present? ? OutpatientPrescriptionProduct.find(params[:order_product_id]) : OutpatientPrescriptionProduct.new
   end

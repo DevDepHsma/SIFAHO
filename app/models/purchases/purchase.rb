@@ -77,9 +77,6 @@ class Purchase < ApplicationRecord
     when /^tipo_/
       # Ordenamiento por nombre de estado
       order("purchases.order_type #{ direction }")
-    when /^ins_/
-      # Ordenamiento por nombre de insumo solicitado
-      order("quantity_ord_supply_lots.count #{ direction }")
     when /^solicitado_/
       # Ordenamiento por la fecha de recepción
       order("purchases.requested_date #{ direction }") 
