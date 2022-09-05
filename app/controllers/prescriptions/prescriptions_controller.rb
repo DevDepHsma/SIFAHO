@@ -3,7 +3,7 @@ class PrescriptionsController < ApplicationController
   # GET /prescriptions
   # GET /prescriptions.json
   def index
-    authorize Prescription
+    authorize :prescription
     @patient = Patient.new
   end
 

@@ -1,7 +1,7 @@
 <% content_for :title, "Recetas" %>
 
 <% content_for :page_header do %>
-  <% if policy(Prescription).index? %>
+  <% if policy(:prescription).index? %>
     <li class="nav-item non-sel">
       <%= link_to prescriptions_path, class: "nav-link #{ active_action_and_controller('new', 'prescriptions') }" do %>
         <%= fa_icon "signature" %>
