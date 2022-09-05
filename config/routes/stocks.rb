@@ -37,27 +37,5 @@ Rails.application.routes.draw do
         resources :lot_provenances
       end
     end
-
-    # Sector supply lots
-    resources :sector_supply_lots, only: %i[index show create destroy] do
-      member do
-        get :delete
-        get :restore
-        get :restore_confirm
-        get :purge
-        get :purge_confirm
-        get :archive
-        get :archive_confirm
-        get :lots_for_supply
-      end
-      collection do
-        get :select_lot
-        get :trash_index
-        get :group_by_supply
-        get :get_stock_quantity
-        get :search_by_code
-        get :search_by_name
-      end
-    end
   end
 end
