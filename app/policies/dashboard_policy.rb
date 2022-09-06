@@ -1,7 +1,6 @@
 class DashboardPolicy < ApplicationPolicy
   def sidebar?
-    # ROLES ARE DEPRECATED
-    user.roles.any? || user.permissions.any?
+    user.permissions.any?
   end
 
   def index?

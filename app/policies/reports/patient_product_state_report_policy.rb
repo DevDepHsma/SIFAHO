@@ -1,6 +1,7 @@
 class PatientProductStateReportPolicy < ApplicationPolicy
   def index?
-    user.has_any_role?(:admin, :reportes_provincia)
+    # user.has_any_role?(:admin, :reportes_provincia)
+    false
   end
 
   def show?

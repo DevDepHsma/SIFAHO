@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_08_27_215518) do
+ActiveRecord::Schema.define(version: 2022_09_01_104657) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "fuzzystrmatch"
@@ -965,6 +965,15 @@ ActiveRecord::Schema.define(version: 2022_08_27_215518) do
     t.index ["user_id"], name: "index_permission_requests_on_user_id"
   end
 
+  create_table "permission_roles", force: :cascade do |t|
+    t.bigint "role_id"
+    t.bigint "permission_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["permission_id"], name: "index_permission_roles_on_permission_id"
+    t.index ["role_id"], name: "index_permission_roles_on_role_id"
+  end
+
   create_table "permission_users", force: :cascade do |t|
     t.bigint "user_id"
     t.bigint "sector_id"
@@ -1464,14 +1473,6 @@ ActiveRecord::Schema.define(version: 2022_08_27_215518) do
     t.index ["username"], name: "index_users_on_username", unique: true
   end
 
-  create_table "users_roles", id: false, force: :cascade do |t|
-    t.integer "user_id"
-    t.integer "role_id"
-    t.index ["role_id"], name: "index_users_roles_on_role_id"
-    t.index ["user_id", "role_id"], name: "index_users_roles_on_user_id_and_role_id"
-    t.index ["user_id"], name: "index_users_roles_on_user_id"
-  end
-
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "addresses", "cities"
   add_foreign_key "addresses", "countries"
@@ -1488,6 +1489,8 @@ ActiveRecord::Schema.define(version: 2022_08_27_215518) do
   add_foreign_key "permission_request_roles", "permission_requests"
   add_foreign_key "permission_request_roles", "roles"
   add_foreign_key "permission_requests", "users"
+  add_foreign_key "permission_roles", "permissions"
+  add_foreign_key "permission_roles", "roles"
   add_foreign_key "prescriptions", "establishments"
   add_foreign_key "prescriptions", "patients"
   add_foreign_key "prescriptions", "professionals"

@@ -1,6 +1,7 @@
 class AreaPolicy < ApplicationPolicy
   def index?
-    user.has_any_role?(:admin, :enfermero, :farmaceutico, :auxiliar_farmacia, :central_farmaceutico, :medic, :enfermero)
+    # user.has_any_role?(:admin, :enfermero, :farmaceutico, :auxiliar_farmacia, :central_farmaceutico, :medic, :enfermero)
+    false
   end
 
   def tree_view?

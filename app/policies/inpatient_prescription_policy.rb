@@ -4,7 +4,8 @@ class InpatientPrescriptionPolicy < ApplicationPolicy
   end
 
   def show?
-    user.has_any_role?(:admin)
+    # user.has_any_role?(:admin)
+    false
   end
 
   def new?
