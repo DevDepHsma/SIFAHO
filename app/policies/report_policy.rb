@@ -1,6 +1,7 @@
 class ReportPolicy < ApplicationPolicy
   def index?
-    show_roles.any? { |role| user.has_role?(role) }
+    # show_roles.any? { |role| user.has_role?(role) }
+    false
   end
 
   def show?

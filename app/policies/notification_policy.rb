@@ -1,5 +1,5 @@
 class NotificationPolicy < ApplicationPolicy
   def index?
-    user.roles.any? && false
+    false
   end
 end

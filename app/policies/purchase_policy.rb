@@ -1,6 +1,6 @@
 class PurchasePolicy < ApplicationPolicy
   def index?
-    user.has_any_role?(:admin, :farmaceutico, :auxiliar_farmacia, :central_farmaceutico, :medic, :enfermero)
+    # user.has_any_role?(:admin, :farmaceutico, :auxiliar_farmacia, :central_farmaceutico, :medic, :enfermero)
   end
 
   def show?
