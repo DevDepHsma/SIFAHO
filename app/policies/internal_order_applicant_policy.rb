@@ -12,10 +12,6 @@ class InternalOrderApplicantPolicy < ApplicationPolicy
     user.has_permission?(:create_internal_order_applicant)
   end
 
-  def new_report?
-    user.has_any_role?(:admin, :farmaceutico, :auxiliar_farmacia)
-  end
-
   def create?
     new?
   end
@@ -46,10 +42,6 @@ class InternalOrderApplicantPolicy < ApplicationPolicy
     if resource.solicitud_auditoria? && resource.applicant_sector == user.sector
       user.has_permission?(:destroy_internal_order_applicant)
     end
-  end
-
-  def generate_report?
-    new_report?
   end
 
   def receive_order?(resource)

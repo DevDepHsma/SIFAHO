@@ -11,10 +11,6 @@ class InternalOrderProviderPolicy < ApplicationPolicy
     user.has_permission?(:create_internal_order_provider)
   end
 
-  def new_report?
-    user.has_any_role?(:admin, :farmaceutico, :auxiliar_farmacia)
-  end
-
   def create?
     new?
   end
@@ -45,10 +41,6 @@ class InternalOrderProviderPolicy < ApplicationPolicy
     if (resource.provision? && resource.proveedor_auditoria?) && resource.provider_sector == user.sector
       user.has_permission?(:destroy_internal_order_provider)
     end
-  end
-
-  def generate_report?
-    new_report?
   end
 
   def rollback_order?(resource)

@@ -5,8 +5,5 @@ class InternalOrderTemplatePolicy < ApplicationPolicy
 
   def destroy?
     true
-    # if record.owner_sector == user.sector
-    #   user.has_any_role?(:admin, :farmaceutico, :auxiliar_farmacia, :medic, :enfermero)
-    # end
   end
 end
