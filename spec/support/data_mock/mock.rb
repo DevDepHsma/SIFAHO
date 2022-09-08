@@ -192,7 +192,9 @@ module DataMock
         ],
         [
           'Reportes',
-          ['external_order_by_products']
+          %w[report_by_patients
+             report_by_sectors
+             report_by_establishments]
         ]
       ]
     end
