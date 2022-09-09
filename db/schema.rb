@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_09_09_132211) do
+ActiveRecord::Schema.define(version: 2022_09_09_232112) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "fuzzystrmatch"
@@ -1251,6 +1251,26 @@ ActiveRecord::Schema.define(version: 2022_09_09_132211) do
     t.index ["received_by_id"], name: "index_receipts_on_received_by_id"
   end
 
+  create_table "report_patients", force: :cascade do |t|
+    t.bigint "report_id"
+    t.bigint "product_id"
+    t.bigint "patient_id"
+    t.integer "product_code"
+    t.string "product_name"
+    t.integer "product_quantity"
+    t.integer "patient_dni"
+    t.string "patient_fullname"
+    t.integer "patient_age"
+    t.date "patient_birthdate"
+    t.string "outpatient_pres_obs"
+    t.string "chronic_pres_diag"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["patient_id"], name: "index_report_patients_on_patient_id"
+    t.index ["product_id"], name: "index_report_patients_on_product_id"
+    t.index ["report_id"], name: "index_report_patients_on_report_id"
+  end
+
   create_table "report_product_lines", force: :cascade do |t|
     t.string "reportable_type"
     t.bigint "reportable_id"
@@ -1497,6 +1517,9 @@ ActiveRecord::Schema.define(version: 2022_09_09_132211) do
   add_foreign_key "quantity_ord_supply_lots", "laboratories"
   add_foreign_key "quantity_ord_supply_lots", "supplies"
   add_foreign_key "quantity_ord_supply_lots", "supply_lots"
+  add_foreign_key "report_patients", "patients"
+  add_foreign_key "report_patients", "products"
+  add_foreign_key "report_patients", "reports"
   add_foreign_key "report_product_lines", "products"
   add_foreign_key "reports", "sectors"
   add_foreign_key "reports", "users", column: "generated_by_user_id"
