@@ -54,6 +54,10 @@ Rails.application.routes.draw do
       # end
       # end
     end
-    resources :reports, only: %i[index new create]
+    resources :reports, only: %i[index new create] do
+      collection do
+        get :get_stock_products,  to: 'reports#get_stock_products', as: 'get_stock_products'
+      end
+    end
   end
 end
