@@ -1,0 +1,5 @@
+<% @products.each do |product| %>
+  <li>
+    <button class="link-add-product" type="button" data-value="<%= product.id %>"><%= highlight("#{product.code} | #{product.name}", params[:term], ignore_special_chars: true) %></button>
+  </li>
+<%end%>

@@ -1,0 +1,5 @@
+<% stock_products = escape_javascript(
+  render(partial: 'reports/partials/stock_products')
+) %>
+
+$("#prod-list").html("<%= stock_products %>");
