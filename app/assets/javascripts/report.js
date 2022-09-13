@@ -1,7 +1,7 @@
 $(document).on('turbolinks:load', function() {
   $("#products-search").on('keyup', function(e){
     const regexp = /^[a-zA-Z | 0-9 | áéíóúñ%°,.-]$/ig;
-    if(e.key.match(regexp) || e.key === 'Backspace'){
+    if((e.key.match(regexp) || e.key === 'Backspace') && ($(e.target).val().length > 2 || $(e.target).val().length == 0)){
       $(e.target).attr('disabled', true);
       $("#loader-container").css({'display': 'flex'});
       const product_ids = $("input[name='product_ids']").val();
