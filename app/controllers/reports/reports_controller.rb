@@ -49,6 +49,11 @@ class ReportsController < ApplicationController
     @product_ids = @product_ids.join('_')
   end
 
+  # Unset selected products and reset avaible products list
+  # params[:product_ids]    string with selected products
+  # params[:product_id]     product id to remove from selected products
+  # params[:product_term]   keep product term search
+  # get all products with stock x >= 0 of current sector
   def unselect_product
     @product_id = params[:product_id]
     @product_ids = params[:product_ids].present? ? params[:product_ids].split('_') : []
