@@ -1,7 +1,6 @@
 class PatientProductStateReportPolicy < ApplicationPolicy
   def index?
-    # user.has_any_role?(:admin, :reportes_provincia)
-    false
+    true
   end
 
   def show?
@@ -9,7 +8,7 @@ class PatientProductStateReportPolicy < ApplicationPolicy
   end
 
   def create?
-    user.has_any_role?(:admin, :reportes_provincia)
+    true
   end
 
   def new?

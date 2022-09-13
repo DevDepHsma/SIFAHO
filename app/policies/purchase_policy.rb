@@ -1,6 +1,6 @@
 class PurchasePolicy < ApplicationPolicy
   def index?
-    # user.has_any_role?(:admin, :farmaceutico, :auxiliar_farmacia, :central_farmaceutico, :medic, :enfermero)
+    false
   end
 
   def show?
@@ -8,7 +8,7 @@ class PurchasePolicy < ApplicationPolicy
   end
 
   def create?
-    user.has_any_role?(:admin)
+    false
   end
 
   def new?
@@ -20,7 +20,7 @@ class PurchasePolicy < ApplicationPolicy
   end
   
   def edit?
-    user.has_any_role?(:admin) && (record.inicial? || record.auditoria?)
+    false
   end
   
   def set_products?
@@ -41,7 +41,7 @@ class PurchasePolicy < ApplicationPolicy
     if record.recibido? && record.received_date.present?
       diff_in_hours = (DateTime.now.to_time - record.received_date.to_time) / 1.hours
       if diff_in_hours < 2
-        user.has_any_role?(:admin, :farmaceutico, :auxiliar_farmacia)
+        false
       end
     end
   end
@@ -51,7 +51,7 @@ class PurchasePolicy < ApplicationPolicy
   end
 
   def destroy?
-    user.has_any_role?(:admin) && (record.inicial? || record.auditoria?)
+    false
   end
 
   def delete?
