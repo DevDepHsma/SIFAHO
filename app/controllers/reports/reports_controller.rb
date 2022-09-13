@@ -11,9 +11,8 @@ class ReportsController < ApplicationController
   def new
     policy(:report).new?
     @report = Report.new
-    @products = Product.select(:id, :name,
-                               :code).where(id: Stock.where(sector_id: @current_user.sector_id).pluck(:product_id)).limit(20)
-    # Product.select(:id, :name, :code).limit(10)
+    @products = Product.filter_by_stock({ sector_id: @current_user.sector_id }).limit(20)
+    @product_ids = []
   end
 
   def create
@@ -26,10 +25,28 @@ class ReportsController < ApplicationController
                             report_type: report_params(:report_type))
   end
 
+  # get all products with stock x >= 0 of current sector
+  # params[:product_ids]    string with selected products
+  # params[:product_term]   string for search by name or code (Product)
   def get_stock_products
-    @products = Product.select(:id, :name, :code).where(id: Stock.where(sector_id: @current_user.sector_id).pluck(:product_id)).where(
-      'code like ? OR unaccent(lower(name)) like ?', "%#{params[:term]}%", "%#{params[:term].downcase.parameterize}%"
-    ).limit(20)
+    @product_ids = params[:product_ids]
+    @products = Product.filter_by_stock({ sector_id: @current_user.sector_id, product: params[:product_term],
+                                          product_ids: params[:product_ids].split('_') })
+                       .limit(20)
+  end
+
+  # Set selected product and reset avaible products list
+  # params[:product_ids]    string with selected products
+  # params[:product_term]   string for search by name or code (Product)
+  # get all products with stock x >= 0 of current sector
+  def set_product
+    @product = Product.find(params[:product_id])
+    @product_ids = params[:product_ids].present? ? params[:product_ids].split('_') : []
+    @product_ids << @product.id
+    @products = Product.filter_by_stock({ sector_id: @current_user.sector_id, product: params[:product_term],
+                                          product_ids: @product_ids })
+                       .limit(20)
+    @product_ids = @product_ids.join('_')
   end
 
   ###################################  DEPRECATED  ########################################
