@@ -46,10 +46,10 @@ class Product < ApplicationRecord
   # To filter records by controller params
   # Slice params "search_code, search_name, with_area_ids"
   def self.filter(params)
-    @products = self.all
-    @products = params[:search_code].present? ? self.search_code( params[:search_code] ) : @products
-    @products = params[:search_name].present? ? self.search_name( params[:search_name] ) : @products
-    @products = params[:with_area_ids].present? ? self.with_area_ids( params[:with_area_ids] ) : @products
+    @products = all
+    @products = params[:search_code].present? ? search_code(params[:search_code]) : @products
+    @products = params[:search_name].present? ? search_name(params[:search_name]) : @products
+    @products = params[:with_area_ids].present? ? with_area_ids(params[:with_area_ids]) : @products
   end
 
   # Scopes
@@ -73,10 +73,10 @@ class Product < ApplicationRecord
     case sort_option.to_s
     when /^codigo_/
       # Ordenamiento por id de insumo
-      order(code: "#{direction}".to_sym)
+      order(code: direction.to_s.to_sym)
     when /^nombre_/
       # Ordenamiento por nombre de insumo
-      order(name: "#{direction}".to_sym)
+      order(name: direction.to_s.to_sym)
     when /^unidad_/
       # Ordenamiento por la unidad
       # order("LOWER(unities.name) #{direction}").joins(:unity)
@@ -84,6 +84,17 @@ class Product < ApplicationRecord
       # Si no existe la opcion de ordenamiento se levanta la excepcion
       raise(ArgumentError, "Invalid sort option: #{sort_option.inspect}")
     end
+  }
+
+  scope :filter_by_stock, lambda { |filter_params|
+    query = self.select(:id, :name, :code).where(id: Stock.where(sector_id: filter_params[:sector_id]).pluck(:product_id))
+
+    if filter_params[:product]
+      query = query.where('code like ? OR unaccent(lower(name)) like ?', "%#{filter_params[:product]}%", "%#{filter_params[:product].downcase.parameterize}%")
+    end
+    query = query.where.not(id: filter_params[:product_ids]) if filter_params[:product_ids]
+
+    return query
   }
 
   def self.options_for_sorted_by
@@ -97,17 +108,17 @@ class Product < ApplicationRecord
 
   def self.options_for_status
     [
-      ['Activo', 'active', 'success'],
-      ['Inactivo', 'inactive', 'danger'],
-      ['Fusionado', 'merged', 'primary']
+      %w[Activo active success],
+      %w[Inactivo inactive danger],
+      %w[Fusionado merged primary]
     ]
   end
 
-  scope :for_statuses, ->(values) do
+  scope :for_statuses, lambda { |values|
     return all if values.blank?
 
     where(status: statuses.values_at(*Array(values)))
-  end
+  }
 
   scope :with_code, ->(product_code) { where('products.code = ?', product_code) }
 

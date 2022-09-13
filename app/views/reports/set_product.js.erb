@@ -1,0 +1,12 @@
+<% selected_product_partial = escape_javascript(
+  render(partial: 'reports/partials/selected_product')
+) %>
+
+$("input[name='product_ids']").val("<%= @product_ids %>");
+$("#selected-products").append("<%= selected_product_partial %>");
+
+<% stock_products = escape_javascript(
+  render(partial: 'reports/partials/stock_products')
+) %>
+
+$("#products-list").html("<%= stock_products %>");

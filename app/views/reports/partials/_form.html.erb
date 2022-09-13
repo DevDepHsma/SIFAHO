@@ -13,6 +13,7 @@
   <div class="card-body">
     <%= simple_form_for @report, html: { role: 'check-modified'} do |f| %>
       <%= f.error_notification %>
+      <input type="hidden" name="product_ids">
       <% Report.report_types.each do |type| %>
         <div class="custom-control custom-radio">
           <input type="radio" class="custom-control-input" id="report_type" name="report_type" required value="<%= type[1] %>">
@@ -23,9 +24,10 @@
       <div>
         <div class="form-group">
           <label for="products-search">Productos</label>
+          <div id="selected-products"></div>
           <input type="email" class="form-control" id="products-search" data-url="<%= get_stock_products_reports_path %>">
         </div>
-        <ul id="prod-list">
+        <ul id="products-list">
           <%= render(partial: 'reports/partials/stock_products') %>
         </ul>
       </div>
