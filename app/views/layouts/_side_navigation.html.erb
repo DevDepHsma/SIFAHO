@@ -152,8 +152,8 @@
       <% end %>
     <% end %>
 
-    <% if policy(Report).index? %>
-      <%= link_to main_app.reports_path, class: "list-group-item list-group-item-action list-custom #{active_class_folder('reports')}" do %>
+    <% if policy(Report).new? %>
+      <%= link_to main_app.new_report_path, class: "list-group-item list-group-item-action list-custom #{active_class_folder('reports')}" do %>
         <span class="sb-icon">
           <%= fa_icon "file-alt" %>
         </span>

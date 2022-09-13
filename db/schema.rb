@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_09_01_104657) do
+ActiveRecord::Schema.define(version: 2022_09_09_132211) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "fuzzystrmatch"
@@ -1262,18 +1262,15 @@ ActiveRecord::Schema.define(version: 2022_09_01_104657) do
   end
 
   create_table "reports", force: :cascade do |t|
-    t.string "name", default: "Reporte"
-    t.datetime "since_date"
-    t.datetime "to_date"
-    t.integer "report_type", default: 0
-    t.bigint "supply_id"
     t.bigint "sector_id"
-    t.bigint "user_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.string "name"
+    t.string "sector_name"
+    t.string "establishment_name"
+    t.datetime "generated_name"
+    t.bigint "generated_by_user_id"
+    t.integer "report_type"
+    t.index ["generated_by_user_id"], name: "index_reports_on_generated_by_user_id"
     t.index ["sector_id"], name: "index_reports_on_sector_id"
-    t.index ["supply_id"], name: "index_reports_on_supply_id"
-    t.index ["user_id"], name: "index_reports_on_user_id"
   end
 
   create_table "roles", id: :serial, force: :cascade do |t|
@@ -1502,8 +1499,7 @@ ActiveRecord::Schema.define(version: 2022_09_01_104657) do
   add_foreign_key "quantity_ord_supply_lots", "supply_lots"
   add_foreign_key "report_product_lines", "products"
   add_foreign_key "reports", "sectors"
-  add_foreign_key "reports", "supplies"
-  add_foreign_key "reports", "users"
+  add_foreign_key "reports", "users", column: "generated_by_user_id"
   add_foreign_key "sectors", "establishments"
   add_foreign_key "states", "countries"
   add_foreign_key "stocks", "products"
