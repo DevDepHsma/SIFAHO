@@ -57,7 +57,8 @@ Rails.application.routes.draw do
     resources :reports, only: %i[index new create] do
       collection do
         get :get_stock_products, to: 'reports#get_stock_products', as: 'get_stock_products'
-        get 'set_product/:product_id', to: 'reports#set_product', as: 'set_product'
+        get 'select_product/:product_id', to: 'reports#select_product', as: 'select_product'
+        get 'unselect_product/:product_id', to: 'reports#unselect_product', as: 'unselect_product'
       end
     end
   end

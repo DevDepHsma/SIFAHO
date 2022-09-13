@@ -1,7 +1,10 @@
 <% @products.each do |product| %>
   <li>
-    <%=link_to set_product_reports_path(product.id, {product_ids: @product_ids, product_term: params[:product_term]}), remote: true do %>
+    <button type="button" 
+            onclick="toggleSelectProduct(event);"
+            data-url="<%= select_product_reports_path(product.id) %>"
+            id="sp-<%=product.id%>">
       <%= highlight("#{product.code} | #{product.name}", params[:product_term], ignore_special_chars: true) %>
-    <%end%>    
+    </button>
   </li>
 <%end%>
