@@ -39,10 +39,20 @@ class ReportsController < ApplicationController
   # params[:product_ids]    string with selected products
   # params[:product_term]   string for search by name or code (Product)
   # get all products with stock x >= 0 of current sector
-  def set_product
+  def select_product
     @product = Product.find(params[:product_id])
     @product_ids = params[:product_ids].present? ? params[:product_ids].split('_') : []
     @product_ids << @product.id
+    @products = Product.filter_by_stock({ sector_id: @current_user.sector_id, product: params[:product_term],
+                                          product_ids: @product_ids })
+                       .limit(20)
+    @product_ids = @product_ids.join('_')
+  end
+
+  def unselect_product
+    @product_id = params[:product_id]
+    @product_ids = params[:product_ids].present? ? params[:product_ids].split('_') : []
+    @product_ids.delete(@product_id)
     @products = Product.filter_by_stock({ sector_id: @current_user.sector_id, product: params[:product_term],
                                           product_ids: @product_ids })
                        .limit(20)

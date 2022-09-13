@@ -10,8 +10,14 @@ $(document).on('turbolinks:load', function() {
       });
     }
   });
-
-  $(".link-add-product").on('click', function(e){
-    console.log($(e.target).attr('data-value'));
-  });
 });
+
+function toggleSelectProduct(event){
+  const product_ids = $("input[name='product_ids']").val();
+  const product_term = $("input#products-search").val();
+  $.ajax({
+    url: $(event.target).attr('data-url'),
+    contentType: 'script',
+    data: { product_term, product_ids }
+  });
+}
