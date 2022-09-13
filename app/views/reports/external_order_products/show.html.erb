@@ -74,11 +74,11 @@
     <%= link_to :back, class: 'btn btn-light mr-2' do %>
       Volver
     <% end %>
-    <%= link_to reports_external_order_product_report_path(format: 'xlsx', id: @external_order_product_report.id), 
+    <%= link_to external_order_product_report_path(format: 'xlsx', id: @external_order_product_report.id), 
       class: "btn btn-success mr-2", id: "print-report", target: :_blank do %>
       <%= fa_icon "download" %> Excel
     <% end %>
-    <%= link_to reports_external_order_product_reports_path, class: "btn btn-primary" do %>
+    <%= link_to new_external_order_product_report_path, class: "btn btn-primary" do %>
       <%= fa_icon "plus" %> Nuevo reporte
     <% end %>
   </div>

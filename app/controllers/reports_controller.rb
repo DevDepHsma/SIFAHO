@@ -2,19 +2,38 @@ class ReportsController < ApplicationController
   before_action :set_report, only: [:show]
 
   def index
-    @filterrific = initialize_filterrific(
-      Report.to_sector(current_user.sector),
-      params[:filterrific],
-      select_options: {
-        sorted_by: Report.options_for_sorted_by,
-      },
-      persistence_id: false,
-      default_filter_params: {sorted_by: 'created_at_desc'},
-      available_filters: [
-        :sorted_by
-      ],
-    ) or return
-    @reports = @filterrific.find.page(params[:page]).per_page(15)
+    unless policy(:report).index?
+      flash[:error] = 'Usted no está autorizado para realizar esta acción.'
+      redirect_back(fallback_location: root_path)
+    end
+    # @filterrific = initialize_filterrific(
+    #   Report.to_sector(current_user.sector),
+    #   params[:filterrific],
+    #   select_options: {
+    #     sorted_by: Report.options_for_sorted_by,
+    #   },
+    #   persistence_id: false,
+    #   default_filter_params: {sorted_by: 'created_at_desc'},
+    #   available_filters: [
+    #     :sorted_by
+    #   ],
+    # ) or return
+    # @reports = @filterrific.find.page(params[:page]).per_page(15)
+
+    # @establishments = (request.format.xlsx? || request.format.pdf?) ? @filterrific.find : @filterrific.find.page(params[:page]).per(15)
+    respond_to do |format|
+      if policy(ExternalOrderProductReport).show?
+        # format.html
+        # format.js
+        # format.xlsx { headers['Content-Disposition'] = "attachment; filename=\"Establecimientos_#{DateTime.now.strftime('%d-%m-%Y')}.xlsx\"" }
+        format.html { redirect_to new_external_order_product_report_path }
+      # elsif 
+      # elsif policy(:external_order_provider).index?
+      #   format.html { redirect_to external_orders_providers_path }
+      end
+    end
+
+    
   end
 
   def show
