@@ -3,3 +3,7 @@
 ) %>
 
 $("#products-list").html("<%= stock_products %>");
+
+$("#products-search").removeAttr('disabled');
+$("#products-search").focus();
+$("#loader-container").css({'display': 'none'});
