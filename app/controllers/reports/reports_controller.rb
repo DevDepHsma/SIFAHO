@@ -6,34 +6,24 @@ class ReportsController < ApplicationController
       flash[:error] = 'Usted no está autorizado para realizar esta acción.'
       redirect_back(fallback_location: root_path)
     end
-    # @filterrific = initialize_filterrific(
-    #   Report.to_sector(current_user.sector),
-    #   params[:filterrific],
-    #   select_options: {
-    #     sorted_by: Report.options_for_sorted_by,
-    #   },
-    #   persistence_id: false,
-    #   default_filter_params: {sorted_by: 'created_at_desc'},
-    #   available_filters: [
-    #     :sorted_by
-    #   ],
-    # ) or return
-    # @reports = @filterrific.find.page(params[:page]).per_page(15)
-
-    # @establishments = (request.format.xlsx? || request.format.pdf?) ? @filterrific.find : @filterrific.find.page(params[:page]).per(15)
-    respond_to do |format|
-      if policy(ExternalOrderProductReport).show?
-        # format.html
-        # format.js
-        # format.xlsx { headers['Content-Disposition'] = "attachment; filename=\"Establecimientos_#{DateTime.now.strftime('%d-%m-%Y')}.xlsx\"" }
-        format.html { redirect_to new_external_order_product_report_path }
-      # elsif 
-      # elsif policy(:external_order_provider).index?
-      #   format.html { redirect_to external_orders_providers_path }
-      end
-    end
-
     
+  end
+
+  def new
+    policy(:report).new?
+    @report = Report.new
+  end
+  
+  def create
+    policy(:report).create?
+    @report = Report.create(sector: @current_user.sector, 
+                            sector_name: @current_user.sector.name, 
+                            establishment_name: @current_user.sector.establishment.name,
+                            generated_date: Time.now,
+                            generated_by_user_id: @current_user.id,
+                            report_type: report_params(:report_type))
+    puts "<======================".colorize(background: :red)
+    # @report = Report.new
   end
 
   def show
@@ -112,6 +102,6 @@ class ReportsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def report_params
-      params.require(:report).permit(:id, :since_date, :to_date, :supply_id,)
+      params.require(:report).permit(:id, :report_type)
     end
 end
