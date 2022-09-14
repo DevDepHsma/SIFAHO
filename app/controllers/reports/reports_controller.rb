@@ -12,7 +12,7 @@ class ReportsController < ApplicationController
     policy(:report).new?
     @report = Report.new
     @products = Product.filter_by_stock({ sector_id: @current_user.sector_id }).limit(20)
-    @patients = [] #Patient.filter_by_sector_dispensation({ sector_id: @current_user.sector_id }).limit(20)
+    @patients = [] # Patient.filter_by_sector_dispensation({ sector_id: @current_user.sector_id }).limit(20)
     @product_ids = []
   end
 
@@ -65,9 +65,7 @@ class ReportsController < ApplicationController
     @product_ids = @product_ids.join('_')
   end
 
-  def get_patients_by_sector
-
-  end
+  def get_patients_by_sector; end
 
   ###################################  DEPRECATED  ########################################
 
