@@ -1,0 +1,10 @@
+<% @products.each do |product| %>
+  <li>
+    <button type="button" 
+            onclick="toggleSelectProduct(event);"
+            data-url="<%= select_product_reports_path(product.id) %>"
+            id="sp-<%=product.id%>">
+      <%= highlight("#{product.code} | #{product.name}", params[:product_term], ignore_special_chars: true) %>
+    </button>
+  </li>
+<%end%>

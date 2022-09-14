@@ -21,6 +21,7 @@
         </div>
       <% end %>
 
+      <%# Products  %>
       <div>
         <div class="form-group">
           <label for="products-search">Productos</label>
@@ -31,6 +32,19 @@
           <%= render(partial: 'reports/partials/stock_products') %>
         </ul>
       </div>
+      
+      <%# Petients %>
+      <div>
+        <div class="form-group">
+          <label for="patients-search">Pacientes</label>
+          <div id="selected-patients"></div>
+          <input type="email" class="form-control" id="patients-search" data-url="<%= get_patients_by_sector_reports_path %>">
+        </div>
+        <ul id="patients-list">
+          <%= render(partial: 'reports/partials/sector_patients') %>
+        </ul>
+      </div>
+
     <%end%>
   </div>
 

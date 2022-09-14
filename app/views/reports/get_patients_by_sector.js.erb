@@ -1,0 +1,9 @@
+<% stock_products = escape_javascript(
+  render(partial: 'reports/partials/stock_products')
+) %>
+
+$("#products-list").html("<%= stock_products %>");
+
+$("#products-search").removeAttr('disabled');
+$("#products-search").focus();
+$("#loader-container").css({'display': 'none'});
