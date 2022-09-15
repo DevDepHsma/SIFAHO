@@ -12,8 +12,9 @@ class ReportsController < ApplicationController
     policy(:report).new?
     @report = Report.new
     @products = Product.filter_by_stock({ sector_id: @current_user.sector_id }).limit(20)
-    @patients = [] # Patient.filter_by_sector_dispensation({ sector_id: @current_user.sector_id }).limit(20)
+    @patients = Patient.filter_by_sector_dispensation({ sector_id: @current_user.sector_id }).limit(20)
     @product_ids = []
+    @patients_ids = []
   end
 
   def create
@@ -31,7 +32,7 @@ class ReportsController < ApplicationController
   # params[:product_term]   string for search by name or code (Product)
   def get_stock_products
     @product_ids = params[:product_ids]
-    @products = Product.filter_by_stock({ sector_id: @current_user.sector_id, product: params[:product_term],
+    @products = Product.filter_by_stock({ sector_id: @current_user.sector_id, product: params[:term],
                                           product_ids: params[:product_ids].split('_') })
                        .limit(20)
   end
@@ -44,7 +45,7 @@ class ReportsController < ApplicationController
     @product = Product.find(params[:product_id])
     @product_ids = params[:product_ids].present? ? params[:product_ids].split('_') : []
     @product_ids << @product.id
-    @products = Product.filter_by_stock({ sector_id: @current_user.sector_id, product: params[:product_term],
+    @products = Product.filter_by_stock({ sector_id: @current_user.sector_id, product: params[:term],
                                           product_ids: @product_ids })
                        .limit(20)
     @product_ids = @product_ids.join('_')
@@ -59,13 +60,47 @@ class ReportsController < ApplicationController
     @product_id = params[:product_id]
     @product_ids = params[:product_ids].present? ? params[:product_ids].split('_') : []
     @product_ids.delete(@product_id)
-    @products = Product.filter_by_stock({ sector_id: @current_user.sector_id, product: params[:product_term],
+    @products = Product.filter_by_stock({ sector_id: @current_user.sector_id, product: params[:term],
                                           product_ids: @product_ids })
                        .limit(20)
     @product_ids = @product_ids.join('_')
   end
 
-  def get_patients_by_sector; end
+  def get_patients_by_sector
+    @patient_ids = params[:patient_ids]
+    @patients = Patient.filter_by_sector_dispensation({ sector_id: @current_user.sector_id,
+                                                        patient: params[:term],
+                                                        patient_ids: params[:patient_ids].split('_') }).limit(20)
+  end
+
+  # Set selected patient and reset avaible patients list
+  # params[:patient_ids]    string with selected patients
+  # params[:patient_term]   string for search by name or code (Patient)
+  # get all patients with stock x >= 0 of current sector
+  def select_patient
+    @patient = Patient.find(params[:patient_id])
+    @patient_ids = params[:patient_ids].present? ? params[:patient_ids].split('_') : []
+    @patient_ids << @patient.id
+    @patients = Patient.filter_by_sector_dispensation({ sector_id: @current_user.sector_id, patient: params[:term],
+                                                        patient_ids: @patient_ids })
+                       .limit(20)
+    @patient_ids = @patient_ids.join('_')
+  end
+
+  # Unset selected patients and reset avaible patients list
+  # params[:patient_ids]    string with selected patients
+  # params[:patient_id]     patient id to remove from selected patients
+  # params[:patient_term]   keep patient term search
+  # get all patients with stock x >= 0 of current sector
+  def unselect_patient
+    @patient_id = params[:patient_id]
+    @patient_ids = params[:patient_ids].present? ? params[:patient_ids].split('_') : []
+    @patient_ids.delete(@patient_id)
+    @patients = Patient.filter_by_sector_dispensation({ sector_id: @current_user.sector_id, patient: params[:term],
+                                                        patient_ids: @patient_ids })
+                       .limit(20)
+    @patient_ids = @patient_ids.join('_')
+  end
 
   ###################################  DEPRECATED  ########################################
 

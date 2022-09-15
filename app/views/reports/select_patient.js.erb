@@ -1,0 +1,14 @@
+<% select_patient_partial = escape_javascript(
+  render(partial: 'reports/partials/selected_patient')
+) %>
+
+$("input[name='patient_ids']").val("<%= @patient_ids %>");
+$("#selected-patients").append("<%= select_patient_partial %>");
+
+<% sector_patients = escape_javascript(
+  render(partial: 'reports/partials/sector_patients')
+) %>
+
+$("#patients-list").html("<%= sector_patients %>");
+
+$("#loader-container").css({'display': 'none'});

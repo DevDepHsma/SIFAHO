@@ -31,10 +31,10 @@ class Patient < ApplicationRecord
 
   filterrific(
     default_filter_params: { sorted_by: 'created_at_desc' },
-    available_filters: [
-      :sorted_by,
-      :search_fullname,
-      :search_dni,
+    available_filters: %i[
+      sorted_by
+      search_fullname
+      search_dni
     ]
   )
   pg_search_scope :get_by_dni_and_fullname,
@@ -58,23 +58,37 @@ class Patient < ApplicationRecord
     case sort_option.to_s
     when /^created_at_/s
       # Ordenamiento por fecha de creación en la BD
-      order("patients.created_at #{ direction }")
+      order("patients.created_at #{direction}")
     when /^nacimiento_/
       # Ordenamiento por fecha de creación en la BD
-      order("patients.birthdate #{ direction }")
+      order("patients.birthdate #{direction}")
     when /^dni_/
       # Ordenamiento por fecha de creación en la BD
-      order("patients.dni #{ direction }")
+      order("patients.dni #{direction}")
     when /^nombre_/
       # Ordenamiento por nombre de paciente
-      order("LOWER(patients.first_name) #{ direction }")
+      order("LOWER(patients.first_name) #{direction}")
     when /^apellido_/
       # Ordenamiento por apellido de paciente
-      order("LOWER(patients.last_name) #{ direction }")
+      order("LOWER(patients.last_name) #{direction}")
     else
       # Si no existe la opcion de ordenamiento se levanta la excepcion
-      raise(ArgumentError, "Invalid sort option: #{ sort_option.inspect }")
+      raise(ArgumentError, "Invalid sort option: #{sort_option.inspect}")
     end
+  }
+  scope :filter_by_sector_dispensation, lambda { |filter_params|
+    op_patient_ids = OutpatientPrescription.where(provider_sector_id: filter_params[:sector_id], status: 'dispensada').pluck(:patient_id).uniq
+    cr_patient_ids = ChronicPrescription.where(provider_sector_id: filter_params[:sector_id], status: ['dispensada', 'dispensada_parcial']).pluck(:patient_id).uniq
+    patient_ids = (op_patient_ids + cr_patient_ids).uniq
+    query = where(id: patient_ids)
+    if filter_params[:patient].present?
+      query = query.where('unaccent(lower(last_name)) like ? OR unaccent(lower(first_name)) like ? OR unaccent(lower(dni)) like ?',
+                          "%#{filter_params[:patient].downcase.parameterize}%",
+                          "%#{filter_params[:patient].downcase.parameterize}%",
+                          "%#{filter_params[:patient]}%")
+    end
+    query = query.where.not(id: filter_params[:patient_ids]) if filter_params[:patient_ids]
+    return query
   }
 
   # Método para establecer las opciones del select input del filtro
@@ -83,7 +97,7 @@ class Patient < ApplicationRecord
     [
       ['Creación (desc)', 'created_at_desc'],
       ['Nombre (a-z)', 'nombre_asc'],
-      ['Apellido (a-z)', 'apellido_asc'],
+      ['Apellido (a-z)', 'apellido_asc']
     ]
   end
 
@@ -92,25 +106,25 @@ class Patient < ApplicationRecord
   end
 
   def fullname
-    self.last_name+", "+self.first_name
+    last_name + ', ' + first_name
   end
 
   def age_string
-    if self.birthdate.present?
-      age = ((Time.zone.now - self.birthdate.to_time) / 1.year.seconds).floor
-      age.to_s+" años"
+    if birthdate.present?
+      age = ((Time.zone.now - birthdate.to_time) / 1.year.seconds).floor
+      age.to_s + ' años'
     else
-      "----"
+      '----'
     end
   end
 
   # Return formatted birthdate
   def birthdate_string
-    self.birthdate.present? ? self.birthdate.strftime("%d/%m/%Y") : '---'
+    birthdate.present? ? birthdate.strftime('%d/%m/%Y') : '---'
   end
 
   # Return the last hospitalization
   def last_hospitalization
-    self.inpatient_movements.admissions.last
+    inpatient_movements.admissions.last
   end
 end
