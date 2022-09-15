@@ -1,0 +1,6 @@
+<button type="button" 
+        onclick="toggleSelectItem(event, 'patient');"
+        data-url="<%= unselect_patient_reports_path(@patient.id) %>"
+        id="sp-<%=@patient.id%>">
+  <%= "#{@patient.dni} | #{@patient.last_name} #{@patient.first_name}" %>
+</button>

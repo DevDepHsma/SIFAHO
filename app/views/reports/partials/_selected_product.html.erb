@@ -1,5 +1,5 @@
 <button type="button" 
-        onclick="toggleSelectProduct(event);"
+        onclick="toggleSelectItem(event, 'product');"
         data-url="<%= unselect_product_reports_path(@product.id) %>"
         id="sp-<%=@product.id%>">
   <%= "#{@product.code} | #{@product.name}" %>

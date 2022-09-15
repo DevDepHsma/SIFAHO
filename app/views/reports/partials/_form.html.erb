@@ -14,6 +14,7 @@
     <%= simple_form_for @report, html: { role: 'check-modified'} do |f| %>
       <%= f.error_notification %>
       <input type="hidden" name="product_ids">
+      <input type="hidden" name="patient_ids">
       <% Report.report_types.each do |type| %>
         <div class="custom-control custom-radio">
           <input type="radio" class="custom-control-input" id="report_type" name="report_type" required value="<%= type[1] %>">
@@ -26,7 +27,7 @@
         <div class="form-group">
           <label for="products-search">Productos</label>
           <div id="selected-products"></div>
-          <input type="email" class="form-control" id="products-search" data-url="<%= get_stock_products_reports_path %>">
+          <input type="text" class="form-control" id="products-search" data-url="<%= get_stock_products_reports_path %>">
         </div>
         <ul id="products-list">
           <%= render(partial: 'reports/partials/stock_products') %>
@@ -38,7 +39,7 @@
         <div class="form-group">
           <label for="patients-search">Pacientes</label>
           <div id="selected-patients"></div>
-          <input type="email" class="form-control" id="patients-search" data-url="<%= get_patients_by_sector_reports_path %>">
+          <input type="text" class="form-control" id="patients-search" data-url="<%= get_patients_by_sector_reports_path %>">
         </div>
         <ul id="patients-list">
           <%= render(partial: 'reports/partials/sector_patients') %>
