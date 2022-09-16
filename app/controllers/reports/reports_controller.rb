@@ -24,7 +24,10 @@ class ReportsController < ApplicationController
                             establishment_name: @current_user.sector.establishment.name,
                             generated_date: Time.now,
                             generated_by_user_id: @current_user.id,
-                            report_type: report_params(:report_type))
+                            report_type: report_params[:report_type].to_i)
+    @report.set_report_by_patients({ sector_id: @current_user.sector_id,
+                                     patient_ids: report_params[:patient_ids].split('_'),
+                                     product_ids: report_params[:product_ids].split('_') })
   end
 
   # get all products with stock x >= 0 of current sector
@@ -184,6 +187,6 @@ class ReportsController < ApplicationController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def report_params
-    params.require(:report).permit(:id, :report_type)
+    params.require(:report).permit(:report_type, :product_ids, :patient_ids)
   end
 end
