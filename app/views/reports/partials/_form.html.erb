@@ -13,11 +13,11 @@
   <div class="card-body">
     <%= simple_form_for @report, html: { role: 'check-modified'} do |f| %>
       <%= f.error_notification %>
-      <input type="hidden" name="product_ids">
-      <input type="hidden" name="patient_ids">
+      <input type="hidden" name="report[product_ids]">
+      <input type="hidden" name="report[patient_ids]">
       <% Report.report_types.each do |type| %>
         <div class="custom-control custom-radio">
-          <input type="radio" class="custom-control-input" id="report_type" name="report_type" required value="<%= type[1] %>">
+          <input type="radio" class="custom-control-input" id="report_type" name="report[report_type]" required value="<%= type[1] %>">
           <label class="custom-control-label" for="report_type"><%= type[0] %></label>
         </div>
       <% end %>

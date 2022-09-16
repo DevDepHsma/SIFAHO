@@ -4,8 +4,8 @@ $(document).on('turbolinks:load', function() {
     if((e.key.match(regexp) || e.key === 'Backspace') && ($(e.target).val().length > 2 || $(e.target).val().length == 0)){
       $(e.target).attr('disabled', true);
       $("#loader-container").css({'display': 'flex'});
-      const product_ids = $("input[name='product_ids']").val();
-      const patient_ids = $("input[name='patient_ids']").val();
+      const product_ids = $("input[name='report[product_ids]']").val();
+      const patient_ids = $("input[name='report[patient_ids]']").val();
       $.ajax({
         url: $(e.target).attr('data-url'),
         contentType: 'script',
@@ -17,8 +17,8 @@ $(document).on('turbolinks:load', function() {
 
 function toggleSelectItem(event, type){
   $("#loader-container").css({'display': 'flex'});
-  const product_ids = $("input[name='product_ids']").val();
-  const patient_ids = $("input[name='patient_ids']").val();
+  const product_ids = $("input[name='report[product_ids]']").val();
+  const patient_ids = $("input[name='report[patient_ids]']").val();
   const term = type === 'product' ? $("input#products-search").val() : $("input#patients-search").val();
   $.ajax({
     url: $(event.target).attr('data-url'),
