@@ -8,11 +8,9 @@ class CreateReportPatients < ActiveRecord::Migration[5.2]
       t.string :product_name
       t.integer :product_quantity
       t.integer :patient_dni
-      t.string :patient_fullname
+      t.string :patient_full_name
       t.integer :patient_age
       t.date :patient_birthdate
-      t.string :outpatient_pres_obs
-      t.string :chronic_pres_diag
       t.timestamps
     end
   end

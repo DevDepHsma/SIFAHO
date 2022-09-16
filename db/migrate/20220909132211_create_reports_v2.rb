@@ -8,7 +8,7 @@ class CreateReportsV2 < ActiveRecord::Migration[5.2]
       t.string :name
       t.string :sector_name
       t.string :establishment_name
-      t.datetime :generated_name
+      t.datetime :generated_date
       t.references :generated_by_user, index: true, foreign_key: {to_table: :users}
       t.integer :report_type
     end
