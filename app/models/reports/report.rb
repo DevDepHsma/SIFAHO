@@ -5,8 +5,14 @@ class Report < ApplicationRecord
 
   enum report_type: { by_patient: 1 }
 
-  def set_report_by_patients(params_by_patient)
-    opprescriptions = OutpatientPrescriptionProduct.get_delivery_products_by_patient(params_by_patient)
+  def build_report_values(args)
+    set_by_patients(args) if by_patient?
+  end
+
+  def set_by_patients(args)
+    opprescriptions = OutpatientPrescriptionProduct.get_delivery_products_by_patient({ sector_id: sector_id,
+                                                                                       patient_ids: args[:patient_ids].split('_'),
+                                                                                       product_ids: args[:product_ids].split('_') })
     opprescriptions.each do |opp|
       ReportPatient.create(
         report_id: id,

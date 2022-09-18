@@ -40,12 +40,12 @@ class OutpatientPrescriptionProduct < ApplicationRecord
     select('SUM("delivery_quantity") as product_quantity',
            :product_id,
            'patients.id as patient_id',
-           'CONCAT(patients.last_name, patients.first_name) as patient_full_name',
+           'CONCAT(patients.last_name, \' \', patients.first_name) as patient_full_name',
            'patients.dni as patient_dni',
            'patients.birthdate as patient_birthdate')
       .joins(:patient)
       .where(outpatient_prescription_id: OutpatientPrescription.where(provider_sector_id: filter_params[:sector_id],
-                                                                      status: 'dispensada', 
+                                                                      status: 'dispensada',
                                                                       patient_id: filter_params[:patient_ids]))
       .where(product_id: filter_params[:product_ids])
       .group('patients.id', :product_id)
