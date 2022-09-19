@@ -10,10 +10,16 @@ class Report < ApplicationRecord
   end
 
   def set_by_patients(args)
-    opprescriptions = OutpatientPrescriptionProduct.get_delivery_products_by_patient({ sector_id: sector_id,
+    opproducts = OutpatientPrescriptionProduct.get_delivery_products_by_patient({ sector_id: sector_id,
                                                                                        patient_ids: args[:patient_ids].split('_'),
                                                                                        product_ids: args[:product_ids].split('_') })
-    opprescriptions.each do |opp|
+
+    cpproducts = ChronicPrescriptionProduct.get_delivery_products_by_patient({ sector_id: sector_id,
+                                                                                    patient_ids: args[:patient_ids].split('_'),
+                                                                                    product_ids: args[:product_ids].split('_') })
+
+    # pproducts = 
+    opproducts.each do |opp|
       ReportPatient.create(
         report_id: id,
         product_id: opp.product_id,
