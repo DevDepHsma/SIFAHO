@@ -1,4 +1,4 @@
-$("input[name='patient_ids']").val("<%= @patient_ids %>");
+$("input[name='report[patient_ids]']").val("<%= @patient_ids %>");
 $("button#sp-<%= @patient_id %>").remove();
 <% sector_patients = escape_javascript(
   render(partial: 'reports/partials/sector_patients')
