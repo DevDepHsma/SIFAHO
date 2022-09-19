@@ -17,12 +17,13 @@
     <table class="table table-hover table-striped table-condensed">
       <thead>
         <tr>
-          <th>Código producto</th>
+          <th>Cód producto</th>
           <th>Producto</th>
+          <th>Paciente</th>
+          <th class="text-center">Dni</th>
+          <th class="text-center">Edad</th>
+          <th class="text-center">Fecha nacimiento</th>
           <th>Cantidad</th>
-          <th>Apellido y Nombre</th>
-          <th>Dni</th>
-          <th >Edad</th>
         </tr>
       </thead>
       <tbody id=reports>
@@ -30,10 +31,11 @@
           <tr>
             <td><%= rp.product_code %></td>
             <td><%= rp.product_name %></td>
-            <td><%= rp.product_quantity %></td>
             <td><%= rp.patient_full_name %></td>
-            <td><%= rp.patient_dni %></td>
-            <td><%= rp.patient_age %></td>
+            <td class="text-center"><%= rp.patient_dni %></td>
+            <td class="text-center"><%= rp.patient_age %></td>
+            <td class="text-center"><%= rp.patient_birthdate.strftime("%d/%m/%Y") %></td>
+            <td class="text-center table-danger"><%= rp.product_quantity %></td>
           </tr>
         <% end %>
       </tbody>
@@ -43,5 +45,10 @@
   </div>
   <div class="card-footer d-flex justify-content-end">
     <%= link_to 'Volver', sectors_path, class: 'btn btn-light mr-2' %>
+
+    <%= link_to report_path(format: 'xlsx', id: @report.id), 
+      class: "btn btn-success mr-2", id: "print-report", target: :_blank do %>
+      <%= fa_icon "download" %> Excel
+    <% end %>
   </div>
 </div>

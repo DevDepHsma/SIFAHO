@@ -110,7 +110,15 @@ class ReportsController < ApplicationController
   ###################################  DEPRECATED  ########################################
 
   def show
-    authorize @report    
+    authorize @report
+    report_name = @report.name.present? ? @report.name.downcase.joins('_') : 'reporte_por_paciente'
+    respond_to do |format|
+      format.html
+      format.xlsx do
+        headers['Content-Disposition'] =
+          "attachment; filename=\"#{report_name}_#{DateTime.now.strftime('%d-%m-%Y')}.xlsx\""
+      end
+    end
   end
 
   private
