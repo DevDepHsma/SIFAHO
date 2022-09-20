@@ -2,7 +2,7 @@ $(document).on('turbolinks:load', function() {
   let $_AJAX
   $("#products-search , #patients-search").on('keyup', function(e){
     const regexp = /^[a-zA-Z | 0-9 | áéíóúñ%°,.-]$/ig;
-    if((e.key.match(regexp) || e.key === 'Backspace') && ($(e.target).val().length > 2 || $(e.target).val().length == 0)){
+    if(e.key.match(regexp) || e.key === 'Backspace'){
       clearTimeout($_AJAX);
       $_AJAX = setTimeout(function(){
         $(e.target).attr('disabled', true);
