@@ -50,13 +50,14 @@ class Report < ApplicationRecord
                 t2.patient_dni,
                 t2.patient_birthdate
               FROM (#{cpproducts.to_sql}) as t2) as t3
-            GROUP BY t3.patient_id,
-                    t3.product_id,
-                    t3.product_code,
-                    t3.product_name,
-                    t3.patient_full_name,
-                    t3.patient_dni,
-                    t3.patient_birthdate"
+            GROUP BY
+              t3.patient_id,
+              t3.product_id,
+              t3.product_code,
+              t3.product_name,
+              t3.patient_full_name,
+              t3.patient_dni,
+              t3.patient_birthdate"
     dispensed_products = ActiveRecord::Base.connection.execute(query).entries
 
     dispensed_products.each do |dp|
