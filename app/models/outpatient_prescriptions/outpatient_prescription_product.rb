@@ -38,17 +38,19 @@ class OutpatientPrescriptionProduct < ApplicationRecord
 
   scope :get_delivery_products_by_patient, lambda { |filter_params|
     select('SUM("delivery_quantity") as product_quantity',
-           :product_id,
+           'products.id as product_id',
+           'products.code as product_code',
+           'products.name as product_name',
            'patients.id as patient_id',
            'CONCAT(patients.last_name, \' \', patients.first_name) as patient_full_name',
            'patients.dni as patient_dni',
            'patients.birthdate as patient_birthdate')
-      .joins(:patient)
+      .joins(:patient, :product)
       .where(outpatient_prescription_id: OutpatientPrescription.where(provider_sector_id: filter_params[:sector_id],
                                                                       status: 'dispensada',
                                                                       patient_id: filter_params[:patient_ids]))
       .where(product_id: filter_params[:product_ids])
-      .group('patients.id', :product_id)
+      .group('patients.id', 'products.id')
       .order('patient_full_name ASC')
   }
 
