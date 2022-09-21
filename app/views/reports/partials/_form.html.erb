@@ -24,26 +24,49 @@
 
       <%# Products  %>
       <div>
-        <div class="form-group">
+        <div class="form-group mb-0">
           <label for="products-search">Productos</label>
           <div id="selected-products"></div>
-          <input type="text" class="form-control" id="products-search" data-url="<%= get_stock_products_reports_path %>">
+          <div class="input-group mb-0">
+            <input type="text" class="form-control" id="products-search" data-url="<%= get_stock_products_reports_path %>" autocomplete="off" data-target="#products-collapse" placeholder="Producto: Código | Nombre">
+            <div class="input-group-append">
+              <button class="btn btn-outline-secondary" type="button" data-toggle="collapse" data-target="#products-collapse">
+                <%= fa_icon 'caret-down' %>
+              </button>
+            </div>
+          </div>
         </div>
-        <ul id="products-list">
-          <%= render(partial: 'reports/partials/stock_products') %>
-        </ul>
+        <div class="collapse" id="products-collapse">
+          <div class="card card-body">
+            <ul id="products-list">
+              <%= render(partial: 'reports/partials/stock_products') %>
+            </ul>
+          </div>
+        </div>
+        
       </div>
       
       <%# Petients %>
       <div>
-        <div class="form-group">
+        <div class="form-group mb-0">
           <label for="patients-search">Pacientes</label>
           <div id="selected-patients"></div>
-          <input type="text" class="form-control" id="patients-search" data-url="<%= get_patients_by_sector_reports_path %>">
+          <div class="input-group mb-0">
+            <input type="text" class="form-control" id="patients-search" data-url="<%= get_patients_by_sector_reports_path %>" autocomplete="off" data-target="#patients-collapse" placeholder="Paciente: DNI | Apellido | Nombre">
+            <div class="input-group-append">
+              <button class="btn btn-outline-secondary" type="button" data-toggle="collapse" data-target="#patients-collapse">
+                <%= fa_icon 'caret-down' %>
+              </button>
+            </div>
+          </div>          
         </div>
-        <ul id="patients-list">
-          <%= render(partial: 'reports/partials/sector_patients') %>
-        </ul>
+        <div class="collapse" id="patients-collapse">
+          <div class="card card-body">
+            <ul id="patients-list">
+              <%= render(partial: 'reports/partials/sector_patients') %>
+            </ul>
+          </div>
+        </div>
       </div>
 
     <%end%>

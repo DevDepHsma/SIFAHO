@@ -1,6 +1,11 @@
-<button type="button" 
+<button type="button" class="btn-unselect-item" 
         onclick="toggleSelectItem(event, 'patient');"
         data-url="<%= unselect_patient_reports_path(@patient.id) %>"
         id="sp-<%=@patient.id%>">
-  <%= "#{@patient.dni} | #{@patient.last_name} #{@patient.first_name}" %>
+  <span class="mr-2">
+    <%= "#{@patient.dni} | #{@patient.last_name.upcase} #{@patient.first_name.upcase}" %>
+  </span>
+  <span class="times-icon">
+    <%= fa_icon 'times', class: 'text-danger' %>
+  </span>
 </button>
