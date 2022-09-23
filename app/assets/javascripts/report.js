@@ -28,6 +28,11 @@ $(document).on('turbolinks:load', function() {
       }, 700);      
     }
   });
+
+  $("#all-products").on('change', function(e){
+    console.log($(e.target).is(":checked"), "<==========")
+    $(e.target).is(":checked") ? $("#products-selection-cotainer").hide() : $("#products-selection-cotainer").show();
+  });
 });
 
 
