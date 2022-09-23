@@ -1,6 +1,6 @@
 module ProfileHelper
   def patient_avatar(patient, first_size=162, second_size=200 )
-    if patient.avatar.attached?
+    if patient.avatar.attached? && patient.avatar.variable?
       main_app.url_for(patient.avatar.variant(resize: "#{first_size}x#{second_size}^", gravity: "center", crop: "#{first_size}x#{second_size}+0+0"))
     else
       image_path('profile-placeholder.jpg')
