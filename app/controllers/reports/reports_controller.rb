@@ -11,8 +11,8 @@ class ReportsController < ApplicationController
   def new
     policy(:report).new?
     @report = Report.new
-    @products = Product.filter_by_stock({ sector_id: @current_user.sector_id }).limit(20)
-    @patients = Patient.filter_by_sector_dispensation({ sector_id: @current_user.sector_id }).limit(20)
+    @products = Product.filter_by_stock({ sector_id: @current_user.sector_id }).limit(11)
+    @patients = Patient.filter_by_sector_dispensation({ sector_id: @current_user.sector_id }).limit(11)
     @product_ids = []
     @patients_ids = []
   end

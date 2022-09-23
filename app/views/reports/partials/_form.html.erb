@@ -26,6 +26,13 @@
       <div>
         <div class="form-group mb-0">
           <label for="products-search">Productos</label>
+          <div class="custom-control custom-switch">
+            <input type="checkbox" class="custom-control-input" id="all-products">
+            <label class="custom-control-label" for="all-products">Todos los productos</label>
+          </div>
+        </div>
+
+        <div id="products-selection-cotainer">
           <div id="selected-products"></div>
           <div class="input-group mb-0">
             <input type="text" class="form-control" id="products-search" data-url="<%= get_stock_products_reports_path %>" autocomplete="off" data-target="#products-collapse" placeholder="Producto: Código | Nombre">
@@ -35,12 +42,12 @@
               </button>
             </div>
           </div>
-        </div>
-        <div class="collapse" id="products-collapse">
-          <div class="card card-body">
-            <ul id="products-list" class="mb-0">
-              <%= render(partial: 'reports/partials/stock_products') %>
-            </ul>
+          <div class="collapse" id="products-collapse">
+            <div class="card card-body">
+              <ul id="products-list" class="mb-0">
+                <%= render(partial: 'reports/partials/stock_products') %>
+              </ul>
+            </div>
           </div>
         </div>
         
