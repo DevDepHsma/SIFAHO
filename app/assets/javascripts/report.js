@@ -29,9 +29,8 @@ $(document).on('turbolinks:load', function() {
     }
   });
 
-  $("#all-products").on('change', function(e){
-    console.log($(e.target).is(":checked"), "<==========")
-    $(e.target).is(":checked") ? $("#products-selection-cotainer").hide() : $("#products-selection-cotainer").show();
+  $("#report-all-products, #report-all-patients").on('change', function(e){
+    $(e.target).is(":checked") ? $($(e.target).attr('data-target')).hide() : $($(e.target).attr('data-target')).show();
   });
 });
 

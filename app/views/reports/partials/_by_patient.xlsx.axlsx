@@ -17,7 +17,7 @@ wb.add_worksheet(name: @report.name.present? ? @report.name : "Reporte por pacie
       rp.patient_full_name,
       rp.patient_dni,
       rp.patient_age,
-      rp.patient_birthdate.strftime("%d/%m/%Y"),
+      rp.patient_birthdate.present? ? rp.patient_birthdate.strftime("%d/%m/%Y") : '-',
       rp.product_quantity,
     ], style: [justify_center, justify_center, justify_left, justify_left, justify_center, justify_center, justify_center, justify_right]
   end
