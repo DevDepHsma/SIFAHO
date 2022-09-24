@@ -1,6 +1,11 @@
 class ReportsController < ApplicationController
   before_action :set_report, only: [:show]
 
+  def initialize
+    super
+    @result_size = 11
+  end
+
   def index
     unless policy(:report).index?
       flash[:error] = 'Usted no está autorizado para realizar esta acción.'
@@ -11,8 +16,8 @@ class ReportsController < ApplicationController
   def new
     policy(:report).new?
     @report = Report.new
-    @products = Product.filter_by_stock({ sector_id: @current_user.sector_id }).limit(11)
-    @patients = Patient.filter_by_sector_dispensation({ sector_id: @current_user.sector_id }).limit(11)
+    @products = Product.filter_by_stock({ sector_id: @current_user.sector_id }).limit(@result_size)
+    @patients = Patient.filter_by_sector_dispensation({ sector_id: @current_user.sector_id }).limit(@result_size)
     @product_ids = []
     @patients_ids = []
   end
@@ -39,7 +44,7 @@ class ReportsController < ApplicationController
     @product_ids = params[:product_ids]
     @products = Product.filter_by_stock({ sector_id: @current_user.sector_id, product: params[:term],
                                           product_ids: params[:product_ids].split('_') })
-                       .limit(20)
+                       .limit(@result_size)
   end
 
   # Set selected product and reset avaible products list
@@ -52,7 +57,7 @@ class ReportsController < ApplicationController
     @product_ids << @product.id
     @products = Product.filter_by_stock({ sector_id: @current_user.sector_id, product: params[:term],
                                           product_ids: @product_ids })
-                       .limit(20)
+                       .limit(@result_size)
     @product_ids = @product_ids.join('_')
   end
 
@@ -67,7 +72,7 @@ class ReportsController < ApplicationController
     @product_ids.delete(@product_id)
     @products = Product.filter_by_stock({ sector_id: @current_user.sector_id, product: params[:term],
                                           product_ids: @product_ids })
-                       .limit(20)
+                       .limit(@result_size)
     @product_ids = @product_ids.join('_')
   end
 
@@ -75,7 +80,7 @@ class ReportsController < ApplicationController
     @patient_ids = params[:patient_ids]
     @patients = Patient.filter_by_sector_dispensation({ sector_id: @current_user.sector_id,
                                                         patient: params[:term],
-                                                        patient_ids: params[:patient_ids].split('_') }).limit(20)
+                                                        patient_ids: params[:patient_ids].split('_') }).limit(@result_size)
   end
 
   # Set selected patient and reset avaible patients list
@@ -88,7 +93,7 @@ class ReportsController < ApplicationController
     @patient_ids << @patient.id
     @patients = Patient.filter_by_sector_dispensation({ sector_id: @current_user.sector_id, patient: params[:term],
                                                         patient_ids: @patient_ids })
-                       .limit(20)
+                       .limit(@result_size)
     @patient_ids = @patient_ids.join('_')
   end
 
@@ -103,7 +108,7 @@ class ReportsController < ApplicationController
     @patient_ids.delete(@patient_id)
     @patients = Patient.filter_by_sector_dispensation({ sector_id: @current_user.sector_id, patient: params[:term],
                                                         patient_ids: @patient_ids })
-                       .limit(20)
+                       .limit(@result_size)
     @patient_ids = @patient_ids.join('_')
   end
 
@@ -130,6 +135,6 @@ class ReportsController < ApplicationController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def report_params
-    params.require(:report).permit(:report_type, :product_ids, :patient_ids)
+    params.require(:report).permit(:report_type, :product_ids, :patient_ids, :all_products, :all_patients)
   end
 end

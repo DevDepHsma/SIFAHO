@@ -12,11 +12,15 @@ class Report < ApplicationRecord
   def set_by_patients(args)
     opproducts = OutpatientPrescriptionProduct.get_delivery_products_by_patient({ sector_id: sector_id,
                                                                                   patient_ids: args[:patient_ids].split('_'),
-                                                                                  product_ids: args[:product_ids].split('_') })
+                                                                                  product_ids: args[:product_ids].split('_'),
+                                                                                  all_products: args[:all_products],
+                                                                                  all_patients: args[:all_patients] })
 
     cpproducts = ChronicPrescriptionProduct.get_delivery_products_by_patient({ sector_id: sector_id,
                                                                                patient_ids: args[:patient_ids].split('_'),
-                                                                               product_ids: args[:product_ids].split('_') })
+                                                                               product_ids: args[:product_ids].split('_'),
+                                                                               all_products: args[:all_products],
+                                                                               all_patients: args[:all_patients] })
 
     query = "SELECT
               SUM(t3.product_quantity) as product_quantity,
@@ -61,6 +65,7 @@ class Report < ApplicationRecord
     dispensed_products = ActiveRecord::Base.connection.execute(query).entries
 
     dispensed_products.each do |dp|
+      patient_age = ((Time.zone.now - dp['patient_birthdate'].to_time) / 1.year.seconds).floor if dp['patient_birthdate'].present?
       ReportPatient.create(
         report_id: id,
         product_id: dp['product_id'],
@@ -70,7 +75,7 @@ class Report < ApplicationRecord
         product_quantity: dp['product_quantity'],
         patient_dni: dp['patient_dni'],
         patient_full_name: dp['patient_full_name'],
-        patient_age: ((Time.zone.now - dp['patient_birthdate'].to_time) / 1.year.seconds).floor,
+        patient_age: patient_age,
         patient_birthdate: dp['patient_birthdate']
       )
     end
