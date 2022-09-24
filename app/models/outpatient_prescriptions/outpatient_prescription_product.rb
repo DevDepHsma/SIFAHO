@@ -43,6 +43,14 @@ class OutpatientPrescriptionProduct < ApplicationRecord
       sub_query_prescriptions = sub_query_prescriptions.where(patient_id: filter_params[:patient_ids])
     end
 
+    if filter_params[:from_date].present?
+      sub_query_prescriptions = sub_query_prescriptions.where('date_dispensed >= ?', filter_params[:from_date])
+    end
+
+    if filter_params[:to_date].present?
+      sub_query_prescriptions = sub_query_prescriptions.where('date_dispensed <= ?', filter_params[:to_date])
+    end
+
     query = select('SUM("delivery_quantity") as product_quantity',
                    'products.id as product_id',
                    'products.code as product_code',

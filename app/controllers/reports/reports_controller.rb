@@ -135,6 +135,6 @@ class ReportsController < ApplicationController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def report_params
-    params.require(:report).permit(:report_type, :product_ids, :patient_ids, :all_products, :all_patients)
+    params.require(:report).permit(:report_type, :product_ids, :patient_ids, :all_products, :all_patients, :from_date, :to_date)
   end
 end
