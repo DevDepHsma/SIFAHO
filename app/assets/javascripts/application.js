@@ -107,7 +107,8 @@ $(document).on('turbolinks:load', function() {
   $('.datepicker').datepicker({
     format: "dd/mm/yyyy",
     language: "es",
-    autoclose: true
+    autoclose: true,
+    orientation: 'bottom'
   });
 
   $('.selectpicker').selectpicker({

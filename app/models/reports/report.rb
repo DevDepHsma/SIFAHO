@@ -14,13 +14,17 @@ class Report < ApplicationRecord
                                                                                   patient_ids: args[:patient_ids].split('_'),
                                                                                   product_ids: args[:product_ids].split('_'),
                                                                                   all_products: args[:all_products],
-                                                                                  all_patients: args[:all_patients] })
+                                                                                  all_patients: args[:all_patients],
+                                                                                  from_date: args[:from_date],
+                                                                                  to_date: args[:to_date] })
 
     cpproducts = ChronicPrescriptionProduct.get_delivery_products_by_patient({ sector_id: sector_id,
                                                                                patient_ids: args[:patient_ids].split('_'),
                                                                                product_ids: args[:product_ids].split('_'),
                                                                                all_products: args[:all_products],
-                                                                               all_patients: args[:all_patients] })
+                                                                               all_patients: args[:all_patients],
+                                                                               from_date: args[:from_date],
+                                                                               to_date: args[:to_date] })
 
     query = "SELECT
               SUM(t3.product_quantity) as product_quantity,
