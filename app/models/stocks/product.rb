@@ -29,19 +29,13 @@ class Product < ApplicationRecord
   has_many :lots
   has_many :stocks
 
-
   # Validations
   validates_presence_of :name, :code, :area_id, :unity_id
   validates_uniqueness_of :code
 
   # Delegations
- 
-  delegate :term, :fsn, :concept_id, :semantic_tag, to: :snomed_concept, prefix: :snomed, allow_nil: true
 
-  filterrific(
-    default_filter_params: { sorted_by: 'codigo_asc' },
-    available_filters: %i[search_code search_name for_statuses with_area_ids sorted_by]
-  )
+  delegate :term, :fsn, :concept_id, :semantic_tag, to: :snomed_concept, prefix: :snomed, allow_nil: true
 
   # To filter records by controller params
   # Slice params "search_code, search_name, with_area_ids"
@@ -98,16 +92,13 @@ class Product < ApplicationRecord
   }
 
   scope :filter_by_params, lambda { |filter_params|
-    query = self.select(:id, :name, :status, :code, "unities.name as unity_name","areas.name as area_name").joins(:unity, :area)
-    
+    query = self.select(:id, :name, :status, :code, 'unities.name as unity_name', 'areas.name as area_name').joins(:unity, :area)
 
-    if filter_params[:code]
-      query = query.where('code like ?', "%#{filter_params[:code]}%")
-    end
+    query = query.where('code like ?', "%#{filter_params[:code]}%") if filter_params[:code]
     if filter_params[:name]
-      query = query.where('unaccent(lower(products.name))  like ?', "%#{filter_params[:name].downcase.parameterize}% " ) 
+      query = query.where('unaccent(lower(products.name))  like ?', "%#{filter_params[:name].downcase.parameterize}% ")
     end
-    #query = query.where.not(id: filter_params[:product_ids]) if filter_params[:product_ids]
+    # query = query.where.not(id: filter_params[:product_ids]) if filter_params[:product_ids]
 
     return query
   }
