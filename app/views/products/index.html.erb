@@ -1,13 +1,30 @@
-<% render 'header' %>
+<% content_for :modal do %>
+  <%= render(partial: 'shared/modals/delete_confirmation') %>
+<% end %>
+
+    <% content_for :footer_extra_info do %>
+  <%= link_to products_path(format: 'xlsx'),
+          class: "btn btn-success", target: :_blank,
+          title: 'Descargar a excel', data: { toggle: 'tooltip', placement: 'top' } do %>
+      <%= fa_icon "file-excel" %>
+      Excel
+    <% end %>
+<% end %>
+
+
+<%= render 'products/partials/header' %>
 <div class="card fixed-custom-card">
   <div class="card-header">
-    <%= render 'filter' %>
+     <%= render(
+          partial: 'products/partials/filter',
+          locals: { products: @products }
+        ) %>
   </div>
   <div class="card-body fixed-panel-index">
     <% if @products.present? %>
-      <div id="filter_results">
+      <div id="table_results">
         <%= render(
-          partial: 'products/list',
+          partial: 'products/partials/list',
           locals: { products: @products }
         ) %>
       </div>
@@ -18,9 +35,10 @@
       ) %>
     <% end %>
   </div>
-</div>
-<% content_for :modal do %>
-  <div id="modals">
-    <%= render(partial: 'shared/modals/delete_confirmation') %>
+  <div class="card-footer" id="paginate_footer">
+    <%= render(
+          partial: 'shared/paginate_index',
+          locals: { model: @products, form_id: 'products-filter' }
+        ) %>
   </div>
-<% end %>
+</div>
