@@ -29,13 +29,13 @@ class Product < ApplicationRecord
   has_many :lots
   has_many :stocks
 
+
   # Validations
   validates_presence_of :name, :code, :area_id, :unity_id
   validates_uniqueness_of :code
 
   # Delegations
-  delegate :name, to: :area, prefix: true
-  delegate :name, to: :unity, prefix: true
+ 
   delegate :term, :fsn, :concept_id, :semantic_tag, to: :snomed_concept, prefix: :snomed, allow_nil: true
 
   filterrific(
@@ -93,6 +93,21 @@ class Product < ApplicationRecord
       query = query.where('code like ? OR unaccent(lower(name)) like ?', "%#{filter_params[:product]}%", "%#{filter_params[:product].downcase.parameterize}%")
     end
     query = query.where.not(id: filter_params[:product_ids]) if filter_params[:product_ids]
+
+    return query
+  }
+
+  scope :filter_by_params, lambda { |filter_params|
+    query = self.select(:id, :name, :status, :code, "unities.name as unity_name","areas.name as area_name").joins(:unity, :area)
+    
+
+    if filter_params[:code]
+      query = query.where('code like ?', "%#{filter_params[:code]}%")
+    end
+    if filter_params[:name]
+      query = query.where('unaccent(lower(products.name))  like ?', "%#{filter_params[:name].downcase.parameterize}% " ) 
+    end
+    #query = query.where.not(id: filter_params[:product_ids]) if filter_params[:product_ids]
 
     return query
   }

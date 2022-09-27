@@ -1,6 +1,17 @@
 <tr id="product_<%= product.id %>">
-  <td><%= product.code %></td>
-  <td><%= product.name %></td>
+  <td>
+ 
+   <%= highlight(product.code, 
+                  get_value_from_filter(:code), 
+                  highlighter: '<mark class="highlight-1">\1</mark>'
+                  ) %>
+  </td>
+  <td>
+    <%= highlight(product.name, 
+                  get_value_from_filter(:name), 
+                  highlighter: '<mark class="highlight-1">\1</mark>'
+                  ) %>
+  </td>
   <td>
     <span class="badge badge-<%= product_status_label(product) %>">
       <%= Product.human_enum_name(:status, product.status) %>

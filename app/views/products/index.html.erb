@@ -1,21 +1,18 @@
 <% content_for :modal do %>
   <%= render(partial: 'shared/modals/delete_confirmation') %>
 <% end %>
-
-    <% content_for :footer_extra_info do %>
+<% content_for :footer_extra_info do %>
   <%= link_to products_path(format: 'xlsx'),
           class: "btn btn-success", target: :_blank,
           title: 'Descargar a excel', data: { toggle: 'tooltip', placement: 'top' } do %>
-      <%= fa_icon "file-excel" %>
-      Excel
-    <% end %>
+    <%= fa_icon "file-excel" %>
+    Excel
+  <% end %>
 <% end %>
-
-
 <%= render 'products/partials/header' %>
 <div class="card fixed-custom-card">
   <div class="card-header">
-     <%= render(
+    <%= render(
           partial: 'products/partials/filter',
           locals: { products: @products }
         ) %>
