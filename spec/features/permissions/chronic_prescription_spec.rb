@@ -131,15 +131,16 @@ RSpec.feature 'Permissions::ChronicPrescriptions', type: :feature do
           expect(page).to have_content('Dispensar receta crónica')
           click_link 'Volver'
           # List filters
-          expect(page.has_css?('#filterrific_filter')).to be true
-          expect(page.has_css?('input[name="filterrific[search_by_remit_code]"]')).to be true
-          expect(page.has_css?('input[name="filterrific[search_by_professional]"]')).to be true
-          expect(page.has_css?('input[name="filterrific[search_by_patient]"]')).to be true
-          expect(page.has_css?('input[name="filterrific[date_prescribed_since]"]')).to be true
-          expect(page.has_css?('select[name="filterrific[for_statuses][]"]', visible: false)).to be true
-          expect(page.has_css?('select[name="filterrific[sorted_by]"]', visible: false)).to be true
+          expect(page.has_css?('#chronic-prescriptions-filter')).to be true
+          expect(page.has_css?('input[name="filter[code]"]')).to be true
+          expect(page.has_css?('input[name="filter[professional_full_name]"]')).to be true
+          expect(page.has_css?('input[name="filter[patient_full_name]"]')).to be true
+          expect(page.has_css?('input[name="filter[date_prescribed_since]"]')).to be true
+          expect(page.has_css?('input[name="filter[date_prescribed_to]"]')).to be true
+          expect(page.has_css?('select[name="filter[status]"]')).to be true
+          expect(page.has_css?('input[name="filter[sort]"]', visible: false)).to be true
           # List
-          expect(page.has_css?('#filterrific_results')).to be true
+          expect(page.has_css?('#table_results')).to be true
           expect(page.has_css?('#chronic_prescriptions')).to be true
           within '#chronic_prescriptions' do
             expect(page.has_css?('a > svg.fa-paper-plane')).to be true
