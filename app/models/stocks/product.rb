@@ -2,7 +2,7 @@ class Product < ApplicationRecord
   include PgSearch::Model
   include EnumTranslation
   enum status: { active: 0, inactive: 1, merged: 2 }
-
+  include QuerySort
   # Relationships
   belongs_to :unity, optional: true
   belongs_to :area, optional: true
@@ -37,48 +37,7 @@ class Product < ApplicationRecord
 
   delegate :term, :fsn, :concept_id, :semantic_tag, to: :snomed_concept, prefix: :snomed, allow_nil: true
 
-  # To filter records by controller params
-  # Slice params "search_code, search_name, with_area_ids"
-  def self.filter(params)
-    @products = all
-    @products = params[:search_code].present? ? search_code(params[:search_code]) : @products
-    @products = params[:search_name].present? ? search_name(params[:search_name]) : @products
-    @products = params[:with_area_ids].present? ? with_area_ids(params[:with_area_ids]) : @products
-  end
-
   # Scopes
-  pg_search_scope :search_code,
-                  against: :code,
-                  using: {
-                    tsearch: { prefix: true } # Buscar coincidencia desde las primeras letras.
-                  },
-                  ignoring: :accents # Ignorar tildes.
-
-  pg_search_scope :search_name,
-                  against: :name,
-                  using: {
-                    tsearch: { prefix: true } # Buscar coincidencia desde las primeras letras.
-                  },
-                  ignoring: :accents # Ignorar tildes.
-
-  scope :sorted_by, lambda { |sort_option|
-    # extract the sort direction from the param value.
-    direction = sort_option =~ /desc$/ ? 'desc' : 'asc'
-    case sort_option.to_s
-    when /^codigo_/
-      # Ordenamiento por id de insumo
-      order(code: direction.to_s.to_sym)
-    when /^nombre_/
-      # Ordenamiento por nombre de insumo
-      order(name: direction.to_s.to_sym)
-    when /^unidad_/
-      # Ordenamiento por la unidad
-      # order("LOWER(unities.name) #{direction}").joins(:unity)
-    else
-      # Si no existe la opcion de ordenamiento se levanta la excepcion
-      raise(ArgumentError, "Invalid sort option: #{sort_option.inspect}")
-    end
-  }
 
   scope :filter_by_stock, lambda { |filter_params|
     query = self.select(:id, :name, :code).where(id: Stock.where(sector_id: filter_params[:sector_id]).pluck(:product_id))
@@ -92,43 +51,21 @@ class Product < ApplicationRecord
   }
 
   scope :filter_by_params, lambda { |filter_params|
-    query = self.select(:id, :name, :status, :code, 'unities.name as unity_name', 'areas.name as area_name').joins(:unity, :area)
+    query = self.select(:id, 'products.name as product_name', :status, :code, 'unities.name as unity_name', 'areas.name as area_name').joins(:unity, :area)
 
-    query = query.where('code like ?', "%#{filter_params[:code]}%") if filter_params[:code]
-    if filter_params[:name]
-      query = query.where('unaccent(lower(products.name))  like ?', "%#{filter_params[:name].downcase.parameterize}% ")
-    end
-    # query = query.where.not(id: filter_params[:product_ids]) if filter_params[:product_ids]
+    query = query.like_code("%#{filter_params[:code]}%") if filter_params[:code]
+    query = query.like_name("%#{filter_params[:name].downcase.parameterize}% ") if filter_params[:name]
 
+    query = if filter_params.present? && filter_params['sort'].present?
+              query.sorted_by(filter_params['sort'])
+            else
+              query.reorder(code: :desc)
+            end
     return query
   }
 
-  def self.options_for_sorted_by
-    [
-      ['Código (menor primero)', 'codigo_asc'],
-      ['Código (mayor primero)', 'codigo_desc'],
-      ['Nombre (a-z)', 'nombre_asc'],
-      ['Nombre (z-a)', 'nombre_desc']
-    ]
-  end
-
-  def self.options_for_status
-    [
-      %w[Activo active success],
-      %w[Inactivo inactive danger],
-      %w[Fusionado merged primary]
-    ]
-  end
-
-  scope :for_statuses, lambda { |values|
-    return all if values.blank?
-
-    where(status: statuses.values_at(*Array(values)))
-  }
-
-  scope :with_code, ->(product_code) { where('products.code = ?', product_code) }
-
-  scope :with_area_ids, ->(area_ids) { where(area_id: area_ids) }
+  scope :like_name, ->(product_name) { where('unaccent(lower(products.name))  like ?', product_name) }
+  scope :like_code, ->(product_code) { where('code like ?', product_code) }
 
   def self.search_supply(a_name)
     Supply.search_text(a_name).with_pg_search_rank

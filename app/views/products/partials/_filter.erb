@@ -1,4 +1,4 @@
-<%= simple_form_for products_path, remote: true, html: { method: 'GET', class: 'custom-filters-v1', id: "outpatient-products-filter" } do |f| %>
+<%= simple_form_for products_path, remote: true, html: { method: 'GET', class: 'custom-filters-v1', id: "products-filter" } do |f| %>
   <div class="filter-form-row">
     <div class="filter-form-col">
       <div class="form-group">
@@ -24,19 +24,15 @@
         <label>Nombre</label>
       </div>
     </div>
- 
-
-    
-    
-      <input type="hidden" name="filter[sort]" value="<%= get_value_from_filter(:sort) %>">
-      <input type="hidden" name="per_page" value="<%= params[:per_page] || 15 %>">
-      <div class="filter-form-btn-group">
-        <button class="btn btn-primary" type="submit" form="<%= "outpatient-products-filter" %>">
-          Buscar
-        </button>
-        <button class="btn btn-danger btn-clean-filters" type="button" form="<%= "outpatient-products-filter" %>">
-          <%= fa_icon 'times' %>
-        </button>
-      </div>
+    <input type="hidden" name="filter[sort]" value="<%= get_value_from_filter(:sort) %>">
+    <input type="hidden" name="per_page" value="<%= params[:per_page] || 15 %>">
+    <div class="filter-form-btn-group">
+      <button class="btn btn-primary" type="submit" form="<%= "products-filter" %>">
+        Buscar
+      </button>
+      <button class="btn btn-danger btn-clean-filters" type="button" form="<%= "products-filter" %>">
+        <%= fa_icon 'times' %>
+      </button>
     </div>
-  <% end %>
+  </div>
+<% end %>

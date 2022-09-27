@@ -7,7 +7,7 @@
                   ) %>
   </td>
   <td>
-    <%= highlight(product.name, 
+    <%= highlight(product.product_name, 
                   get_value_from_filter(:name), 
                   highlighter: '<mark class="highlight-1">\1</mark>'
                   ) %>
@@ -29,7 +29,7 @@
         destroy: {
           visible: true, 
           title: "Eliminar producto",
-          body: "Esta seguro que desea eliminar el producto #{ product.name }?",
+          body: "Esta seguro que desea eliminar el producto #{ product.product_name }?",
           path: product_url(product.id)
         }
       }
