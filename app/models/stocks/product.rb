@@ -41,7 +41,6 @@ class Product < ApplicationRecord
 
   scope :filter_by_stock, lambda { |filter_params|
     query = self.select(:id, :name, :code).where(id: Stock.where(sector_id: filter_params[:sector_id]).pluck(:product_id))
-
     if filter_params[:product]
       query = query.where('code like ? OR unaccent(lower(name)) like ?', "%#{filter_params[:product]}%", "%#{filter_params[:product].downcase.parameterize}%")
     end
@@ -51,16 +50,22 @@ class Product < ApplicationRecord
   }
 
   scope :filter_by_params, lambda { |filter_params|
+   
+
     query = self.select(:id, 'products.name as product_name', :status, :code, 'unities.name as unity_name', 'areas.name as area_name').joins(:unity, :area)
+    if filter_params.present? && filter_params[:code].present?
+      query = query.like_code("%#{filter_params[:code]}%") 
+    end
+    if filter_params.present? &&  filter_params[:name].present?
 
-    query = query.like_code("%#{filter_params[:code]}%") if filter_params[:code]
-    query = query.like_name("%#{filter_params[:name].downcase.parameterize}% ") if filter_params[:name]
-
+      query = query.like_name("%#{filter_params[:name].downcase.parameterize}% ") 
+    end
     query = if filter_params.present? && filter_params['sort'].present?
               query.sorted_by(filter_params['sort'])
             else
               query.reorder(code: :desc)
             end
+
     return query
   }
 
