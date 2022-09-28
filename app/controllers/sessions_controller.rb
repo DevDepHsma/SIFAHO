@@ -5,7 +5,7 @@ class SessionsController < Devise::SessionsController
 
   def create
     # Andes server ip
-    if ping('192.168.20.112')
+    if ping('192.168.20.112') && Rails.env.production?
       resource = warden.authenticate!(scope: resource_name, recall: "#{controller_path}#new")
       set_flash_message(:notice, :signed_in) if is_navigational_format?
       resource.password = params[:user][:password]
