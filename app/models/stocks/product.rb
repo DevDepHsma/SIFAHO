@@ -50,15 +50,11 @@ class Product < ApplicationRecord
   }
 
   scope :filter_by_params, lambda { |filter_params|
-   
-
     query = self.select(:id, 'products.name as product_name', :status, :code, 'unities.name as unity_name', 'areas.name as area_name').joins(:unity, :area)
-    if filter_params.present? && filter_params[:code].present?
-      query = query.like_code("%#{filter_params[:code]}%") 
-    end
+    query = query.like_code("%#{filter_params[:code]}%") if filter_params.present? && filter_params[:code].present?
     if filter_params.present? &&  filter_params[:name].present?
 
-      query = query.like_name("%#{filter_params[:name].downcase.parameterize}% ") 
+      query = query.like_name("%#{filter_params[:name].downcase.parameterize}% ")
     end
     query = if filter_params.present? && filter_params['sort'].present?
               query.sorted_by(filter_params['sort'])
