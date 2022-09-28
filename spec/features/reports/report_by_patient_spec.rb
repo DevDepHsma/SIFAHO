@@ -30,19 +30,19 @@ RSpec.feature 'Reports::ExternalOrderProductReports', type: :feature do
           click_link 'Reportes'
         end
         within '#dropdown-menu-header' do
-          expect(page.has_link?('Stock por rubro')).to be true
-          expect(page.has_link?('Pacientes')).to be false
-          expect(page.has_link?('Sectores')).to be false
-          expect(page.has_link?('Establecimientos')).to be false
-          expect(page.has_link?('Consumo por mes')).to be false
+          # expect(page.has_link?('Reportes')).to be true
         end
 
-        # Stock por rubro
-        click_link 'Stock por rubro'
-        expect(page).to have_content('Nuevo reporte de stock por rubro')
-        expect(page).to have_content('Últimos reportes generados')
-        expect(page.has_link?('Volver')).to be true
-        expect(page.has_button?('Generar')).to be true
+        # By Patient
+        expect(page).to have_content('Nuevo reporte')
+        expect(page.has_css?('#new_report')).to be true
+        within '#new_report' do
+          expect(page).to have_content('Desde')
+          expect(page).to have_content('Hasta')
+          expect(page).to have_content('Productos')
+          expect(page).to have_content('Pacientes')
+        end
+
       end
     end
   end
