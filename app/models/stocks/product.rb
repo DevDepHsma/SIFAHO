@@ -54,7 +54,7 @@ class Product < ApplicationRecord
     query = query.like_code("%#{filter_params[:code]}%") if filter_params.present? && filter_params[:code].present?
     if filter_params.present? &&  filter_params[:name].present?
 
-      query = query.like_name("%#{filter_params[:name].downcase.parameterize(separator:' ')}%")
+      query = query.like_name("%#{filter_params[:name].downcase.removeaccents}%")
     end
     query = if filter_params.present? && filter_params['sort'].present?
               query.sorted_by(filter_params['sort'])
