@@ -71,39 +71,42 @@ RSpec.feature 'ProductsFilters', type: :feature do
       it 'displays loader on click "Buscar"' do
         within '#products-filter' do
           click_button 'Buscar'
-
-          # expect(page.has_css?("#loader-container")).to be true
         end
       end
-      it 'displays loader on click "Buscar"' do
-        within '#products-filter' do
-          fill_in 'filter[code]', with: '101010'
-
-          click_button 'Buscar'
+      it 'displays code results' do
+        products = Product.all.sample(5)
+        products.each do |product|
+          within '#products-filter' do
+            fill_in 'filter[code]', with: product.code
+            click_button 'Buscar'
+            sleep 1
+          end
+          within '#products' do
+            expect(page.first('tr').first('td')).to have_content(product.code)
+          end
+          within '#products-filter' do
+            page.execute_script %{$("button.btn-clean-filters")[0].click()}
+          end
           sleep 1
-          # expect(page.has_css?("#loader-container")).to be true
-        end
-
-        within '#products' do
-          expect(page.has_css?('tr', count: 1)).to be true
-          sleep 2
-        end
-        within '#products-filter' do
-          page.execute_script %{$("button.btn-clean-filters")[0].click()}
-        end
-        sleep 1
-        within '#products-filter' do
-          fill_in 'filter[name]', with: 'SOXUPRINA AMPOLLA'
-          click_button 'Buscar'
-          sleep 1
-          # expect(page.has_css?("#loader-container")).to be true
-        end
-        within '#products' do
-          expect(page.has_css?('tr', count: 1)).to be true
-          sleep 1
-          page.execute_script %{$("button.btn-clean-filters")[0].click()}
         end
       end
+      # it 'displays name results' do
+      #   products = Product.all.sample(5)
+      #   products.each do |product|
+      #     within '#products-filter' do
+      #       fill_in 'filter[name]', with: product.name
+      #       click_button 'Buscar'
+      #       sleep 1
+      #       puts product.name
+      #     end
+      #     within '#products' do
+      #       expect(page.first('tr').has_css?('td', text: product.name)).to be true
+      #       # expect(page.has_css?('tr', count: 1)).to be true
+      #       # sleep 1
+      #       # page.execute_script %{$("button.btn-clean-filters")[0].click()}
+      #     end
+      #   end
+      # end
     end
 
     describe 'paginator actions' do
@@ -217,8 +220,6 @@ RSpec.feature 'ProductsFilters', type: :feature do
         end
         sleep 3
       end
-      # it 'sort by name' do
-      # end
     end
   end
 end
