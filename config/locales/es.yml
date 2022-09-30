@@ -207,6 +207,9 @@ es:
         sector_id: 'Sector'
         other_establishment: 'Establecimiento'
         other_sector: 'Sector'
+      report:
+        report_type: 
+          by_patient: 'Por paciente'
   user_status:
     permission_req: 'Solicitud'
     active: 'Activo'

@@ -2,7 +2,7 @@
 
 <% content_for :page_header do %>
   <li class="nav-item non-sel" id="page-title">
-    <%= link_to new_report_path, class: "nav-link #{active_action_and_controller('index', 'reports')} disabled" do %>
+    <%= link_to new_report_path, class: "nav-link #{active_action_and_controller('index', 'reports')}" do %>
       <%= fa_icon "file-alt" %>
       Reportes
     <% end %>
