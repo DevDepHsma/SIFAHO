@@ -1,7 +1,7 @@
 <tr id="product_<%= product.id %>">
   <td>
  
-   <%= highlight(product.code, 
+   <%= highlight(product.code.to_s, 
                   get_value_from_filter(:code), 
                   highlighter: '<mark class="highlight-1">\1</mark>'
                   ) %>

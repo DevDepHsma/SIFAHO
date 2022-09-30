@@ -66,7 +66,7 @@ class Product < ApplicationRecord
   }
 
   scope :like_name, ->(product_name) { where('unaccent(lower(products.name))  like ?', product_name) }
-  scope :like_code, ->(product_code) { where('code like ?', product_code) }
+  scope :like_code, ->(product_code) { where('code::varchar like ?', product_code) }
 
   def self.search_supply(a_name)
     Supply.search_text(a_name).with_pg_search_rank
