@@ -17,8 +17,8 @@
       <input type="hidden" name="report[patient_ids]">
       <% Report.report_types.each do |type| %>
         <div class="custom-control custom-radio">
-          <input type="radio" class="custom-control-input" id="report_type" name="report[report_type]" required value="<%= type[1] %>">
-          <label class="custom-control-label" for="report_type"><%= type[0] %></label>
+          <input type="radio" class="custom-control-input" id="<%= type[0] %>" name="report[report_type]" required value="<%= type[1] %>">
+          <label class="custom-control-label" for="<%= type[0] %>"><%=  t("activerecord.attributes.report.report_type.#{type[0]}") %></label>
         </div>
       <% end %>
       
@@ -26,7 +26,7 @@
       <%# Dates %>
       <div>
         <div class="form-group">
-          <label>Desde: dd/mm/aaaa</label>
+          <label for="report_from_date">Desde: dd/mm/aaaa</label>
           <input class="form-control datepicker" 
                 autocomplete="off" 
                 type="text" 

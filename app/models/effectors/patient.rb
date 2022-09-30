@@ -83,8 +83,8 @@ class Patient < ApplicationRecord
     query = where(id: patient_ids)
     if filter_params[:patient].present?
       query = query.where('unaccent(lower(last_name)) like ? OR unaccent(lower(first_name)) like ? OR unaccent(lower(dni)) like ?',
-                          "%#{filter_params[:patient].downcase.parameterize}%",
-                          "%#{filter_params[:patient].downcase.parameterize}%",
+                          "%#{filter_params[:patient].downcase.parameterize(separator: ' ')}%",
+                          "%#{filter_params[:patient].downcase.parameterize(separator: ' ')}%",
                           "%#{filter_params[:patient]}%")
     end
     query = query.where.not(id: filter_params[:patient_ids]) if filter_params[:patient_ids]
