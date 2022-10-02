@@ -18,11 +18,11 @@ module FiltersHelper
       haystack = text.clone
       match = Array(phrases).map { |p| Regexp.escape(p) }.join('|')
       if options[:ignore_special_chars]
+        haystack = haystack.gsub(/(°)|(º)/, '&deg;')
         haystack = haystack.mb_chars.normalize(:kd)
-        match = match.mb_chars.normalize(:kd).gsub(/[^\x00-\x7F]+/n, '').gsub(/\w/, '\0[^\x00-\x7F]*')
+        match = match.gsub(/(°)|(º)/, '&deg;').mb_chars.normalize(:kd).gsub(/[^\x00-\x7F]+/n, '').gsub(/\w/, '\0[^\x00-\x7F]*')
       end
       highlighted = haystack.gsub(/(#{match})(?!(?:[^<]*?)(?:["'])[^<>]*>)/i, options[:highlighter])
-      highlighted = highlighted.mb_chars.normalize(:kc) if options[:ignore_special_chars]
       highlighted
     end.html_safe
   end
