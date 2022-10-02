@@ -1,0 +1,26 @@
+<tr id="report_<%= report.id %>" >
+  <td><%= report.name %></td>
+  <td><%= report.sector_name %></td>
+  <td><%= report.establishment_name %></td>
+  <td><%= report.generated_date.strftime("%d/%m/%Y") %></td>
+  <td><%= report.report_type %></td>
+  <td class="text-left actions-col">
+    <div class="d-flex">
+      <%= render(
+        partial: 'shared/action_buttons',
+        locals:{ 
+            object: report, 
+            show: {visible: true, target: (show_target if defined?(show_target) )},
+            edit: {visible: false, target: (edit_target if defined?(edit_target) )},
+            destroy: {
+              visible: true, 
+              title: "Eliminar reporte",
+              body: "Esta seguro que desea eliminar la reporte de #{ report.name }?",
+              path: "#{report_path(report)}"
+            }
+          }
+        ) 
+      %>
+    </div>
+  </td>
+</tr>

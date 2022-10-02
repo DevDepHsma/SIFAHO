@@ -5,6 +5,45 @@ class Report < ApplicationRecord
 
   enum report_type: { by_patient: 1 }
 
+  scope :filter_by_params, lambda { |filter_params|
+    query = self.select(:id, :name, :sector_name, :establishment_name, :generated_date, :report_type)
+    
+
+
+
+
+
+    # if filter_params.present?
+    #   # Remit_code
+    #   query = query.like_remit_code(filter_params['code']) if filter_params['code'].present?
+    #   # Profesisonal
+    #   if filter_params['professional_full_name'].present?
+    #     query = query.like_professional_full_name(filter_params['professional_full_name'])
+    #   end
+    #   # Patient
+    #   if filter_params['patient_full_name'].present?
+    #     query = query.like_patient_full_name_and_dni(filter_params['patient_full_name'])
+    #   end
+    #   # Prescribed since
+    #   if filter_params['date_prescribed_since'].present?
+    #     query = query.like_date_prescribed_since(filter_params['date_prescribed_since'])
+    #   end
+    #   # Prescribed to
+    #   if filter_params['date_prescribed_to'].present?
+    #     query = query.like_date_prescribed_to(filter_params['date_prescribed_to'])
+    #   end
+    #   # Status
+    #   query = query.like_status(filter_params['status']) if filter_params['status'].present?
+    # end
+
+    # query = if filter_params.present? && filter_params['sort'].present?
+    #           query.sorted_by(filter_params['sort'])
+    #         else
+    #           query.reorder(date_prescribed: :desc, status: :desc)
+    #         end
+    return query
+  }
+
   def build_report_values(args)
     set_by_patients(args) if by_patient?
   end

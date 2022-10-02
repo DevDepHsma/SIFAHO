@@ -1,0 +1,17 @@
+<div class="card fixed-panel-list">
+  <table class="table table-hover table-striped table-sm">
+    <thead>
+      <tr>
+        <%= th_label name: 'Nombre', form: 'reports-filter', sort_field: 'name', icon_type: 'alpha' %>
+        <%= th_label name: 'Sector nombre', form: 'reports-filter', sort_field: 'sector_name', icon_type: 'alpha' %>
+        <%= th_label name: 'Establecimiento nombre', form: 'reports-filter', sort_field: 'establishment_name', icon_type: 'alpha' %>
+        <%= th_label name: 'Generado', form: 'reports-filter', sort_field: 'generated_date', icon_type: 'alpha' %>
+        <%= th_label name: 'Tipo', form: 'reports-filter', sort_field: 'report_type', icon_type: 'alpha' %>
+        <%= th_label name: 'Acciones' %>
+      </tr>
+    </thead>
+    <tbody id="reports">
+      <%= render(partial: 'reports/partials/report', collection: @reports, as: :report) %>
+    </tbody>
+  </table>
+</div>
