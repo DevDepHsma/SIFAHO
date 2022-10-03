@@ -13,9 +13,10 @@
 ) %>
 <% paginate = escape_javascript( 
   render( partial: 'shared/paginate_index',
-          locals: { model: @outpatient_prescriptions, form_id: 'chronic-prescriptions-filter' }
+          locals: { model: @outpatient_prescriptions, form_id: 'outpatient-prescriptions-filter' }
         )
 ) %>
+
 $("#table_results").html("<%= list %>");
 $("#paginate_footer").html("<%= paginate %>");
 setEventDestroyItem();
