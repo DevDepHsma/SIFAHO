@@ -1,5 +1,5 @@
 class ReportsController < ApplicationController
-  before_action :set_report, only: [:show]
+  before_action :set_report, only: %i[show destroy]
 
   def initialize
     super
@@ -114,8 +114,6 @@ class ReportsController < ApplicationController
     @patient_ids = @patient_ids.join('_')
   end
 
-  ###################################  DEPRECATED  ########################################
-
   def show
     authorize @report
     report_name = @report.name.present? ? @report.name.downcase.gsub(' ', '_') : 'reporte_por_paciente'
@@ -125,6 +123,17 @@ class ReportsController < ApplicationController
         headers['Content-Disposition'] =
           "attachment; filename=\"#{report_name}_#{DateTime.now.strftime('%d-%m-%Y')}.xlsx\""
       end
+    end
+  end
+
+  # DELETE /establishments/1
+  # DELETE /establishments/1.json
+  def destroy
+    authorize @report
+    flash.now[:success] = "El report #{@report.name} se ha eliminado correctamente."
+    @report.destroy
+    respond_to do |format|
+      format.js
     end
   end
 

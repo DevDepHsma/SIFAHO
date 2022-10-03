@@ -152,7 +152,7 @@
       <% end %>
     <% end %>
 
-    <% if policy(Report).new? %>
+    <% if policy(Report).index? %>
       <%= link_to main_app.reports_path, class: "list-group-item list-group-item-action list-custom #{active_class_folder('reports')}" do %>
         <span class="sb-icon">
           <%= fa_icon "file-alt" %>

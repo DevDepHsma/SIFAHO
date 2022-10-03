@@ -3,7 +3,7 @@ class Report < ApplicationRecord
 
   belongs_to :sector
   belongs_to :generated_by_user, class_name: 'User'
-  has_many :report_patients
+  has_many :report_patients, dependent: :delete_all
 
   enum report_type: { by_patient: 1 }
 
