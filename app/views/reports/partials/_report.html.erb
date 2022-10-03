@@ -1,9 +1,24 @@
 <tr id="report_<%= report.id %>" >
-  <td><%= report.name %></td>
-  <td><%= report.sector_name %></td>
-  <td><%= report.establishment_name %></td>
+  <td>
+    <%= highlight(report.name, 
+                  get_value_from_filter(:name), 
+                  highlighter: '<mark class="highlight-1">\1</mark>',
+                  ignore_special_chars: true ) %>
+  </td>
+  <td>
+    <%= highlight(report.sector_name, 
+                  get_value_from_filter(:sector_name), 
+                  highlighter: '<mark class="highlight-1">\1</mark>',
+                  ignore_special_chars: true ) %>
+  </td>
+  <td>
+    <%= highlight(report.establishment_name, 
+                  get_value_from_filter(:establishment_name), 
+                  highlighter: '<mark class="highlight-1">\1</mark>',
+                  ignore_special_chars: true ) %>
+  </td>
   <td><%= report.generated_date.strftime("%d/%m/%Y") %></td>
-  <td><%= report.report_type %></td>
+  <td><%= t("activerecord.attributes.report.report_type.#{report.report_type}")  %></td>
   <td class="text-left actions-col">
     <div class="d-flex">
       <%= render(

@@ -1,4 +1,6 @@
 class Report < ApplicationRecord
+  include QuerySort
+
   belongs_to :sector
   belongs_to :generated_by_user, class_name: 'User'
   has_many :report_patients
@@ -7,41 +9,43 @@ class Report < ApplicationRecord
 
   scope :filter_by_params, lambda { |filter_params|
     query = self.select(:id, :name, :sector_name, :establishment_name, :generated_date, :report_type)
-    
+    if filter_params.present?
+      # Name
+      query = query.like_name(filter_params['name']) if filter_params['name'].present?
+      # Sector name
+      query = query.like_sector_name(filter_params['sector_name']) if filter_params['sector_name'].present?
+      # Establishment name
+      if filter_params['establishment_name'].present?
+        query = query.like_establishment_name(filter_params['establishment_name'])
+      end
+      # Generated date
+      query = query.like_generated_date(filter_params['generated_date']) if filter_params['generated_date'].present?
+      # Report type
+      query = query.like_report_type(filter_params['report_type']) if filter_params['report_type'].present?
+    end
 
-
-
-
-
-    # if filter_params.present?
-    #   # Remit_code
-    #   query = query.like_remit_code(filter_params['code']) if filter_params['code'].present?
-    #   # Profesisonal
-    #   if filter_params['professional_full_name'].present?
-    #     query = query.like_professional_full_name(filter_params['professional_full_name'])
-    #   end
-    #   # Patient
-    #   if filter_params['patient_full_name'].present?
-    #     query = query.like_patient_full_name_and_dni(filter_params['patient_full_name'])
-    #   end
-    #   # Prescribed since
-    #   if filter_params['date_prescribed_since'].present?
-    #     query = query.like_date_prescribed_since(filter_params['date_prescribed_since'])
-    #   end
-    #   # Prescribed to
-    #   if filter_params['date_prescribed_to'].present?
-    #     query = query.like_date_prescribed_to(filter_params['date_prescribed_to'])
-    #   end
-    #   # Status
-    #   query = query.like_status(filter_params['status']) if filter_params['status'].present?
-    # end
-
-    # query = if filter_params.present? && filter_params['sort'].present?
-    #           query.sorted_by(filter_params['sort'])
-    #         else
-    #           query.reorder(date_prescribed: :desc, status: :desc)
-    #         end
+    query = if filter_params.present? && filter_params['sort'].present?
+              query.sorted_by(filter_params['sort'])
+            else
+              query.reorder(generated_date: :desc)
+            end
     return query
+  }
+
+  scope :like_name, lambda { |word|
+    where('unaccent(lower(name)) like ?', "%#{word}%")
+  }
+  scope :like_sector_name, lambda { |word|
+    where('unaccent(lower(sector_name)) like ?', "%#{word}%")
+  }
+  scope :like_establishment_name, lambda { |word|
+    where('unaccent(lower(establishment_name)) like ?', "%#{word}%")
+  }
+  scope :like_generated_date, lambda { |reference_time|
+    where('generated_date >= ?', reference_time)
+  }
+  scope :like_report_type, lambda { |reference_time|
+    where('report_type = ?', reference_time)
   }
 
   def build_report_values(args)
@@ -108,7 +112,9 @@ class Report < ApplicationRecord
     dispensed_products = ActiveRecord::Base.connection.execute(query).entries
 
     dispensed_products.each do |dp|
-      patient_age = ((Time.zone.now - dp['patient_birthdate'].to_time) / 1.year.seconds).floor if dp['patient_birthdate'].present?
+      if dp['patient_birthdate'].present?
+        patient_age = ((Time.zone.now - dp['patient_birthdate'].to_time) / 1.year.seconds).floor
+      end
       ReportPatient.create(
         report_id: id,
         product_id: dp['product_id'],
