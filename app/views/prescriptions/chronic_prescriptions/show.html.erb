@@ -161,7 +161,7 @@
                     <% end %>
                   </td>
                   <td>
-                    <%= org_chron_pres_prod.request_quantity %> <%= org_chron_pres_prod.product_unity_name.pluralize(org_chron_pres_prod.request_quantity) %>
+                    <%= org_chron_pres_prod.request_quantity %> <%= org_chron_pres_prod.product.unity.name.pluralize(org_chron_pres_prod.request_quantity) %>
                   </td>
                   <td>
                     <%= org_chron_pres_prod.total_delivered_quantity %> / <%= org_chron_pres_prod.total_request_quantity %>
@@ -269,7 +269,7 @@
                           </td>
                           <td class="org-product"><%= dispensation_type.original_chronic_prescription_product.product_code %></td>
                           <td class="org-product"><%= dispensation_type.original_chronic_prescription_product.product_name %></td>
-                          <td class="org-product"><%= dispensation_type.original_chronic_prescription_product.product_unity_name %></td>
+                          <td class="org-product"><%= dispensation_type.original_chronic_prescription_product.product.unity.name %></td>
                           <td class="org-product"><%= dispensation_type.quantity %></td>
                           <td class="text-center org-product">
                             <%= dispensation_type.chronic_prescription_products.count %>

@@ -19,7 +19,7 @@ class OriginalChronicPrescriptionProduct < ApplicationRecord
                                 allow_destroy: true
 
   # Delegations
-  delegate :unity_name, :name, :code, to: :product, prefix: :product
+  delegate  :name, :code, to: :product, prefix: :product
 
   scope :excluding_ids, lambda { |ids|
     where(['id NOT IN (?)', ids]) if ids.any?

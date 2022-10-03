@@ -43,7 +43,7 @@ class User < ApplicationRecord
     # first_name = Devise::LDAP::Adapter.get_ldap_param("Test", "givenname").first # Uncomment in test
     if Rails.env.test?
       profile = Profile.new(user: self, first_name: 'Test', last_name: 'Reimann', email: 'reimann@example.com',
-                            dni: 0o0001111)
+                            dni: 000001111)
     else
       # Comment in production
       first_name = Devise::LDAP::Adapter.get_ldap_param(username, 'givenname').first.encode('Windows-1252',

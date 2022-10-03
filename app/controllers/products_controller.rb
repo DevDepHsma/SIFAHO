@@ -6,25 +6,16 @@ class ProductsController < ApplicationController
   def index
     authorize Product
 
-    @filterrific = initialize_filterrific(
-      Product,
-      params[:filterrific],
-      select_options: {
-        sorted_by: Product.options_for_sorted_by,
-        for_statuses: Product.options_for_status
-      },
-      persistence_id: false
-    ) or return
-    @areas = Area.all
-    if request.format.xlsx? || request.format.pdf?
-      @products = @filterrific.find
-    else
-      @products = @filterrific.find.paginate(page: params[:page], per_page: 20)
-    end
+    @products = Product.filter_by_params(params[:filter])
+                       .paginate(page: params[:page], per_page: params[:per_page] || 15)
+
     respond_to do |format|
       format.html
       format.js
-      format.xlsx { headers["Content-Disposition"] = "attachment; filename=\"ReporteListadoProductos_#{DateTime.now.strftime('%d-%m-%Y')}.xlsx\"" }
+      format.xlsx do
+        headers['Content-Disposition'] =
+          "attachment; filename=\"ReporteListadoProductos_#{DateTime.now.strftime('%d-%m-%Y')}.xlsx\""
+      end
     end
   end
 
@@ -64,12 +55,12 @@ class ProductsController < ApplicationController
 
     respond_to do |format|
       if @product.save
-        flash.now[:success] = "El insumo "+@product.name+" se ha creado correctamente."
+        flash.now[:success] = 'El insumo ' + @product.name + ' se ha creado correctamente.'
         format.html { redirect_to @product }
       else
         @unities = Unity.all
         @areas = Area.all
-        flash.now[:error] = "El insumo no se ha podido crear."
+        flash.now[:error] = 'El insumo no se ha podido crear.'
         format.html { render :new }
       end
     end
@@ -81,12 +72,12 @@ class ProductsController < ApplicationController
     authorize @product
     respond_to do |format|
       if @product.update(product_params)
-        flash.now[:success] = "El insumo "+@product.name+" se ha modificado correctamente."
-        format.html { redirect_to @product}
+        flash.now[:success] = 'El insumo ' + @product.name + ' se ha modificado correctamente.'
+        format.html { redirect_to @product }
       else
         @unities = Unity.all
         @areas = Area.all
-        flash.now[:error] = "El insumo "+@product.name+" no se ha podido modificar."
+        flash.now[:error] = 'El insumo ' + @product.name + ' no se ha podido modificar.'
         format.html { render :edit }
       end
     end
@@ -99,7 +90,7 @@ class ProductsController < ApplicationController
     @product_name = @product.name
     @product.destroy
     respond_to do |format|
-      flash.now[:success] = "El suministro "+@product_name+" se ha eliminado correctamente."
+      flash.now[:success] = 'El suministro ' + @product_name + ' se ha eliminado correctamente.'
       format.js
     end
   end
@@ -122,17 +113,18 @@ class ProductsController < ApplicationController
   # GET /product/1/restore
   def restore
     authorize @product
-    Product.restore(@product.id, :recursive => true)
+    Product.restore(@product.id, recursive: true)
 
     respond_to do |format|
-      flash.now[:success] = "El insumo código "+@product.id.to_s+" se ha restaurado correctamente."
+      flash.now[:success] = 'El insumo código ' + @product.id.to_s + ' se ha restaurado correctamente.'
       format.js
     end
   end
 
   def search_by_name
     @products = Product.active.order(:name).search_name(params[:term]).limit(8)
-    render json: @products.map { |product| {
+    render json: @products.map { |product|
+      {
         label: product.name,
         name: product.name,
         id: product.id,
@@ -145,21 +137,23 @@ class ProductsController < ApplicationController
 
   def search_by_code
     @products = Product.active.order(:id).with_code(params[:term]).limit(8)
-    render json: @products.map { |product| {
-                                 label: product.code,
-                                 code: product.code,
-                                 id: product.id,
-                                 name: product.name,
-                                 unity: product.unity.name,
-                                 stock: current_user.sector.stock_to(product.id)
-                               }
+    render json: @products.map { |product|
+      {
+        label: product.code,
+        code: product.code,
+        id: product.id,
+        name: product.name,
+        unity: product.unity.name,
+        stock: current_user.sector.stock_to(product.id)
+      }
     }
   end
 
   def search_by_name_to_order
-    @area_ids = params[:area_ids].split("_")
+    @area_ids = params[:area_ids].split('_')
     @products = Product.active.order(:name).search_name(params[:term]).with_area_ids(@area_ids).limit(8)
-    render json: @products.map { |product| {
+    render json: @products.map { |product|
+      {
         label: product.name,
         id: product.id,
         code: product.code,
@@ -170,23 +164,25 @@ class ProductsController < ApplicationController
   end
 
   def search_by_code_to_order
-    @area_ids = params[:area_ids].split("_")
+    @area_ids = params[:area_ids].split('_')
     @products = Product.order(:id).with_code(params[:term]).with_area_ids(@area_ids).limit(8)
-    render json: @products.map{ |product| { 
-      label: product.code, 
-      id: product.id,
-      name: product.name,
-      unity: product.unity.name,
-      stock: current_user.sector.stock_to(product.id)
-    } 
-  }
+    render json: @products.map { |product|
+                   {
+                     label: product.code,
+                     id: product.id,
+                     name: product.name,
+                     unity: product.unity.name,
+                     stock: current_user.sector.stock_to(product.id)
+                   }
+                 }
   end
 
   private
 
   # Use callbacks to share common setup or constraints between actions.
   def set_product
-    @product = Product.find(params[:id])
+    @product = Product.select('products.*', 'unities.name as unity_name', 'areas.name as area_name').joins(:unity,
+                                                                                                           :area).find(params[:id])
   end
 
   # Never trust parameters from the scary internet, only allow the white list through.

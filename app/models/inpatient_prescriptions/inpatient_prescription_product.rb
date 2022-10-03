@@ -47,7 +47,7 @@ class InpatientPrescriptionProduct < ApplicationRecord
                                 allow_destroy: true
 
   # Delegations
-  delegate :unity_name, :code, :name, to: :product, prefix: :product
+  delegate :code, :name, to: :product, prefix: :product
 
   # Scopes
   scope :only_parents, -> { where(parent_id: :nil) }

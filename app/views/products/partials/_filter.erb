@@ -1,0 +1,38 @@
+<%= simple_form_for products_path, remote: true, html: { method: 'GET', class: 'custom-filters-v1', id: "products-filter" } do |f| %>
+  <div class="filter-form-row">
+    <div class="filter-form-col">
+      <div class="form-group">
+        <input class="form-control" 
+               autocomplete="off" 
+               type="text" 
+               name="filter[code]" 
+               id="filter_code" 
+               placeholder="Código"
+               value="<%= get_value_from_filter(:code) %>">
+        <label>Código</label>
+      </div>
+    </div>
+    <div class="filter-form-col">
+      <div class="form-group">
+        <input class="form-control" 
+               autocomplete="off" 
+               type="text" 
+               name="filter[name]" 
+               id="filter_name" 
+               placeholder="Nombre"
+               value="<%= get_value_from_filter(:name) %>">
+        <label>Nombre</label>
+      </div>
+    </div>
+    <input type="hidden" name="filter[sort]" value="<%= get_value_from_filter(:sort) %>">
+    <input type="hidden" name="per_page" value="<%= params[:per_page] || 15 %>">
+    <div class="filter-form-btn-group">
+      <button class="btn btn-primary" type="submit" form="<%= "products-filter" %>">
+        Buscar
+      </button>
+      <button class="btn btn-danger btn-clean-filters" type="button" form="<%= "products-filter" %>">
+        <%= fa_icon 'times' %>
+      </button>
+    </div>
+  </div>
+<% end %>
