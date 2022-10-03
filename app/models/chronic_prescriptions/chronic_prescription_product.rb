@@ -27,7 +27,7 @@ class ChronicPrescriptionProduct < ApplicationRecord
                                 allow_destroy: true
 
   # Delegations
-  delegate :unity_name, :name, :code, to: :product, prefix: :product
+  delegate  :name, :code, to: :product, prefix: :product
 
   scope :get_delivery_products_by_patient, lambda { |filter_params|
     sub_query_prescriptions = ChronicDispensation.where(provider_sector_id: filter_params[:sector_id],
