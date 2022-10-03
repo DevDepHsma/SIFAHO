@@ -8,11 +8,9 @@
     </div>
   </div>
 <% end %>
-
 <% list = escape_javascript(
   render(partial: 'prescriptions/outpatient_prescriptions/partials/list', locals: { outpatient_prescriptions: @outpatient_prescriptions })
 ) %>
-
 <% paginate = escape_javascript( 
   render( partial: 'shared/paginate_index',
           locals: { model: @outpatient_prescriptions, form_id: 'chronic-prescriptions-filter' }
