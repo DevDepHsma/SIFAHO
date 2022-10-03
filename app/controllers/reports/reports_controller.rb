@@ -26,6 +26,7 @@ class ReportsController < ApplicationController
   def create
     policy(:report).create?
     @report = Report.create(sector: @current_user.sector,
+                            name: report_params[:name],
                             sector_name: @current_user.sector.name,
                             establishment_name: @current_user.sector.establishment.name,
                             generated_date: Time.now,
@@ -117,7 +118,7 @@ class ReportsController < ApplicationController
 
   def show
     authorize @report
-    report_name = @report.name.present? ? @report.name.downcase.joins('_') : 'reporte_por_paciente'
+    report_name = @report.name.present? ? @report.name.downcase.gsub(' ', '_') : 'reporte_por_paciente'
     respond_to do |format|
       format.html
       format.xlsx do
@@ -136,6 +137,13 @@ class ReportsController < ApplicationController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def report_params
-    params.require(:report).permit(:report_type, :product_ids, :patient_ids, :all_products, :all_patients, :from_date, :to_date)
+    params.require(:report).permit(:name,
+                                   :report_type,
+                                   :product_ids,
+                                   :patient_ids,
+                                   :all_products,
+                                   :all_patients,
+                                   :from_date,
+                                   :to_date)
   end
 end
