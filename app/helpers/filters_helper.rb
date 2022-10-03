@@ -13,7 +13,7 @@ module FiltersHelper
     options.reverse_merge!(highlighter: '<mark class="highlight">\1</mark>')
 
     if text.blank? || phrases.blank?
-      text
+      text || ''
     else
       haystack = text.clone
       match = Array(phrases).map { |p| Regexp.escape(p) }.join('|')
