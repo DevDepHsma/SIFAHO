@@ -24,7 +24,7 @@ module OrderProduct
     # Delegations
     delegate :code, 
              :name, 
-             :unity_name, 
+            
              to: :product, 
              prefix: :product, 
              allow_nil: true

@@ -7,13 +7,13 @@
       %>
       <div class="ml-3">
         <span>Por página:</span>
-        <select class="custom-select w-auto ml-2" onChange="page_size_selection(event, '<%=form_id %>')">
+        <select id="page-size-selection"  class="custom-select w-auto ml-2" onChange="page_size_selection(event, '<%=form_id %>')">
           <% per_page_options.each do |option| %>
             <option value='<%=option%>' <%= 'selected' if params[:per_page].to_i == option %>><%=option%></option>
-          <% end %>
-        </select>
+            <% end %>
+          </select>
+        </div>
       </div>
     </div>
-  </div>  
-  <%= yield(:footer_extra_info) %>
-</div>
+    <%= yield(:footer_extra_info) %>
+  </div>

@@ -1,6 +1,15 @@
-<% js = escape_javascript(
-  render(partial: 'products/list', locals: { products: @products })
+<% list = escape_javascript(
+  render(partial: 'products/partials/list', locals: { products: @products })
 ) %>
-
-$("#filter_results").html("<%= js %>");
+<% paginate = escape_javascript( 
+  render( partial: 'shared/paginate_index',
+          locals: { model: @products, form_id: 'products-filter' }
+        )
+) %>
+$("#table_results").html("<%= list %>");
+$("#paginate_footer").html("<%= paginate %>");
 setEventDestroyItem();
+$("a.page-link").on('click', (e) => {
+$("#loader-container").css({'display': 'flex'});
+})
+$("#loader-container").css({'display': 'none'});

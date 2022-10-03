@@ -27,7 +27,7 @@
             type="text"
             disabled
             name="product-unity-no-editable"
-            value="<%= object.product_unity_name %>">
+            value="<%=  object.product.unity.name if object.product.present? %>">
   </div>
 </div>
 
