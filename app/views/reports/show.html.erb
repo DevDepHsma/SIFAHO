@@ -1,45 +1,54 @@
-<%= render 'header' %>
-
-<div class="row">
-  <div class="col-md-8 col-md-offset-2">
-    <div class="panel panel-default">
-      <div class="panel-heading hidden-print">
-        <h3 class="panel-title">
-          <%= content_tag(:span, '', class: 'glyphicon glyphicon-eye-open') %> Viendo <%= @report.name.downcase %>
-          <%= link_to reports_path, class: 'btn pull-right close-btn',
-            :title => 'Cerrar', :'data-placement'=>'top', :'data-toggle'=>'tooltip' do %>
-            <%= content_tag(:span, '', class: 'glyphicon glyphicon-remove') %>
-          <% end %>
-        </h3>
-      </div>
-      <div class="panel-body" id="panel-body-new">
-        <div class="row">
-          <div class='col-md-6 col-xs-4'>
-            <div class="text-center"><h5><strong>Insumo</strong></h5></div>
-            <hr>
-            <strong>Código: </strong><%= @report.supply.id %> <strong>Nombre: </strong><%= @report.supply.name %> 
-          </div>
-          <div class="col-md-6 col-xs-4">
-            <div class="text-center"><h5><strong>Fecha</strong></h5></div>
-            <hr>
-            <strong>Desde: </strong><%= @report.since_date.strftime("%d/%m/%Y") %>&nbsp;&nbsp;&nbsp;<strong>Hasta: </strong><%= @report.to_date.strftime("%d/%m/%Y") %>
-          </div>
-        </div>
-        <br>
-        <div class="row">
-          <div class="col-md-12">
-            <% if @report.delivered_by_order? %>
-              <%= render "delivered_by_order" %>
-            <% elsif @report.delivered_by_establishment? %>
-              <%= render "delivered_by_establishment" %>
-            <% end %>
-          </div>
-        </div>
-      </div>
-      <div class="panel-footer">
-        <%= @report.user.sector_and_establishment %>
-      </div>
+<%= render 'reports/partials/header' %>
+<div class="card fixed-custom-card">
+  <div class="card-header d-flex align-items-center justify-content-between">
+    <div class="d-flex align-items-center">
+      <%= fa_icon "eye" %>
+      <h5 class="card-title mb-0 ml-2">
+        Report
+      </h5>
     </div>
   </div>
+  <div class="card-body">
+    <div>
+      <%= @report.sector_name %>
+      <%= @report.establishment_name %>
+    </div>
+    <div>
+    <table class="table table-hover table-striped table-condensed">
+      <thead>
+        <tr>
+          <th>Cód producto</th>
+          <th>Producto</th>
+          <th>Paciente</th>
+          <th class="text-center">Dni</th>
+          <th class="text-center">Edad</th>
+          <th class="text-center">Fecha nacimiento</th>
+          <th>Cantidad</th>
+        </tr>
+      </thead>
+      <tbody id=reports>
+        <% @report.report_patients.each do |rp| %>
+          <tr>
+            <td><%= rp.product_code %></td>
+            <td><%= rp.product_name %></td>
+            <td><%= rp.patient_full_name %></td>
+            <td class="text-center"><%= rp.patient_dni %></td>
+            <td class="text-center"><%= rp.patient_age %></td>
+            <td class="text-center"><%= rp.patient_birthdate.present? ? rp.patient_birthdate.strftime("%d/%m/%Y") : '-' %></td>
+            <td class="text-center table-danger"><%= rp.product_quantity %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+        
+    </div>
+  </div>
+  <div class="card-footer d-flex justify-content-end">
+    <%= link_to 'Volver', sectors_path, class: 'btn btn-light mr-2' %>
+
+    <%= link_to report_path(format: 'xlsx', id: @report.id), 
+      class: "btn btn-success mr-2", id: "print-report", target: :_blank do %>
+      <%= fa_icon "download" %> Excel
+    <% end %>
+  </div>
 </div>
-      

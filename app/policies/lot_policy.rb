@@ -38,8 +38,4 @@ class LotPolicy < ApplicationPolicy
   def restore?
     destroy?
   end
-
-  def trash_index?
-    user.has_any_role?(:admin)
-  end
 end

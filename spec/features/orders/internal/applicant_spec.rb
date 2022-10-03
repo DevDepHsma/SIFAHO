@@ -21,7 +21,8 @@ RSpec.feature 'Orders::Internal::Applicants', type: :feature do
 
     describe '' do
       before(:each) do
-        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @read_internal_order_applicant)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector,
+                              permission: @read_internal_order_applicant)
         visit '/'
       end
 
@@ -41,7 +42,7 @@ RSpec.feature 'Orders::Internal::Applicants', type: :feature do
           expect(page.has_link?('Entregas')).not_to be true
           expect(page.has_link?('Solicitar')).not_to be true
           expect(page.has_link?('Entregar')).not_to be true
-          expect(page.has_link?('Plantillas')).not_to be true
+          expect(page.has_link?('Plantillas')).to be true
         end
 
         describe ':: CREATE' do
@@ -52,7 +53,8 @@ RSpec.feature 'Orders::Internal::Applicants', type: :feature do
 
           describe '' do
             before(:each) do
-              PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @create_internal_order_applicant)
+              PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector,
+                                    permission: @create_internal_order_applicant)
             end
 
             it ':: visit create form' do
@@ -84,7 +86,8 @@ RSpec.feature 'Orders::Internal::Applicants', type: :feature do
               expect(page.has_link?('Volver')).to be true
               expect(page.has_button?('Enviar')).to be false
 
-              PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @update_internal_order_applicant)
+              PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector,
+                                    permission: @update_internal_order_applicant)
               visit current_path
               add_products(rand(1..3), request_quantity: true, observations: true)
               expect(page).to have_selector('input.product-code')
@@ -92,7 +95,7 @@ RSpec.feature 'Orders::Internal::Applicants', type: :feature do
               within '#applicant_orders' do
                 expect(page).to have_selector('tr')
                 expect(page).to have_selector('.btn-edit')
-                page.execute_script %Q{$('a.btn-edit')[0].click()}
+                page.execute_script %{$('a.btn-edit')[0].click()}
               end
 
               expect(page).to have_content('Editando solicitud de sector código')
@@ -106,7 +109,8 @@ RSpec.feature 'Orders::Internal::Applicants', type: :feature do
               expect(page.has_button?('Enviar')).to be false
 
               # Add send permission
-              PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @send_internal_order_applicant)
+              PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector,
+                                    permission: @send_internal_order_applicant)
               visit current_path
               expect(page.has_button?('Enviar')).to be true
               click_button 'Enviar'
@@ -117,7 +121,8 @@ RSpec.feature 'Orders::Internal::Applicants', type: :feature do
               expect(page.has_link?('Imprimir')).to be true
               expect(page.has_button?('Retornar')).to be false
               # Add return permission
-              PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @return_internal_order_applicant)
+              PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector,
+                                    permission: @return_internal_order_applicant)
               visit current_path
               expect(page.has_button?('Retornar')).to be true
               click_button 'Retornar'
@@ -132,11 +137,12 @@ RSpec.feature 'Orders::Internal::Applicants', type: :feature do
                 expect(page).not_to have_selector('.delete-item')
               end
               # Add destroy permission
-              PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @destroy_internal_order_applicant)
+              PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector,
+                                    permission: @destroy_internal_order_applicant)
               visit current_path
               within '#applicant_orders' do
                 expect(page).to have_selector('.delete-item')
-                page.execute_script %Q{$('button.delete-item')[0].click()}
+                page.execute_script %{$('button.delete-item')[0].click()}
                 sleep 1
               end
               expect(page).to have_content('Eliminar solicitud')
@@ -144,6 +150,43 @@ RSpec.feature 'Orders::Internal::Applicants', type: :feature do
               expect(page.has_link?('Confirmar')).to be true
               click_link 'Confirmar'
               sleep 1
+            end
+
+            it 'Templates' do
+              within '#dropdown-menu-header' do
+                expect(page.has_link?('Plantillas')).to be true
+                click_link 'Plantillas'
+              end
+              expect(page).to have_content('Plantillas de solicitud')
+              expect(page).not_to have_content('Plantillas de despacho')
+              expect(page.has_css?('#btn-applicant-template')).to be true
+              find('#btn-applicant-template').click
+              expect(page).to have_content('Agregar plantilla de solicitud a sector')
+              expect(page.has_css?('#new_internal_order_template')).to be true
+
+              fill_order_template(
+                form_id: '#new_internal_order_template',
+                template_name_input: 'internal_order_template_name',
+                template_name: 'Template Test',
+                sector_input: 'provider-sector',
+                sector: @depo_applicant.sector,
+                products_size: 3
+              )
+
+              expect(page.has_button?('Guardar')).to be true
+              click_button 'Guardar'
+              expect(page).to have_content('Viendo plantilla de solicitud')
+              expect(page.has_css?('.delete-item')).to be true
+              expect(page.has_link?('Volver')).to be true
+              expect(page.has_link?('Imprimir')).to be true
+              expect(page.has_link?('Editar')).to be true
+              expect(page.has_link?('Crear solicitud')).to be true
+              click_link 'Editar'
+              expect(page).to have_content('Editando plantilla de solicitud a sector')
+              expect(page.has_link?('Volver')).to be true
+              expect(page.has_button?('Guardar')).to be true
+              click_link 'Volver'
+              expect(page).to have_content('Template Test')
             end
           end
         end

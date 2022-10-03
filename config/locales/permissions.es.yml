@@ -95,3 +95,4 @@ es:
       return_archive_stocks: 'Retornar archivado'
       read_lot_stocks: 'Ver / Listar lotes'
       read_movement_stocks: 'Ver / Listar movimientos'
+      external_order_by_products: 'Reporte de establecimientos por productos'

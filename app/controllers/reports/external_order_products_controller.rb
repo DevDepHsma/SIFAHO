@@ -41,7 +41,7 @@ class Reports::ExternalOrderProductsController < ApplicationController
 
     respond_to do |format|
       if @external_order_product_report.save
-        format.html { redirect_to reports_external_order_product_report_path(@external_order_product_report), notice: 'El reporte se ha creado correctamente.' }
+        format.html { redirect_to external_order_product_report_path(@external_order_product_report), notice: 'El reporte se ha creado correctamente.' }
       else
         @last_reports = ExternalOrderProductReport.limit(10)
         format.html { render :new }
@@ -63,16 +63,16 @@ class Reports::ExternalOrderProductsController < ApplicationController
 
   def generate_report(movements, params)
     report = Thinreports::Report.new layout: File.join(Rails.root, 'app', 'reports', 'external_order_product', 'first_page.tlf')
-    
+
     report.use_layout File.join(Rails.root, 'app', 'reports', 'external_order_product', 'first_page.tlf'), :default => true
     report.use_layout File.join(Rails.root, 'app', 'reports', 'external_order_product', 'other_page.tlf'), id: :other_page
-  
+
     movements.each do |movement|
       if report.page_count == 1 && report.list.overflow?
         report.start_new_page layout: :other_page do |page|
         end
       end
-      
+
       # movement => {["last_name", "first_name", "dni", "dispensed_at"] => "delivered_quantity"} 
       report.list do |list|
         list.add_row do |row|
@@ -81,7 +81,7 @@ class Reports::ExternalOrderProductsController < ApplicationController
         end
       end
     end
-    
+
     report.pages.each do |page|
       page[:product_name] = @external_order_product_report.product_name
       page[:title] = 'Reporte producto entregado por establecimiento'

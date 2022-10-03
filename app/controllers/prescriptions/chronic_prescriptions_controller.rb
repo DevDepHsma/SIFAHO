@@ -6,16 +6,11 @@ class Prescriptions::ChronicPrescriptionsController < ApplicationController
   # GET /chronic_prescriptions.json
   def index
     authorize ChronicPrescription
-    @filterrific = initialize_filterrific(
-      ChronicPrescription.with_establishment(current_user.establishment),
-      params[:filterrific],
-      select_options: {
-        sorted_by: ChronicPrescription.options_for_sorted_by,
-        for_statuses: ChronicPrescription.options_for_statuses
-      },
-      persistence_id: false
-    ) or return
-    @chronic_prescriptions = @filterrific.find.paginate(page: params[:page], per_page: 15)
+    @chronic_prescriptions = ChronicPrescription.filter_by_params(params[:filter])
+                                                .paginate(page: params[:page], per_page: params[:per_page] || 15)
+    @total = @chronic_prescriptions.count
+    @total_pending = @chronic_prescriptions.pending_count
+    @total_pending_dispense = @chronic_prescriptions.pending_dispense_count
   end
 
   # GET /chronic_prescriptions/1
@@ -28,9 +23,9 @@ class Prescriptions::ChronicPrescriptionsController < ApplicationController
       format.js
       format.pdf do
         send_data generate_order_report(@chronic_prescription),
-        filename: "Rec_amb_#{@chronic_prescription.patient_last_name}.pdf",
-        type: 'application/pdf',
-        disposition: 'inline'
+                  filename: "Rec_amb_#{@chronic_prescription.patient_last_name}.pdf",
+                  type: 'application/pdf',
+                  disposition: 'inline'
       end
     end
   end
@@ -52,32 +47,33 @@ class Prescriptions::ChronicPrescriptionsController < ApplicationController
     authorize @chronic_prescription
     @chronic_prescription.provider_sector = current_user.sector
     @chronic_prescription.establishment = current_user.sector.establishment
-    @chronic_prescription.remit_code = "CR"+DateTime.now.to_s(:number)
+    @chronic_prescription.remit_code = 'CR' + DateTime.now.to_s(:number)
     @chronic_prescription.status = 'pendiente'
 
     respond_to do |format|
       # Si se entrega la receta
-      begin
-        @chronic_prescription.save!
-        message = "La receta crónica de #{@chronic_prescription.patient.fullname} se ha creado correctamente."
-        notification_type = 'creó'
 
-        @chronic_prescription.create_notification(current_user, notification_type)
+      @chronic_prescription.save!
+      message = "La receta crónica de #{@chronic_prescription.patient.fullname} se ha creado correctamente."
+      notification_type = 'creó'
 
-        if policy(@chronic_prescription).dispense_new?
-          format.html { redirect_to new_chronic_prescription_chronic_dispensation_path(@chronic_prescription), notice: message }
-        else
-          format.html { redirect_to @chronic_prescription, notice: message }
+      @chronic_prescription.create_notification(current_user, notification_type)
+
+      if policy(@chronic_prescription).dispense_new?
+        format.html do
+          redirect_to new_chronic_prescription_chronic_dispensation_path(@chronic_prescription), notice: message
         end
-      rescue ArgumentError => e
-        # si fallo la validacion de stock debemos modificar el estado a proveedor_auditoria
-        flash[:error] = e.message
-      rescue ActiveRecord::RecordInvalid
-      ensure
-        @chronic_prescription_products = @chronic_prescription.original_chronic_prescription_products.present? ? @chronic_prescription.original_chronic_prescription_products : @chronic_prescription.original_chronic_prescription_products.build
-        @chronic_prescription.patient = Patient.find(params[:patient_id])
-        format.html { render :new }
+      else
+        format.html { redirect_to @chronic_prescription, notice: message }
       end
+    rescue ArgumentError => e
+      # si fallo la validacion de stock debemos modificar el estado a proveedor_auditoria
+      flash[:error] = e.message
+    rescue ActiveRecord::RecordInvalid
+    ensure
+      @chronic_prescription_products = @chronic_prescription.original_chronic_prescription_products.present? ? @chronic_prescription.original_chronic_prescription_products : @chronic_prescription.original_chronic_prescription_products.build
+      @chronic_prescription.patient = Patient.find(params[:patient_id])
+      format.html { render :new }
     end
   end
 
@@ -87,25 +83,25 @@ class Prescriptions::ChronicPrescriptionsController < ApplicationController
     authorize @chronic_prescription
 
     respond_to do |format|
-      begin
-        @chronic_prescription.update!(chronic_prescription_params)
+      @chronic_prescription.update!(chronic_prescription_params)
 
-        message = "La receta crónica de #{@chronic_prescription.patient.fullname} se ha auditado correctamente."
-        notification_type = 'auditó'
+      message = "La receta crónica de #{@chronic_prescription.patient.fullname} se ha auditado correctamente."
+      notification_type = 'auditó'
 
-        @chronic_prescription.create_notification(current_user, notification_type)
-        if policy(@chronic_prescription).dispense_new?
-          format.html { redirect_to new_chronic_prescription_chronic_dispensation_path(@chronic_prescription), notice: message }
-        else
-          format.html { redirect_to @chronic_prescription, notice: message }
+      @chronic_prescription.create_notification(current_user, notification_type)
+      if policy(@chronic_prescription).dispense_new?
+        format.html do
+          redirect_to new_chronic_prescription_chronic_dispensation_path(@chronic_prescription), notice: message
         end
-      rescue ArgumentError => e
-        flash[:error] = e.message
-      rescue ActiveRecord::RecordInvalid
-      ensure
-        @chronic_prescription_products = @chronic_prescription.original_chronic_prescription_products.present? ? @chronic_prescription.original_chronic_prescription_products : @chronic_prescription.original_chronic_prescription_products.build        
-        format.html { render :edit }
+      else
+        format.html { redirect_to @chronic_prescription, notice: message }
       end
+    rescue ArgumentError => e
+      flash[:error] = e.message
+    rescue ActiveRecord::RecordInvalid
+    ensure
+      @chronic_prescription_products = @chronic_prescription.original_chronic_prescription_products.present? ? @chronic_prescription.original_chronic_prescription_products : @chronic_prescription.original_chronic_prescription_products.build
+      format.html { render :edit }
     end
   end
 
@@ -154,13 +150,13 @@ class Prescriptions::ChronicPrescriptionsController < ApplicationController
       :diagnostic,
       :date_prescribed,
       :expiry_date,
-      original_chronic_prescription_products_attributes: [
-        :id,
-        :product_id, 
-        :request_quantity,
-        :total_request_quantity,
-        :observation,
-        :_destroy
+      original_chronic_prescription_products_attributes: %i[
+        id
+        product_id
+        request_quantity
+        total_request_quantity
+        observation
+        _destroy
       ]
     )
   end

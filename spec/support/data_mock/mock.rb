@@ -5,17 +5,17 @@ module DataMock
         ['ISOXUPRINA AMPOLLA', '2'],
         ['Placa Digital Fuji 26 x 36 - Caja x 150', '8'],
         ['Placa Digital Fuji 35 x 43 - Caja x 100', '9'],
-        ['Aguja sutura acero G Nº 211 calibre 10 paquete x 12', '12'],
-        ['Aguja de sutura de acero recta Keith Nº 209 calibre 3', '17'],
+        ['Hidrocortisona 0.25% jarabe 100ml (Magistral)', '20817'],
+        ['Rifampicina 2% jarabe', '17'],
         ['Aguja sutura acero B nº 203 calibre 10 paquete x 12', '18'],
-        ['Aguja sutura acero b nº 203 calibre 12 paquete x 12', '19'],
+        ['Sonda uretral doble lumen de silicona n° 20 Fr', '20819'],
         ['Aguja sutura acero B Nº 203 calibre 16 paquete x 12', '20'],
         ['Aguja sutura acero Keith Nº 209 calibre 3 paquete x 12', '22'],
         ['Aguja sutura acero B Nº 203 calibre 12 paquete x 12', '23'],
         ['Aguja sutura acero B Nº 203 calibre 14 paquete x 12', '24'],
         ['Aguja sutura acero B Nº 203 calibre 8 paquete x 12', '25'],
         ['Aguja sutura acero G Nº 211 calibre 14 paquete x 12', '26'],
-        ['Aguja sutura acero G Nº 211 calibre 6 paquete x 12', '27'],
+        ['Hilo de lino calibre n° 1 x 10 hebras x 75cm', '11313'],
         ['Aguja sutura acero G Nº 211 calibre 8 paquete x 12', '28'],
         ['Aguja sutura acero G Nº 211 calibre 9 paquete x 12', '29'],
         ['Aguja sutura acero G Nº 211 calibre 10 paquete x 12', '30'],
@@ -71,9 +71,9 @@ module DataMock
         ['Seda negra 4/0 c/1 aguja T/SH ó HR-26 ó V-20', '82'],
         ['Catgut cromado estéril calibre 4/0 con aguja SH-1', '85'],
         ['Catgut cromado estéril calibre 3/0', '86'],
-        ['Catgut  cromado estéril calibre 0', '87'],
+        ['Catgut cromado estéril calibre 0', '87'],
         ['Catgut cromado estéril calibre 1', '88'],
-        ['Catgut cromado estéril calibre 2', '89'],
+        ['Pregabalina 150 mg x 30 comp (Magistral)', '20821'],
         ['Catgut simple estéril calibre 4/0 con aguja SH-1', '90'],
         ['Catgut simple estéril calibre 0 sin aguja', '91'],
         ['Catgut simple estéril calibre 2/0 sin aguja', '92'],
@@ -94,8 +94,8 @@ module DataMock
         ['Clorhexidina gluconato 4% en env x 500 ml', '112'],
         ['Litros de Glutaraldehído 28 días en envases x 5 litros', '117'],
         ['Detergente Enzimático quirúrgico envase x 5 litros (con bateas)', '118'],
-        ['Detergente Enzimático quirúrgico Envase x 5 litros', '119'],
-        ['Detergente Enzimático quirúrgico', '120'],
+        ['Catéter para hemodiálisis x 70 cm T/Tesio', '11206'],
+        ['Enalapril 0.1% solución (magistral)', '101010'],
         ['Formol 38/40 env. plast. x 1 litro (Antisépt)', '121'],
         ['Vaselina Sólida Env. x 250 gramos', '122'],
         ['Nitrofurazona Solucion x Env de 500 ml', '123'],
@@ -192,7 +192,9 @@ module DataMock
         ],
         [
           'Reportes',
-          ['external_order_by_products']
+          %w[report_by_patients
+             report_by_sectors
+             report_by_establishments]
         ]
       ]
     end
@@ -206,6 +208,40 @@ module DataMock
         %w[29298088 Masculino BAUER GABRIEL soltero],
         ['56757352', 'Masculino', 'CHEUQUEPAN', 'EMILIO MACIEL', 'soltero'],
         ['57122317', 'Masculino', 'INAL SANGIULIANO', 'LORENZO NAHITAN', 'soltero']
+      ]
+    end
+  end
+
+  module Roles
+    def get_roles
+      [
+        'Dispensa de recetas',
+        'Pedidos Internos',
+        'Pedidos Externos'
+      ]
+    end
+  end
+
+  module Professionals
+    def get_professionals
+      [
+        ['ROSALIA MARIELA', 'FERRO', 'FERRO ROSALIA MARIELA', 25_403_491, true, 'female'],
+        ['CINTIA LORENA', 'RODAS', 'RODAS CINTIA LORENA', 30_176_719, true, 'female'],
+        ['ANTONELA', 'SANCHOTENA', 'SANCHOTENA ANTONELA', 34_717_578, true, 'female'],
+        ['DENISE YASMIN', 'PERVANAS', 'PERVANAS DENISE YASMIN', 23_069_643, true, 'female'],
+        ['FABIOLA', 'RODRIGUEZ SOMOZA', 'RODRIGUEZ SOMOZA FABIOLA', 18_361_139, true, 'female'],
+        ['EDUARDO ANDRES', 'SERER', 'SERER EDUARDO ANDRES', 22_287_673, true, 'male']
+      ]
+    end
+
+    def get_qualifications
+      [
+        %w[OFTALMOLOGIA 1610],
+        %w[MEDICO 3369],
+        %w[MEDICO 5334],
+        %w[PSIQUIATRIA 3239],
+        %w[OBSTETRICO 165],
+        %w[MEDICO 2136]
       ]
     end
   end

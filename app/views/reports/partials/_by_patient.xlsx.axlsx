@@ -1,0 +1,25 @@
+
+s = wb.styles
+justify_center = s.add_style alignment: { horizontal: :center }
+justify_left = s.add_style alignment: { horizontal: :left }
+justify_right = s.add_style bg_color: 'fddddd', alignment: { horizontal: :right }
+
+wb.add_worksheet(name: @report.name.present? ? @report.name : "Reporte por paciente") do |sheet|
+  sheet.add_row ["#", "Cód producto", "Producto", "Paciente", "DNI", "Edad", "Fecha nacimiento", "Total dispensado" ]
+
+  sheet.add_style 'A1:H1', bg_color: '00407A', fg_color: 'FFFFFF', b: true, alignment: { horizontal: :center }
+  
+  @report.report_patients.each_with_index do |rp, index|
+    sheet.add_row [
+      index + 1,
+      rp.product_code, 
+      rp.product_name,
+      rp.patient_full_name,
+      rp.patient_dni,
+      rp.patient_age,
+      rp.patient_birthdate.present? ? rp.patient_birthdate.strftime("%d/%m/%Y") : '-',
+      rp.product_quantity,
+    ], style: [justify_center, justify_center, justify_left, justify_left, justify_center, justify_center, justify_center, justify_right]
+  end
+  sheet.column_widths 10,15,50,50,15,7,20,20
+end

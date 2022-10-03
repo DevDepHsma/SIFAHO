@@ -1,0 +1,9 @@
+$("input[name='report[product_ids]']").val("<%= @product_ids %>");
+$("button#sp-<%= @product_id %>").remove();
+<% stock_products = escape_javascript(
+  render(partial: 'reports/partials/stock_products')
+) %>
+
+$("#products-list").html("<%= stock_products %>");
+
+$("#loader-container").css({'display': 'none'});

@@ -1,7 +1,24 @@
 $(document).on('turbolinks:load', function() {
 
+  $("form.custom-filters-v1").on('submit', (e) => {
+    $("#loader-container").css({'display': 'flex'});
+  })
   
-
+  $("a.page-link").on('click', (e) => {
+    $("#loader-container").css({'display': 'flex'});
+  })
+  
+  $("button.btn-clean-filters").on('click', (e) => {
+    const $form = $("#" + $(e.target).attr('form'));
+    resetForm($form);
+    $form.submit();
+  });
+  
+  function resetForm($form){
+    $form.find('input:text, input:password, input:file, select, textarea').val('').trigger('change');
+    $form.find('input:radio, input:checkbox')
+         .removeAttr('checked').removeAttr('selected');
+  }
 });
 function sort_by(sortColumn, sortMethod, target){
   const form = $("#" + $(target).attr('data-form'));

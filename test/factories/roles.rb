@@ -1,10 +1,5 @@
 FactoryBot.define do
   factory :role do
-
-    trait :role_1 do
-      name { 'farmaceutico' }
-    end
-
-    factory :role_farmaceutico, traits: %i[role_1]
+    name { 'Recetas / Dispensas' }
   end
 end

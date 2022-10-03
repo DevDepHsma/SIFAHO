@@ -1,0 +1,10 @@
+<% @patients.each do |patient| %>
+  <li>
+    <button type="button" 
+            onclick="toggleSelectItem(event, 'patient');"
+            data-url="<%= select_patient_reports_path(patient.id) %>"
+            id="sp-<%=patient.id%>">
+      <%= highlight("#{patient.dni} | #{patient.last_name.upcase} #{patient.first_name.upcase}", params[:term], ignore_special_chars: true) %>
+    </button>
+  </li>
+<%end%>

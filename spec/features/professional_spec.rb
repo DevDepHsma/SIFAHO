@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.feature "Professionals", type: :feature do
+RSpec.feature 'Professionals', type: :feature do
   before(:all) do
     permission_module = PermissionModule.includes(:permissions).find_by(name: 'Profesionales')
     @read_professionals = permission_module.permissions.find_by(name: 'read_professionals')
@@ -19,7 +19,7 @@ RSpec.feature "Professionals", type: :feature do
       expect(page.has_css?('#sidebar-wrapper')).to be false
     end
 
-    describe "Add permission:" do
+    describe 'Add permission:' do
       before(:each) do
         PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @read_professionals)
         visit '/'
@@ -50,7 +50,7 @@ RSpec.feature "Professionals", type: :feature do
         end
         sleep 2
         expect(page).to have_content('GONZALES GABRIELA INES | 26231509 | MP 1937')
-        page.execute_script %Q{$('a.btn-success').first().click()}
+        page.execute_script %{$("span:contains('GONZALES GABRIELA')").siblings('a.btn-success').first().click()}
         sleep 1
         expect(page).to have_content('Viendo médico')
         expect(page).to have_content('GONZALES')
@@ -59,13 +59,13 @@ RSpec.feature "Professionals", type: :feature do
         expect(page.has_link?('Editar')).to be false
         click_link 'Volver'
         within '#professionals' do
-          expect(page).to have_selector('.btn-detail', count: 1)
+          expect(page).to have_selector('.btn-detail')
         end
         PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @update_professionals)
         visit current_path
         within '#professionals' do
-          expect(page).to have_selector('.btn-edit', count: 1)
-          page.execute_script %Q{$('a.btn-edit')[0].click()}
+          expect(page).to have_selector('.btn-edit')
+          page.execute_script %{$('a.btn-edit')[0].click()}
         end
 
         expect(page).to have_content('Editando médico')
@@ -75,8 +75,8 @@ RSpec.feature "Professionals", type: :feature do
         PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @destroy_professionals)
         visit current_path
         within '#professionals' do
-          expect(page).to have_selector('.delete-item', count: 1)
-          page.execute_script %Q{$('td:contains("GABRIELA")').closest('tr').find('button.delete-item').click()}
+          expect(page).to have_selector('.delete-item')
+          page.execute_script %{$('td:contains("GABRIELA")').closest('tr').find('button.delete-item').click()}
         end
         sleep 1
         expect(page).to have_content('Eliminar Médico')
@@ -85,8 +85,8 @@ RSpec.feature "Professionals", type: :feature do
         click_link 'Confirmar'
         sleep 1
         within '#professionals' do
-          expect(page).to have_selector('.delete-item', count: 0)
-          page.execute_script %Q{$('button.delete-item')[0].click()}
+          expect(page).to have_selector('.delete-item')
+          page.execute_script %{$('button.delete-item')[0].click()}
         end
       end
     end

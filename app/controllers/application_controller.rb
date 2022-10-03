@@ -57,22 +57,15 @@ class ApplicationController < ActionController::Base
   # keep_params: only in index actions
   # Store filters in session or retrive filters from session to params
   def keep_params
-    if (params[:filter].present? || params[:page].present?) && params[:reset].nil?
+    if params[:filter].present? || params[:page].present?
       session[:filter] = params[:filter]
       session[:page] = params[:page]
       session[:per_page] = params[:per_page]
       session[:controller] = controller_path
-    elsif (session[:filter].present? || session[:page].present?) && params[:reset].nil?
+    elsif session[:filter].present? || session[:page].present?
       params[:filter] = session[:filter]
       params[:page] = session[:page]
       params[:per_page] = session[:per_page]
-    elsif params[:reset].present?
-      params[:filter] = nil
-      params[:page] = nil
-      params[:per_page] = nil
-      session[:filter] = nil
-      session[:page] = nil
-      session[:per_page] = nil
     end
   end
 

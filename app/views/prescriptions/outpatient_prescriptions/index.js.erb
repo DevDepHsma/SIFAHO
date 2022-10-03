@@ -8,16 +8,18 @@
     </div>
   </div>
 <% end %>
-
 <% list = escape_javascript(
   render(partial: 'prescriptions/outpatient_prescriptions/partials/list', locals: { outpatient_prescriptions: @outpatient_prescriptions })
 ) %>
-
 <% paginate = escape_javascript( 
   render( partial: 'shared/paginate_index',
-          locals: { model: @outpatient_prescriptions }
+          locals: { model: @outpatient_prescriptions, form_id: 'chronic-prescriptions-filter' }
         )
 ) %>
 $("#table_results").html("<%= list %>");
 $("#paginate_footer").html("<%= paginate %>");
 setEventDestroyItem();
+$("a.page-link").on('click', (e) => {
+$("#loader-container").css({'display': 'flex'});
+})
+$("#loader-container").css({'display': 'none'});
