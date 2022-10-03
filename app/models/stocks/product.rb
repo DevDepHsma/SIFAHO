@@ -71,4 +71,20 @@ class Product < ApplicationRecord
   def self.search_supply(a_name)
     Supply.search_text(a_name).with_pg_search_rank
   end
+  scope :with_code, ->(product_code) { where('products.code = ?', product_code) }
+  # Scopes
+  pg_search_scope :search_code,
+                  against: :code,
+                  using: {
+                    tsearch: { prefix: true } # Buscar coincidencia desde las primeras letras.
+                  },
+                  ignoring: :accents # Ignorar tildes.
+
+  pg_search_scope :search_name,
+                  against: :name,
+                  using: {
+                    tsearch: { prefix: true } # Buscar coincidencia desde las primeras letras.
+                  },
+                  ignoring: :accents # Ignorar tildes.
+  
 end
