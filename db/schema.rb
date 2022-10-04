@@ -1041,7 +1041,7 @@ ActiveRecord::Schema.define(version: 2022_10_03_180444) do
 
   create_table "products", force: :cascade do |t|
     t.bigint "unity_id"
-    t.string "code"
+    t.integer "code"
     t.string "name"
     t.text "description"
     t.text "observation"

@@ -87,11 +87,6 @@ RSpec.feature 'Patients', type: :feature do
         expect(page.has_button?('Volver')).to be true
         expect(page.has_link?('Confirmar')).to be true
         click_link 'Confirmar'
-        sleep 1
-        within '#patients' do
-          expect(page).to have_selector('.delete-item')
-          page.execute_script %{$('button.delete-item')[0].click()}
-        end
       end
     end
   end
