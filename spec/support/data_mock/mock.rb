@@ -194,7 +194,9 @@ module DataMock
           'Reportes',
           %w[report_by_patients
              report_by_sectors
-             report_by_establishments]
+             report_by_establishments
+             read_reports
+             destroy_reports]
         ]
       ]
     end
