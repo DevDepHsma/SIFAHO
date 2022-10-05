@@ -1,3 +1,17 @@
+# == Schema Information
+
+# Table name: reports
+
+# id                      :bigint   not null, primary key
+# sector_id               :bigint   not null, current sector of current user
+# name                    :string   not null, by default
+# sector_name             :string   not null
+# establishment_name      :string   not null
+# generated_date          :date     not null
+# generated_by_user_id    :bigint   not null, current user
+# report_type             :integer  not null
+#
+
 class Report < ApplicationRecord
   include QuerySort
 
@@ -33,13 +47,13 @@ class Report < ApplicationRecord
   }
 
   scope :like_name, lambda { |word|
-    where('unaccent(lower(name)) like ?', "%#{word}%")
+    where('unaccent(lower(name)) like ?', "%#{word.downcase.removeaccents}%")
   }
   scope :like_sector_name, lambda { |word|
-    where('unaccent(lower(sector_name)) like ?', "%#{word}%")
+    where('unaccent(lower(sector_name)) like ?', "%#{word.downcase.removeaccents}%")
   }
   scope :like_establishment_name, lambda { |word|
-    where('unaccent(lower(establishment_name)) like ?', "%#{word}%")
+    where('unaccent(lower(establishment_name)) like ?', "%#{word.downcase.removeaccents}%")
   }
   scope :like_generated_date, lambda { |reference_time|
     where('generated_date >= ?', reference_time)
@@ -47,6 +61,20 @@ class Report < ApplicationRecord
   scope :like_report_type, lambda { |reference_time|
     where('report_type = ?', reference_time)
   }
+
+  def generate!(user, report_params)
+    ActiveRecord::Base.transaction do
+      @report = Report.create!(sector_id: user.sector_id,
+                               name: report_params[:name],
+                               sector_name: user.sector.name,
+                               establishment_name: user.sector.establishment.name,
+                               generated_date: Time.now,
+                               generated_by_user_id: user.id,
+                               report_type: report_params[:report_type].to_i)
+      @report.build_report_values(report_params)
+      @report
+    end
+  end
 
   def build_report_values(args)
     set_by_patients(args) if by_patient?
@@ -115,7 +143,7 @@ class Report < ApplicationRecord
       if dp['patient_birthdate'].present?
         patient_age = ((Time.zone.now - dp['patient_birthdate'].to_time) / 1.year.seconds).floor
       end
-      ReportPatient.create(
+      ReportPatient.create!(
         report_id: id,
         product_id: dp['product_id'],
         patient_id: dp['patient_id'],

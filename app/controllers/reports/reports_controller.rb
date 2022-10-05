@@ -25,15 +25,7 @@ class ReportsController < ApplicationController
 
   def create
     policy(:report).create?
-    @report = Report.create(sector: @current_user.sector,
-                            name: report_params[:name],
-                            sector_name: @current_user.sector.name,
-                            establishment_name: @current_user.sector.establishment.name,
-                            generated_date: Time.now,
-                            generated_by_user_id: @current_user.id,
-                            report_type: report_params[:report_type].to_i)
-
-    @report.build_report_values(report_params)
+    @report = Report.new.generate!(@current_user, report_params)
     respond_to do |format|
       format.html { redirect_to @report }
     end
