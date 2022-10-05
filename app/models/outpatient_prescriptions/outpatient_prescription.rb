@@ -70,11 +70,12 @@ class OutpatientPrescription < ApplicationRecord
   }
   # Where string match with %...% (support accents / unaccents)
   scope :like_professional_full_name, lambda { |word|
-    where('unaccent(lower(professionals.fullname)) LIKE ?', "%#{word.downcase.parameterize}%")
+    where('unaccent(lower(professionals.fullname)) LIKE ?', "%#{word.downcase.removeaccents}%")
   }
   # Where string match with %...% (support accents / unaccents)
   scope :like_patient_full_name_and_dni, lambda { |word|
-    where('unaccent(lower(patients.first_name)) LIKE ? OR unaccent(lower(patients.last_name)) LIKE ? OR unaccent(lower(patients.dni)) LIKE ?', "%#{word.downcase.parameterize}%", "%#{word.downcase.parameterize}%", "%#{word.downcase.parameterize}%")
+    where('unaccent(lower(patients.first_name)) LIKE ? OR unaccent(lower(patients.last_name)) LIKE ? OR unaccent(lower(patients.dni)) LIKE ?',
+          "%#{word.downcase.removeaccents}%", "%#{word.downcase.removeaccents}%", "%#{word.downcase.removeaccents}%")
   }
   scope :like_date_prescribed_since, lambda { |reference_time|
     where('date_prescribed >= ?', reference_time)
