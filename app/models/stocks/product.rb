@@ -1,8 +1,8 @@
 class Product < ApplicationRecord
   include PgSearch::Model
   include EnumTranslation
-  enum status: { active: 0, inactive: 1, merged: 2 }
   include QuerySort
+  enum status: { active: 0, inactive: 1, merged: 2 }
   # Relationships
   belongs_to :unity, optional: true
   belongs_to :area, optional: true
@@ -34,11 +34,9 @@ class Product < ApplicationRecord
   validates_uniqueness_of :code
 
   # Delegations
-
   delegate :term, :fsn, :concept_id, :semantic_tag, to: :snomed_concept, prefix: :snomed, allow_nil: true
 
   # Scopes
-
   scope :filter_by_stock, lambda { |filter_params|
     query = self.select(:id, :name, :code).where(id: Stock.where(sector_id: filter_params[:sector_id]).pluck(:product_id))
     if filter_params[:product]
@@ -50,8 +48,6 @@ class Product < ApplicationRecord
   }
 
   scope :filter_by_params, lambda { |filter_params|
-   
-
     query = self.select(:id, 'products.name as product_name', :status, :code, 'unities.name as unity_name', 'areas.name as area_name').joins(:unity, :area)
     query = query.like_code("%#{filter_params[:code]}%") if filter_params.present? && filter_params[:code].present?
     if filter_params.present? &&  filter_params[:name].present?
@@ -69,18 +65,9 @@ class Product < ApplicationRecord
 
   scope :like_name, ->(product_name) { where('unaccent(lower(products.name))  like ?', product_name) }
   scope :like_code, ->(product_code) { where('code::varchar like ?', product_code) }
-
-  def self.search_supply(a_name)
-    Supply.search_text(a_name).with_pg_search_rank
-  end
   scope :with_code, ->(product_code) { where('products.code = ?', product_code) }
-  # Scopes
-  pg_search_scope :search_code,
-                  against: :code,
-                  using: {
-                    tsearch: { prefix: true } # Buscar coincidencia desde las primeras letras.
-                  },
-                  ignoring: :accents # Ignorar tildes.
+
+  #### DEPRECATED #####
 
   pg_search_scope :search_name,
                   against: :name,
@@ -88,5 +75,8 @@ class Product < ApplicationRecord
                     tsearch: { prefix: true } # Buscar coincidencia desde las primeras letras.
                   },
                   ignoring: :accents # Ignorar tildes.
-  
+
+  def self.search_supply(a_name)
+    Supply.search_text(a_name).with_pg_search_rank
+  end
 end
