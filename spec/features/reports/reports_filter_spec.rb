@@ -21,11 +21,24 @@ RSpec.feature 'Reports::ExternalOrderProductReports', type: :feature do
     describe 'Form' do
       it 'fields' do
         expect(page.has_css?('#reports-filter')).to be true
-        expect(page.has_field?('filter[name]', type: 'text')).to be true
-        expect(page.has_field?('filter[sector_name]', type: 'text')).to be true
-        expect(page.has_field?('filter[establishment_name]', type: 'text')).to be true
-        expect(page.has_field?('filter[generated_date]', type: 'text')).to be true
-        expect(page.has_select?('filter[report_type]')).to be true
+        within '#reports-filter' do
+          expect(page.has_field?('filter[name]', type: 'text')).to be true
+          expect(page.has_field?('filter[sector_name]', type: 'text')).to be true
+          expect(page.has_field?('filter[establishment_name]', type: 'text')).to be true
+          expect(page.has_field?('filter[generated_date]', type: 'text')).to be true
+          expect(page.has_select?('filter[report_type]')).to be true
+          expect(page.has_button?('Buscar'))
+          expect(page.has_css?('button.btn-clean-filters')).to be true
+        end
+      end
+
+      it 'filter by name' do
+        report = Report.all.sample
+        within '#reports-filter' do
+          fill_in 'filter[name]', with: report.name
+          click_button 'Buscar'
+        end
+        # add expect
       end
     end
   end
