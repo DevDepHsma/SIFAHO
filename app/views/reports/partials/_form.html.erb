@@ -15,6 +15,19 @@
       <%= f.error_notification %>
       <input type="hidden" name="report[product_ids]">
       <input type="hidden" name="report[patient_ids]">
+
+      <div class="form-group">
+        <label for="name">Nombre</label>
+        <input class="form-control" 
+              autocomplete="off" 
+              type="text" 
+              name="report[name]" 
+              id="name" 
+              placeholder="Nombre">
+      </div>
+        
+      <hr>
+
       <% Report.report_types.each do |type| %>
         <div class="custom-control custom-radio">
           <input type="radio" class="custom-control-input" id="<%= type[0] %>" name="report[report_type]" required value="<%= type[1] %>">

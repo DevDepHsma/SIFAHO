@@ -1,9 +1,80 @@
+# == Schema Information
+
+# Table name: reports
+
+# id                      :bigint   not null, primary key
+# sector_id               :bigint   not null, current sector of current user
+# name                    :string   not null, by default
+# sector_name             :string   not null
+# establishment_name      :string   not null
+# generated_date          :date     not null
+# generated_by_user_id    :bigint   not null, current user
+# report_type             :integer  not null
+#
+
 class Report < ApplicationRecord
+  include QuerySort
+
   belongs_to :sector
   belongs_to :generated_by_user, class_name: 'User'
-  has_many :report_patients
+  has_many :report_patients, dependent: :delete_all
 
   enum report_type: { by_patient: 1 }
+
+  scope :filter_by_params, lambda { |filter_params|
+    query = self.select(:id, :name, :sector_name, :establishment_name, :generated_date, :report_type)
+    if filter_params.present?
+      # Name
+      query = query.like_name(filter_params['name']) if filter_params['name'].present?
+      # Sector name
+      query = query.like_sector_name(filter_params['sector_name']) if filter_params['sector_name'].present?
+      # Establishment name
+      if filter_params['establishment_name'].present?
+        query = query.like_establishment_name(filter_params['establishment_name'])
+      end
+      # Generated date
+      query = query.like_generated_date(filter_params['generated_date']) if filter_params['generated_date'].present?
+      # Report type
+      query = query.like_report_type(filter_params['report_type']) if filter_params['report_type'].present?
+    end
+
+    query = if filter_params.present? && filter_params['sort'].present?
+              query.sorted_by(filter_params['sort'])
+            else
+              query.reorder(generated_date: :desc)
+            end
+    return query
+  }
+
+  scope :like_name, lambda { |word|
+    where('unaccent(lower(name)) like ?', "%#{word.downcase.removeaccents}%")
+  }
+  scope :like_sector_name, lambda { |word|
+    where('unaccent(lower(sector_name)) like ?', "%#{word.downcase.removeaccents}%")
+  }
+  scope :like_establishment_name, lambda { |word|
+    where('unaccent(lower(establishment_name)) like ?', "%#{word.downcase.removeaccents}%")
+  }
+  scope :like_generated_date, lambda { |reference_time|
+    where('generated_date >= ?', reference_time)
+  }
+  scope :like_report_type, lambda { |reference_time|
+    where('report_type = ?', reference_time)
+  }
+
+  def generate!(user, report_params)
+    ActiveRecord::Base.transaction do
+      @report = Report.create!(sector_id: user.sector_id,
+                               name: report_params[:name],
+                               sector_name: user.sector.name,
+                               establishment_name: user.sector.establishment.name,
+                               generated_date: Time.now,
+                               generated_by_user_id: user.id,
+                               report_type: report_params[:report_type].to_i)
+      @report.build_report_values(report_params)
+      @report
+    end
+  end
 
   def build_report_values(args)
     set_by_patients(args) if by_patient?
@@ -69,8 +140,10 @@ class Report < ApplicationRecord
     dispensed_products = ActiveRecord::Base.connection.execute(query).entries
 
     dispensed_products.each do |dp|
-      patient_age = ((Time.zone.now - dp['patient_birthdate'].to_time) / 1.year.seconds).floor if dp['patient_birthdate'].present?
-      ReportPatient.create(
+      if dp['patient_birthdate'].present?
+        patient_age = ((Time.zone.now - dp['patient_birthdate'].to_time) / 1.year.seconds).floor
+      end
+      ReportPatient.create!(
         report_id: id,
         product_id: dp['product_id'],
         patient_id: dp['patient_id'],

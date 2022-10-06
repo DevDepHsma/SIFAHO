@@ -1,0 +1,41 @@
+<tr id="report_<%= report.id %>" >
+  <td>
+    <%= highlight(report.name, 
+                  get_value_from_filter(:name), 
+                  highlighter: '<mark class="highlight-1">\1</mark>',
+                  ignore_special_chars: true ) %>
+  </td>
+  <td>
+    <%= highlight(report.sector_name, 
+                  get_value_from_filter(:sector_name), 
+                  highlighter: '<mark class="highlight-1">\1</mark>',
+                  ignore_special_chars: true ) %>
+  </td>
+  <td>
+    <%= highlight(report.establishment_name, 
+                  get_value_from_filter(:establishment_name), 
+                  highlighter: '<mark class="highlight-1">\1</mark>',
+                  ignore_special_chars: true ) %>
+  </td>
+  <td><%= report.generated_date.strftime("%d/%m/%Y") %></td>
+  <td><%= t("activerecord.attributes.report.report_type.#{report.report_type}")  %></td>
+  <td class="text-left actions-col">
+    <div class="d-flex">
+      <%= render(
+        partial: 'shared/action_buttons',
+        locals:{ 
+            object: report, 
+            show: {visible: true, target: (show_target if defined?(show_target) )},
+            edit: {visible: false, target: (edit_target if defined?(edit_target) )},
+            destroy: {
+              visible: true, 
+              title: "Eliminar reporte",
+              body: "Esta seguro que desea eliminar la reporte de #{ report.name }?",
+              path: "#{report_path(report)}"
+            }
+          }
+        ) 
+      %>
+    </div>
+  </td>
+</tr>

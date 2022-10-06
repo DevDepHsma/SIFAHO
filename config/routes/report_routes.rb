@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   # Reports
   localized do
-    resources :reports, only: %i[index new create show] do
+    resources :reports, only: %i[index new create show destroy] do
       collection do
         get :get_stock_products, to: 'reports#get_stock_products', as: 'get_stock_products'
         get 'select_product/:product_id', to: 'reports#select_product', as: 'select_product'

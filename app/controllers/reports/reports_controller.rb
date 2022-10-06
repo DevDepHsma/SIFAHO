@@ -1,5 +1,5 @@
 class ReportsController < ApplicationController
-  before_action :set_report, only: [:show]
+  before_action :set_report, only: %i[show destroy]
 
   def initialize
     super
@@ -11,6 +11,7 @@ class ReportsController < ApplicationController
       flash[:error] = 'Usted no está autorizado para realizar esta acción.'
       redirect_back(fallback_location: root_path)
     end
+    @reports = Report.filter_by_params(params[:filter]).paginate(page: params[:page], per_page: params[:per_page] || 15)
   end
 
   def new
@@ -24,14 +25,7 @@ class ReportsController < ApplicationController
 
   def create
     policy(:report).create?
-    @report = Report.create(sector: @current_user.sector,
-                            sector_name: @current_user.sector.name,
-                            establishment_name: @current_user.sector.establishment.name,
-                            generated_date: Time.now,
-                            generated_by_user_id: @current_user.id,
-                            report_type: report_params[:report_type].to_i)
-
-    @report.build_report_values(report_params)
+    @report = Report.new.generate!(@current_user, report_params)
     respond_to do |format|
       format.html { redirect_to @report }
     end
@@ -112,17 +106,26 @@ class ReportsController < ApplicationController
     @patient_ids = @patient_ids.join('_')
   end
 
-  ###################################  DEPRECATED  ########################################
-
   def show
     authorize @report
-    report_name = @report.name.present? ? @report.name.downcase.joins('_') : 'reporte_por_paciente'
+    report_name = @report.name.present? ? @report.name.downcase.gsub(' ', '_') : 'reporte_por_paciente'
     respond_to do |format|
       format.html
       format.xlsx do
         headers['Content-Disposition'] =
           "attachment; filename=\"#{report_name}_#{DateTime.now.strftime('%d-%m-%Y')}.xlsx\""
       end
+    end
+  end
+
+  # DELETE /establishments/1
+  # DELETE /establishments/1.json
+  def destroy
+    authorize @report
+    flash.now[:success] = "El report #{@report.name} se ha eliminado correctamente."
+    @report.destroy
+    respond_to do |format|
+      format.js
     end
   end
 
@@ -135,6 +138,13 @@ class ReportsController < ApplicationController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def report_params
-    params.require(:report).permit(:report_type, :product_ids, :patient_ids, :all_products, :all_patients, :from_date, :to_date)
+    params.require(:report).permit(:name,
+                                   :report_type,
+                                   :product_ids,
+                                   :patient_ids,
+                                   :all_products,
+                                   :all_patients,
+                                   :from_date,
+                                   :to_date)
   end
 end

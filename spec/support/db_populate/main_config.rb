@@ -6,7 +6,7 @@ require 'support/db_populate/products'
 require 'support/db_populate/stocks'
 require 'support/db_populate/roles'
 require 'support/db_populate/patients'
-require 'support/db_populate/professionals'
+require 'support/db_populate/reports'
 
 RSpec.configure do |config|
   config.include DataMock::Products, type: :feature
@@ -14,6 +14,7 @@ RSpec.configure do |config|
   config.include DataMock::Roles, type: :feature
   config.include DataMock::Patients, type: :feature
   config.include DataMock::Professionals, type: :feature
+  config.include DataMock::Reports, type: :feature
 
   config.before(:all, type: :feature) do
     permissions_populate
@@ -25,5 +26,6 @@ RSpec.configure do |config|
     patients_populate
     professionals_populate
     outpatient_prescriptions_populate
+    reports_populate
   end
 end

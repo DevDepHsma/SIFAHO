@@ -35,7 +35,7 @@ class Product < ApplicationRecord
 
   # Delegations
   delegate :term, :fsn, :concept_id, :semantic_tag, to: :snomed_concept, prefix: :snomed, allow_nil: true
-
+  before_save :format_downcase_degree
   # Scopes
   scope :filter_by_stock, lambda { |filter_params|
     query = self.select(:id, :name, :code).where(id: Stock.where(sector_id: filter_params[:sector_id]).pluck(:product_id))
@@ -64,7 +64,7 @@ class Product < ApplicationRecord
   }
 
   scope :like_name, ->(product_name) { where('unaccent(lower(products.name))  like ?', product_name) }
-  scope :like_code, ->(product_code) { where('code::varchar like ?', product_code) }
+  scope :like_code, ->(product_code) { where('code::VARCHAR like ?', product_code) }
   scope :with_code, ->(product_code) { where('products.code = ?', product_code) }
 
   #### DEPRECATED #####
@@ -78,5 +78,9 @@ class Product < ApplicationRecord
 
   def self.search_supply(a_name)
     Supply.search_text(a_name).with_pg_search_rank
+  end
+
+  def format_downcase_degree
+    self.name = name.downcase.to_degree
   end
 end
