@@ -16,6 +16,7 @@ RSpec.feature 'Reports::ExternalOrderProductReports', type: :feature do
 
     before(:each) do
       visit '/reportes'
+      @reports = Report.all.sample(3)
     end
 
     describe 'Form' do
@@ -33,12 +34,77 @@ RSpec.feature 'Reports::ExternalOrderProductReports', type: :feature do
       end
 
       it 'filter by name' do
-        report = Report.all.sample
+        @reports.each do |report|
+          within '#reports-filter' do
+            fill_in 'filter[name]', with: report.name
+            click_button 'Buscar'
+          end
+          sleep 1
+          within 'tbody#reports' do
+            expect(page.first('tr').has_css?('td', text: report.name)).to be true
+          end
+          within '#reports-filter' do
+            first('button.btn-clean-filters').click
+          end
+          sleep 1
+        end
+      end
+
+      it 'filter by sector name' do
+        @reports.each do |report|
+          within '#reports-filter' do
+            fill_in 'filter[sector_name]', with: report.sector_name
+            click_button 'Buscar'
+          end
+          sleep 1
+          within 'tbody#reports' do
+            expect(page.first('tr').has_css?('td', text: report.sector_name)).to be true
+          end
+          within '#reports-filter' do
+            first('button.btn-clean-filters').click
+          end
+          sleep 1
+        end
+      end
+
+      it 'filter by establishment name' do
+        @reports.each do |report|
+          within '#reports-filter' do
+            fill_in 'filter[establishment_name]', with: report.establishment_name
+            click_button 'Buscar'
+          end
+          sleep 1
+          within 'tbody#reports' do
+            expect(page.first('tr').has_css?('td', text: report.establishment_name)).to be true
+          end
+          within '#reports-filter' do
+            first('button.btn-clean-filters').click
+          end
+          sleep 1
+        end
+      end
+
+      it 'filter by generated date' do
+        generated_date_filter = (DateTime.now - 2.day).strftime('%d/%m/%Y')
         within '#reports-filter' do
-          fill_in 'filter[name]', with: report.name
+          fill_in 'filter[generated_date]', with: generated_date_filter
           click_button 'Buscar'
         end
-        # add expect
+        sleep 1
+        within 'tbody#reports' do
+          expect(page.first('tr').has_css?('td')).to be true
+        end
+      end
+
+      it 'filter by report type' do
+        within '#reports-filter' do
+          page.select 'Por paciente', from: 'filter[report_type]'
+          click_button 'Buscar'
+        end
+        sleep 1
+        within 'tbody#reports' do
+          expect(page.first('tr').has_css?('td', text: 'Por paciente')).to be true
+        end
       end
     end
   end

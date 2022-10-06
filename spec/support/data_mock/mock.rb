@@ -251,7 +251,7 @@ module DataMock
   module Reports
     def get_by_patient
       [
-        'Reporte de prueba', 'Medicamentos', 'Paciente x', 'Cantidades dispensadas'
+        'Reporte de prueba', 'Medicamentos', 'Paciente x', 'Cantidades dispensadas', 'Random report', 'Dispensado Marzo'
       ]
     end
   end
