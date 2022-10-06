@@ -18,9 +18,8 @@ module FiltersHelper
       haystack = text.clone
       match = Array(phrases).map { |p| Regexp.escape(p) }.join('|')
       if options[:ignore_special_chars]
-        haystack = haystack.gsub(/(°)|(º)/, '&deg;')
-        haystack = haystack.mb_chars.normalize(:kd)
-        match = match.gsub(/(°)|(º)/, '&deg;').mb_chars.normalize(:kd).gsub(/[^\x00-\x7F]+/n, '').gsub(/\w/, '\0[^\x00-\x7F]*')
+        haystack = haystack.replace_accents_as_html
+        match = match.replace_accents_as_html.gsub(/[^\x00-\x7F]+/n, '').gsub(/\w/, '\0[^\x00-\x7F]*')
       end
       highlighted = haystack.gsub(/(#{match})(?!(?:[^<]*?)(?:["'])[^<>]*>)/i, options[:highlighter])
       highlighted
