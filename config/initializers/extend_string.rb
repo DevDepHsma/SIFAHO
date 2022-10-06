@@ -51,6 +51,26 @@ class String
     'oe' => [189]
   }
 
+  ACCENTS_MAPPING_TO_HTML = {
+    '&Eacute' => [200, 201, 202, 203],
+    '&eacute' => [232, 233, 234, 235],
+    '&Aacute' => [192, 193, 194, 195, 196, 197],
+    '&aacute' => [224, 225, 226, 227, 228, 229, 230],
+    '&Oacute' => [210, 211, 212, 213, 214, 216],
+    '&oacute' => [242, 243, 244, 245, 246, 248],
+    '&Iacute' => [204, 205, 206, 207],
+    '&iacute' => [236, 237, 238, 239],
+    '&Uacute' => [217, 218, 219, 220],
+    '&uacute' => [249, 250, 251, 252],
+    '&Ntilde;' => [209],
+    '&ntilde;' => [241],
+    '&deg;' => [186, 176]
+  }
+
+  TO_DEGREE = {
+    '°' => [186, 176]
+  }
+
   # Remove the accents from the string. Uses String::ACCENTS_MAPPING as the source map.
   def removeaccents
     str = String.new(self)
@@ -59,7 +79,28 @@ class String
       rxp = Regexp.new("[#{packed}]", nil)
       str.gsub!(rxp, letter)
     end
+    str
+  end
 
+  # replace the accents from the string to HTML name. Uses String::ACCENTS_MAPPING_TO_HTML as the source map.
+  def replace_accents_as_html
+    str = String.new(self)
+    String::ACCENTS_MAPPING_TO_HTML.each do |letter, accents|
+      packed = accents.pack('U*')
+      rxp = Regexp.new("[#{packed}]", nil)
+      str.gsub!(rxp, letter)
+    end
+    str
+  end
+
+  # replace the masculine ordinal indicator to degree sign. Uses String::TO_DEGREE as the source map.
+  def to_degree
+    str = String.new(self)
+    String::TO_DEGREE.each do |letter, accents|
+      packed = accents.pack('U*')
+      rxp = Regexp.new("[#{packed}]", nil)
+      str.gsub!(rxp, letter)
+    end
     str
   end
 end
