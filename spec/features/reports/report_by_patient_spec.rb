@@ -4,6 +4,8 @@ RSpec.feature 'Reports::ExternalOrderProductReports', type: :feature do
   before(:all) do
     permission_module = PermissionModule.includes(:permissions).find_by(name: 'Reportes')
     @report_by_patients = permission_module.permissions.find_by(name: 'report_by_patients')
+    @read_reports = permission_module.permissions.find_by(name: 'read_reports')
+    @destroy_reports = permission_module.permissions.find_by(name: 'destroy_reports')
   end
 
   background do
@@ -19,7 +21,7 @@ RSpec.feature 'Reports::ExternalOrderProductReports', type: :feature do
     describe 'Add permission:' do
       before(:each) do
         PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector,
-                              permission: @report_by_patients)
+                              permission: @read_reports)
         visit '/'
       end
 
@@ -35,8 +37,13 @@ RSpec.feature 'Reports::ExternalOrderProductReports', type: :feature do
       end
       describe 'Form' do
         before(:each) do
+          PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector,
+                                permission: @report_by_patients)
           within '#sidebar-wrapper' do
             click_link 'Reportes'
+          end
+          within '#dropdown-menu-header' do
+            click_link 'Nuevo reporte'
           end
         end
 
@@ -83,7 +90,6 @@ RSpec.feature 'Reports::ExternalOrderProductReports', type: :feature do
                   expect(page.has_button?("#{product.code} | #{product.name.upcase}")).to be true
                   click_button "#{product.code} | #{product.name.upcase}"
                 end
-                sleep 1
                 expect(page.has_css?('#selected-products')).to be true
                 within '#selected-products' do
                   expect(page.has_button?("#{product.code} | #{product.name.upcase}")).to be true
@@ -95,13 +101,11 @@ RSpec.feature 'Reports::ExternalOrderProductReports', type: :feature do
           it 'Fill patients' do
             within '#new_report' do
               page.find('input#patients-search').click.set(@patient.dni)
-              sleep 1
               expect(page.has_css?('#patients-collapse')).to be true
               within '#patients-collapse' do
                 expect(page.has_button?("#{@patient.dni} | #{@patient.last_name.upcase} #{@patient.first_name.upcase}")).to be true
                 click_button "#{@patient.dni} | #{@patient.last_name.upcase} #{@patient.first_name.upcase}"
               end
-              sleep 1
               expect(page.has_css?('#selected-patients')).to be true
               within '#selected-patients' do
                 expect(page.has_button?("#{@patient.dni} | #{@patient.last_name.upcase} #{@patient.first_name.upcase}")).to be true
@@ -125,11 +129,9 @@ RSpec.feature 'Reports::ExternalOrderProductReports', type: :feature do
               # Product
               @products_to_dispense.each do |product|
                 page.find('input#products-search').click.set(product.code)
-                sleep 1
                 within '#products-collapse' do
-                  click_button "#{product.code} | #{product.name}"
+                  click_button "#{product.code} | #{product.name.upcase}"
                 end
-                sleep 1
               end
               # Patient
               within '#patients-module' do
