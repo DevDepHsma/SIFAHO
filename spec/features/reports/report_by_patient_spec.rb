@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.feature 'Reports::ExternalOrderProductReports', type: :feature do
+RSpec.feature 'Reports::CreateAndShow', type: :feature do
   before(:all) do
     permission_module = PermissionModule.includes(:permissions).find_by(name: 'Reportes')
     @report_by_patients = permission_module.permissions.find_by(name: 'report_by_patients')
@@ -138,6 +138,10 @@ RSpec.feature 'Reports::ExternalOrderProductReports', type: :feature do
                 page.find('label', text: 'Todos').click
               end
             end
+            click_button 'Guardar'
+            expect(page).to have_content('Viendo reporte')
+            expect(page.has_link?('Volver')).to be true
+            expect(page.has_link?('Excel')).to be true
           end
         end
       end
