@@ -1285,8 +1285,12 @@ ActiveRecord::Schema.define(version: 2022_10_03_180444) do
     t.string "sector_name"
     t.string "establishment_name"
     t.datetime "generated_date"
+    t.datetime "from_date"
+    t.datetime "to_date"
+    t.string "product_ids"
+    t.string "patient_ids"
     t.bigint "generated_by_user_id"
-    t.integer "report_type"
+    t.integer "report_type", default: 0
     t.index ["generated_by_user_id"], name: "index_reports_on_generated_by_user_id"
     t.index ["sector_id"], name: "index_reports_on_sector_id"
   end

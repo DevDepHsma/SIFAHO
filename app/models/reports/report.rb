@@ -4,12 +4,16 @@
 
 # id                      :bigint   not null, primary key
 # sector_id               :bigint   not null, current sector of current user
-# name                    :string   not null, by default
+# name                    :string   not null, by default 0
 # sector_name             :string   not null
 # establishment_name      :string   not null
 # generated_date          :date     not null
 # generated_by_user_id    :bigint   not null, current user
 # report_type             :integer  not null
+# from_date               :date     null
+# to_date                 :date     null
+# product_ids             :string   not null
+# patient_ids             :string   not null
 #
 
 class Report < ApplicationRecord
@@ -19,7 +23,9 @@ class Report < ApplicationRecord
   belongs_to :generated_by_user, class_name: 'User'
   has_many :report_patients, dependent: :delete_all
 
-  enum report_type: { by_patient: 1 }
+  enum report_type: [:by_patient]
+
+  validates_presence_of :report_type
 
   scope :filter_by_params, lambda { |filter_params|
     query = self.select(:id, :name, :sector_name, :establishment_name, :generated_date, :report_type)
@@ -70,7 +76,7 @@ class Report < ApplicationRecord
                                establishment_name: user.sector.establishment.name,
                                generated_date: Time.now,
                                generated_by_user_id: user.id,
-                               report_type: report_params[:report_type].to_i)
+                               report_type: report_params[:report_type])
       @report.build_report_values(report_params)
       @report
     end
