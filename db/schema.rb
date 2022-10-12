@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_10_03_180444) do
+ActiveRecord::Schema.define(version: 2022_10_12_142608) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "fuzzystrmatch"
@@ -1285,12 +1285,12 @@ ActiveRecord::Schema.define(version: 2022_10_03_180444) do
     t.string "sector_name"
     t.string "establishment_name"
     t.datetime "generated_date"
-    t.datetime "from_date"
-    t.datetime "to_date"
-    t.string "product_ids"
-    t.string "patient_ids"
     t.bigint "generated_by_user_id"
     t.integer "report_type", default: 0
+    t.datetime "from_date"
+    t.datetime "to_date"
+    t.string "products_ids"
+    t.string "patients_ids"
     t.index ["generated_by_user_id"], name: "index_reports_on_generated_by_user_id"
     t.index ["sector_id"], name: "index_reports_on_sector_id"
   end

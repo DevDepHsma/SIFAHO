@@ -76,7 +76,11 @@ class Report < ApplicationRecord
                                establishment_name: user.sector.establishment.name,
                                generated_date: Time.now,
                                generated_by_user_id: user.id,
-                               report_type: report_params[:report_type])
+                               report_type: report_params[:report_type],
+                               products_ids: report_params[:product_ids].to_s,
+                               patients_ids: report_params[:patient_ids].to_s,
+                               from_date: report_params[:from_date],
+                               to_date: report_params[:to_date])
       @report.build_report_values(report_params)
       @report
     end
