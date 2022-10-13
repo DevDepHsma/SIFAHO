@@ -163,22 +163,22 @@ RSpec.feature 'Reports::IndexAndFilters', type: :feature do
       end
 
       it 'sort by "nombre"' do
-        sort_by_name_desc = Report.order(name: :desc).first
-        within '#table_results thead' do
-          click_button 'Nombre'
-        end
-
-        within 'tbody#reports' do
-          expect(page.first('tr').has_css?('td', text: sort_by_name_desc.name)).to be true
-        end
-
         sort_by_name_asc = Report.order(name: :asc).first
         within '#table_results thead' do
           click_button 'Nombre'
         end
-
+        sleep 1
         within 'tbody#reports' do
           expect(page.first('tr').has_css?('td', text: sort_by_name_asc.name)).to be true
+        end
+
+        sort_by_name_desc = Report.order(name: :desc).first
+        within '#table_results thead' do
+          click_button 'Nombre'
+        end
+        sleep 1
+        within 'tbody#reports' do
+          expect(page.first('tr').has_css?('td', text: sort_by_name_desc.name)).to be true
         end
       end
 
