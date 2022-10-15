@@ -25,7 +25,7 @@ class Report < ApplicationRecord
 
   enum report_type: [:by_patient]
 
-  validates_presence_of :report_type
+  validates_presence_of :report_type, :products_ids, :patients_ids, :from_date, :to_date, :name
 
   scope :filter_by_params, lambda { |filter_params|
     query = self.select(:id, :name, :sector_name, :establishment_name, :generated_date, :report_type)
@@ -71,16 +71,16 @@ class Report < ApplicationRecord
   def generate!(user, report_params)
     ActiveRecord::Base.transaction do
       @report = Report.create!(sector_id: user.sector_id,
-                               name: report_params[:name],
-                               sector_name: user.sector.name,
-                               establishment_name: user.sector.establishment.name,
-                               generated_date: Time.now,
-                               generated_by_user_id: user.id,
-                               report_type: report_params[:report_type],
-                               products_ids: report_params[:product_ids].to_s,
-                               patients_ids: report_params[:patient_ids].to_s,
-                               from_date: report_params[:from_date],
-                               to_date: report_params[:to_date])
+                              name: report_params[:name],
+                              sector_name: user.sector.name,
+                              establishment_name: user.sector.establishment.name,
+                              generated_date: Time.now,
+                              generated_by_user_id: user.id,
+                              report_type: report_params[:report_type],
+                              products_ids: report_params[:product_ids].to_s,
+                              patients_ids: report_params[:patient_ids].to_s,
+                              from_date: report_params[:from_date],
+                              to_date: report_params[:to_date])
       @report.build_report_values(report_params)
       @report
     end

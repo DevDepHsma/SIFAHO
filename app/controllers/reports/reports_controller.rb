@@ -25,9 +25,18 @@ class ReportsController < ApplicationController
 
   def create
     policy(:report).create?
-    @report = Report.new.generate!(@current_user, report_params)
     respond_to do |format|
-      format.html { redirect_to @report }
+      begin
+        @report = Report.new.generate!(@current_user, report_params)
+        format.html { redirect_to @report, notice: 'El reporte se ha creado correctamente.' }
+      rescue ActiveRecord::RecordInvalid
+        @report = Report.new
+        @products = Product.filter_by_stock({ sector_id: @current_user.sector_id }).limit(@result_size)
+        @patients = Patient.filter_by_sector_dispensation({ sector_id: @current_user.sector_id }).limit(@result_size)
+        @product_ids = []
+        @patients_ids = []
+        format.html { render :new }
+      end
     end
   end
 

@@ -209,6 +209,7 @@ es:
         other_sector: 'Sector'
       report:
         report_type: 
+          one: 'Por paciente'
           by_patient: 'Por paciente'
   user_status:
     permission_req: 'Solicitud'
