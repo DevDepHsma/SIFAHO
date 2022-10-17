@@ -37,12 +37,13 @@ class Product < ApplicationRecord
   delegate :term, :fsn, :concept_id, :semantic_tag, to: :snomed_concept, prefix: :snomed, allow_nil: true
   before_save :format_downcase_degree
   # Scopes
+  # Get all products with stock from a sector
   scope :filter_by_stock, lambda { |filter_params|
     query = self.select(:id, :name, :code).where(id: Stock.where(sector_id: filter_params[:sector_id]).pluck(:product_id))
     if filter_params[:product]
       query = query.where('code::VARCHAR like ? OR unaccent(lower(name)) like ?', "%#{filter_params[:product]}%", "%#{filter_params[:product].downcase.parameterize}%")
     end
-    query = query.where.not(id: filter_params[:product_ids]) if filter_params[:product_ids]
+    query = query.where.not(id: filter_params[:products_ids]) if filter_params[:products_ids]
 
     return query
   }

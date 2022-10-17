@@ -12,8 +12,8 @@
 # report_type             :integer  not null
 # from_date               :date     null
 # to_date                 :date     null
-# product_ids             :string   not null
-# patient_ids             :string   not null
+# products_ids             :string   not null
+# patients_ids             :string   not null
 #
 
 class Report < ApplicationRecord
@@ -77,8 +77,8 @@ class Report < ApplicationRecord
                               generated_date: Time.now,
                               generated_by_user_id: user.id,
                               report_type: report_params[:report_type],
-                              products_ids: report_params[:product_ids].to_s,
-                              patients_ids: report_params[:patient_ids].to_s,
+                              products_ids: report_params[:products_ids].to_s,
+                              patients_ids: report_params[:patients_ids].to_s,
                               from_date: report_params[:from_date],
                               to_date: report_params[:to_date])
       @report.build_report_values(report_params)
@@ -92,18 +92,14 @@ class Report < ApplicationRecord
 
   def set_by_patients(args)
     opproducts = OutpatientPrescriptionProduct.get_delivery_products_by_patient({ sector_id: sector_id,
-                                                                                  patient_ids: args[:patient_ids].split('_'),
-                                                                                  product_ids: args[:product_ids].split('_'),
-                                                                                  all_products: args[:all_products],
-                                                                                  all_patients: args[:all_patients],
+                                                                                  patients_ids: args[:patients_ids].split('_'),
+                                                                                  products_ids: args[:products_ids].split('_'),
                                                                                   from_date: args[:from_date],
                                                                                   to_date: args[:to_date] })
 
     cpproducts = ChronicPrescriptionProduct.get_delivery_products_by_patient({ sector_id: sector_id,
-                                                                               patient_ids: args[:patient_ids].split('_'),
-                                                                               product_ids: args[:product_ids].split('_'),
-                                                                               all_products: args[:all_products],
-                                                                               all_patients: args[:all_patients],
+                                                                               patients_ids: args[:patients_ids].split('_'),
+                                                                               products_ids: args[:products_ids].split('_'),
                                                                                from_date: args[:from_date],
                                                                                to_date: args[:to_date] })
 

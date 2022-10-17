@@ -2,7 +2,7 @@
   render(partial: 'reports/partials/selected_product')
 ) %>
 
-$("input[name='report[product_ids]']").val("<%= @product_ids %>");
+$("input[name='report[products_ids]']").val("<%= @products_ids %>");
 $("#selected-products").append("<%= selected_product_partial %>");
 
 <% stock_products = escape_javascript(

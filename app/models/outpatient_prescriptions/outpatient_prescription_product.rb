@@ -39,8 +39,8 @@ class OutpatientPrescriptionProduct < ApplicationRecord
   scope :get_delivery_products_by_patient, lambda { |filter_params|
     sub_query_prescriptions = OutpatientPrescription.where(provider_sector_id: filter_params[:sector_id],
                                                            status: 'dispensada')
-    unless filter_params[:all_patients].present?
-      sub_query_prescriptions = sub_query_prescriptions.where(patient_id: filter_params[:patient_ids])
+    if filter_params[:patients_ids].present?
+      sub_query_prescriptions = sub_query_prescriptions.where(patient_id: filter_params[:patients_ids])
     end
 
     if filter_params[:from_date].present?
@@ -61,7 +61,7 @@ class OutpatientPrescriptionProduct < ApplicationRecord
                    'patients.birthdate as patient_birthdate')
             .joins(:patient, :product)
             .where(outpatient_prescription_id: sub_query_prescriptions)
-    query = query.where(product_id: filter_params[:product_ids]) unless filter_params[:all_products].present?
+    query = query.where(product_id: filter_params[:products_ids]) if filter_params[:products_ids].present?
     query = query.group('patients.id', 'products.id')
                  .order('patient_full_name ASC')
     return query

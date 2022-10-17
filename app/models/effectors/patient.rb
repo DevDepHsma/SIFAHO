@@ -76,6 +76,8 @@ class Patient < ApplicationRecord
       raise(ArgumentError, "Invalid sort option: #{sort_option.inspect}")
     end
   }
+
+  # Get all dispensed patients by a sector: OutPatientPrescriptions / ChronicPrescriptions
   scope :filter_by_sector_dispensation, lambda { |filter_params|
     op_patient_ids = OutpatientPrescription.where(provider_sector_id: filter_params[:sector_id], status: 'dispensada').pluck(:patient_id).uniq
     cr_patient_ids = ChronicPrescription.where(provider_sector_id: filter_params[:sector_id], status: ['dispensada', 'dispensada_parcial']).pluck(:patient_id).uniq
@@ -87,7 +89,7 @@ class Patient < ApplicationRecord
                           "%#{filter_params[:patient].downcase.parameterize(separator: ' ')}%",
                           "%#{filter_params[:patient]}%")
     end
-    query = query.where.not(id: filter_params[:patient_ids]) if filter_params[:patient_ids]
+    query = query.where.not(id: filter_params[:patients_ids]) if filter_params[:patients_ids]
     return query
   }
 

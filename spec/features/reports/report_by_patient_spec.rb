@@ -60,13 +60,12 @@ RSpec.feature 'Reports::CreateAndShow', type: :feature do
             expect(page).to have_content('Productos')
             expect(page).to have_content('Pacientes')
 
+            expect(page.has_field?('report[name]', type: 'text')).to be true
             expect(page.has_field?('report[from_date]', type: 'text')).to be true
             expect(page.has_field?('report[to_date]', type: 'text')).to be true
-            expect(page.has_field?('report[product_ids]', type: 'hidden')).to be true
-            expect(page.has_field?('report[patient_ids]', type: 'hidden')).to be true
+            expect(page.has_field?('report[products_ids]', type: 'hidden')).to be true
+            expect(page.has_field?('report[patients_ids]', type: 'hidden')).to be true
             expect(page.has_field?('report[report_type]', type: 'radio', visible: false)).to be true
-            expect(page.has_field?('report[all_products]', type: 'checkbox', visible: false)).to be true
-            expect(page.has_field?('report[all_patients]', type: 'checkbox', visible: false)).to be true
 
             expect(page.has_field?('products-search', type: 'text')).to be true
             expect(page.has_field?('patients-search', type: 'text')).to be true
@@ -123,6 +122,7 @@ RSpec.feature 'Reports::CreateAndShow', type: :feature do
 
           it 'Send success form' do
             within '#new_report' do
+              fill_in 'report[name]', with: 'Example report'
               page.find('label', text: 'Por paciente').click
               fill_in 'report[from_date]', with: @from_date
               fill_in 'report[to_date]', with: @to_date
@@ -133,15 +133,39 @@ RSpec.feature 'Reports::CreateAndShow', type: :feature do
                   click_button "#{product.code} | #{product.name.upcase}"
                 end
               end
+
               # Patient
-              within '#patients-module' do
-                page.find('label', text: 'Todos').click
+              @patients.first(2).each do |patient|
+                page.find('input#patients-search').click.set(patient.dni)
+                within '#patients-collapse' do
+                  click_button "#{patient.dni} | #{patient.last_name.upcase} #{patient.first_name.upcase}"
+                end
               end
             end
             click_button 'Guardar'
             expect(page).to have_content('Viendo reporte')
             expect(page.has_link?('Volver')).to be true
             expect(page.has_link?('Excel')).to be true
+          end
+
+          it 'Send fail form' do
+            click_button 'Guardar'
+            within '#new_report' do
+              expect(page).to have_css('input[name="report[name]"].is-invalid')
+              expect(page.find('input[name="report[name]"]+.invalid-feedback')).to have_content('Nombre no puede estar en blanco')
+
+              expect(page).to have_css('input[name="report[from_date]"].is-invalid')
+              expect(page.find('input[name="report[from_date]"]+.invalid-feedback')).to have_content('Fecha desde no puede estar en blanco')
+
+              expect(page).to have_css('input[name="report[to_date]"].is-invalid')
+              expect(page.find('input[name="report[to_date]"]+.invalid-feedback')).to have_content('Fecha hasta no puede estar en blanco')
+
+              expect(page).to have_css('input#products-search.is-invalid')
+              expect(page).to have_content('Productos no puede estar en blanco')
+
+              expect(page).to have_css('input#patients-search.is-invalid')
+              expect(page).to have_content('Pacientes no puede estar en blanco')
+            end
           end
         end
       end

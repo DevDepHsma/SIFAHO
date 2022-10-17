@@ -19,100 +19,99 @@ class ReportsController < ApplicationController
     @report = Report.new
     @products = Product.filter_by_stock({ sector_id: @current_user.sector_id }).limit(@result_size)
     @patients = Patient.filter_by_sector_dispensation({ sector_id: @current_user.sector_id }).limit(@result_size)
-    @product_ids = []
+    @products_ids = []
     @patients_ids = []
   end
 
   def create
     policy(:report).create?
     respond_to do |format|
-      begin
-        @report = Report.new.generate!(@current_user, report_params)
-        format.html { redirect_to @report, notice: 'El reporte se ha creado correctamente.' }
-      rescue ActiveRecord::RecordInvalid
-        @report = Report.new
-        @products = Product.filter_by_stock({ sector_id: @current_user.sector_id }).limit(@result_size)
-        @patients = Patient.filter_by_sector_dispensation({ sector_id: @current_user.sector_id }).limit(@result_size)
-        @product_ids = []
-        @patients_ids = []
-        format.html { render :new }
-      end
+      @report = Report.new.generate!(@current_user, report_params)
+      format.html { redirect_to @report, notice: 'El reporte se ha creado correctamente.' }
+    rescue ActiveRecord::RecordInvalid => e
+      @report = e.record
+      @products = Product.filter_by_stock({ sector_id: @current_user.sector_id }).limit(@result_size)
+      @patients = Patient.filter_by_sector_dispensation({ sector_id: @current_user.sector_id }).limit(@result_size)
+      @products_ids = []
+      @patients_ids = []
+      @errors = e.record.errors
+      format.html { render :new }
     end
   end
 
   # get all products with stock x >= 0 of current sector
-  # params[:product_ids]    string with selected products
+  # params[:products_ids]    string with selected products
   # params[:product_term]   string for search by name or code (Product)
   def get_stock_products
-    @product_ids = params[:product_ids]
+    @products_ids = params[:products_ids]
     @products = Product.filter_by_stock({ sector_id: @current_user.sector_id, product: params[:term],
-                                          product_ids: params[:product_ids].split('_') })
+                                          products_ids: params[:products_ids].split('_') })
                        .limit(@result_size)
   end
 
   # Set selected product and reset avaible products list
-  # params[:product_ids]    string with selected products
+  # params[:products_ids]    string with selected products
   # params[:product_term]   string for search by name or code (Product)
   # get all products with stock x >= 0 of current sector
   def select_product
     @product = Product.find(params[:product_id])
-    @product_ids = params[:product_ids].present? ? params[:product_ids].split('_') : []
-    @product_ids << @product.id
+    @products_ids = params[:products_ids].present? ? params[:products_ids].split('_') : []
+    @products_ids << @product.id
     @products = Product.filter_by_stock({ sector_id: @current_user.sector_id, product: params[:term],
-                                          product_ids: @product_ids })
+                                          products_ids: @products_ids })
                        .limit(@result_size)
-    @product_ids = @product_ids.join('_')
+    @products_ids = @products_ids.join('_')
   end
 
   # Unset selected products and reset avaible products list
-  # params[:product_ids]    string with selected products
+  # params[:products_ids]    string with selected products
   # params[:product_id]     product id to remove from selected products
   # params[:product_term]   keep product term search
   # get all products with stock x >= 0 of current sector
   def unselect_product
     @product_id = params[:product_id]
-    @product_ids = params[:product_ids].present? ? params[:product_ids].split('_') : []
-    @product_ids.delete(@product_id)
+    @products_ids = params[:products_ids].present? ? params[:products_ids].split('_') : []
+    @products_ids.delete(@product_id)
     @products = Product.filter_by_stock({ sector_id: @current_user.sector_id, product: params[:term],
-                                          product_ids: @product_ids })
+                                          products_ids: @products_ids })
                        .limit(@result_size)
-    @product_ids = @product_ids.join('_')
+    @products_ids = @products_ids.join('_')
   end
 
   def get_patients_by_sector
-    @patient_ids = params[:patient_ids]
+    @patients_ids = params[:patients_ids]
     @patients = Patient.filter_by_sector_dispensation({ sector_id: @current_user.sector_id,
                                                         patient: params[:term],
-                                                        patient_ids: params[:patient_ids].split('_') }).limit(@result_size)
+                                                        patients_ids: params[:patients_ids].split('_') }).limit(@result_size)
   end
 
   # Set selected patient and reset avaible patients list
-  # params[:patient_ids]    string with selected patients
+  # params[:patients_ids]    string with selected patients
   # params[:patient_term]   string for search by name or code (Patient)
   # get all patients with stock x >= 0 of current sector
   def select_patient
     @patient = Patient.find(params[:patient_id])
-    @patient_ids = params[:patient_ids].present? ? params[:patient_ids].split('_') : []
-    @patient_ids << @patient.id
+    @patients_ids = params[:patients_ids].present? ? params[:patients_ids].split('_') : []
+    @patients_ids << @patient.id
     @patients = Patient.filter_by_sector_dispensation({ sector_id: @current_user.sector_id, patient: params[:term],
-                                                        patient_ids: @patient_ids })
+                                                        patients_ids: @patients_ids })
                        .limit(@result_size)
-    @patient_ids = @patient_ids.join('_')
+    @patients_ids = @patients_ids.join('_')
   end
 
   # Unset selected patients and reset avaible patients list
-  # params[:patient_ids]    string with selected patients
+  # params[:patients_ids]    string with selected patients
   # params[:patient_id]     patient id to remove from selected patients
   # params[:patient_term]   keep patient term search
   # get all patients with stock x >= 0 of current sector
   def unselect_patient
     @patient_id = params[:patient_id]
-    @patient_ids = params[:patient_ids].present? ? params[:patient_ids].split('_') : []
-    @patient_ids.delete(@patient_id)
+    @patients_ids = params[:patients_ids].present? ? params[:patients_ids].split('_') : []
+    @patients_ids.delete(@patient_id)
     @patients = Patient.filter_by_sector_dispensation({ sector_id: @current_user.sector_id, patient: params[:term],
-                                                        patient_ids: @patient_ids })
+                                                        patients_ids: @patients_ids })
                        .limit(@result_size)
-    @patient_ids = @patient_ids.join('_')
+    @patients_ids = @patients_ids.join('_')
   end
 
   def show
@@ -149,10 +148,8 @@ class ReportsController < ApplicationController
   def report_params
     params.require(:report).permit(:name,
                                    :report_type,
-                                   :product_ids,
-                                   :patient_ids,
-                                   :all_products,
-                                   :all_patients,
+                                   :products_ids,
+                                   :patients_ids,
                                    :from_date,
                                    :to_date)
   end
