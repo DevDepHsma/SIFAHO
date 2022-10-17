@@ -63,7 +63,9 @@ RSpec.feature 'Reports::CreateAndShow', type: :feature do
             expect(page.has_field?('report[name]', type: 'text')).to be true
             expect(page.has_field?('report[from_date]', type: 'text')).to be true
             expect(page.has_field?('report[to_date]', type: 'text')).to be true
-            expect(page.has_field?('report[products_ids]', type: 'hidden')).to be true
+
+            expect(page).to have_field('report[products_ids]', type: 'hidden')
+
             expect(page.has_field?('report[patients_ids]', type: 'hidden')).to be true
             expect(page.has_field?('report[report_type]', type: 'radio', visible: false)).to be true
 
@@ -165,6 +167,57 @@ RSpec.feature 'Reports::CreateAndShow', type: :feature do
 
               expect(page).to have_css('input#patients-search.is-invalid')
               expect(page).to have_content('Pacientes no puede estar en blanco')
+            end
+          end
+
+          it 'fill name attribute on fail save' do
+            within '#new_report' do
+              fill_in 'report[name]', with: 'Example report'
+            end
+            click_button 'Guardar'
+            within '#new_report' do
+              expect(page).to have_field('report[name]', with: 'Example report')
+            end
+          end
+
+          it 'fill from_date attribute on fail save' do
+            within '#new_report' do
+              fill_in 'report[from_date]', with: @from_date
+            end
+            click_button 'Guardar'
+            within '#new_report' do
+              expect(page).to have_field('report[from_date]', with: @from_date)
+            end
+          end
+
+          it 'fill to_date attribute on fail save' do
+            within '#new_report' do
+              fill_in 'report[to_date]', with: @to_date
+            end
+            click_button 'Guardar'
+            within '#new_report' do
+              expect(page).to have_field('report[to_date]', with: @to_date)
+            end
+          end
+
+          it 'fill products attribute on fail save' do
+            within '#new_report' do
+              @products.each do |product|
+                page.find('input#products-search').click.set(product.code)
+                expect(page.has_css?('#products-collapse')).to be true
+                within '#products-collapse' do
+                  expect(page.has_button?("#{product.code} | #{product.name.upcase}")).to be true
+                  click_button "#{product.code} | #{product.name.upcase}"
+                end
+                expect(page.has_css?('#selected-products')).to be true
+                within '#selected-products' do
+                  expect(page.has_button?("#{product.code} | #{product.name.upcase}")).to be true
+                end
+              end
+            end
+            click_button 'Guardar'
+            within '#new_report' do
+              expect(page).to have_field('report[products_ids]', type: 'hidden', with: @products.pluck(:id).join('_'))
             end
           end
         end

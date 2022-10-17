@@ -13,7 +13,7 @@
   <div class="card-body">
     <%= simple_form_for @report, html: { role: 'check-modified'} do |f| %>
       <%= f.error_notification %>
-      <input type="hidden" name="report[products_ids]">
+      <input type="hidden" name="report[products_ids]" value="<%= @report.products_ids if @report.products_ids.present? %>">
       <input type="hidden" name="report[patients_ids]">
       <div class="form-group">
         <label for="name">Nombre</label>
