@@ -25,7 +25,7 @@ class Report < ApplicationRecord
 
   enum report_type: [:by_patient]
 
-  validates_presence_of :report_type, :patients_ids, :from_date, :to_date, :name
+  validates_presence_of :report_type, :from_date, :to_date, :name
   validates_with CustomValidators::ReportValidator
 
   scope :filter_by_params, lambda { |filter_params|

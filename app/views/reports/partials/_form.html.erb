@@ -151,7 +151,7 @@
             </div>
             <% if @errors.present? && @errors[:patients_ids].present? %>
               <div class="invalid-feedback d-block">
-                Pacientes <%= @errors[:patients_ids].first %>
+                <%= @errors[:patients_ids].first %>
               </div>
             <% end %>
           </div>
