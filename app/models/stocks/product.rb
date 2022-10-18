@@ -39,7 +39,7 @@ class Product < ApplicationRecord
   # Scopes
   # Get all products with stock from a sector
   scope :filter_by_stock, lambda { |filter_params|
-    query = self.select(:id, :name, :code).where(id: Stock.where(sector_id: filter_params[:sector_id]).pluck(:product_id))
+    query = self.select(:id, :name, :code).by_stock(filter_params[:sector_id])
     if filter_params[:product]
       query = query.where('code::VARCHAR like ? OR unaccent(lower(name)) like ?', "%#{filter_params[:product]}%", "%#{filter_params[:product].downcase.parameterize}%")
     end
@@ -64,6 +64,7 @@ class Product < ApplicationRecord
     return query
   }
 
+  scope :by_stock, ->(sector_id) { where(id: Stock.where(sector_id: sector_id).pluck(:product_id)) }
   scope :like_name, ->(product_name) { where('unaccent(lower(products.name))  like ?', product_name) }
   scope :like_code, ->(product_code) { where('code::VARCHAR like ?', product_code) }
   scope :with_code, ->(product_code) { where('products.code = ?', product_code) }

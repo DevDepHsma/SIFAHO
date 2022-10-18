@@ -111,7 +111,7 @@
             </div>
             <% if @errors.present? && @errors[:products_ids].present? %>
               <div class="invalid-feedback d-block">
-                Productos <%= @errors[:products_ids].first %>
+                <%= @errors[:products_ids].first %>
               </div>
             <% end %>
           </div>

@@ -12,8 +12,8 @@
 # report_type             :integer  not null
 # from_date               :date     null
 # to_date                 :date     null
-# products_ids             :string   not null
-# patients_ids             :string   not null
+# products_ids            :string   not null
+# patients_ids            :string   not null
 #
 
 class Report < ApplicationRecord
@@ -25,7 +25,8 @@ class Report < ApplicationRecord
 
   enum report_type: [:by_patient]
 
-  validates_presence_of :report_type, :products_ids, :patients_ids, :from_date, :to_date, :name
+  validates_presence_of :report_type, :patients_ids, :from_date, :to_date, :name
+  validates_with CustomValidators::ReportValidator
 
   scope :filter_by_params, lambda { |filter_params|
     query = self.select(:id, :name, :sector_name, :establishment_name, :generated_date, :report_type)

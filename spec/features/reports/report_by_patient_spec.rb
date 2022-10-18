@@ -164,7 +164,7 @@ RSpec.feature 'Reports::CreateAndShow', type: :feature do
               expect(page.find('input[name="report[to_date]"]+.invalid-feedback')).to have_content('Fecha hasta no puede estar en blanco')
 
               expect(page).to have_css('input#products-search.is-invalid')
-              expect(page).to have_content('Productos no puede estar en blanco')
+              expect(page).to have_content('Debe seleccionar almenos 1 producto')
 
               expect(page).to have_css('input#patients-search.is-invalid')
               expect(page).to have_content('Pacientes no puede estar en blanco')
