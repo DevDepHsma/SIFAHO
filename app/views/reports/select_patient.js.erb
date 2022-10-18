@@ -1,5 +1,5 @@
 <% select_patient_partial = escape_javascript(
-  render(partial: 'reports/partials/selected_patient')
+  render(partial: 'reports/partials/selected_patient', locals: { patient: @patient })
 ) %>
 
 $("input[name='report[patients_ids]']").val("<%= @patients_ids %>");
