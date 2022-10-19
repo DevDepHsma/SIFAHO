@@ -216,7 +216,7 @@ module DataMock
         ['11155707', 'Masculino', 'RAMOS', 'BARTOLOMÈ JUAN', 'soltero'],
         ['32320564', 'Femenino', 'MOYANO LAURIN', 'URSULA BELEN', 'soltero'],
         ['39179882', 'Masculino', 'JEREZ', 'RODRIGO MAXIMILIANO', 'soltero'],
-        ['94328242', 'Masculino', 'RUSCONI ', 'ANTONIO ', 'soltero'],
+        %w[94328242 Masculino RUSCONI ANTONIO soltero],
         ['54495846', 'Femenino', 'ALMENDRA FUENTES', 'LUCERO ELIZABETH', 'soltero'],
         ['93660013', 'Masculino', 'RAMOS FIGUEROA', 'HUGO ALEJANDRO', 'soltero'],
         ['29873762', 'Femenino', 'MOLINA', 'VALERIA RAQUEL', 'soltero'],

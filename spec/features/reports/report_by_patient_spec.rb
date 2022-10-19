@@ -76,7 +76,6 @@ RSpec.feature 'Reports::CreateAndShow', type: :feature do
           PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector,
                                 permission: @report_by_patients)
           visit '/reportes/nuevo'
-          @products = Product.all.sample(5)
           @patients = Patient.all.sample(5)
           @patient = Patient.first
           @from_date = (DateTime.now - 1.year).strftime('%d/%m/%Y')
@@ -85,7 +84,7 @@ RSpec.feature 'Reports::CreateAndShow', type: :feature do
 
         it 'Fill products' do
           within '#new_report' do
-            @products.each do |product|
+            @products.sample(5).each do |product|
               page.find('input#products-search').click.set(product.code)
               expect(page).to have_css('#products-collapse')
               within '#products-collapse' do
@@ -123,7 +122,7 @@ RSpec.feature 'Reports::CreateAndShow', type: :feature do
           PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector,
                                 permission: @report_by_patients)
           visit '/reportes/nuevo'
-          @products = Product.all.sample(5)
+          @sample_products = @products.sample(5)
           @patients = Patient.all.sample(5)
           @patient = Patient.first
           @from_date = (DateTime.now - 1.year).strftime('%d/%m/%Y')
@@ -211,7 +210,7 @@ RSpec.feature 'Reports::CreateAndShow', type: :feature do
 
           it 'keep products attribute' do
             within '#new_report' do
-              @products.each do |product|
+              @sample_products.each do |product|
                 page.find('input#products-search').click.set(product.code)
                 within '#products-collapse' do
                   click_button "#{product.code} | #{product.name.upcase}"
@@ -221,10 +220,10 @@ RSpec.feature 'Reports::CreateAndShow', type: :feature do
             click_button 'Guardar'
             within '#new_report' do
               expect(page).to have_field('report[products_ids]', type: 'hidden',
-                                                                 with: @products.pluck(:id).join('_'))
+                                                                 with: @sample_products.pluck(:id).join('_'))
             end
             within '#selected-products' do
-              @products.each do |product|
+              @sample_products.each do |product|
                 expect(page).to have_button("#{product.code} | #{product.name.upcase}")
               end
             end
@@ -253,8 +252,7 @@ RSpec.feature 'Reports::CreateAndShow', type: :feature do
 
           it 'max products fails' do
             within '#new_report' do
-              @products = @products = Product.all.sample(12)
-              @products.each do |product|
+              @products.sample(12).each do |product|
                 page.find('input#products-search').click.set(product.code)
                 within '#products-collapse' do
                   click_button "#{product.code} | #{product.name.upcase}"
@@ -268,7 +266,7 @@ RSpec.feature 'Reports::CreateAndShow', type: :feature do
             end
           end
 
-          # Require more patients records 
+          # Require more patients records
           # it 'max patients fails' do
           #   @patients = Patient.all.sample(12)
           #   within '#new_report' do
@@ -288,6 +286,6 @@ RSpec.feature 'Reports::CreateAndShow', type: :feature do
           # end
         end
       end
-    end  
+    end
   end
 end
