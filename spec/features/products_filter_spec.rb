@@ -171,7 +171,7 @@ RSpec.feature 'ProductsFilters', type: :feature do
       before(:each) do
         @product_to_del = @products_without_stock.sample
         within '#products-filter' do
-          fill_in 'filter[code]', with: @product_to_del.code
+          fill_in 'filter[name]', with: @product_to_del.name
           click_button 'Buscar'
           sleep 1
         end
@@ -186,6 +186,7 @@ RSpec.feature 'ProductsFilters', type: :feature do
       it 'shown modal on button destroy click' do
         within '#products' do
           page.first('button.delete-item').click
+          sleep 1
         end
         within '#delete-item' do
           expect(page).to have_content('Eliminar producto')
@@ -195,15 +196,17 @@ RSpec.feature 'ProductsFilters', type: :feature do
       end
 
       # require run test
-      # it 'destroy items' do
-      #   within '#products' do
-      #     page.first('button.delete-item').click
-      #   end
-      #   within '#delete-item' do
-      #     expect(page).to have_link('Confirmar')
-      #   end
-      #   expect(page).to have_text("El suministro #{@product_to_del.name} se ha eliminado correctamente.")
-      # end
+      it 'destroy items' do
+        within '#products' do
+          page.first('button.delete-item').click
+          sleep 1
+        end
+        within '#delete-item' do
+          click_link 'Confirmar'
+          sleep 1
+        end
+        expect(page).to have_text("El suministro #{@product_to_del.name} se ha eliminado correctamente.")
+      end
     end
   end
 end

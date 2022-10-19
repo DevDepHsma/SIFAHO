@@ -1,3 +1,18 @@
+# == Schema Information
+
+# Table name: products
+
+# id                      :bigint   not null, primary key
+# code                    :integer  not null
+# name                    :string   not null
+# status                  :integer  not null, by default 0
+# description             :text     optional
+# observation             :text     optional
+# unity_id                :bigint   not null, unity
+# area_id                 :bigint   not null, area
+# snomed_concept_id       :bigint   optional
+#
+
 class Product < ApplicationRecord
   include PgSearch::Model
   include EnumTranslation
@@ -26,7 +41,7 @@ class Product < ApplicationRecord
   has_many :patient_product_reports
   has_many :report_product_lines
   has_many :patient_product_state_reports
-  has_many :lots
+  has_many :lots, dependent: :delete_all
   has_many :stocks
 
   # Validations
