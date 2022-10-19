@@ -69,7 +69,7 @@ RSpec.feature 'Reports::CreateAndShow', type: :feature do
     end
 
     describe 'Form' do
-      describe 'Fields' do
+      describe 'Products and Patients fields with search and multi selection' do
         before(:each) do
           PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector,
                                 permission: @read_reports)
@@ -112,14 +112,6 @@ RSpec.feature 'Reports::CreateAndShow', type: :feature do
             within '#selected-patients' do
               expect(page).to have_button("#{@patient.dni} | #{@patient.last_name.upcase} #{@patient.first_name.upcase}")
             end
-          end
-        end
-
-        it 'Fill dates and report type' do
-          within '#new_report' do
-            page.find('label', text: 'Por paciente').click
-            fill_in 'report[from_date]', with: @from_date
-            fill_in 'report[to_date]', with: @to_date
           end
         end
       end

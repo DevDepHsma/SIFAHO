@@ -19,9 +19,9 @@ RSpec.configure do |config|
   config.before(:all, type: :feature) do
     permissions_populate
     effectors_populate
-    users_populate
     products_populate
     stocks_populate
+    users_populate
     roles_populate
     patients_populate
     professionals_populate

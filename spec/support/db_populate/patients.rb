@@ -9,7 +9,6 @@ end
 def outpatient_prescriptions_populate
    ###Dispensada#####
   from_date = Time.now - 19.day
-  @products_to_dispense = Product.all.sample(2)
   3.times do
     @patients.each_with_index do |patient, index|
       date_prescribed = time_rand(from_date)
