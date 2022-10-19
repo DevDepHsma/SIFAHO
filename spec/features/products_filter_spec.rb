@@ -195,7 +195,6 @@ RSpec.feature 'ProductsFilters', type: :feature do
         end
       end
 
-      # require run test
       it 'destroy items' do
         within '#products' do
           page.first('button.delete-item').click

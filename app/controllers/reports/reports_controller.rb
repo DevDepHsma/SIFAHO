@@ -131,7 +131,7 @@ class ReportsController < ApplicationController
   # DELETE /establishments/1.json
   def destroy
     authorize @report
-    flash.now[:success] = "El report #{@report.name} se ha eliminado correctamente."
+    flash.now[:success] = "El reporte #{@report.name} se ha eliminado correctamente."
     @report.destroy
     respond_to do |format|
       format.js

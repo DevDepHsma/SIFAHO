@@ -5,7 +5,6 @@ RSpec.feature 'Reports::CreateAndShow', type: :feature do
     permission_module = PermissionModule.includes(:permissions).find_by(name: 'Reportes')
     @report_by_patients = permission_module.permissions.find_by(name: 'report_by_patients')
     @read_reports = permission_module.permissions.find_by(name: 'read_reports')
-    @destroy_reports = permission_module.permissions.find_by(name: 'destroy_reports')
   end
 
   background do
