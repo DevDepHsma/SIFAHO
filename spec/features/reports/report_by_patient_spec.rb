@@ -266,24 +266,22 @@ RSpec.feature 'Reports::CreateAndShow', type: :feature do
             end
           end
 
-          # Require more patients records
-          # it 'max patients fails' do
-          #   @patients = Patient.all.sample(12)
-          #   within '#new_report' do
-          #     @patients.each do |patient|
-          #       page.find('input#patients-search').click.set(patient.dni)
-          #       within '#patients-collapse' do
-          #         click_button "#{patient.dni} | #{patient.last_name.upcase} #{patient.first_name.upcase}"
-          #       end
-          #     end
-          #   end
-          #   click_button 'Guardar'
-          #   within '#new_report' do
-          #     sleep 10
-          #     expect(page).to have_css('input#patients-search.is-invalid')
-          #     expect(page).to have_content('No debe superar el máximo de 11 pacientes')
-          #   end
-          # end
+          it 'max patients fails' do
+            @patients = Patient.all.sample(12)
+            within '#new_report' do
+              @patients.each do |patient|
+                page.find('input#patients-search').click.set(patient.dni)
+                within '#patients-collapse' do
+                  click_button "#{patient.dni} | #{patient.last_name.upcase} #{patient.first_name.upcase}"
+                end
+              end
+            end
+            click_button 'Guardar'
+            within '#new_report' do
+              expect(page).to have_css('input#patients-search.is-invalid')
+              expect(page).to have_content('No debe superar el máximo de 11 pacientes')
+            end
+          end
         end
       end
     end
