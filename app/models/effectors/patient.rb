@@ -79,10 +79,7 @@ class Patient < ApplicationRecord
 
   # Get all dispensed patients by a sector: OutPatientPrescriptions / ChronicPrescriptions
   scope :filter_by_sector_dispensation, lambda { |filter_params|
-    op_patient_ids = OutpatientPrescription.where(provider_sector_id: filter_params[:sector_id], status: 'dispensada').pluck(:patient_id).uniq
-    cr_patient_ids = ChronicPrescription.where(provider_sector_id: filter_params[:sector_id], status: ['dispensada', 'dispensada_parcial']).pluck(:patient_id).uniq
-    patient_ids = (op_patient_ids + cr_patient_ids).uniq
-    query = where(id: patient_ids)
+    query = by_stock(filter_params[:sector_id])
     if filter_params[:patient].present?
       query = query.where('unaccent(lower(last_name)) like ? OR unaccent(lower(first_name)) like ? OR unaccent(lower(dni)) like ?',
                           "%#{filter_params[:patient].downcase.parameterize(separator: ' ')}%",
@@ -91,6 +88,13 @@ class Patient < ApplicationRecord
     end
     query = query.where.not(id: filter_params[:patients_ids]) if filter_params[:patients_ids]
     return query
+  }
+
+  scope :by_stock, lambda { |sector_id|
+    op_patient_ids = OutpatientPrescription.where(provider_sector_id: sector_id, status: 'dispensada').pluck(:patient_id).uniq
+    cr_patient_ids = ChronicPrescription.where(provider_sector_id: sector_id, status: %w[dispensada dispensada_parcial]).pluck(:patient_id).uniq
+    patient_ids = (op_patient_ids + cr_patient_ids).uniq
+    where(id: patient_ids)
   }
 
   # Método para establecer las opciones del select input del filtro

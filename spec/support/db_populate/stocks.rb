@@ -1,7 +1,6 @@
 def stocks_populate
-  # @products_without_stock = Product.all.sample(10)
-  # @products = Product.where.not(id: @products_without_stock.pluck(:id))
-  @products = Product.all
+  @products_without_stock = Product.all.sample(10)
+  @products = Product.where.not(id: @products_without_stock.pluck(:id))
   @products.each do |prod|
     [@farm_est_1, @depo_est_1, @farm_est_2, @depo_est_2].each do |sector|
       stock = create(:stock, product: prod, sector: sector)
