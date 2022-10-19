@@ -167,24 +167,43 @@ RSpec.feature 'ProductsFilters', type: :feature do
       end
     end
 
-    #  Require a product without stock for display destroy button
-    # describe 'Destroy permission' do
-    #   it 'has button destroy' do
-    #     within '#products' do
-    #       expect(page).to have_selector('button.delete-item')
-    #     end
-    #   end
+    describe 'Destroy permission' do
+      before(:each) do
+        @product_to_del = @products_without_stock.sample
+        within '#products-filter' do
+          fill_in 'filter[code]', with: @product_to_del.code
+          click_button 'Buscar'
+          sleep 1
+        end
+      end
 
-    #   it 'shown modal on button destroy click' do
-    #     within '#products' do
-    #       page.first('button.delete-item').click
-    #     end
-    #     within '#delete-item' do
-    #       expect(page).to have_content('Eliminar producto')
-    #       expect(page).to have_button('Volver')
-    #       expect(page).to have_link('Confirmar')
-    #     end
-    #   end
-    # end
+      it 'has button destroy' do
+        within '#products' do
+          expect(page).to have_selector('button.delete-item')
+        end
+      end
+
+      it 'shown modal on button destroy click' do
+        within '#products' do
+          page.first('button.delete-item').click
+        end
+        within '#delete-item' do
+          expect(page).to have_content('Eliminar producto')
+          expect(page).to have_button('Volver')
+          expect(page).to have_link('Confirmar')
+        end
+      end
+
+      # require run test
+      # it 'destroy items' do
+      #   within '#products' do
+      #     page.first('button.delete-item').click
+      #   end
+      #   within '#delete-item' do
+      #     expect(page).to have_link('Confirmar')
+      #   end
+      #   expect(page).to have_text("El suministro #{@product_to_del.name} se ha eliminado correctamente.")
+      # end
+    end
   end
 end
