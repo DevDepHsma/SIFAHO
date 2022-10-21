@@ -20,50 +20,48 @@ RSpec.feature 'ProductsFilters', type: :feature do
       visit '/productos'
     end
 
-    describe 'filters' do
-      describe 'form' do
-        it 'has fields' do
+    describe 'filters form' do
+      it 'has fields' do
+        within '#products-filter' do
+          expect(page).to have_field('filter[code]', type: 'text')
+          expect(page).to have_field('filter[name]', type: 'text')
+          expect(page).to have_button('Buscar')
+          expect(page).to have_selector('button.btn-clean-filters')
+        end
+      end
+
+      it 'filter by code' do
+        products = Product.all.sample(5)
+        products.each do |product|
           within '#products-filter' do
-            expect(page).to have_field('filter[code]', type: 'text')
-            expect(page).to have_field('filter[name]', type: 'text')
-            expect(page).to have_button('Buscar')
-            expect(page).to have_selector('button.btn-clean-filters')
+            fill_in 'filter[code]', with: product.code
+            click_button 'Buscar'
+            sleep 1
+          end
+          within '#products' do
+            expect(page.first('tr').first('td')).to have_selector('mark.highlight-1', text: product.code)
+          end
+          within '#products-filter' do
+            page.first('button.btn-clean-filters').click
+            sleep 1
           end
         end
+      end
 
-        it 'filter by code' do
-          products = Product.all.sample(5)
-          products.each do |product|
-            within '#products-filter' do
-              fill_in 'filter[code]', with: product.code
-              click_button 'Buscar'
-              sleep 1
-            end
-            within '#products' do
-              expect(page.first('tr').first('td')).to have_selector('mark.highlight-1', text: product.code)
-            end
-            within '#products-filter' do
-              page.first('button.btn-clean-filters').click
-              sleep 1
-            end
+      it 'filter by name' do
+        products = Product.all.sample(5)
+        products.each do |product|
+          within '#products-filter' do
+            fill_in 'filter[name]', with: product.name
+            click_button 'Buscar'
+            sleep 1
           end
-        end
-
-        it 'filter by name' do
-          products = Product.all.sample(5)
-          products.each do |product|
-            within '#products-filter' do
-              fill_in 'filter[name]', with: product.name
-              click_button 'Buscar'
-              sleep 1
-            end
-            within '#products' do
-              expect(page.first('tr').find('td:nth-child(2)')).to have_selector('mark.highlight-1', text: product.name)
-            end
-            within '#products-filter' do
-              page.first('button.btn-clean-filters').click
-              sleep 1
-            end
+          within '#products' do
+            expect(page.first('tr').find('td:nth-child(2)')).to have_selector('mark.highlight-1', text: product.name)
+          end
+          within '#products-filter' do
+            page.first('button.btn-clean-filters').click
+            sleep 1
           end
         end
       end

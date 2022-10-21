@@ -16,7 +16,6 @@ RSpec.feature 'Permissions::OutpatientPrescriptions', type: :feature do
     permission_module = PermissionModule.includes(:permissions).find_by(name: 'Recetas Ambulatorias')
     @read_outpatient_permission = permission_module.permissions.find_by(name: 'read_outpatient_recipes')
     @dispense_recipe_permission = permission_module.permissions.find_by(name: 'dispense_outpatient_recipes')
-    @return_recipe_permission = permission_module.permissions.find_by(name: 'return_outpatient_recipes')
     @update_recipe_permission = permission_module.permissions.find_by(name: 'update_outpatient_recipes')
 
     patient_permission_module = PermissionModule.includes(:permissions).find_by(name: 'Pacientes')
@@ -30,8 +29,6 @@ RSpec.feature 'Permissions::OutpatientPrescriptions', type: :feature do
                           permission: @read_outpatient_permission)
     PermissionUser.create(user: @farm_provider, sector: @farm_provider.sector,
                           permission: @dispense_recipe_permission)
-    PermissionUser.create(user: @farm_provider, sector: @farm_provider.sector,
-                          permission: @return_recipe_permission)
     PermissionUser.create(user: @farm_provider, sector: @farm_provider.sector,
                           permission: @update_recipe_permission)
 
