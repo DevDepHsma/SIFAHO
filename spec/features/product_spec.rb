@@ -1,3 +1,14 @@
+#  Test information
+
+#  Testing modules:
+#  Access permissions: List / Show /Create / Edit
+#  Present fields on create
+#  Present fields and values on edit
+#  Save product
+#  Validations on empty form
+#  Check present field values on Save fails
+#
+
 require 'rails_helper'
 
 RSpec.feature 'Products', type: :feature do
@@ -17,7 +28,7 @@ RSpec.feature 'Products', type: :feature do
   describe '', js: true do
     subject { page }
 
-    describe 'Add permission:' do
+    describe 'Permission:' do
       it 'List' do
         visit '/'
         expect(page).to have_css('#sidebar-wrapper', visible: false)

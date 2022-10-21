@@ -20,7 +20,9 @@ def outpatient_prescriptions_populate
         provider_sector_id: user.sector_id,
         establishment_id: user.sector.establishment_id,
         remit_code: "AM#{date_prescribed.to_datetime.to_s(:number)}-#{index}",
-        date_prescribed: date_prescribed.to_datetime
+        date_prescribed: date_prescribed.to_datetime,
+        expiry_date: (date_prescribed + 1.month).to_datetime,
+        observation: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.'
       )
 
       @products_to_dispense.each do |product|
@@ -54,7 +56,9 @@ def outpatient_prescriptions_populate
         provider_sector_id: user.sector_id,
         establishment_id: user.sector.establishment_id,
         remit_code: "AM#{date_prescribed.to_datetime.to_s(:number)}-#{index}",
-        date_prescribed: date_prescribed.to_datetime
+        date_prescribed: date_prescribed.to_datetime,
+        expiry_date: (date_prescribed + 1.month).to_datetime,
+        observation: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.'
       )
 
       @products_to_dispense.each do |product|
@@ -87,7 +91,9 @@ def outpatient_prescriptions_populate
         provider_sector_id: user.sector_id,
         establishment_id: user.sector.establishment_id,
         remit_code: "AM#{date_prescribed.to_datetime.to_s(:number)}-#{index}",
-        date_prescribed: date_prescribed.to_datetime
+        date_prescribed: date_prescribed.to_datetime,
+        expiry_date: (date_prescribed + 1.month).to_datetime,
+        observation: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.'
       )
 
       @products_to_dispense.each do |product|

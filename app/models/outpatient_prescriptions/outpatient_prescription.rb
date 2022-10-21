@@ -1,3 +1,18 @@
+# == Schema Information
+
+# Table name: reports
+
+# remit_code                :string   not null, auto
+# observation               :text     optional
+# date_prescribed           :string   not null
+# date_dispensed            :string   not null, auto
+# expiry_date               :string   not null, auto from date_prescribed
+# status                    :integer  not null, by default 0
+# professional_id           :bigint   not null
+# patient_id                :bigint   not null
+# provider_sector_id        :bigint   not null, auto
+# establishment_id          :bigint   not null, auto
+#
 class OutpatientPrescription < ApplicationRecord
   include PgSearch::Model
   include QuerySort
