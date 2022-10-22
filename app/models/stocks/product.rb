@@ -50,7 +50,7 @@ class Product < ApplicationRecord
 
   # Delegations
   delegate :term, :fsn, :concept_id, :semantic_tag, to: :snomed_concept, prefix: :snomed, allow_nil: true
-  before_save :format_downcase_degree
+  before_save :format_name
   # Scopes
   # Get all products with stock from a sector
   scope :filter_by_stock, lambda { |filter_params|
@@ -97,7 +97,7 @@ class Product < ApplicationRecord
     Supply.search_text(a_name).with_pg_search_rank
   end
 
-  def format_downcase_degree
-    self.name = name.downcase.to_degree
+  def format_name
+    self.name = name.downcase.to_degree.to_permite_accents
   end
 end

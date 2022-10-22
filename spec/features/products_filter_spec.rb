@@ -1,3 +1,12 @@
+# == Test Information
+
+#  Testing modules:
+#  Filter: fields and results
+#  Pagination: presence and results
+#  Sort: buttons and results
+#  Destroy action
+#
+
 require 'rails_helper'
 
 RSpec.feature 'ProductsFilters', type: :feature do
@@ -20,7 +29,7 @@ RSpec.feature 'ProductsFilters', type: :feature do
       visit '/productos'
     end
 
-    describe 'filters form' do
+    describe 'form filters' do
       it 'has fields' do
         within '#products-filter' do
           expect(page).to have_field('filter[code]', type: 'text')
@@ -30,7 +39,7 @@ RSpec.feature 'ProductsFilters', type: :feature do
         end
       end
 
-      it 'filter by code' do
+      it 'by code' do
         products = Product.all.sample(5)
         products.each do |product|
           within '#products-filter' do
@@ -48,7 +57,7 @@ RSpec.feature 'ProductsFilters', type: :feature do
         end
       end
 
-      it 'filter by name' do
+      it 'by name' do
         products = Product.all.sample(5)
         products.each do |product|
           within '#products-filter' do
@@ -118,7 +127,7 @@ RSpec.feature 'ProductsFilters', type: :feature do
         end
       end
 
-      it 'sort by code' do
+      it 'by code' do
         sorted_by_code_asc = Product.select(:code).order(code: :asc).first
         sorted_by_code_desc = Product.select(:code).order(code: :desc).first
 
@@ -141,7 +150,7 @@ RSpec.feature 'ProductsFilters', type: :feature do
         end
       end
 
-      it 'sort by name' do
+      it 'by name' do
         sorted_by_name_asc = Product.select(:name).order(name: :asc).first
         sorted_by_name_desc = Product.select(:name).order(name: :desc).first
 

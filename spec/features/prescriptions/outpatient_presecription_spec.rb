@@ -88,7 +88,6 @@ RSpec.feature 'Permissions::OutpatientPrescriptions', type: :feature do
         expect(page).to have_link('Movimientos')
         expect(page).to have_link('Volver')
         expect(page).to have_link('Imprimir')
-        expect(page).to have_button('Retornar')
       end
 
       it 'Create: form and fields' do
@@ -195,6 +194,7 @@ RSpec.feature 'Permissions::OutpatientPrescriptions', type: :feature do
           click_link 'Ambulatoria'
         end
       end
+
       # Require update products scope search
       # it 'dispense successfully' do
       #   10.times do |_prescription|

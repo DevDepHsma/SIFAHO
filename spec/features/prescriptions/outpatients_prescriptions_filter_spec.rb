@@ -1,3 +1,13 @@
+# == Test Information
+
+#  Testing modules:
+#  Filter: fields and results
+#  Pagination: presence and results
+#  Sort: buttons and results
+#  Destroy action
+#  Return action
+#
+
 require 'rails_helper'
 
 RSpec.feature 'OutpatientsPrescriptionsFilters', type: :feature do
@@ -24,10 +34,10 @@ RSpec.feature 'OutpatientsPrescriptionsFilters', type: :feature do
 
     before(:each) do
       visit '/recetas/ambulatorias'
-      op_prescriptions = OutpatientPrescription.all.sample(5)
+      @op_prescriptions = OutpatientPrescription.all.sample(5)
     end
 
-    describe 'filters form' do
+    describe 'form filter' do
       it 'has fields' do
         within '#outpatient-prescriptions-filter' do
           expect(page).to have_field('filter[code]', type: 'text')
@@ -41,15 +51,15 @@ RSpec.feature 'OutpatientsPrescriptionsFilters', type: :feature do
         end
       end
 
-      it 'filter by code' do
-        op_prescriptions.each do |opp|
+      it 'by remit_code' do
+        @op_prescriptions.each do |opp|
           within '#outpatient-prescriptions-filter' do
-            fill_in 'filter[code]', with: opp.code
+            fill_in 'filter[code]', with: opp.remit_code
             click_button 'Buscar'
             sleep 1
           end
           within '#outpatient_prescriptions' do
-            expect(page.first('tr').first('td')).to have_selector('mark.highlight-1', text: opp.code)
+            expect(page.first('tr').first('td')).to have_selector('mark.highlight', text: opp.remit_code)
           end
           within '#outpatient-prescriptions-filter' do
             page.first('button.btn-clean-filters').click
@@ -58,16 +68,31 @@ RSpec.feature 'OutpatientsPrescriptionsFilters', type: :feature do
         end
       end
 
-      it 'filter by professional fullname' do
-        op_prescriptions.each do |opp|
+      it 'by professional fullname' do
+        @op_prescriptions.each do |opp|
+          # By first name
           within '#outpatient-prescriptions-filter' do
-            fill_in 'filter[professional_full_name]', with: opp.professional.fullname
+            fill_in 'filter[professional_full_name]', with: opp.professional.first_name
             click_button 'Buscar'
             sleep 1
           end
           within '#outpatient_prescriptions' do
             expect(page.first('tr').find('td:nth-child(2)')).to have_selector('mark.highlight-1',
-                                                                              text: opp.professional.fullname)
+                                                                              text: opp.professional.first_name)
+          end
+          within '#outpatient-prescriptions-filter' do
+            page.first('button.btn-clean-filters').click
+            sleep 1
+          end
+          # By last name
+          within '#outpatient-prescriptions-filter' do
+            fill_in 'filter[professional_full_name]', with: opp.professional.last_name
+            click_button 'Buscar'
+            sleep 1
+          end
+          within '#outpatient_prescriptions' do
+            expect(page.first('tr').find('td:nth-child(2)')).to have_selector('mark.highlight-1',
+                                                                              text: opp.professional.last_name)
           end
           within '#outpatient-prescriptions-filter' do
             page.first('button.btn-clean-filters').click
@@ -76,68 +101,80 @@ RSpec.feature 'OutpatientsPrescriptionsFilters', type: :feature do
         end
       end
 
-      it 'filter by patient full_name' do
-        op_prescriptions.each do |opp|
+      it 'by patient full_name' do
+        @op_prescriptions.each do |opp|
           within '#outpatient-prescriptions-filter' do
+            # By dni
             fill_in 'filter[patient_full_name]', with: opp.patient.dni
             click_button 'Buscar'
             sleep 1
           end
           within '#outpatient_prescriptions' do
-            expect(page.first('tr').find('td:nth-child(3)')).to have_selector('mark.highlight-1',
+            expect(page.first('tr').find('td:nth-child(3)')).to have_selector('mark.highlight-2',
+                                                                              text: opp.patient.dni)
+          end
+          within '#outpatient-prescriptions-filter' do
+            page.first('button.btn-clean-filters').click
+            sleep 1
+          end
+          # By first name
+          within '#outpatient-prescriptions-filter' do
+            fill_in 'filter[patient_full_name]', with: opp.patient.first_name
+            click_button 'Buscar'
+            sleep 1
+          end
+          within '#outpatient_prescriptions' do
+            expect(page.first('tr').find('td:nth-child(3)')).to have_selector('mark.highlight-2',
                                                                               text: opp.patient.first_name)
           end
           within '#outpatient-prescriptions-filter' do
             page.first('button.btn-clean-filters').click
             sleep 1
           end
-        end
-      end
-
-      # require a date for run
-      # it 'filter by date_prescribed_since' do
-      #   op_prescriptions.each do |opp|
-      #     within '#outpatient-prescriptions-filter' do
-      #       fill_in 'filter[date_prescribed_since]', with: opp.date_prescribed
-      #       click_button 'Buscar'
-      #       sleep 1
-      #     end
-      #     within '#outpatient_prescriptions' do
-      #       expect(page.first('tr').find('td:nth-child(3)')).to have_selector('mark.highlight-1', text: opp.date_prescribed)
-      #     end
-      #     within '#outpatient-prescriptions-filter' do
-      #       page.first('button.btn-clean-filters').click
-      #       sleep 1
-      #     end
-      #   end
-      # end
-
-      # it 'filter by date_prescribed_to' do
-      #   op_prescriptions.each do |opp|
-      #     within '#outpatient-prescriptions-filter' do
-      #       fill_in 'filter[date_prescribed_to]', with: opp.patient.dni
-      #       click_button 'Buscar'
-      #       sleep 1
-      #     end
-      #     within '#outpatient_prescriptions' do
-      #       expect(page.first('tr').find('td:nth-child(3)')).to have_selector('mark.highlight-1', text: opp.patient.first_name)
-      #     end
-      #     within '#outpatient-prescriptions-filter' do
-      #       page.first('button.btn-clean-filters').click
-      #       sleep 1
-      #     end
-      #   end
-      # end
-
-      it 'filter by status' do
-        op_prescriptions.each do |opp|
+          # By last name
           within '#outpatient-prescriptions-filter' do
-            fill_in 'filter[status]', with: opp.status
+            fill_in 'filter[patient_full_name]', with: opp.patient.last_name
             click_button 'Buscar'
             sleep 1
           end
           within '#outpatient_prescriptions' do
-            expect(page.first('tr').find('td:nth-child(4)')).to have_content(opp.status)
+            expect(page.first('tr').find('td:nth-child(3)')).to have_selector('mark.highlight-2',
+                                                                              text: opp.patient.last_name)
+          end
+          within '#outpatient-prescriptions-filter' do
+            page.first('button.btn-clean-filters').click
+            sleep 1
+          end
+        end
+      end
+
+      it 'by date_prescribed_since and date_prescribed_to' do
+        @op_prescriptions.each do |opp|
+          within '#outpatient-prescriptions-filter' do
+            fill_in 'filter[date_prescribed_since]', with: opp.date_prescribed.strftime('%d/%m/%Y')
+            fill_in 'filter[date_prescribed_to]', with: opp.date_prescribed.strftime('%d/%m/%Y')
+            click_button 'Buscar'
+            sleep 1
+          end
+          within '#outpatient_prescriptions' do
+            expect(page.first('tr').find('td:nth-child(6)')).to have_content(opp.date_prescribed.strftime('%d/%m/%Y'))
+          end
+          within '#outpatient-prescriptions-filter' do
+            page.first('button.btn-clean-filters').click
+            sleep 1
+          end
+        end
+      end
+
+      it 'by status' do
+        @op_prescriptions.each do |opp|
+          within '#outpatient-prescriptions-filter' do
+            page.select opp.status, from: 'filter[status]'
+            click_button 'Buscar'
+            sleep 1
+          end
+          within '#outpatient_prescriptions' do
+            expect(page.first('tr').find('td:nth-child(4)')).to have_content(opp.status.underscore.humanize)
           end
           within '#outpatient-prescriptions-filter' do
             page.first('button.btn-clean-filters').click
@@ -146,252 +183,216 @@ RSpec.feature 'OutpatientsPrescriptionsFilters', type: :feature do
         end
       end
     end
-    # describe 'filters columns table' do
-    #   before(:each) do
-    #     visit '/recetas/ambulatorias'
-    #   end
-    #   after(:each) do
-    #     sleep 1
-    #     sign_out_as(@farm_provider)
-    #   end
-    #   it 'verify form' do
-    #     expect(page.has_css?('#outpatient-prescriptions-filter')).to be true
-    #     expect(page.has_css?('#filter_code')).to be true
-    #     expect(page.has_css?('#filter_professional_full_name')).to be true
-    #     expect(page.has_css?('#filter_patient_full_name')).to be true
-    #     expect(page.has_css?('#filter_date_prescribed_since')).to be true
-    #     expect(page.has_css?('#filter_date_prescribed_to')).to be true
-    #     expect(page.has_css?('select[name="filter[status]"')).to be true
-    #     expect(page.has_button?('Buscar')).to be true
-    #     expect(page.has_css?('.btn-clean-filters')).to be true
-    #   end
-    #   it 'sarch by code' do
-    #     @outpatients.each do |outpatient|
-    #       within '.filter-form-row' do
-    #         fill_in 'filter[code]', with: outpatient.remit_code
-    #         click_button 'Buscar'
-    #       end
 
-    #       sleep 1
-    #       within '#outpatient_prescriptions' do
-    #         expect(page.first('tr').first('td')).to have_content(outpatient.remit_code)
-    #       end
-    #       sleep 1
-    #       within '.filter-form-row' do
-    #         page.execute_script %{$("button.btn-clean-filters")[0].click()}
-    #       end
-    #     end
-    #   end
-    #   it 'search by profesional' do
-    #     @outpatients.each do |outpatient|
-    #       within '.filter-form-row' do
-    #         fill_in 'filter[professional_full_name]', with: outpatient.professional.fullname
-    #         click_button 'Buscar'
-    #       end
-    #       sleep 1
-    #       within '#outpatient_prescriptions' do
-    #         expect(page.first('tr').has_css?('td', text: outpatient.professional.fullname)).to be true
-    #       end
-    #       sleep 1
-    #       within '.filter-form-row' do
-    #         page.execute_script %{$("button.btn-clean-filters")[0].click()}
-    #       end
-    #     end
-    #   end
-
-    #   it 'search by patient' do
-    #     sleep 1
-
-    #     @outpatients.each do |outpatient|
-    #       within '.filter-form-row' do
-    #         fill_in 'filter[patient_full_name]', with: outpatient.patient.dni
-    #         click_button 'Buscar'
-    #       end
-
-    #       sleep 1
-    #       within '#outpatient_prescriptions' do
-    #         expect(page.first('tr').has_css?('td', text: outpatient.patient.dni)).to be true
-    #       end
-    #       sleep 1
-    #       within '.filter-form-row' do
-    #         page.execute_script %{$("button.btn-clean-filters")[0].click()}
-    #       end
-
-    #       within '.filter-form-row' do
-    #         fill_in 'filter[patient_full_name]', with: outpatient.patient.last_name
-    #         click_button 'Buscar'
-    #       end
-
-    #       sleep 1
-    #       within '#outpatient_prescriptions' do
-    #         expect(page.first('tr').has_css?('td', text: outpatient.patient.last_name)).to be true
-    #       end
-    #       sleep 1
-    #       within '.filter-form-row' do
-    #         page.execute_script %{$("button.btn-clean-filters")[0].click()}
-    #       end
-    #       sleep 1
-    #       within '.filter-form-row' do
-    #         fill_in 'filter[patient_full_name]', with: outpatient.patient.first_name
-    #         click_button 'Buscar'
-    #       end
-    #       sleep 1
-    #       within '#outpatient_prescriptions' do
-    #         expect(page.first('tr').has_css?('td', text: outpatient.patient.first_name)).to be true
-    #       end
-    #       sleep 1
-    #       within '.filter-form-row' do
-    #         page.execute_script %{$("button.btn-clean-filters")[0].click()}
-    #       end
-    #     end
-    #   end
-
-    #   it 'search by date' do
-    #     date_to = DateTime.current.to_date.strftime('%d/%m/%Y')
-    #     date_since = date_to.to_date - 365
-
-    #     within '.filter-form-row' do
-    #       fill_in 'filter[date_prescribed_since]', with: date_since
-    #       fill_in 'filter[date_prescribed_to]', with: date_to
-    #       click_button 'Buscar'
-    #       sleep 1
-    #     end
-    #     within '#outpatient_prescriptions' do
-    #       expect(page.first('tr').has_css?('td')).to be true
-    #     end
-    #     within '.filter-form-row' do
-    #       page.execute_script %{$("button.btn-clean-filters")[0].click()}
-    #     end
-    #   end
-
-    #   it 'filter by state' do
-    #     page.select 'dispensada', from: 'filter[status]'
-    #     click_button 'Buscar'
-    #     sleep 1
-    #     within '#outpatient_prescriptions' do
-    #       expect(page.first('tr').has_css?('td span', text: 'Dispensada')).to be true
-    #     end
-    #     page.select 'vencida', from: 'filter[status]'
-    #     click_button 'Buscar'
-    #     sleep 1
-    #     within '#outpatient_prescriptions' do
-    #       expect(page.first('tr').has_css?('td span',text: 'Vencida')).to be true
-    #     end
-    #     page.select 'pendiente', from: 'filter[status]'
-    #     click_button 'Buscar'
-    #     sleep 1
-    #     within '#outpatient_prescriptions' do
-    #       expect(page.first('tr').has_css?('td span',text: 'Pendiente')).to be true
-    #     end
-    #   end
-    # end
-    # describe 'pagination actions' do
-    #   before(:each) do
-    #     visit '/recetas/ambulatorias'
-    #   end
-    #   after(:each) do
-    #     sleep 1
-    #     sign_out_as(@farm_provider)
-    #   end
-    #   it 'change page' do
-    #     sleep 1
-    #     within '#paginate_footer nav' do
-    #       expect(page.has_css?('li.active', text: '1')).to be true
-    #       click_link '2'
-    #       sleep 1
-    #       expect(page.has_css?('li.active', text: '2')).to be true
-    #     end
-    #   end
-    #   it 'checks pages count' do
-    #     prescriptions_count = OutpatientPrescription.all.count
-    #     page_size = (prescriptions_count / 15.to_f).ceil
-    #     within '#paginate_footer nav' do
-    #       expect(page.has_link?(page_size.to_s)).to be true
-    #       expect(page.has_link?((page_size + 1).to_s)).not_to be true
-    #     end
-    #   end
-
-    #   it 'checks results count by page' do
-    #     prescriptions_count = OutpatientPrescription.all.count
-    #     page_size = (prescriptions_count / 15.to_f).ceil
-    #     within '#paginate_footer nav' do
-    #       expect(page.has_link?(page_size.to_s)).to be true
-    #       expect(page.has_link?((page_size + 1).to_s)).not_to be true
-    #     end
-    #     within '#outpatient_prescriptions' do
-    #       expect(page.has_css?('tbody tr', count: 15)).to be true
-    #     end
-
-    #     page.select '30', from: 'page-size-selection'
-    #     sleep 1
-    #     within '#outpatient_prescriptions' do
-    #       expect(page.has_css?('tbody tr', count: 30)).to be true
-    #     end
-    #     page_size = (prescriptions_count / 30.to_f).ceil
-    #     within '#paginate_footer nav' do
-    #       expect(page.has_link?(page_size.to_s)).to be true
-    #       expect(page.has_link?((page_size + 1).to_s)).not_to be true
-    #     end
-    #   end
-    # end
-    describe 'sort action' do
+    describe 'pagination' do
       before(:each) do
-        visit '/recetas/ambulatorias'
+        @last_page = (OutpatientPrescription.all.count / 15.to_f).ceil
       end
-      after(:each) do
-        sleep 1
-        sign_out_as(@farm_provider)
+
+      it 'has pagination' do
+        within '#paginate_footer nav' do
+          expect(page).to have_selector('a.page-link', text: @last_page.to_s)
+        end
       end
-      it 'sort by fullname professional' do
+
+      it 'has pagination size selector' do
+        within '#paginate_footer' do
+          expect(page).to have_select('page-size-selection', with_options: %w[15 30 50 100])
+        end
+      end
+
+      it 'change page number' do
+        within '#paginate_footer nav' do
+          expect(page).to have_selector('li.active', text: '1')
+          click_link @last_page.to_s
+          sleep 1
+          expect(page).to have_selector('li.active', text: @last_page.to_s)
+        end
+      end
+
+      it 'has 15 items per page by default' do
+        within '#outpatient_prescriptions' do
+          expect(page).to have_selector('tr', count: 15)
+        end
+      end
+
+      it 'change items per page to 30' do
+        within '#paginate_footer' do
+          page.select '30', from: 'page-size-selection'
+          sleep 1
+        end
+        within '#outpatient_prescriptions' do
+          expect(page).to have_selector('tr', count: 30)
+        end
+      end
+    end
+
+    describe 'Sort' do
+      it 'has sort buttons' do
+        within '#table_results thead' do
+          expect(page).to have_button('Médico')
+          expect(page).to have_button('Paciente')
+          expect(page).to have_button('Recetada')
+        end
+      end
+
+      it 'by professional' do
         sorted_by_professional_asc = OutpatientPrescription.select('professionals.fullname AS pr_fullname').joins(:professional).order('pr_fullname asc').first
         sorted_by_professional_desc = OutpatientPrescription.select('professionals.fullname AS pr_fullname').joins(:professional).order('pr_fullname desc').first
+
         within '#table_results' do
           click_button 'Médico'
+          sleep 1
         end
-        sleep 1
+
         within '#outpatient_prescriptions' do
-          expect(page.first('tr').has_css?('td', text: sorted_by_professional_asc.pr_fullname)).to be true
+          expect(page.first('tr').find('td:nth-child(2)')).to have_content(sorted_by_professional_asc.pr_fullname)
         end
-        sleep 1
+
         within '#table_results' do
           click_button 'Médico'
+          sleep 1
         end
-        sleep 1
+
         within '#outpatient_prescriptions' do
-          expect(page.first('tr').has_css?('td', text: sorted_by_professional_desc.pr_fullname)).to be true
-        end
-        sleep 1
-        within '#table_results' do
-          click_button 'Médico'
+          expect(page.first('tr').find('td:nth-child(2)')).to have_content(sorted_by_professional_desc.pr_fullname)
         end
       end
-      # ##############Falta terminar esta seccion de ordenamiento por fullname de paciente##########################
-      # it 'sort by patient fullname ' do
-      #   sorted_by_patient_asc = OutpatientPrescription.select('CONCAT(patients.last_name,\'\',patients.first_name,\' \',patients.dni) AS pt_fullname').joins(:patient).order('pt_fullname asc').first
-      #   sorted_by_patient_desc = OutpatientPrescription.select('CONCAT(patients.last_name,\'\',patients.first_name,\' \',patients.dni) AS pt_fullname').joins(:patient).order('pt_fullname desc').first
-      #   # page.execute_script %{($("button.custom-sort-v1.btn-list-sort")[0]).click();}
-      #   within '#table_results' do
-      #     click_button 'Paciente'
-      #   end
-      #   sleep 1
-      #   within '#outpatient_prescriptions' do
-      #     sleep 5
-      #     expect(page.first('tr').has_css?('td', text: sorted_by_patient_asc.pt_fullname)).to be true
-      #   end
 
-      #   within '#table_results' do
-      #     click_button 'Paciente'
-      #   end
-      #   sleep 1
-      #   within '#outpatient_prescriptions' do
-      #     expect(page.first('tr').has_css?('td', text: sorted_by_patient_desc.pt_fullname)).to be true
-      #   end
-      #   sleep 1
-      #   within '#table_results' do
-      #     click_button 'Paciente'
-      #   end
-      #   sleep 3
-      # end
+      it 'by name' do
+        sorted_by_patient_asc = OutpatientPrescription.select('patients.first_name AS pa_first_name',
+                                                              'patients.last_name AS pa_last_name', 'patients.dni AS pa_dni').joins(:patient).order('pa_last_name asc').first
+        sorted_by_patient_desc = OutpatientPrescription.select('patients.first_name AS pa_first_name',
+                                                               'patients.last_name AS pa_last_name', 'patients.dni AS pa_dni').joins(:patient).order('pa_last_name desc').first
+
+        within '#table_results' do
+          click_button 'Paciente'
+          sleep 1
+        end
+
+        within '#outpatient_prescriptions' do
+          expect(page.first('tr').find('td:nth-child(3)')).to have_text(sorted_by_patient_asc.pa_last_name)
+        end
+
+        within '#table_results' do
+          click_button 'Paciente'
+          sleep 1
+        end
+
+        within '#outpatient_prescriptions' do
+          expect(page.first('tr').find('td:nth-child(3)')).to have_text(sorted_by_patient_desc.pa_last_name)
+        end
+      end
+
+      it 'by date prescribed' do
+        sorted_by_date_prescribed_asc = OutpatientPrescription.select(:date_prescribed).order('date_prescribed asc').first
+        sorted_by_date_prescribed_desc = OutpatientPrescription.select(:date_prescribed).order('date_prescribed desc').first
+
+        within '#table_results' do
+          click_button 'Recetada'
+          sleep 1
+        end
+
+        within '#outpatient_prescriptions' do
+          expect(page.first('tr').find('td:nth-child(6)')).to have_text(sorted_by_date_prescribed_asc.date_prescribed.strftime('%d/%m/%Y'))
+        end
+
+        within '#table_results' do
+          click_button 'Recetada'
+          sleep 1
+        end
+
+        within '#outpatient_prescriptions' do
+          expect(page.first('tr').find('td:nth-child(6)')).to have_text(sorted_by_date_prescribed_desc.date_prescribed.strftime('%d/%m/%Y'))
+        end
+      end
+    end
+
+    describe 'Destroy permission' do
+      before(:each) do
+        @outpatient_prescription_to_del = OutpatientPrescription.where(status: 'pendiente').sample
+        within '#outpatient-prescriptions-filter' do
+          fill_in 'filter[code]', with: @outpatient_prescription_to_del.remit_code
+          click_button 'Buscar'
+          sleep 1
+        end
+      end
+
+      it 'has button destroy' do
+        within '#outpatient_prescriptions' do
+          expect(page).to have_selector('button.delete-item')
+        end
+      end
+
+      it 'shown modal on button destroy click' do
+        within '#outpatient_prescriptions' do
+          page.first('button.delete-item').click
+          sleep 1
+        end
+        within '#delete-item' do
+          expect(page).to have_content('Eliminar prescripción')
+          expect(page).to have_button('Volver')
+          expect(page).to have_link('Confirmar')
+        end
+      end
+
+      it 'destroy items' do
+        within '#outpatient_prescriptions' do
+          page.first('button.delete-item').click
+          sleep 1
+        end
+        within '#delete-item' do
+          click_link 'Confirmar'
+          sleep 1
+        end
+        expect(page).to have_text("La receta de #{@outpatient_prescription_to_del.professional.fullname} se ha eliminado correctamente.")
+      end
+    end
+
+    describe 'Return permission' do
+      before(:each) do
+        @outpatient_prescription_to_return = OutpatientPrescription.where(status: 'dispensada').sample
+        within '#outpatient-prescriptions-filter' do
+          fill_in 'filter[code]', with: @outpatient_prescription_to_return.remit_code
+          click_button 'Buscar'
+          sleep 1
+        end
+      end
+
+      it 'has button show' do
+        within '#outpatient_prescriptions' do
+          expect(page).to have_selector('a.btn-detail')
+        end
+      end
+
+      it 'redirect to shown view' do
+        within '#outpatient_prescriptions' do
+          page.first('a.btn-detail').click
+        end
+        expect(page).to have_content('Viendo receta ambulatoria')
+        expect(page).to have_link('Volver')
+        expect(page).to have_button('Retornar')
+        expect(page).to have_link('Imprimir')
+
+        click_button 'Retornar'
+        sleep 1
+        within '#return-confirm' do
+          expect(page).to have_content('Retornar a Pendiente')
+          expect(page).to have_link('Cancelar')
+          expect(page).to have_link('Confirmar')
+        end
+      end
+
+      it 'return prescription' do
+        visit "/recetas/ambulatorias/#{@outpatient_prescription_to_return.id}"
+        click_button 'Retornar'
+        sleep 1
+        within '#return-confirm' do
+          click_link 'Confirmar'
+          sleep 1
+        end
+        expect(page).to have_text('La receta se ha retornado a pendiente.')
+      end
     end
   end
 end
