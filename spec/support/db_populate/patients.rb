@@ -8,111 +8,81 @@ end
 
 def outpatient_prescriptions_populate
   [@farm_applicant, @depo_applicant, @farm_provider].each do |user|
-    # ##Dispensada#####
-    from_date = Time.now - 19.day
-    @patients.each_with_index do |patient, index|
-      date_prescribed = time_rand(from_date)
-      op = OutpatientPrescription.new(
-        status: 'dispensada',
-        date_dispensed: date_prescribed.to_datetime,
-        professional_id: Professional.all.sample.id,
-        patient_id: patient.id,
-        provider_sector_id: user.sector_id,
-        establishment_id: user.sector.establishment_id,
-        remit_code: "AM#{date_prescribed.to_datetime.to_s(:number)}-#{index}",
-        date_prescribed: date_prescribed.to_datetime,
-        expiry_date: (date_prescribed + 1.month).to_datetime,
-        observation: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.'
-      )
-
-      @products_to_dispense.each do |product|
-        quantity = rand(2..5)
-        opp = OutpatientPrescriptionProduct.new(
-          product_id: product.id,
-          request_quantity: quantity,
-          delivery_quantity: quantity
+    OutpatientPrescription.statuses.each do |status|
+      @patients.each_with_index do |patient, index|
+        from_date = status[0] == 'vencida' ? (Time.now - 6.month) : (Time.now - 15.day)
+        date_prescribed = time_rand(from_date)
+        op = OutpatientPrescription.new(
+          status: status[0],
+          date_dispensed: date_prescribed.to_datetime,
+          professional_id: Professional.all.sample.id,
+          patient_id: patient.id,
+          provider_sector_id: user.sector_id,
+          establishment_id: user.sector.establishment_id,
+          remit_code: "AM#{date_prescribed.to_datetime.to_s(:number)}-#{index}",
+          date_prescribed: date_prescribed.to_datetime,
+          expiry_date: (date_prescribed + 1.month).to_datetime,
+          observation: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.'
         )
 
-        opp.order_prod_lot_stocks.build({
-                                          quantity: quantity,
-                                          lot_stock_id: Stock.where(sector_id: user.sector_id,
-                                                                    product_id: product.id).first.lot_stocks.first.id
-                                        })
+        @products_to_dispense.each do |product|
+          quantity = rand(2..5)
+          opp = OutpatientPrescriptionProduct.new(
+            product_id: product.id,
+            request_quantity: quantity,
+            delivery_quantity: quantity
+          )
 
-        op.outpatient_prescription_products << opp
+          opp.order_prod_lot_stocks.build({
+                                            quantity: quantity,
+                                            lot_stock_id: Stock.where(sector_id: user.sector_id,
+                                                                      product_id: product.id).first.lot_stocks.first.id
+                                          })
+
+          op.outpatient_prescription_products << opp
+        end
+        op.save(validation: false)
       end
-      op.save!
     end
+  end
+end
 
-    # ##Vencida#####
-    from_date = Time.now - 6.month
-    @patients.each_with_index do |patient, index|
-      date_prescribed = time_rand(from_date)
-      op = OutpatientPrescription.new(
-        status: 'vencida',
-        date_dispensed: date_prescribed.to_datetime,
-        professional_id: Professional.all.sample.id,
-        patient_id: patient.id,
-        provider_sector_id: user.sector_id,
-        establishment_id: user.sector.establishment_id,
-        remit_code: "AM#{date_prescribed.to_datetime.to_s(:number)}-#{index}",
-        date_prescribed: date_prescribed.to_datetime,
-        expiry_date: (date_prescribed + 1.month).to_datetime,
-        observation: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.'
-      )
-
-      @products_to_dispense.each do |product|
-        quantity = rand(2..5)
-        opp = OutpatientPrescriptionProduct.new(
-          product_id: product.id,
-          request_quantity: quantity,
-          delivery_quantity: quantity
+def chronic_prescriptions_populate
+  [@farm_applicant, @depo_applicant, @farm_provider].each do |user|
+    ChronicPrescription.statuses.each do |status|
+      @patients.each_with_index do |patient, index|
+        from_date = status[0] == 'vencida' ? (Time.now - 6.month) : (Time.now - 15.day)
+        date_prescribed = time_rand(from_date)
+        op = ChronicPrescription.new(
+          remit_code: "CR#{date_prescribed.to_datetime.to_s(:number)}-#{index}",
+          date_prescribed: date_prescribed.to_datetime,
+          expiry_date: (date_prescribed + 3.month).to_datetime,
+          status: status[0],
+          diagnostic: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+          professional_id: Professional.all.sample.id,
+          patient_id: patient.id,
+          provider_sector_id: user.sector_id,
+          establishment_id: user.sector.establishment_id
         )
 
-        opp.order_prod_lot_stocks.build({
-                                          quantity: quantity,
-                                          lot_stock_id: Stock.where(sector_id: user.sector_id,
-                                                                    product_id: product.id).first.lot_stocks.first.id
-                                        })
+        @products_to_dispense.each do |product|
+          quantity = rand(2..5)
+          opp = OriginalChronicPrescriptionProduct.new(
+            product_id: product.id,
+            request_quantity: quantity,
+            delivery_quantity: quantity
+          )
 
-        op.outpatient_prescription_products << opp
+          opp.order_prod_lot_stocks.build({
+                                            quantity: quantity,
+                                            lot_stock_id: Stock.where(sector_id: user.sector_id,
+                                                                      product_id: product.id).first.lot_stocks.first.id
+                                          })
+
+          op.outpatient_prescription_products << opp
+        end
+        op.save(validation: false)
       end
-      op.save(validation: false)
-    end
-    # ##Pendiente#####
-    from_date = Time.now - 15.day
-    @patients.each_with_index do |patient, index|
-      date_prescribed = time_rand(from_date)
-      op = OutpatientPrescription.new(
-        status: 'pendiente',
-        date_dispensed: date_prescribed.to_datetime,
-        professional_id: Professional.all.sample.id,
-        patient_id: patient.id,
-        provider_sector_id: user.sector_id,
-        establishment_id: user.sector.establishment_id,
-        remit_code: "AM#{date_prescribed.to_datetime.to_s(:number)}-#{index}",
-        date_prescribed: date_prescribed.to_datetime,
-        expiry_date: (date_prescribed + 1.month).to_datetime,
-        observation: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.'
-      )
-
-      @products_to_dispense.each do |product|
-        quantity = rand(2..5)
-        opp = OutpatientPrescriptionProduct.new(
-          product_id: product.id,
-          request_quantity: quantity,
-          delivery_quantity: quantity
-        )
-
-        opp.order_prod_lot_stocks.build({
-                                          quantity: quantity,
-                                          lot_stock_id: Stock.where(sector_id: user.sector_id,
-                                                                    product_id: product.id).first.lot_stocks.first.id
-                                        })
-
-        op.outpatient_prescription_products << opp
-      end
-      op.save!
     end
   end
 end
