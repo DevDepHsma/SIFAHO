@@ -1,3 +1,22 @@
+# == Schema Information
+
+# Table name: patients
+
+# id                      :bigint     not null, primary key
+# first_name              :string     not null
+# last_name               :string     not null
+# dni                     :string     not null
+# sex                     :integer    not null, by default 0
+# birthdate               :datetime   optional
+# email                   :string     optional
+# marital_status          :integer    not null, by default 1
+# status                  :integer    not null, by default 0
+# cuil                    :string     optional
+# address_id              :bigint     not null, unity
+# andes_id                :bigint     not null, area
+# bed_id                  :bigint     optional
+#
+
 class Patient < ApplicationRecord
   include PgSearch::Model
 
@@ -28,6 +47,8 @@ class Patient < ApplicationRecord
   accepts_nested_attributes_for :patient_phones,
                                 reject_if: proc { |attributes| attributes['number'].blank? },
                                 allow_destroy: true
+
+  before_save :format_full_name
 
   filterrific(
     default_filter_params: { sorted_by: 'created_at_desc' },
@@ -76,19 +97,25 @@ class Patient < ApplicationRecord
       raise(ArgumentError, "Invalid sort option: #{sort_option.inspect}")
     end
   }
+
+  # Get all dispensed patients by a sector: OutPatientPrescriptions / ChronicPrescriptions
   scope :filter_by_sector_dispensation, lambda { |filter_params|
-    op_patient_ids = OutpatientPrescription.where(provider_sector_id: filter_params[:sector_id], status: 'dispensada').pluck(:patient_id).uniq
-    cr_patient_ids = ChronicPrescription.where(provider_sector_id: filter_params[:sector_id], status: ['dispensada', 'dispensada_parcial']).pluck(:patient_id).uniq
-    patient_ids = (op_patient_ids + cr_patient_ids).uniq
-    query = where(id: patient_ids)
+    query = by_stock(filter_params[:sector_id])
     if filter_params[:patient].present?
       query = query.where('unaccent(lower(last_name)) like ? OR unaccent(lower(first_name)) like ? OR unaccent(lower(dni)) like ?',
                           "%#{filter_params[:patient].downcase.parameterize(separator: ' ')}%",
                           "%#{filter_params[:patient].downcase.parameterize(separator: ' ')}%",
                           "%#{filter_params[:patient]}%")
     end
-    query = query.where.not(id: filter_params[:patient_ids]) if filter_params[:patient_ids]
+    query = query.where.not(id: filter_params[:patients_ids]) if filter_params[:patients_ids]
     return query
+  }
+
+  scope :by_stock, lambda { |sector_id|
+    op_patient_ids = OutpatientPrescription.where(provider_sector_id: sector_id, status: 'dispensada').pluck(:patient_id).uniq
+    cr_patient_ids = ChronicPrescription.where(provider_sector_id: sector_id, status: %w[dispensada dispensada_parcial]).pluck(:patient_id).uniq
+    patient_ids = (op_patient_ids + cr_patient_ids).uniq
+    where(id: patient_ids)
   }
 
   # Método para establecer las opciones del select input del filtro
@@ -126,5 +153,10 @@ class Patient < ApplicationRecord
   # Return the last hospitalization
   def last_hospitalization
     inpatient_movements.admissions.last
+  end
+
+  def format_full_name
+    self.first_name = first_name.downcase.to_permite_accents
+    self.last_name = last_name.downcase.to_permite_accents
   end
 end
