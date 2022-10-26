@@ -1,3 +1,12 @@
+# == Schema Information
+
+# Table name: dispensation_types
+
+# chronic_dispensation_id                           :bigint   not null
+# original_chronic_prescription_product_id          :bigint   not null
+# quantity                                          :integer  not null
+#
+
 class DispensationType < ApplicationRecord
 
   # Relationships

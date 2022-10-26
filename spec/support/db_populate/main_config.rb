@@ -26,6 +26,7 @@ RSpec.configure do |config|
     patients_populate
     professionals_populate
     outpatient_prescriptions_populate
+    chronic_prescriptions_populate
     reports_populate
   end
 end

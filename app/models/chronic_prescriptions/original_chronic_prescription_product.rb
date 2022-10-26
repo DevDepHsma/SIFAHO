@@ -1,3 +1,18 @@
+# == Schema Information
+
+# Table name: original_chronic_prescription_products
+
+# chronic_prescription_id       :bigint, not null
+# product_id                    :bigint, not null
+# request_quantity              :integer, not null
+# total_request_quantity        :integer, default: 0
+# total_delivered_quantity      :integer, default: 0
+# observation                   :text, optinal
+# treatment_status              :integer, default: 0
+# finished_by_professional_id   :bigint, optional
+# finished_observation          :text, optional
+#
+
 class OriginalChronicPrescriptionProduct < ApplicationRecord
   enum treatment_status: { pendiente: 0, terminado: 1, terminado_manual: 2 }
 

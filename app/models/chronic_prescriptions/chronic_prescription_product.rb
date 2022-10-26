@@ -1,3 +1,15 @@
+# == Schema Information
+
+# Table name: chronic_prescriptions
+
+# original_chronic_prescription_product_id        :bigint    not null
+# chronic_dispensation_id                         :bigint    not null
+# product_id                                      :bigint    not null
+# delivery_quantity                               :integer   optional
+# observation                                     :text      optional
+# dispensation_type_id                            :bigint    optional
+#
+
 class ChronicPrescriptionProduct < ApplicationRecord
   # Relationships
   belongs_to :original_chronic_prescription_product, inverse_of: 'chronic_prescription_products', optional: true
@@ -27,7 +39,7 @@ class ChronicPrescriptionProduct < ApplicationRecord
                                 allow_destroy: true
 
   # Delegations
-  delegate  :name, :code, to: :product, prefix: :product
+  delegate :name, :code, to: :product, prefix: :product
 
   scope :get_delivery_products_by_patient, lambda { |filter_params|
     sub_query_prescriptions = ChronicDispensation.where(provider_sector_id: filter_params[:sector_id],
