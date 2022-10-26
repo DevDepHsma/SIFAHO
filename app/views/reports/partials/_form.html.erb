@@ -13,71 +13,107 @@
   <div class="card-body">
     <%= simple_form_for @report, html: { role: 'check-modified'} do |f| %>
       <%= f.error_notification %>
-      <input type="hidden" name="report[product_ids]">
-      <input type="hidden" name="report[patient_ids]">
-
+      <input type="hidden" name="report[products_ids]" value="<%= @report.products_ids if @report.products_ids.present? %>">
+      <input type="hidden" name="report[patients_ids]" value="<%= @report.patients_ids if @report.patients_ids.present? %>">
       <div class="form-group">
         <label for="name">Nombre</label>
-        <input class="form-control" 
+        <input class="form-control <%= 'is-invalid' if @errors.present? && @errors[:name].present? %>" 
               autocomplete="off" 
               type="text" 
               name="report[name]" 
               id="name" 
-              placeholder="Nombre">
+              placeholder="Nombre"
+              value="<%= @report.name if @report.name.present? %>">
+        <% if @errors.present? && @errors[:name].present? %>
+          <div class="invalid-feedback d-block">
+            Nombre <%= @errors[:name].first %>
+          </div>
+        <% end %>
       </div>
-        
       <hr>
-
       <% Report.report_types.each do |type| %>
         <div class="custom-control custom-radio">
-          <input type="radio" class="custom-control-input" id="<%= type[0] %>" name="report[report_type]" required value="<%= type[1] %>">
-          <label class="custom-control-label" for="<%= type[0] %>"><%=  t("activerecord.attributes.report.report_type.#{type[0]}") %></label>
+          <input type="radio" 
+                 class="custom-control-input <%= 'is-invalid' if @errors.present? && @errors[:report_type].present? %>" 
+                 id="<%= type[0] %>" 
+                 name="report[report_type]" 
+                 required 
+                 value="<%= type[0] %>"
+                 <%= 'checked' if @report.report_type.present? && @report.report_type == type[0] %>>
+          <label class="custom-control-label" for="<%= type[0] %>">
+            <%=  t("activerecord.attributes.report.report_type.#{type[0]}") %>
+          </label>
         </div>
       <% end %>
-      
+      <% if @errors.present? && @errors[:report_type].present? %>
+        <div class="invalid-feedback d-block">
+          Tipo de reporte <%= @errors[:report_type].first %>
+        </div>
+      <% end %>
       <hr>
       <%# Dates %>
       <div>
         <div class="form-group">
           <label for="report_from_date">Desde: dd/mm/aaaa</label>
-          <input class="form-control datepicker" 
+          <input class="form-control datepicker <%= 'is-invalid' if @errors.present? && @errors[:from_date].present? %>" 
                 autocomplete="off" 
                 type="text" 
                 name="report[from_date]" 
                 id="report_from_date" 
-                placeholder="Desde: dd/mm/aaaa">
+                placeholder="Desde: dd/mm/aaaa"
+                value="<%= @report.from_date.strftime("%d/%m/%Y") if @report.from_date.present? %>">
+          <% if @errors.present? && @errors[:from_date].present? %>
+            <div class="invalid-feedback d-block">
+              Fecha desde <%= @errors[:from_date].first %>
+            </div>
+          <% end %>
         </div>
         <div class="form-group">
           <label>Hasta: dd/mm/aaaa</label>
-          <input class="form-control datepicker" 
+          <input class="form-control datepicker <%= 'is-invalid' if @errors.present? && @errors[:to_date].present? %>" 
                 autocomplete="off" 
                 type="text" 
                 name="report[to_date]" 
                 id="report_to_date" 
-                placeholder="Hasta: dd/mm/aaaa">
+                placeholder="Hasta: dd/mm/aaaa"
+                value="<%= @report.to_date.strftime("%d/%m/%Y") if @report.to_date.present? %>">
+          <% if @errors.present? && @errors[:to_date].present? %>
+            <div class="invalid-feedback d-block">
+              Fecha hasta <%= @errors[:to_date].first %>
+            </div>
+          <% end %>
         </div>
       </div>
-
       <hr>
       <%# Products  %>
       <div id="products-module">
-        <div class="form-group mb-0 d-flex justify-content-between w-100">
-          <label for="products-search" class="mb-0">Productos</label>
-          <div class="custom-control custom-switch">
-            <input type="checkbox" class="custom-control-input" id="report-all-products" name="report[all_products]" data-target="#products-selection-container">
-            <label class="custom-control-label" for="report-all-products">Todos</label>
-          </div>
-        </div>
-
+        <label for="products-search" class="mb-0">Productos</label>
         <div id="products-selection-container">
-          <div id="selected-products"></div>
+          <div id="selected-products">
+            <% if @selected_products.present? %>
+              <% @selected_products.each do |product|%>
+                <%= render(partial: 'reports/partials/selected_product', locals: { product: product })%>
+              <%end %>
+            <%end %>
+          </div>
           <div class="input-group mb-0">
-            <input type="text" class="form-control" id="products-search" data-url="<%= get_stock_products_reports_path %>" autocomplete="off" data-target="#products-collapse" placeholder="Producto: Código | Nombre">
+            <input type="text" 
+                   class="form-control <%= 'is-invalid' if @errors.present? && @errors[:products_ids].present? %>" 
+                   id="products-search" 
+                   data-url="<%= get_stock_products_reports_path %>" 
+                   data-target="#products-collapse" 
+                   autocomplete="off" 
+                   placeholder="Producto: Código | Nombre">
             <div class="input-group-append">
               <button class="btn btn-outline-secondary" type="button" data-toggle="collapse" data-target="#products-collapse">
                 <%= fa_icon 'caret-down' %>
               </button>
             </div>
+            <% if @errors.present? && @errors[:products_ids].present? %>
+              <div class="invalid-feedback d-block">
+                <%= @errors[:products_ids].first %>
+              </div>
+            <% end %>
           </div>
           <div class="collapse" id="products-collapse">
             <div class="card card-body">
@@ -88,26 +124,36 @@
           </div>
         </div>
       </div>
-        
       <hr>
       <%# Petients %>
       <div id="patients-module">
-        <div class="form-group mb-0 d-flex justify-content-between w-100">
-          <label for="patients-search" class="mb-0">Pacientes</label>
-          <div class="custom-control custom-switch">
-            <input type="checkbox" class="custom-control-input" id="report-all-patients" name="report[all_patients]" data-target="#patients-selection-container">
-            <label class="custom-control-label" for="report-all-patients">Todos</label>
-          </div>
-        </div>
+        <label for="patients-search" class="mb-0">Pacientes</label>
         <div id="patients-selection-container">
-          <div id="selected-patients"></div>
+          <div id="selected-patients">
+            <% if @selected_patients.present? %>
+              <% @selected_patients.each do |patient|%>
+                <%= render(partial: 'reports/partials/selected_patient', locals: { patient: patient })%>
+              <%end %>
+            <%end %>
+          </div>
           <div class="input-group mb-0">
-            <input type="text" class="form-control" id="patients-search" data-url="<%= get_patients_by_sector_reports_path %>" autocomplete="off" data-target="#patients-collapse" placeholder="Paciente: DNI | Apellido | Nombre">
+            <input type="text" 
+                   class="form-control <%= 'is-invalid' if @errors.present? && @errors[:patients_ids].present? %>" 
+                   id="patients-search" 
+                   autocomplete="off" 
+                   data-url="<%= get_patients_by_sector_reports_path %>" 
+                   data-target="#patients-collapse"
+                   placeholder="Paciente: DNI | Apellido | Nombre">
             <div class="input-group-append">
               <button class="btn btn-outline-secondary" type="button" data-toggle="collapse" data-target="#patients-collapse">
                 <%= fa_icon 'caret-down' %>
               </button>
             </div>
+            <% if @errors.present? && @errors[:patients_ids].present? %>
+              <div class="invalid-feedback d-block">
+                <%= @errors[:patients_ids].first %>
+              </div>
+            <% end %>
           </div>
           <div class="collapse" id="patients-collapse">
             <div class="card card-body">
@@ -118,11 +164,10 @@
           </div>
         </div>
       </div>
-    <%end%>
+    <%end #form%>
   </div>
-
   <div class="card-footer d-flex justify-content-end">
-    <%#= link_to 'Volver', new_report_path, class: 'btn btn-light mr-2' %>
+    <%= link_to 'Volver', reports_path, class: 'btn btn-light mr-2' %>
     <button type='submit' name='commit' class='btn btn-success' form="new_report">
       <%= fa_icon 'save' %> Guardar
     </button>

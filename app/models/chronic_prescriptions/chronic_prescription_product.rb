@@ -1,3 +1,15 @@
+# == Schema Information
+
+# Table name: chronic_prescriptions
+
+# original_chronic_prescription_product_id        bigint not null
+# chronic_dispensation_id                         bigint not null
+# product_id                                      bigint not null
+# delivery_quantity                               integer optional
+# observation                                     text optional
+# dispensation_type_id                            bigint optional
+#
+
 class ChronicPrescriptionProduct < ApplicationRecord
   # Relationships
   belongs_to :original_chronic_prescription_product, inverse_of: 'chronic_prescription_products', optional: true
@@ -27,14 +39,14 @@ class ChronicPrescriptionProduct < ApplicationRecord
                                 allow_destroy: true
 
   # Delegations
-  delegate  :name, :code, to: :product, prefix: :product
+  delegate :name, :code, to: :product, prefix: :product
 
   scope :get_delivery_products_by_patient, lambda { |filter_params|
     sub_query_prescriptions = ChronicDispensation.where(provider_sector_id: filter_params[:sector_id],
                                                         status: [:dispensada])
 
-    unless filter_params[:all_patients].present?
-      sub_query_prescriptions = sub_query_prescriptions.where(chronic_prescription_id: ChronicPrescription.where(patient_id: filter_params[:patient_ids]))
+    if filter_params[:patients_ids].present?
+      sub_query_prescriptions = sub_query_prescriptions.where(chronic_prescription_id: ChronicPrescription.where(patient_id: filter_params[:patients_ids]))
     end
 
     if filter_params[:from_date].present?
@@ -55,39 +67,7 @@ class ChronicPrescriptionProduct < ApplicationRecord
                    'patients.birthdate as patient_birthdate')
             .joins(:patient, :product)
             .where(chronic_dispensation_id: sub_query_prescriptions)
-    query = query.where(product_id: filter_params[:product_ids]) unless filter_params[:all_products].present?
-    query = query.group('patients.id', 'products.id')
-                 .order('patient_full_name ASC')
-    return query
-  }
-
-  scope :get_delivery_products_by_patient, lambda { |filter_params|
-    sub_query_prescriptions = ChronicDispensation.where(provider_sector_id: filter_params[:sector_id],
-                                                        status: [:dispensada])
-
-    unless filter_params[:all_patients].present?
-      sub_query_prescriptions = sub_query_prescriptions.where(chronic_prescription_id: ChronicPrescription.where(patient_id: filter_params[:patient_ids]))
-    end
-
-    if filter_params[:from_date].present?
-      sub_query_prescriptions = sub_query_prescriptions.where('created_at >= ?', filter_params[:from_date])
-    end
-
-    if filter_params[:to_date].present?
-      sub_query_prescriptions = sub_query_prescriptions.where('created_at <= ?', filter_params[:to_date])
-    end
-
-    query = select('SUM("delivery_quantity") as product_quantity',
-                   'products.id as product_id',
-                   'products.code as product_code',
-                   'products.name as product_name',
-                   'patients.id as patient_id',
-                   'CONCAT(patients.last_name, \' \', patients.first_name) as patient_full_name',
-                   'patients.dni as patient_dni',
-                   'patients.birthdate as patient_birthdate')
-            .joins(:patient, :product)
-            .where(chronic_dispensation_id: sub_query_prescriptions)
-    query = query.where(product_id: filter_params[:product_ids]) unless filter_params[:all_products].present?
+    query = query.where(product_id: filter_params[:products_ids]) if filter_params[:products_ids].present?
     query = query.group('patients.id', 'products.id')
                  .order('patient_full_name ASC')
     return query

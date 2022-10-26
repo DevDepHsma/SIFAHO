@@ -1,34 +1,41 @@
 module Helpers
   module Recipe
-    def find_or_create_patient_by_dni(link, patient_dni, type)
-      visit '/'
-      within '#sidebar-wrapper' do
-        click_link 'Recetas'
-      end
-      expect(page.has_link?(link)).to be true
+    def expect_patient_search_form
       within '#new_patient' do
-        expect(page.has_css?('input#patient-dni')).to be true
-        page.execute_script %{$('#patient-dni').focus().val("#{patient_dni}").keydown()}
-        sleep 2
+        expect(page).to have_field('patient[dni]', type: 'text')
+        expect(page).to have_field('patient[status]', type: 'hidden')
+        expect(page).to have_field('patient[birthdate]', type: 'hidden')
+        expect(page).to have_field('patient[marital_status]', type: 'hidden')
+        expect(page).to have_field('patient[email]', type: 'hidden')
+        expect(page).to have_field('patient[address][postal_code]', type: 'hidden')
+        expect(page).to have_field('patient[address][line]', type: 'hidden')
+        expect(page).to have_field('patient[address][city_name]', type: 'hidden')
+        expect(page).to have_field('patient[address][state_name]', type: 'hidden')
+        expect(page).to have_field('patient[address][country_name]', type: 'hidden')
+        expect(page).to have_field('patient[andes_id]', type: 'hidden')
+        expect(page).to have_field('patient[photo_andes_id]', type: 'hidden')
       end
-      expect(find('ul.ui-autocomplete')).to have_content(patient_dni.to_s)
-      page.execute_script("$('.ui-menu-item:contains(#{patient_dni})').first().click()")
-      sleep 2
-      if page.has_button?('Guardar paciente')
-        find_button('Guardar paciente').click
-      else
-        within '#new-receipt-buttons' do
-          click_link type
-        end
-      end
+      expect(page).to have_button('Guardar paciente', disabled: true)
     end
 
-    def find_or_create_professional_by_enrollment(qualification)
-      expect(page.has_css?('input#professional')).to be true
-      page.execute_script %{$("#professional").val(#{qualification.code}).keydown()}
-      sleep 1
-      expect(find('ul.ui-autocomplete')).to have_content(qualification.code.to_s)
-      page.execute_script("$('.ui-menu-item:contains(#{qualification.code})').first().click()")
+    def find_and_fill_patient_attributes(patient_dni)
+      within '#new_patient' do
+        page.execute_script %{$('input[name="patient[dni]"]').focus().val("#{patient_dni}").keydown()}
+        sleep 2
+      end
+      expect(page.find('ul.ui-autocomplete')).to have_content(patient_dni.to_s)
+      expect(page).to have_selector('li.ui-menu-item', text: patient_dni)
+      page.first('li.ui-menu-item', text: patient_dni).click
+      sleep 2
+    end
+
+    def find_and_fill_professional_attribute(qualification)
+      expect(page).to have_field('professional')
+      page.execute_script %{$("input#professional").val(#{qualification.code}).keydown()}
+      sleep 1 
+      expect(page.find('ul.ui-autocomplete')).to have_content(qualification.code.to_s)
+      expect(page).to have_selector('li.ui-menu-item', text: qualification.code)
+      page.first('li.ui-menu-item', text: qualification.code).click
       sleep 1
     end
 

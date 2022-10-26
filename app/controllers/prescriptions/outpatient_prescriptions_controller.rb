@@ -105,7 +105,7 @@ class Prescriptions::OutpatientPrescriptionsController < ApplicationController
     @professional_fullname = @outpatient_prescription.professional.fullname
     @outpatient_prescription.destroy
     respond_to do |format|
-      flash.now[:success] = 'La receta de ' + @professional_fullname + ' se ha eliminado correctamente.'
+      flash.now[:success] = "La receta de #{@professional_fullname} se ha eliminado correctamente."
       format.js
     end
   end
@@ -137,7 +137,7 @@ class Prescriptions::OutpatientPrescriptionsController < ApplicationController
       rescue ArgumentError => e
         flash[:error] = e.message
       else
-        flash[:notice] = 'La receta se ha retornado a ' + @outpatient_prescription.status + '.'
+        flash[:notice] = "La receta se ha retornado a #{@outpatient_prescription.status}."
       end
       format.html { redirect_to @outpatient_prescription }
     end

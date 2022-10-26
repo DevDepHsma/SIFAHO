@@ -1,8 +1,8 @@
 <% select_patient_partial = escape_javascript(
-  render(partial: 'reports/partials/selected_patient')
+  render(partial: 'reports/partials/selected_patient', locals: { patient: @patient })
 ) %>
 
-$("input[name='report[patient_ids]']").val("<%= @patient_ids %>");
+$("input[name='report[patients_ids]']").val("<%= @patients_ids %>");
 $("#selected-patients").append("<%= select_patient_partial %>");
 
 <% sector_patients = escape_javascript(

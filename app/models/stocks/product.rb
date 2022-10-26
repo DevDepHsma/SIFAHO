@@ -1,3 +1,18 @@
+# == Schema Information
+
+# Table name: products
+
+# id                      :bigint   not null, primary key
+# code                    :integer  not null
+# name                    :string   not null
+# status                  :integer  not null, by default 0
+# description             :text     optional
+# observation             :text     optional
+# unity_id                :bigint   not null, unity
+# area_id                 :bigint   not null, area
+# snomed_concept_id       :bigint   optional
+#
+
 class Product < ApplicationRecord
   include PgSearch::Model
   include EnumTranslation
@@ -26,7 +41,7 @@ class Product < ApplicationRecord
   has_many :patient_product_reports
   has_many :report_product_lines
   has_many :patient_product_state_reports
-  has_many :lots
+  has_many :lots, dependent: :delete_all
   has_many :stocks
 
   # Validations
@@ -35,14 +50,15 @@ class Product < ApplicationRecord
 
   # Delegations
   delegate :term, :fsn, :concept_id, :semantic_tag, to: :snomed_concept, prefix: :snomed, allow_nil: true
-  before_save :format_downcase_degree
+  before_save :format_name
   # Scopes
+  # Get all products with stock from a sector
   scope :filter_by_stock, lambda { |filter_params|
-    query = self.select(:id, :name, :code).where(id: Stock.where(sector_id: filter_params[:sector_id]).pluck(:product_id))
+    query = self.select(:id, :name, :code).by_stock(filter_params[:sector_id])
     if filter_params[:product]
-      query = query.where('code::VARCHAR like ? OR unaccent(lower(name)) like ?', "%#{filter_params[:product]}%", "%#{filter_params[:product].downcase.parameterize}%")
+      query = query.like_code("%#{filter_params[:product]}%").or(query.like_name("%#{filter_params[:product].downcase.removeaccents}%"))      
     end
-    query = query.where.not(id: filter_params[:product_ids]) if filter_params[:product_ids]
+    query = query.where.not(id: filter_params[:products_ids]) if filter_params[:products_ids]
 
     return query
   }
@@ -63,6 +79,7 @@ class Product < ApplicationRecord
     return query
   }
 
+  scope :by_stock, ->(sector_id) { where(id: Stock.where(sector_id: sector_id).pluck(:product_id)) }
   scope :like_name, ->(product_name) { where('unaccent(lower(products.name))  like ?', product_name) }
   scope :like_code, ->(product_code) { where('code::VARCHAR like ?', product_code) }
   scope :with_code, ->(product_code) { where('products.code = ?', product_code) }
@@ -80,7 +97,7 @@ class Product < ApplicationRecord
     Supply.search_text(a_name).with_pg_search_rank
   end
 
-  def format_downcase_degree
-    self.name = name.downcase.to_degree
+  def format_name
+    self.name = name.downcase.to_degree.to_permite_accents
   end
 end

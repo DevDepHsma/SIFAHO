@@ -209,7 +209,27 @@ module DataMock
         %w[56757987 Otro Aguirre Verónica soltero],
         %w[29298088 Masculino BAUER GABRIEL soltero],
         ['56757352', 'Masculino', 'CHEUQUEPAN', 'EMILIO MACIEL', 'soltero'],
-        ['57122317', 'Masculino', 'INAL SANGIULIANO', 'LORENZO NAHITAN', 'soltero']
+        ['57122317', 'Masculino', 'INAL SANGIULIANO', 'LORENZO NAHITAN', 'soltero'],
+        ['44463371', 'Masculino', 'OLAVE ZAPATA', 'SEBASTIAN GABRIEL', 'soltero'],
+        ['33292171', 'Femenino', 'RAMOS', 'SABRINA GISELA', 'soltero'],
+        ['25259816', 'Femenino', 'GONZALEZ', 'ANDREA VERONICA', 'soltero'],
+        ['11155707', 'Masculino', 'RAMOS', 'BARTOLOMÈ JUAN', 'soltero'],
+        ['32320564', 'Femenino', 'MOYANO LAURIN', 'URSULA BELEN', 'soltero'],
+        ['39179882', 'Masculino', 'JEREZ', 'RODRIGO MAXIMILIANO', 'soltero'],
+        %w[94328242 Masculino RUSCONI ANTONIO soltero],
+        ['54495846', 'Femenino', 'ALMENDRA FUENTES', 'LUCERO ELIZABETH', 'soltero'],
+        ['93660013', 'Masculino', 'RAMOS FIGUEROA', 'HUGO ALEJANDRO', 'soltero'],
+        ['29873762', 'Femenino', 'MOLINA', 'VALERIA RAQUEL', 'soltero'],
+        ['95875884', 'Masculino', 'HERBAS VARGAS', 'JHONNY', 'soltero'],
+        ['22116376', 'Femenino', 'RODRIGUEZ REUMAY', 'MARTHA SUSANA', 'casado'],
+        %w[56005098 Femenino MENDEZ ASHLEY soltero],
+        ['28390235', 'Femenino', 'CASTILLO', 'VERONICA ANDREA', 'soltero'],
+        ['92422065', 'Femenino', 'VALENZUELA CARRASCO', 'ROSA ESTER', 'casado'],
+        ['34034559', 'Femenino', 'HERNANDEZ', 'NOELIA RUTH', 'casado'],
+        ['16007692', 'Femenino', 'AVILA', 'MARIA GABRIELA', 'soltero'],
+        ['95939909', 'Femenino', 'DELGADILLO COVA', 'LAUREN VALERIA', 'soltero'],
+        ['28614606', 'Femenino', 'SOTO', 'ELIANA MERCEDES', 'soltero'],
+        ['28863021', 'Masculino', 'TURREIRO', 'MATIAS RAUL', 'soltero']
       ]
     end
   end
@@ -251,7 +271,8 @@ module DataMock
   module Reports
     def get_by_patient
       [
-        'Reporte de prueba', 'Medicamentos', 'Paciente x', 'Cantidades dispensadas'
+        'Reporte de prueba', 'Medicamentos', 'Paciente x', 'Cantidades dispensadas', 'Random report',
+        'Dispensado Marzo', 'Test 1', 'Test 2', 'Test 3', 'Test 4', 'Test 5'
       ]
     end
   end
