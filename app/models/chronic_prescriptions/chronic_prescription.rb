@@ -5,7 +5,7 @@
 # remit_code                :string   not null, auto
 # date_prescribed           :string   not null
 # expiry_date               :string   not null, auto from date_prescribed
-# status                    :integer  not null, by default 0
+# status                    :integer  not null, by default 0, options { pendiente: 0, dispensada: 1, dispensada_parcial: 2, vencida: 3 }
 # diagnostic                :text     optional
 # professional_id           :bigint   not null
 # patient_id                :bigint   not null

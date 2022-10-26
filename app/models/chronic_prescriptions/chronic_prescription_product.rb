@@ -2,12 +2,12 @@
 
 # Table name: chronic_prescriptions
 
-# original_chronic_prescription_product_id        bigint not null
-# chronic_dispensation_id                         bigint not null
-# product_id                                      bigint not null
-# delivery_quantity                               integer optional
-# observation                                     text optional
-# dispensation_type_id                            bigint optional
+# original_chronic_prescription_product_id        :bigint    not null
+# chronic_dispensation_id                         :bigint    not null
+# product_id                                      :bigint    not null
+# delivery_quantity                               :integer   optional
+# observation                                     :text      optional
+# dispensation_type_id                            :bigint    optional
 #
 
 class ChronicPrescriptionProduct < ApplicationRecord
