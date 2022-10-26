@@ -2,8 +2,8 @@
   <td><%= stock.product_code %></td>
   <td><%= stock.product_name %></td>
   <td><%= stock.quantity %></td>
-  <td><%= stock.product_unity_name %></td>
-  <td><%= stock.product_area_name %></td>
+  <td><%= stock.product.unity.name %></td>
+  <td><%= stock.product.area.name %></td>
   <td class="text-left actions-col">
     <% if policy(stock).show? %>
       <%= link_to stock_path(stock), class: 'btn btn-light btn-sm btn-detail',

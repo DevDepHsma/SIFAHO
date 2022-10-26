@@ -1,14 +1,4 @@
 class Role < ApplicationRecord
-  # Relaciones
-  has_and_belongs_to_many :users, :join_table => :users_roles
-  belongs_to :resource,
-  :polymorphic => true,
-  :optional => true
-
-  # Validaciones
-  validates :resource_type,
-            :inclusion => { :in => Rolify.resource_types },
-            :allow_nil => true
-
-  scopify
+  has_many :permission_request_roles
+  has_many :permission_requests, through: :permission_request_roles
 end

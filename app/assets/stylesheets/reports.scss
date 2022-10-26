@@ -1,0 +1,46 @@
+@import 'variables';
+
+form.new_report{
+  .card-body{
+    padding: 0;
+    #products-list, #patients-list{
+      list-style: none;
+      padding: 0;
+      li {
+        button{
+          width: 100%;
+          background: #fff;
+          text-align: left;
+          border: none;
+          padding: 0.4rem 1rem;
+          &:hover, &:focus{
+            background-color: $cblue2;
+            color: #fff;
+            outline: none;
+          }
+        }
+      }
+    }
+  }
+  button.btn-unselect-item{
+    background-color: #fff;
+    border: 1px solid;
+    padding: 0.3rem 1rem;
+    border-radius: 5px;
+    margin: 5px;
+    .times-icon{
+      opacity: 0;
+      transition: opacity 0.2s ease-in-out;
+    }
+    &:hover{
+      background-color: $cblue2;
+      color: #fff;
+      .times-icon{
+        opacity: 1;
+      }
+    }
+    span, svg{
+      pointer-events: none;
+    }
+  }
+}

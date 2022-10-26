@@ -13,7 +13,7 @@ class Stock < ApplicationRecord
   validates_presence_of :product, :sector
 
   # Delegations
-  delegate :code, :name, :unity_name, :area_name, to: :product, prefix: true
+  delegate :code, :name, to: :product, prefix: true
 
   filterrific(
     default_filter_params: { sorted_by: 'nombre_asc' },

@@ -60,12 +60,12 @@ RSpec.feature 'Patients', type: :feature do
         click_button 'Guardar'
         click_link 'Volver'
         within '#patients' do
-          expect(page).to have_selector('.btn-detail', count: 1)
+          expect(page).to have_selector('.btn-detail')
         end
         PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @update_patients)
         visit current_path
         within '#patients' do
-          expect(page).to have_selector('.btn-edit', count: 1)
+          expect(page).to have_selector('.btn-edit')
           page.execute_script %{$('a.btn-edit')[0].click()}
         end
         expect(page).to have_content('Editando paciente')
@@ -79,7 +79,7 @@ RSpec.feature 'Patients', type: :feature do
         PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @destroy_patients)
         visit current_path
         within '#patients' do
-          expect(page).to have_selector('.delete-item', count: 1)
+          expect(page).to have_selector('.delete-item')
           page.execute_script %{$('td:contains("Gadiel Rafael Pedro")').closest('tr').find('button.delete-item').click()}
         end
         sleep 1
@@ -87,11 +87,6 @@ RSpec.feature 'Patients', type: :feature do
         expect(page.has_button?('Volver')).to be true
         expect(page.has_link?('Confirmar')).to be true
         click_link 'Confirmar'
-        sleep 1
-        within '#patients' do
-          expect(page).to have_selector('.delete-item', count: 0)
-          page.execute_script %{$('button.delete-item')[0].click()}
-        end
       end
     end
   end

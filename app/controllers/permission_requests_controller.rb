@@ -1,5 +1,5 @@
 class PermissionRequestsController < ApplicationController
-  before_action :set_permission_request, only: [:show, :edit, :update, :destroy, :end]
+  before_action :set_permission_request, only: %i[show edit update destroy end]
 
   # GET /permission_requests
   # GET /permission_requests.json
@@ -12,7 +12,7 @@ class PermissionRequestsController < ApplicationController
         sorted_by: PermissionRequest.options_for_sorted_by,
         for_statuses: PermissionRequest.options_for_status
       },
-      persistence_id: false,
+      persistence_id: false
     ) or return
     @permission_requests = @filterrific.find.paginate(page: params[:page], per_page: 21)
   end
@@ -21,19 +21,20 @@ class PermissionRequestsController < ApplicationController
   # GET /permission_requests/1.json
   def show
     @user = @permission_request.user
-    @sectors = Sector.joins(:establishment).pluck(:id, :name, "establishments.name")
-    if @user.has_role? :admin
-      @roles = Role.all.order(:name).pluck(:id, :name)
-    else
-      @roles = Role.where.not(name: "admin").order(:name).pluck(:id, :name)
-    end
+    @sectors = Sector.joins(:establishment).pluck(:id, :name, 'establishments.name')
+    @roles = if @user.has_role? :admin
+               Role.all.order(:name).pluck(:id, :name)
+             else
+               Role.where.not(name: 'admin').order(:name).pluck(:id, :name)
+             end
   end
 
   # GET /permission_requests/new
   def new
     authorize PermissionRequest
-    @establishments = Establishment.select(:id, :name).order(:name)
     @permission_request = PermissionRequest.new
+    @establishments = Establishment.select(:id, :name).order(:name)
+    @roles = Role.select(:id, :name).order(:name)
   end
 
   # POST /permission_requests
@@ -41,19 +42,20 @@ class PermissionRequestsController < ApplicationController
   def create
     authorize PermissionRequest
     @permission_request = PermissionRequest.new(permission_request_params)
-    @permission_request.user = current_user
+    @permission_request.user = @current_user
 
     respond_to do |format|
       if @permission_request.save
         format.html { redirect_to root_url, notice: 'Solicitud enviada.' }
-        format.json { render :show, status: :created, location: @permission_request }
+          # format.json { render :show, status: :created, location: @permission_request }
       else
         @establishments = Establishment.select(:id, :name).order(:name)
+        @roles = Role.select(:id, :name).order(:name)
         if @permission_request.establishment_id.to_i.positive?
-          @sectors = Sector.select(:id, :name).where(establishment_id: @permission_request.establishment_id).order(:name)
+          @sectors = Sector.select(:id,
+                                   :name).where(establishment_id: @permission_request.establishment_id).order(:name)
         end
         format.html { render :new }
-        # format.json { render json: @permission_request.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -70,6 +72,7 @@ class PermissionRequestsController < ApplicationController
   end
 
   private
+
   # Use callbacks to share common setup or constraints between actions.
   def set_permission_request
     @permission_request = PermissionRequest.find(params[:id])
@@ -82,7 +85,8 @@ class PermissionRequestsController < ApplicationController
       :other_establishment,
       :sector_id,
       :other_sector,
-      :role,
-      :observation)
+      { role_ids: [] },
+      :observation
+    )
   end
 end

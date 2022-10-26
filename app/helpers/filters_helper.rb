@@ -13,16 +13,15 @@ module FiltersHelper
     options.reverse_merge!(highlighter: '<mark class="highlight">\1</mark>')
 
     if text.blank? || phrases.blank?
-      text
+      text || ''
     else
       haystack = text.clone
       match = Array(phrases).map { |p| Regexp.escape(p) }.join('|')
       if options[:ignore_special_chars]
-        haystack = haystack.mb_chars.normalize(:kd)
-        match = match.mb_chars.normalize(:kd).gsub(/[^\x00-\x7F]+/n, '').gsub(/\w/, '\0[^\x00-\x7F]*')
+        haystack = haystack.replace_accents_as_html
+        match = match.replace_accents_as_html.gsub(/[^\x00-\x7F]+/n, '').gsub(/\w/, '\0[^\x00-\x7F]*')
       end
       highlighted = haystack.gsub(/(#{match})(?!(?:[^<]*?)(?:["'])[^<>]*>)/i, options[:highlighter])
-      highlighted = highlighted.mb_chars.normalize(:kc) if options[:ignore_special_chars]
       highlighted
     end.html_safe
   end
@@ -48,20 +47,26 @@ module FiltersHelper
 
   # Acepted attributes:
   # :name => Label string - important
-  # :field => Field sort: should be on the query select - important
+  # :sort_field => Field sort: should be on the query select - important
   # :form => Filter form id - important
   # :class => Extra classes - optional
   # :icon_type => FontAwesome icon - optional: default "amount"
-  def sort_label(**args)
-    if args[:name].present?
-      method = get_sort_value(args[:field].to_s)
-      "<button class='custom-sort-v1 btn-list-sort #{args[:class]}'
-               type='button'
-               onclick='sort_by(\"#{args[:field]}\", \"#{method}\", event.target);'
-               data-form='#{args[:form]}'>
+  def th_label(**args)
+    if args[:name].present? && args[:sort_field].present? && args[:form].present?
+      method = get_sort_value(args[:sort_field].to_s)
+      "<th class='sort #{'active' unless %w[asc].include?(method)}'>
+        <button class='custom-sort-v1 btn-list-sort #{args[:class]}'
+                type='button'
+                onclick='sort_by(\"#{args[:sort_field]}\", \"#{method}\", event.target);'
+                data-form='#{args[:form]}'>
+          #{args[:name]}
+          #{sort_icon(method, args[:icon_type])}
+        </button>
+      </th>"
+    elsif args[:name].present?
+      "<th>
         #{args[:name]}
-        #{sort_icon(method, args[:icon_type])}
-      </button>"
+      </th>"
     end.html_safe
   end
 

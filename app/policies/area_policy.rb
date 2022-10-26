@@ -1,10 +1,10 @@
 class AreaPolicy < ApplicationPolicy
   def index?
-    user.has_any_role?(:admin, :enfermero, :farmaceutico, :auxiliar_farmacia, :central_farmaceutico, :medic, :enfermero)
+    false
   end
 
   def tree_view?
-    user.has_any_role?(:admin, :enfermero, :farmaceutico, :auxiliar_farmacia, :central_farmaceutico, :medic, :enfermero)
+    false
   end
 
   def show?
@@ -12,7 +12,7 @@ class AreaPolicy < ApplicationPolicy
   end
 
   def create?
-    user.has_any_role?(:admin)
+    false
   end
 
   def create_applicant?
@@ -24,7 +24,7 @@ class AreaPolicy < ApplicationPolicy
   end
 
   def update?
-    user.has_any_role?(:admin)
+    false
   end
 
   def edit?

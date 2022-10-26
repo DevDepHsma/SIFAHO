@@ -1,7 +1,6 @@
 class SnomedConceptPolicy < ApplicationPolicy
-
   def index?
-    user.has_any_role?(:admin, :farmaceutico, :auxiliar_farmacia, :central_farmaceutico, :medic, :enfermero)
+    user.has_permission?(:read_products)
   end
 
   def search?
@@ -13,7 +12,7 @@ class SnomedConceptPolicy < ApplicationPolicy
   end
 
   def create?
-    user.has_any_role?(:admin)
+    user.has_permission?(:create_products)
   end
 
   def new?
@@ -21,7 +20,7 @@ class SnomedConceptPolicy < ApplicationPolicy
   end
 
   def update?
-    user.has_any_role?(:admin)
+    user.has_permission?(:update_products)
   end
 
   def edit?
@@ -29,7 +28,7 @@ class SnomedConceptPolicy < ApplicationPolicy
   end
 
   def destroy?
-    user.has_any_role?(:admin)
+    user.has_permission?(:destroy_products)
   end
 
   def delete?

@@ -1,15 +1,31 @@
-<%= render 'header' %>
-
-<div class="row">
-  <% if @reports.present? %>
+<% content_for :modal do %>
+  <%= render(partial: 'shared/modals/delete_confirmation') %>
+<% end %>
+<%#########################################################################################################%>
+<%= render 'reports/partials/header' %>
+<div class="card fixed-custom-card">
+  <div class="card-header">
+    <%= render 'reports/partials/filter' %>
+  </div>
+  <div class="card-body fixed-panel-index">
+    <% if @reports.present? %>
+      <div id="table_results">
+        <%= render(
+          partial: 'reports/partials/list',
+          locals: { reports: @reports }
+        ) %>
+      </div>
+    <% else %>
+      <%= render(
+        partial: 'shared/not_found_filter',
+        locals: { object_name: 'reportes' }
+      ) %>
+    <% end %>
+  </div>
+  <div class="card-footer" id="paginate_footer">
     <%= render(
-      partial: 'reports/list',
-      locals: { reports: @reports }
-    ) %>
-  <% else %>
-    <%= render(
-      partial: 'shared/not_found',
-      locals: { object_name: 'reportes' }
-    ) %>
-  <% end %>
+          partial: 'shared/paginate_index',
+          locals: { model: @reports, form_id: 'reports-filter' }
+        ) %>
+  </div>
 </div>

@@ -37,60 +37,6 @@
           label: "Cantidad",
           adapter: "highcharts" %>
       </div>
-      <div id="expired" class="tab-pane fade">
-        <table class="table table-hover table-striped">
-          <thead>
-            <tr class="danger">
-              <th>Lote</th>
-              <th>Insumo</th>
-              <th>Cantidad</th>
-              <th>Vencimiento</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% @expired_lot_stocks.each do |esl|%>
-              <tr>
-                <td><%= esl.lot.code %></td>
-                <td class="ins-col-alert"><%= esl.product_name %></td>
-                <td><span class="label label-default"><%= esl.quantity %></span></td>
-                <td><%= esl.lot.expiry_date.present? ? esl.lot.expiry_date.strftime("%d/%m/%y") : "---" %></td>
-              </tr>
-            <% end %>
-          </tbody>
-        </table>
-        <div class="row text-center">
-          <%= link_to sector_supply_lots_url(filterrific: {:with_status => 2}), class: 'btn btn-default btn-xs' do %>
-            Ver todos
-          <% end %>
-        </div>
-      </div>
-      <div id="near_expire" class="tab-pane fade">
-        <table class="table table-hover table-striped">
-          <thead>
-            <tr class="warning">
-              <th>Lote</th>
-              <th>Insumo</th>
-              <th>Cantidad</th>
-              <th>Vencimiento</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% @near_expiry_lots.each do |nesl|%>
-              <tr>
-                <td><%= nesl.lot.code %></td>
-                <td><%= nesl.product_name %></td>
-                <td><span class="label label-default"><%= nesl.quantity %></span></td>
-                <td><%= nesl.lot.expiry_date.present? ? nesl.lot.expiry_date.strftime("%d/%m/%y") : "---" %></td>
-              </tr>
-            <% end %>
-          </tbody>
-        </table>
-        <div class="row text-center">
-          <%= link_to sector_supply_lots_url(filterrific: {:with_status => 1}), class: 'btn btn-default btn-xs' do %>
-            Ver todos
-          <% end %>
-        </div>
-      </div>
     </div>
   </div>
 </div>

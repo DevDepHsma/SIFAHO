@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_07_11_182311) do
+ActiveRecord::Schema.define(version: 2022_10_03_180444) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "fuzzystrmatch"
@@ -940,6 +940,15 @@ ActiveRecord::Schema.define(version: 2022_07_11_182311) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "permission_request_roles", force: :cascade do |t|
+    t.bigint "role_id"
+    t.bigint "permission_request_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["permission_request_id"], name: "index_permission_request_roles_on_permission_request_id"
+    t.index ["role_id"], name: "index_permission_request_roles_on_role_id"
+  end
+
   create_table "permission_requests", force: :cascade do |t|
     t.bigint "user_id"
     t.integer "status", default: 0
@@ -954,6 +963,15 @@ ActiveRecord::Schema.define(version: 2022_07_11_182311) do
     t.index ["establishment_id"], name: "index_permission_requests_on_establishment_id"
     t.index ["sector_id"], name: "index_permission_requests_on_sector_id"
     t.index ["user_id"], name: "index_permission_requests_on_user_id"
+  end
+
+  create_table "permission_roles", force: :cascade do |t|
+    t.bigint "role_id"
+    t.bigint "permission_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["permission_id"], name: "index_permission_roles_on_permission_id"
+    t.index ["role_id"], name: "index_permission_roles_on_role_id"
   end
 
   create_table "permission_users", force: :cascade do |t|
@@ -1023,7 +1041,7 @@ ActiveRecord::Schema.define(version: 2022_07_11_182311) do
 
   create_table "products", force: :cascade do |t|
     t.bigint "unity_id"
-    t.string "code"
+    t.integer "code"
     t.string "name"
     t.text "description"
     t.text "observation"
@@ -1233,6 +1251,24 @@ ActiveRecord::Schema.define(version: 2022_07_11_182311) do
     t.index ["received_by_id"], name: "index_receipts_on_received_by_id"
   end
 
+  create_table "report_patients", force: :cascade do |t|
+    t.bigint "report_id"
+    t.bigint "product_id"
+    t.bigint "patient_id"
+    t.integer "product_code"
+    t.string "product_name"
+    t.integer "product_quantity"
+    t.integer "patient_dni"
+    t.string "patient_full_name"
+    t.integer "patient_age"
+    t.date "patient_birthdate"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["patient_id"], name: "index_report_patients_on_patient_id"
+    t.index ["product_id"], name: "index_report_patients_on_product_id"
+    t.index ["report_id"], name: "index_report_patients_on_report_id"
+  end
+
   create_table "report_product_lines", force: :cascade do |t|
     t.string "reportable_type"
     t.bigint "reportable_id"
@@ -1244,18 +1280,15 @@ ActiveRecord::Schema.define(version: 2022_07_11_182311) do
   end
 
   create_table "reports", force: :cascade do |t|
-    t.string "name", default: "Reporte"
-    t.datetime "since_date"
-    t.datetime "to_date"
-    t.integer "report_type", default: 0
-    t.bigint "supply_id"
     t.bigint "sector_id"
-    t.bigint "user_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.string "name"
+    t.string "sector_name"
+    t.string "establishment_name"
+    t.datetime "generated_date"
+    t.bigint "generated_by_user_id"
+    t.integer "report_type"
+    t.index ["generated_by_user_id"], name: "index_reports_on_generated_by_user_id"
     t.index ["sector_id"], name: "index_reports_on_sector_id"
-    t.index ["supply_id"], name: "index_reports_on_supply_id"
-    t.index ["user_id"], name: "index_reports_on_user_id"
   end
 
   create_table "roles", id: :serial, force: :cascade do |t|
@@ -1455,14 +1488,6 @@ ActiveRecord::Schema.define(version: 2022_07_11_182311) do
     t.index ["username"], name: "index_users_on_username", unique: true
   end
 
-  create_table "users_roles", id: false, force: :cascade do |t|
-    t.integer "user_id"
-    t.integer "role_id"
-    t.index ["role_id"], name: "index_users_roles_on_role_id"
-    t.index ["user_id", "role_id"], name: "index_users_roles_on_user_id_and_role_id"
-    t.index ["user_id"], name: "index_users_roles_on_user_id"
-  end
-
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "addresses", "cities"
   add_foreign_key "addresses", "countries"
@@ -1476,7 +1501,11 @@ ActiveRecord::Schema.define(version: 2022_07_11_182311) do
   add_foreign_key "lots", "products"
   add_foreign_key "patient_phones", "patients"
   add_foreign_key "patients", "addresses"
+  add_foreign_key "permission_request_roles", "permission_requests"
+  add_foreign_key "permission_request_roles", "roles"
   add_foreign_key "permission_requests", "users"
+  add_foreign_key "permission_roles", "permissions"
+  add_foreign_key "permission_roles", "roles"
   add_foreign_key "prescriptions", "establishments"
   add_foreign_key "prescriptions", "patients"
   add_foreign_key "prescriptions", "professionals"
@@ -1486,10 +1515,12 @@ ActiveRecord::Schema.define(version: 2022_07_11_182311) do
   add_foreign_key "quantity_ord_supply_lots", "laboratories"
   add_foreign_key "quantity_ord_supply_lots", "supplies"
   add_foreign_key "quantity_ord_supply_lots", "supply_lots"
+  add_foreign_key "report_patients", "patients"
+  add_foreign_key "report_patients", "products"
+  add_foreign_key "report_patients", "reports"
   add_foreign_key "report_product_lines", "products"
   add_foreign_key "reports", "sectors"
-  add_foreign_key "reports", "supplies"
-  add_foreign_key "reports", "users"
+  add_foreign_key "reports", "users", column: "generated_by_user_id"
   add_foreign_key "sectors", "establishments"
   add_foreign_key "states", "countries"
   add_foreign_key "stocks", "products"

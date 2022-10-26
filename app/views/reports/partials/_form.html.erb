@@ -1,0 +1,130 @@
+<div class="card fixed-custom-card">
+  <div class="card-header bg-primary text-white d-flex align-items-center justify-content-between">
+    <div class="d-flex align-items-center ml-2">
+      <%= fa_icon "plus" %>
+      <h5 class="card-title mb-0 ml-2">
+        Nuevo reporte
+      </h5>
+    </div>
+    <%= link_to :back, class: 'btn text-white' do %>
+      <%= fa_icon "times" %>
+    <% end %>
+  </div>
+  <div class="card-body">
+    <%= simple_form_for @report, html: { role: 'check-modified'} do |f| %>
+      <%= f.error_notification %>
+      <input type="hidden" name="report[product_ids]">
+      <input type="hidden" name="report[patient_ids]">
+
+      <div class="form-group">
+        <label for="name">Nombre</label>
+        <input class="form-control" 
+              autocomplete="off" 
+              type="text" 
+              name="report[name]" 
+              id="name" 
+              placeholder="Nombre">
+      </div>
+        
+      <hr>
+
+      <% Report.report_types.each do |type| %>
+        <div class="custom-control custom-radio">
+          <input type="radio" class="custom-control-input" id="<%= type[0] %>" name="report[report_type]" required value="<%= type[1] %>">
+          <label class="custom-control-label" for="<%= type[0] %>"><%=  t("activerecord.attributes.report.report_type.#{type[0]}") %></label>
+        </div>
+      <% end %>
+      
+      <hr>
+      <%# Dates %>
+      <div>
+        <div class="form-group">
+          <label for="report_from_date">Desde: dd/mm/aaaa</label>
+          <input class="form-control datepicker" 
+                autocomplete="off" 
+                type="text" 
+                name="report[from_date]" 
+                id="report_from_date" 
+                placeholder="Desde: dd/mm/aaaa">
+        </div>
+        <div class="form-group">
+          <label>Hasta: dd/mm/aaaa</label>
+          <input class="form-control datepicker" 
+                autocomplete="off" 
+                type="text" 
+                name="report[to_date]" 
+                id="report_to_date" 
+                placeholder="Hasta: dd/mm/aaaa">
+        </div>
+      </div>
+
+      <hr>
+      <%# Products  %>
+      <div id="products-module">
+        <div class="form-group mb-0 d-flex justify-content-between w-100">
+          <label for="products-search" class="mb-0">Productos</label>
+          <div class="custom-control custom-switch">
+            <input type="checkbox" class="custom-control-input" id="report-all-products" name="report[all_products]" data-target="#products-selection-container">
+            <label class="custom-control-label" for="report-all-products">Todos</label>
+          </div>
+        </div>
+
+        <div id="products-selection-container">
+          <div id="selected-products"></div>
+          <div class="input-group mb-0">
+            <input type="text" class="form-control" id="products-search" data-url="<%= get_stock_products_reports_path %>" autocomplete="off" data-target="#products-collapse" placeholder="Producto: Código | Nombre">
+            <div class="input-group-append">
+              <button class="btn btn-outline-secondary" type="button" data-toggle="collapse" data-target="#products-collapse">
+                <%= fa_icon 'caret-down' %>
+              </button>
+            </div>
+          </div>
+          <div class="collapse" id="products-collapse">
+            <div class="card card-body">
+              <ul id="products-list" class="mb-0">
+                <%= render(partial: 'reports/partials/stock_products') %>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+        
+      <hr>
+      <%# Petients %>
+      <div id="patients-module">
+        <div class="form-group mb-0 d-flex justify-content-between w-100">
+          <label for="patients-search" class="mb-0">Pacientes</label>
+          <div class="custom-control custom-switch">
+            <input type="checkbox" class="custom-control-input" id="report-all-patients" name="report[all_patients]" data-target="#patients-selection-container">
+            <label class="custom-control-label" for="report-all-patients">Todos</label>
+          </div>
+        </div>
+        <div id="patients-selection-container">
+          <div id="selected-patients"></div>
+          <div class="input-group mb-0">
+            <input type="text" class="form-control" id="patients-search" data-url="<%= get_patients_by_sector_reports_path %>" autocomplete="off" data-target="#patients-collapse" placeholder="Paciente: DNI | Apellido | Nombre">
+            <div class="input-group-append">
+              <button class="btn btn-outline-secondary" type="button" data-toggle="collapse" data-target="#patients-collapse">
+                <%= fa_icon 'caret-down' %>
+              </button>
+            </div>
+          </div>
+          <div class="collapse" id="patients-collapse">
+            <div class="card card-body">
+              <ul id="patients-list" class="mb-0">
+                <%= render(partial: 'reports/partials/sector_patients') %>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    <%end%>
+  </div>
+
+  <div class="card-footer d-flex justify-content-end">
+    <%#= link_to 'Volver', new_report_path, class: 'btn btn-light mr-2' %>
+    <button type='submit' name='commit' class='btn btn-success' form="new_report">
+      <%= fa_icon 'save' %> Guardar
+    </button>
+  </div>
+</div>

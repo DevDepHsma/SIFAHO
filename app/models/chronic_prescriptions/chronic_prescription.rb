@@ -1,5 +1,6 @@
 class ChronicPrescription < ApplicationRecord
   include PgSearch::Model
+  include QuerySort
 
   enum status: { pendiente: 0, dispensada: 1, dispensada_parcial: 2, vencida: 3 }
 
@@ -28,84 +29,66 @@ class ChronicPrescription < ApplicationRecord
   delegate :fullname, :last_name, :dni, :age_string, to: :patient, prefix: :patient
   delegate :qualifications, :fullname, to: :professional, prefix: :professional
 
-  filterrific(
-    default_filter_params: { sorted_by: 'updated_at_desc' },
-    available_filters: %i[search_by_remit_code search_by_professional search_by_patient sorted_by date_prescribed_since
-                          for_statuses]
-  )
-
-  pg_search_scope :search_by_remit_code,
-                  against: :remit_code,
-                  using: { tsearch: { prefix: true }, trigram: {} }, # Buscar coincidencia en cualquier parte del string
-                  ignoring: :accents # Ignorar tildes.
-
-  pg_search_scope :search_by_professional,
-                  associated_against: { professional: %i[last_name first_name] },
-                  using: { tsearch: { prefix:  true } }, # Buscar coincidencia desde las primeras letras.
-                  ignoring: :accents # Ignorar tildes.
-
-  pg_search_scope :search_by_patient,
-                  associated_against: { patient: %i[last_name first_name dni] },
-                  using: { tsearch: { prefix: true } }, # Buscar coincidencia desde las primeras letras.
-                  ignoring: :accents # Ignorar tildes.
-
-  scope :sorted_by, lambda { |sort_option|
-    # extract the sort direction from the param value.
-    direction = sort_option =~ /desc$/ ? 'desc' : 'asc'
-    case sort_option.to_s
-    when /^updated_at_/s
-      # Ordenamiento por fecha de modificacion en la BD
-      order("chronic_prescriptions.updated_at #{direction}")
-    when /^created_at_/s
-      # Ordenamiento por fecha de creacion en la BD
-      order("chronic_prescriptions.created_at #{direction}")
-    when /^medico_/
-      # Ordenamiento por nombre de droga
-      order("professionals.last_name #{direction}").joins(:professional)
-    when /^paciente_/
-      # Ordenamiento por marca de medicamento
-      order("patients.last_name #{direction}").joins(:patient)
-    when /^estado_/
-      # Ordenamiento por nombre de estado
-      order("chronic_prescriptions.status #{direction}")
-    when /^productos_/
-      left_joins(:original_chronic_prescription_products)
-      .group(:id)
-      .reorder("COUNT(original_chronic_prescription_products.id) #{direction}")
-    when /^movimientos_/
-      left_joins(:movements)
-      .group(:id)
-      .reorder("COUNT(chronic_prescription_movements.id) #{direction}")
-    when /^recetada_/
-      # Ordenamiento por la fecha de recepcion
-      order("chronic_prescriptions.date_prescribed #{direction}")
-    else
-      # Si no existe la opcion de ordenamiento se levanta la excepcion
-      raise(ArgumentError, "Invalid sort option: #{sort_option.inspect}")
+  scope :filter_by_params, lambda { |filter_params|
+    query = self.select(:id, :remit_code, :status, :date_prescribed, :expiry_date, 'professionals.fullname AS pr_fullname', 'patients.first_name AS pa_first_name', 'patients.last_name AS pa_last_name', 'patients.dni AS pa_dni').joins(:establishment, :professional, :patient)
+    if filter_params.present?
+      # Remit_code
+      query = query.like_remit_code(filter_params['code']) if filter_params['code'].present?
+      # Profesisonal
+      if filter_params['professional_full_name'].present?
+        query = query.like_professional_full_name(filter_params['professional_full_name'])
+      end
+      # Patient
+      if filter_params['patient_full_name'].present?
+        query = query.like_patient_full_name_and_dni(filter_params['patient_full_name'])
+      end
+      # Prescribed since
+      if filter_params['date_prescribed_since'].present?
+        query = query.like_date_prescribed_since(filter_params['date_prescribed_since'])
+      end
+      # Prescribed to
+      if filter_params['date_prescribed_to'].present?
+        query = query.like_date_prescribed_to(filter_params['date_prescribed_to'])
+      end
+      # Status
+      query = query.like_status(filter_params['status']) if filter_params['status'].present?
     end
+
+    query = if filter_params.present? && filter_params['sort'].present?
+              query.sorted_by(filter_params['sort'])
+            else
+              query.reorder(date_prescribed: :desc, status: :desc)
+            end
+    return query
   }
 
-  # Método para establecer las opciones del select sorted_by
-  # Es llamado por el controlador como parte de `initialize_filterrific`.
-  def self.options_for_sorted_by
-    [
-      ['Modificación (nueva primero)', 'updated_at_desc'],
-      ['Modificación (antigua primero)', 'updated_at_asc'],
-      ['Creación (nueva primero)', 'created_at_desc'],
-      ['Creación (antigua primero)', 'created_at_asc'],
-      ['Medico (a-z)', 'medico_asc'],
-      ['Medico (z-a)', 'medico_desc'],
-      ['Paciente (a-z)', 'paciente_asc'],
-      ['Estado (a-z)', 'estado_asc'],
-      ['Productos (mayor primero)', 'productos_desc'],
-      ['Productos (menor primero)', 'productos_asc'],
-      ['Movimientos (mayor primero)', 'movimientos_desc'],
-      ['Movimientos (menor primero)', 'movimientos_asc'],
-      ['Fecha recetada (nueva primero)', 'recetada_asc'],
-      ['Fecha recetada (antigua primero)', 'recetada_desc'],
-    ]
-  end
-
+  # Where string match with %...% (unsupport accents)
+  scope :like_remit_code, lambda { |word|
+    where('lower(remit_code) LIKE ?', "%#{word.downcase}%")
+  }
+  # Where string match with %...% (support accents / unaccents)
+  scope :like_professional_full_name, lambda { |word|
+    where('unaccent(lower(professionals.fullname)) LIKE ?', "%#{word.downcase.parameterize}%")
+  }
+  # Where string match with %...% (support accents / unaccents)
+  scope :like_patient_full_name_and_dni, lambda { |word|
+    where('unaccent(lower(patients.first_name)) LIKE ? OR unaccent(lower(patients.last_name)) LIKE ? OR unaccent(lower(patients.dni)) LIKE ?', "%#{word.downcase.parameterize}%", "%#{word.downcase.parameterize}%", "%#{word.downcase.parameterize}%")
+  }
+  scope :like_date_prescribed_since, lambda { |reference_time|
+    where('date_prescribed >= ?', reference_time)
+  }
+  scope :like_date_prescribed_to, lambda { |reference_time|
+    where('date_prescribed <= ?', reference_time)
+  }
+  scope :like_status, lambda { |status|
+    where('chronic_prescriptions.status = ?', status)
+  }
+  scope :pending_count, -> { where('chronic_prescriptions.status = 0').count }
+  scope :pending_dispense_count, -> { where('chronic_prescriptions.status = 2').count }
+  scope :with_establishment, lambda { |a_establishment|
+    where('chronic_prescriptions.establishment_id = ?', a_establishment)
+  }
+  
   def self.options_for_statuses
     [
       ['Pendiente', 'pendiente', 'secondary'],
@@ -119,24 +102,14 @@ class ChronicPrescription < ApplicationRecord
     where("date_prescribed >= :last_week", { last_week: 1.weeks.ago.midnight })
   end
 
-  # Prescripciones prescritas desde una fecha
-  scope :date_prescribed_since, lambda { |reference_time|
-    where('chronic_prescriptions.date_prescribed >= ?', reference_time)
-  }
 
-  scope :with_establishment, lambda { |a_establishment|
-    where('chronic_prescriptions.establishment_id = ?', a_establishment)
-  }
 
-  scope :search_by_status, lambda { |status|
-    where('chronic_prescriptions.status = ?', status)
-  }
 
-  scope :for_statuses, ->(values) do
-    return all if values.blank?
+    # scope :for_statuses, ->(values) do
+    #   return all if values.blank?
 
-    where(status: statuses.values_at(*Array(values)))
-  end
+    #   where(status: statuses.values_at(*Array(values)))
+    # end
 
   def create_notification(of_user, action_type)
     ChronicPrescriptionMovement.create(user: of_user, chronic_prescription: self, action: action_type, sector: of_user.sector)
@@ -207,6 +180,10 @@ class ChronicPrescription < ApplicationRecord
     raise ArgumentError, 'Tratamientos pendientes' if any_product_without_dispensing?
     dispensada!
     create_notification(a_user, 'finalizó la receta')
+  end
+
+  def pa_full_info
+    "#{pa_last_name} #{pa_first_name} #{pa_dni}"
   end
   
   private

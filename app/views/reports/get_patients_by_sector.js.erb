@@ -1,0 +1,9 @@
+<% sector_patients = escape_javascript(
+  render(partial: 'reports/partials/sector_patients')
+) %>
+
+$("#patients-list").html("<%= sector_patients %>");
+
+$("#patients-search").removeAttr('disabled');
+$("#patients-search").focus();
+$("#loader-container").css({'display': 'none'});

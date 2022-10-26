@@ -22,12 +22,19 @@
     <div class="card-body">
       <div class="row">
         <div class="col-3 border-right">
-          <div class="d-flex">
-            <img src="<%= user_avatar(@user, 25) %>" onError='loadImage(event, "<%= image_path('profile-placeholder.jpg') %>")' class="rounded-circle mr-2 user-thumbnail-40" />
-            <div>
-              <p class="mb-0"><%= @user.full_name %></p>
-              <p class="mb-0"><%= @user.profile.dni %></p>
+          <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex">
+              <img src="<%= user_avatar(@user, 25) %>" onError='loadImage(event, "<%= image_path('profile-placeholder.jpg') %>")' class="rounded-circle mr-2 user-thumbnail-40" />
+              <div>
+                <p class="mb-0"><%= @user.full_name %></p>
+                <p class="mb-0"><%= @user.profile.dni %></p>
+              </div>
             </div>
+            <% if @user.permission_requests.any? && policy(@user.permission_requests.last).update? %>
+              <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#permission_req_in_progress">
+                <%= fa_icon 'info' %>
+              </button>
+            <% end %>
           </div>
           <div class="mt-2 d-flex w-100">
             <div id="location_select_container">
@@ -39,6 +46,18 @@
                 <%= fa_icon 'plus' %>
               </button>
             </div>
+
+          </div>
+          <%# roles %>
+          <div class="mt-2">
+            <p class="mb-1">Modulos</p>
+              <% @roles.each do |role| %>
+                <div class="custom-control custom-checkbox mb-1">
+                  <input type="checkbox" class="custom-control-input" id="role-<%=role.id%>" required>
+                  <label class="custom-control-label" for="role-<%=role.id%>"><%= role.name %></label>
+                </div>
+              <% end %>
+            </ul>
           </div>
         </div>
         <div class="col-9">
@@ -88,11 +107,9 @@
 
 <% content_for :modal do %>
   <%= render "shared/modals/sector_selection" %>
-  <% if @user.permission_requests.any? && policy(@user.permission_requests.first).update? %>
+  <% if @user.permission_requests.any? && policy(@user.permission_requests.last).update? %>
     <%= render "permissions/partials/show_modal" %>  
   <% end %>
-<% end %>
 
-<% content_for :modal do %>
   <%= render(partial: 'shared/modals/delete_confirmation') %>
-<%end%>
+<% end %>

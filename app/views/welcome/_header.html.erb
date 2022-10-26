@@ -8,7 +8,7 @@
         Inicio
       <% end %>
     </li>
-    <% if policy(Prescription).index? %>
+    <% if policy(:prescription).index? %>
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle non-sel" data-toggle="dropdown" href="#">
           <%= fa_icon "file-prescription" %>
@@ -31,7 +31,7 @@
             <% end %>
           <% end %>
 
-          <% if policy(Prescription).new? %>
+          <% if policy(:prescription).new? %>
             <%= link_to prescriptions_path, class: "dropdown-item" do %>
               <%= fa_icon "plus" %>
               Recetas

@@ -4,7 +4,7 @@
       <div class="modal-header">
         <h5 class="modal-title">Solicitud de permisos 
           <span class="badge badge-primary">
-            <%= t("permission_request_status.#{@user.permission_requests.first.status}").downcase %> 
+            <%= t("permission_request_status.#{@user.permission_requests.last.status}").downcase %> 
           </span>
         </h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -16,9 +16,15 @@
         <p>Nombre y Apellido: <%= @user.profile.full_name %></p>
         <p>DNI: <%= @user.profile.dni %></p>
 
-        <p>Establecimiento indicado: <%= @user.permission_requests.first.establishment.present? ? @user.permission_requests.first.establishment.name : @user.permission_requests.first.other_establishment %>.</p>
-        <p>Sector indicado: <%= @user.permission_requests.first.sector.present? ? @user.permission_requests.first.sector.name : @user.permission_requests.first.other_sector %>.</p>
-        <p>Observaciones: <%= @user.permission_requests.first.observation %>.</p>
+        <p>Establecimiento indicado: <%= @user.permission_requests.last.establishment.present? ? @user.permission_requests.last.establishment.name : @user.permission_requests.last.other_establishment %>.</p>
+        <p>Sector indicado: <%= @user.permission_requests.last.sector.present? ? @user.permission_requests.last.sector.name : @user.permission_requests.last.other_sector %>.</p>
+        <div>
+          Funciones selccionadas
+          <% @user.permission_requests.last.roles.each do |role| %>
+          <li><%= role.name %></li>
+          <% end %>
+        </div>
+        <p>Observaciones: <%= @user.permission_requests.last.observation %>.</p>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" data-dismiss="modal">Cerrar</button>

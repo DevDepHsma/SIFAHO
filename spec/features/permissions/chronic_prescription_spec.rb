@@ -16,8 +16,11 @@ RSpec.feature 'Permissions::ChronicPrescriptions', type: :feature do
     # Create scenario with professional form completed
     professionals_permission_module = PermissionModule.includes(:permissions).find_by(name: 'Profesionales')
     @create_professional_permission = professionals_permission_module.permissions.find_by(name: 'create_professionals')
+    @read_professional_permission = professionals_permission_module.permissions.find_by(name: 'read_professionals')
     PermissionUser.create(user: @farm_provider, sector: @farm_provider.sector,
                           permission: @create_professional_permission)
+    PermissionUser.create(user: @farm_provider, sector: @farm_provider.sector,
+                          permission: @read_professional_permission)
     PermissionUser.create(user: @farm_provider, sector: @farm_provider.sector, permission: @create_patient_permission)
   end
 
@@ -49,13 +52,15 @@ RSpec.feature 'Permissions::ChronicPrescriptions', type: :feature do
           expect(page.has_css?('#new-chronic')).to be false
           PermissionUser.create(user: @farm_provider, sector: @farm_provider.sector,
                                 permission: @create_chronic_recipe_permission)
-          5.times do |_prescription|
-            visit '/recetas'
-            find_or_create_patient_by_dni('Crónicas', '37458994', 'Crónica')
+
+          10.times do |_prescription|
+            patient = @patients.sample
+            qualification = @qualifications.sample
+            find_or_create_patient_by_dni('Crónicas', patient.dni, 'Crónica')
             expect(page.has_css?('#new-chronic')).to be true
-            find_or_create_professional_by_enrollment(@farm_provider, '#new-chronic', 'Naval')
+            find_or_create_professional_by_enrollment(qualification)
             # Add product
-            add_original_product_to_recipe(rand(1..3), 1)
+            add_original_product_to_recipe(rand(5..8), 1)
             click_button 'Guardar'
             expect(page).to have_content('Viendo receta crónica')
             expect(page.has_link?('Volver')).to be true
@@ -126,15 +131,16 @@ RSpec.feature 'Permissions::ChronicPrescriptions', type: :feature do
           expect(page).to have_content('Dispensar receta crónica')
           click_link 'Volver'
           # List filters
-          expect(page.has_css?('#filterrific_filter')).to be true
-          expect(page.has_css?('input[name="filterrific[search_by_remit_code]"]')).to be true
-          expect(page.has_css?('input[name="filterrific[search_by_professional]"]')).to be true
-          expect(page.has_css?('input[name="filterrific[search_by_patient]"]')).to be true
-          expect(page.has_css?('input[name="filterrific[date_prescribed_since]"]')).to be true
-          expect(page.has_css?('select[name="filterrific[for_statuses][]"]', visible: false)).to be true
-          expect(page.has_css?('select[name="filterrific[sorted_by]"]', visible: false)).to be true
+          expect(page.has_css?('#chronic-prescriptions-filter')).to be true
+          expect(page.has_css?('input[name="filter[code]"]')).to be true
+          expect(page.has_css?('input[name="filter[professional_full_name]"]')).to be true
+          expect(page.has_css?('input[name="filter[patient_full_name]"]')).to be true
+          expect(page.has_css?('input[name="filter[date_prescribed_since]"]')).to be true
+          expect(page.has_css?('input[name="filter[date_prescribed_to]"]')).to be true
+          expect(page.has_css?('select[name="filter[status]"]')).to be true
+          expect(page.has_css?('input[name="filter[sort]"]', visible: false)).to be true
           # List
-          expect(page.has_css?('#filterrific_results')).to be true
+          expect(page.has_css?('#table_results')).to be true
           expect(page.has_css?('#chronic_prescriptions')).to be true
           within '#chronic_prescriptions' do
             expect(page.has_css?('a > svg.fa-paper-plane')).to be true
@@ -199,12 +205,21 @@ RSpec.feature 'Permissions::ChronicPrescriptions', type: :feature do
           expect(page.has_css?('#chronic_prescriptions')).to be true
 
           # Destroy with js render: on main recipe page
+          # Before add a receipt
+          patient = @patients.sample
+          qualification = @qualifications.sample
+          find_or_create_patient_by_dni('Crónicas', patient.dni, 'Crónica')
+          expect(page.has_css?('#new-chronic')).to be true
+          find_or_create_professional_by_enrollment(qualification)
+          # Add product
+          add_original_product_to_recipe(rand(1..3), 1)
+          click_button 'Guardar'
           visit '/recetas'
           within '#new_patient' do
-            page.execute_script %{$('#patient-dni').focus().val("37458994").keydown()}
+            page.execute_script %{$('#patient-dni').focus().val("#{patient.dni}").keydown()}
           end
           sleep 1
-          page.execute_script("$('.ui-menu-item:contains(37458994)').first().click()")
+          page.execute_script("$('.ui-menu-item:contains(#{patient.dni})').first().click()")
           within '#container-receipts-list' do
             expect(page).to have_content('Recetas')
             expect(page).to have_selector('#chronic-prescriptions')

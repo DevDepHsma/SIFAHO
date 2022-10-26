@@ -4,16 +4,16 @@ class InpatientPrescriptionPolicy < ApplicationPolicy
   end
 
   def show?
-    user.has_any_role?(:admin)
+    false
   end
 
   def new?
-    user.has_any_role?(:admin, :medico, :recetar_internacion)
+    false
   end
 
   def set_products?
     if Date.today <= record.date_prescribed
-      user.has_any_role?(:admin, :medico, :recetar_internacion)
+      false
     end
   end
 
@@ -23,7 +23,7 @@ class InpatientPrescriptionPolicy < ApplicationPolicy
 
   def edit?
     if !record.parent_order_products.any?(&:provista?) && set_products?
-      user.has_any_role?(:admin, :medico)
+      false
     end
   end
 
@@ -33,7 +33,7 @@ class InpatientPrescriptionPolicy < ApplicationPolicy
 
   def delivery?
     if Date.today <= record.date_prescribed && (record.pending? || record.parcialmente_dispensada?) && record.parent_order_products.any?(&:sin_proveer?)
-      user.has_any_role?(:admin, :farmaceutico, :auxiliar_farmacia)
+      false
     end
   end
 
@@ -48,7 +48,7 @@ class InpatientPrescriptionPolicy < ApplicationPolicy
 
   def destroy?
     if !record.parent_order_products.any?(&:provista?)
-      user.has_any_role?(:admin, :medico, :recetar_internacion)
+      false
     end
   end
 

@@ -9,7 +9,9 @@
   <td><%= bed_room.bed.name %></td>
   <td><%= bed_room.bedroom_name %></td>
   <td>
-    <span class="badge"><%= bed_room.quantity_ord_supply_lots.count %></span>
+    <span class="badge">
+      <%# Removed deprecated code: use products relational as OutpatientPrescription %>
+    </span>
   </td>
   <td>
     <span class="badge"><%= bed_room.movements.count %></span>

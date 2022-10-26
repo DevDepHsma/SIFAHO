@@ -1,0 +1,39 @@
+<tr id="product_<%= product.id %>">
+  <td>
+ 
+   <%= highlight(product.code.to_s, 
+                  get_value_from_filter(:code), 
+                  highlighter: '<mark class="highlight-1">\1</mark>'
+                  ) %>
+  </td>
+  <td>
+    <%= highlight(product.product_name, 
+                  get_value_from_filter(:name), 
+                  highlighter: '<mark class="highlight-1">\1</mark>',
+                  ignore_special_chars: true) %>
+  </td>
+  <td>
+    <span class="badge badge-<%= product_status_label(product) %>">
+      <%= Product.human_enum_name(:status, product.status) %>
+    </span>
+  </td>
+  <td><%= product.unity_name %></td>
+  <td><%= product.area_name %></td>
+  <td class="text-left actions-col">
+    <%= render(
+      partial: 'shared/action_buttons',
+      locals:{ 
+        object: product, 
+        show: {visible: true, target: (show_target if defined?(show_target) )},
+        edit: {visible: true, target: (edit_target if defined?(edit_target) )},
+        destroy: {
+          visible: true, 
+          title: "Eliminar producto",
+          body: "Esta seguro que desea eliminar el producto #{ product.product_name }?",
+          path: product_url(product.id)
+        }
+      }
+    ) 
+    %>
+  </td>
+</tr>

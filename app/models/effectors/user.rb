@@ -43,7 +43,7 @@ class User < ApplicationRecord
     # first_name = Devise::LDAP::Adapter.get_ldap_param("Test", "givenname").first # Uncomment in test
     if Rails.env.test?
       profile = Profile.new(user: self, first_name: 'Test', last_name: 'Reimann', email: 'reimann@example.com',
-                            dni: 0o0001111)
+                            dni: 000001111)
     else
       # Comment in production
       first_name = Devise::LDAP::Adapter.get_ldap_param(username, 'givenname').first.encode('Windows-1252',
@@ -156,5 +156,9 @@ class User < ApplicationRecord
     permissions.any? do |permission|
       permission.name == permissions_target.to_s && permission.permission_users.any? { |pu| pu.sector_id == sector_id }
     end
+  end
+  
+  def has_permissions_any?(*permissions_target)
+    permissions.joins(:permission_users).where(name: permissions_target, 'permission_users.sector_id': sector_id).any?
   end
 end

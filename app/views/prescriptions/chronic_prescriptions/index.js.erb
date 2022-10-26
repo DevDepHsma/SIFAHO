@@ -1,9 +1,30 @@
-<% js = escape_javascript(
-  render(partial: 'prescriptions/chronic_prescriptions/list', locals: { chronic_prescriptions: @chronic_prescriptions })
+<% content_for :footer_extra_info do %>
+  <div class="col-3 d-flex justify-content-around align-items-center">
+    <div>
+      Recetas <span class="badge badge-secondary"><%= @total %></span>
+    </div>
+    <div>
+      Pendientes <span class="badge badge-secondary"><%= @total_pending %></span>
+    </div>
+    <div>
+      Dispensadas parcial <span class="badge badge-primary"><%= @total_pending_dispense %></span>
+    </div>
+  </div>
+<% end %>
+
+<% list = escape_javascript(
+  render(partial: 'prescriptions/chronic_prescriptions/partials/list', locals: { chronic_prescriptions: @chronic_prescriptions })
 ) %>
 
-$("#filterrific_results").html("<%= js %>");
-
-$("#modals").html('<%= j render(partial: 'shared/modals/delete_confirmation') %>');
-
+<% paginate = escape_javascript( 
+  render( partial: 'shared/paginate_index',
+          locals: { model: @chronic_prescriptions, form_id: 'chronic-prescriptions-filter' }
+        )
+) %>
+$("#table_results").html("<%= list %>");
+$("#paginate_footer").html("<%= paginate %>");
 setEventDestroyItem();
+$("a.page-link").on('click', (e) => {
+  $("#loader-container").css({'display': 'flex'});
+})
+$("#loader-container").css({'display': 'none'});

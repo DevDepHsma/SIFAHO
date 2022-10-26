@@ -24,7 +24,7 @@ class Lot < ApplicationRecord
   }
 
   # Delegations
-  delegate :name, :code, :area_name, :unity_name, to: :product, prefix: true
+  delegate :name, :code,  to: :product, prefix: true
   delegate :name, to: :laboratory, prefix: true
   delegate :name, to: :provenance, prefix: true
 

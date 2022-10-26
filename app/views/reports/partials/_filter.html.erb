@@ -1,0 +1,75 @@
+<%= simple_form_for reports_path, remote: true, html: { method: 'GET', class: 'custom-filters-v1', id: 'reports-filter' } do |f| %>
+  <div class="filter-form-row">
+    <div class="filter-form-col">
+      <div class="form-group">
+        <input class="form-control" 
+               autocomplete="off" 
+               type="text" 
+               name="filter[name]" 
+               id="filter_name" 
+               placeholder="Nombre"
+               value="<%= get_value_from_filter(:name) %>">
+        <label>Nombre</label>
+      </div>
+    </div>
+    <div class="filter-form-col">
+      <div class="form-group">
+        <input class="form-control" 
+               autocomplete="off" 
+               type="text" 
+               name="filter[sector_name]" 
+               id="filter_sector_name" 
+               placeholder="Nombre sector"
+               value="<%= get_value_from_filter(:sector_name) %>">
+        <label>Nombre sector</label>
+      </div>
+    </div>
+    <div class="filter-form-col">
+      <div class="form-group">
+        <input class="form-control" 
+               autocomplete="off" 
+               type="text" 
+               name="filter[establishment_name]" 
+               id="filter_establishment_name" 
+               placeholder="Nombre establecimiento"
+               value="<%= get_value_from_filter(:establishment_name) %>">
+        <label>Nombre establecimiento</label>
+      </div>
+    </div>
+    <div class="filter-form-col">
+      <div class="form-group">
+        <input class="form-control datepicker" 
+               autocomplete="off" 
+               type="text" 
+               name="filter[generated_date]" 
+               id="filter_generated_date" 
+               placeholder="Generado: dd/mm/aaaa"
+               value="<%= get_value_from_filter(:generated_date) %>">
+        <label>Generado: dd/mm/aaaa</label>
+      </div>
+    </div>
+    <div class="filter-form-col">
+      <div class="form-group">
+        <select class="form-control custom-select <%= 'filled' if get_value_from_filter(:report_type) != '' %>" name="filter[report_type]" onChange="mark_selected(event)">
+          <option value="" ></option>
+          <% Report.report_types.each do |option| %>
+            <option value='<%=option[1] %>' <%= 'selected' if get_value_from_filter(:report_type) == option[1].to_s %>>
+              <%=  t("activerecord.attributes.report.report_type.#{option[0]}")%>
+            </option>
+            <% end %>
+          </select>
+          <label>Tipo</label>
+        </div>
+      </div>
+      <input type="hidden" name="filter[sort]" value="<%= get_value_from_filter(:sort) %>">
+      <input type="hidden" name="per_page" value="<%= params[:per_page] || 15 %>">
+      <div class="filter-form-btn-group">
+        <button class="btn btn-primary" type="submit" form="<%= 'reports-filter' %>">
+          Buscar
+        </button>
+        <button class="btn btn-danger btn-clean-filters" type="button" form="<%= 'reports-filter' %>">
+          <%= fa_icon 'times' %>
+        </button>
+      </div>
+    </div>
+  <% end %>

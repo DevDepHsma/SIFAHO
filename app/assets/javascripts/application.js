@@ -107,12 +107,8 @@ $(document).on('turbolinks:load', function() {
   $('.datepicker').datepicker({
     format: "dd/mm/yyyy",
     language: "es",
-    autoclose: true
-  });
-
-
-  $('.quantity_ord_supply_lots').on('cocoon:after-insert', function(e, insertedItem) {
-    $('.selectpicker').selectpicker({style: 'btn-sm btn-default'}); // Se inicializa selectpicker luego de agregar form
+    autoclose: true,
+    orientation: 'bottom'
   });
 
   $('.selectpicker').selectpicker({

@@ -1,7 +1,6 @@
 class UnifyProductPolicy < ApplicationPolicy
-
   def index?
-    user.has_any_role?(:admin, :farmaceutico, :auxiliar_farmacia, :central_farmaceutico, :medic, :enfermero)
+    UnifyProductPolicy
   end
 
   def show?
@@ -9,7 +8,7 @@ class UnifyProductPolicy < ApplicationPolicy
   end
 
   def create?
-    user.has_any_role?(:admin)
+    user.has_permission?(:create_products)
   end
 
   def new?
@@ -17,9 +16,7 @@ class UnifyProductPolicy < ApplicationPolicy
   end
 
   def update?
-    return if record.merged?
-
-    user.has_any_role?(:admin)
+    user.has_permission?(:update_products) unless record.merged?
   end
 
   def edit?
@@ -35,7 +32,7 @@ class UnifyProductPolicy < ApplicationPolicy
   end
 
   def destroy?
-    user.has_any_role?(:admin)
+    user.has_permission?(:destroy_products)
   end
 
   def delete?

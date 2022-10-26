@@ -33,6 +33,8 @@ RSpec.feature 'PermissionRequests', type: :feature, js: true do
           button.next('.dropdown-menu').find('a.dropdown-item').first().click();
         }
         sleep 1
+        expect(page.has_css?('#permission_request_other_establishment')).to be false
+        expect(page.has_css?('#permission_request_other_sector')).to be false
         page.execute_script %Q{
           const button = $('select#permission_request_sector_id').next('button');
           button.click();
@@ -40,6 +42,10 @@ RSpec.feature 'PermissionRequests', type: :feature, js: true do
           button.next('.dropdown-menu').find('a.dropdown-item').first().click();
         }
         sleep 1
+        role = get_roles.sample
+        page.execute_script %Q{
+          $('label:contains("#{role}")').first().click()
+        }
         fill_in 'permission_request_observation', with: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. "
       end
       click_button 'Enviar'
@@ -63,6 +69,11 @@ RSpec.feature 'PermissionRequests', type: :feature, js: true do
         sleep 1
         fill_in 'permission_request_other_establishment', with: 'Hospital Zonal Zapala'
         fill_in 'permission_request_other_sector', with: 'Farmacia'
+
+        role = get_roles.sample
+        page.execute_script %Q{
+          $('label:contains("#{role}")').first().click()
+        }
         fill_in 'permission_request_observation', with: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. "
       end
       click_button 'Enviar'
@@ -89,6 +100,10 @@ RSpec.feature 'PermissionRequests', type: :feature, js: true do
         sleep 1
         expect(page.has_css?('#permission_request_other_sector')).to be true
         fill_in 'permission_request_other_sector', with: 'Farmacia'
+        role = get_roles.sample
+        page.execute_script %Q{
+          $('label:contains("#{role}")').first().click()
+        }
         fill_in 'permission_request_observation', with: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. "
       end
       click_button 'Enviar'
@@ -148,6 +163,31 @@ RSpec.feature 'PermissionRequests', type: :feature, js: true do
       click_button 'Enviar'
       expect(page).to have_content('Sector no puede estar en blanco')
     end
+
+    it 'Permission request form: role are required' do
+      within '#new_permission_request' do
+        page.execute_script %Q{
+          const button = $('select#permission_request_establishment_id').next('button');
+          button.click();
+          button.next('.dropdown-menu').find('input').first().val('carrillo').trigger('propertychange');
+          button.next('.dropdown-menu').find('a.dropdown-item').first().click();
+        }
+        sleep 1
+        page.execute_script %Q{
+          const button = $('select#permission_request_sector_id').next('button');
+          button.click();
+          button.next('.dropdown-menu').find('input').first().val('farmacia').trigger('propertychange');
+          button.next('.dropdown-menu').find('a.dropdown-item').first().click();
+        }
+        sleep 1
+        fill_in 'permission_request_observation', with: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. "
+      end
+      click_button 'Enviar'
+      expect(page).to have_content('Debe seleccionar una función')
+      expect(page.has_css?('#permission_request_other_establishment')).to be false
+        expect(page.has_css?('#permission_request_other_sector')).to be false
+    end
+
   end
 
   describe 'Permission Requests Active User' do
@@ -177,6 +217,10 @@ RSpec.feature 'PermissionRequests', type: :feature, js: true do
           button.next('.dropdown-menu').find('a.dropdown-item').first().click();
         }
         sleep 1
+        role = get_roles.sample
+        page.execute_script %Q{
+          $('label:contains("#{role}")').first().click()
+        }
         fill_in 'permission_request_observation', with: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. "
       end
       click_button 'Enviar'
