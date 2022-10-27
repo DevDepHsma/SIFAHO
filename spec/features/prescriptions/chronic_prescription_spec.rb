@@ -178,6 +178,146 @@ RSpec.feature 'Prescriptions::ChronicPrescriptions', type: :feature do
         expect(page).to have_link('Cancelar')
         expect(page).to have_button('Guardar')
       end # edit
-    end
+    end # describe permissions
+
+    describe 'Form' do
+      before(:each) do
+        visit '/recetas'
+        @patient = @patients.sample
+        find_and_fill_patient_attributes(@patient.dni)
+        within '#new-receipt-buttons' do
+          click_link 'Crónica'
+        end
+      end
+
+      # Require update products scope search
+      # it 'create successfully' do
+      #   10.times do
+      #     qualification = @qualifications.sample
+      #     find_and_fill_professional_attribute(qualification) # Add professional
+      #     add_original_product_to_recipe(rand(2..4), rand(5..15)) # Add product
+      #     click_button 'Guardar'
+      #     expect(page).to have_content('Viendo receta crónica Pendiente')
+      #     expect(page).to have_content("La receta crónica de #{@patient.fullname} se ha creado correctamente.")
+      #     visit '/recetas'
+      #     @patient = @patients.sample
+      #     find_and_fill_patient_attributes(@patient.dni)
+      #     within '#new-receipt-buttons' do
+      #       click_link 'Crónica'
+      #     end
+      #   end
+      # end
+
+      it 'create fail' do
+        click_button 'Guardar'
+        within '#new_chronic_prescription' do
+          expect(page).to have_field('professional', class: 'is-invalid')
+          expect(page).to have_selector('input#professional + .invalid-feedback', text: 'Profesional debe existir')
+
+          expect(page).to have_field('product_code_fake-', type: 'text', class: 'is-invalid')
+          expect(page).to have_selector('input[name="product_code_fake-"] + .invalid-feedback',
+                                        text: 'Producto no puede estar en blanco')
+
+          expect(page).to have_field('product_name_fake-', type: 'text', class: 'is-invalid')
+          expect(page).to have_selector('input[name="product_name_fake-"] + .invalid-feedback',
+                                        text: 'Producto no puede estar en blanco')
+
+          expect(page).to have_field(
+            'chronic_prescription[original_chronic_prescription_products_attributes][0][request_quantity]',
+            type: 'number',
+            class: 'is-invalid'
+          )
+          expect(page).to have_selector(
+            'input[name="chronic_prescription[original_chronic_prescription_products_attributes][0][request_quantity]"] + .invalid-feedback',
+            text: 'Dosis mensual no es un número'
+          )
+        end
+      end
+
+      it 'keep professional attribute' do
+        qualification = @qualifications.sample
+        professional = Professional.find(qualification.professional_id)
+        find_and_fill_professional_attribute(qualification)
+        click_button 'Guardar'
+        within '#new_chronic_prescription' do
+          expect(page).to have_field('chronic_prescription[professional]', type: 'text', with: professional.full_info)
+        end
+      end
+
+      it 'keep date_prescribed attribute' do
+        a_date = (DateTime.now - 7.days).strftime('%d/%m/%Y')
+        within '#new_chronic_prescription' do
+          fill_in 'chronic_prescription[date_prescribed]', with: a_date
+        end
+        click_button 'Guardar'
+        within '#new_chronic_prescription' do
+          expect(page).to have_field('chronic_prescription[date_prescribed]', type: 'text', with: a_date)
+        end
+      end
+
+      it 'keep products attributes' do
+        product = @products.sample
+        within '#original-order-product-cocoon-container' do
+          page.execute_script %{$('input[name="product_name_fake-"]').last().val("#{product.name}").keydown()}
+        end
+        page.first('li.ui-menu-item', text: product.name).click
+        click_button 'Guardar'
+        within '#original-order-product-cocoon-container' do
+          expect(page).to have_field('product_code_fake-', type: 'text', with: product.code)
+          expect(page).to have_field('product_name_fake-', type: 'text', with: product.name)
+        end
+      end
+
+      it 'keep request_quantity and total_delivery_quantity attribute' do
+        within '#original-order-product-cocoon-container' do
+          fill_in 'chronic_prescription[original_chronic_prescription_products_attributes][0][request_quantity]',
+                  with: 10
+        end
+        click_button 'Guardar'
+        within '#original-order-product-cocoon-container' do
+          expect(page).to have_field(
+            'chronic_prescription[original_chronic_prescription_products_attributes][0][request_quantity]',
+            type: 'number',
+            with: 10
+          )
+          expect(page).to have_field(
+            'chronic_prescription[original_chronic_prescription_products_attributes][0][total_request_quantity_fake]',
+            type: 'text',
+            with: 60,
+            disabled: true
+          )
+        end
+      end
+
+      it 'keep observation attribute' do
+        within '#original-order-product-cocoon-container' do
+          fill_in 'chronic_prescription[original_chronic_prescription_products_attributes][0][observation]',
+                  type: 'textarea',
+                  with: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut.'
+        end
+        click_button 'Guardar'
+        within '#original-order-product-cocoon-container' do
+          expect(page).to have_field(
+            'chronic_prescription[original_chronic_prescription_products_attributes][0][observation]',
+            type: 'textarea',
+            with: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut.'
+          )
+        end
+      end
+
+      it 'keep diagnostic attribute' do
+        within '#new_chronic_prescription' do
+          fill_in 'chronic_prescription[diagnostic]',
+                  type: 'textarea',
+                  with: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+        end
+        click_button 'Guardar'
+        within '#new_chronic_prescription' do
+          expect(page).to have_field('chronic_prescription[diagnostic]',
+                                     type: 'textarea',
+                                     with: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.')
+        end
+      end
+    end # describe form
   end # main describe
 end
