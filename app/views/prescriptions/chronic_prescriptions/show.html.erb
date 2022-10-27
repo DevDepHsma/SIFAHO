@@ -33,7 +33,7 @@
             <h4 class="media-heading">Médico</h4>
             <p>
               <%= link_to professional_path(@chronic_prescription.professional), class: "link" do %>
-                <%= @chronic_prescription.professional_fullname %>
+                <%= @chronic_prescription.professional_fullname.titleize %>
               <% end %>
             </p>
             <p class="mb-1"><strong>Matrículas: </strong>

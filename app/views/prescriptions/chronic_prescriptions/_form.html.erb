@@ -66,9 +66,9 @@
                 Fechas de vencimiento
               <%end%>
               <div id="expiry-date">
-                <%= "#{f.object.expiry_date.present? ? f.object.expiry_date.strftime("%d/%m/%Y") : 6.months.since.end_of_month.strftime("%d/%m/%Y")}" %>
+                <%= "#{f.object.expiry_date.present? ? f.object.expiry_date.strftime("%d/%m/%Y") : 6.months.since.strftime("%d/%m/%Y")}" %>
               </div>
-              <%= f.hidden_field :expiry_date, id: "expiry_date", value: "#{f.object.expiry_date.present? ? f.object.expiry_date.strftime("%d/%m/%Y") : 6.months.since.end_of_month.strftime("%d/%m/%Y")}" %>
+              <%= f.hidden_field :expiry_date, id: "expiry_date", value: "#{f.object.expiry_date.present? ? f.object.expiry_date.strftime("%d/%m/%Y") : 6.months.since.strftime("%d/%m/%Y")}" %>
             </div>
           </div>
 
@@ -90,7 +90,7 @@
   </div><!-- /fin .card-body -->
 
   <div class="card-footer d-flex justify-content-end">
-    <%= link_to 'Volver', chronic_prescriptions_path, class: 'btn btn-light mr-1' %>
+    <%= link_to 'Cancelar', chronic_prescriptions_path, class: 'btn btn-light mr-1' %>
   
     <!--button type='submit' class='btn btn-success mr-2' form="<%#= @chronic_prescription.new_record? ? 'new_chronic_prescription' : 'edit_chronic_prescription_' + @chronic_prescription.id.to_s %>" data-value='audit'>
       
