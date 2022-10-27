@@ -11,7 +11,7 @@
 
 require 'rails_helper'
 
-RSpec.feature 'Permissions::OutpatientPrescriptions', type: :feature do
+RSpec.feature 'OutpatientPrescriptions', type: :feature do
   before(:all) do
     permission_module = PermissionModule.includes(:permissions).find_by(name: 'Recetas Ambulatorias')
     @read_outpatient_permission = permission_module.permissions.find_by(name: 'read_outpatient_recipes')
