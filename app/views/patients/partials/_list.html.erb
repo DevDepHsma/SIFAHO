@@ -2,8 +2,8 @@
   <table class="table table-hover table-striped table-sm">
     <thead >
       <tr>
-        <th><%= filterrific_sorting_link(@filterrific, :dni) %></th>
-        <th><%= filterrific_sorting_link(@filterrific, :apellido_y_nombre) %></th>
+        <th>Dni</th>
+        <th>Apellido y nombre</th>
         <th>Estado</th>
         <th>Edad</th>
         <th>Sexo</th>
@@ -13,7 +13,7 @@
       </tr>
     </thead>
     <tbody id="patients">
-      <%= render @patients %>
+      <%= render(partial: 'patients/partials/patient', collection: @patients, as: :patient) %>
     </tbody>
   </table>
 </div>

@@ -1,7 +1,17 @@
 <tr id="patient_<%= patient.id %>">
   <div class="js-fade fade-in is-paused">
-    <td><%= patient.dni %></td>
-    <td><strong><%= patient.last_name %></strong>, <%= patient.first_name %></td>
+    <td> <%= highlight(patient.dni, 
+                  get_value_from_filter(:dni), 
+                  highlighter: '<mark class="highlight-1">\1</mark>'
+                  ) %></td>
+    <td> <%= highlight(patient.first_name, 
+                  get_value_from_filter(:full_name), 
+                  highlighter: '<mark class="highlight-1">\1</mark>',
+                  ignore_special_chars: true) %>
+                   <%= highlight(patient.last_name, 
+                  get_value_from_filter(:full_name), 
+                  highlighter: '<mark class="highlight-1">\1</mark>',
+                  ignore_special_chars: true) %></td>
     <td>
       <span class="label label-<%= patient.Temporal? ? "warning" : "success"%>">
         <%= patient.status %>
@@ -9,8 +19,8 @@
     </td>
     <td><%= patient.age_string %></td>
     <td><%= patient.sex.humanize %></td>
-    <td><%= patient.outpatient_prescriptions.count %></td>
-    <td><%= patient.chronic_prescriptions.count %></td>
+    <td><%#= patient.outpatient_prescriptions.count %></td>
+    <td><%#= patient.chronic_prescriptions.count %></td>
     <td class="text-left actions-col">
       <%= render(
         partial: 'shared/action_buttons',
