@@ -229,7 +229,14 @@ module DataMock
         ['16007692', 'Femenino', 'AVILA', 'MARIA GABRIELA', 'soltero'],
         ['95939909', 'Femenino', 'DELGADILLO COVA', 'LAUREN VALERIA', 'soltero'],
         ['28614606', 'Femenino', 'SOTO', 'ELIANA MERCEDES', 'soltero'],
-        ['28863021', 'Masculino', 'TURREIRO', 'MATIAS RAUL', 'soltero']
+        ['28863021', 'Masculino', 'TURREIRO', 'MATIAS RAUL', 'soltero'],
+        ['55158894', 'Femenino', 'SAAVEDRA', 'LUPE HEREDIA', 'soltero'],
+        ['16524092', 'Masculino', 'ZYSKINDOWICZ', 'DARIO ALEJANDRO', 'soltero'],
+        ['23205761', 'Femenino', 'ZYLBERSZAC', 'ARIELA VERONICA', 'soltero'],
+        ['43215471', 'Femenino', 'ZYGADLO', 'ALDANA ABRIL', 'soltero'],
+        ['28285284', 'Masculino', 'ZYGADLO', 'GERARDO EZEQUIEL', 'soltero'],
+        ['50173226', 'Masculino', 'ZWONKO CARRERA', 'JUAN MARTIN ', 'soltero']
+
       ]
     end
   end

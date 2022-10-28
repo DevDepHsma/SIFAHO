@@ -110,5 +110,57 @@ RSpec.feature 'PatientsFilters', type: :feature do
         end
       end
     end
+
+    describe 'paginator actions' do
+      before(:each) do
+        within '#sidebar-wrapper' do
+          expect(page.has_link?('Pacientes')).to be true
+          click_link 'Pacientes'
+        end
+      end
+
+      it 'change page' do
+        sleep 1
+        within '#paginate_footer nav' do
+          # page.execute_script %{$(".page-item a")[0].click()}
+          expect(page.has_css?('li.active', text: '1')).to be true
+          click_link '2'
+          sleep 1
+          expect(page.has_css?('li.active', text: '2')).to be true
+          # page.execute_script %{$(".page-item")[2].getAttribute('class').indexOf('active')!=-1}
+        end
+      end
+      it 'checks pages count' do
+        patients_count = Patient.all.count
+        page_size = (patients_count / 15.to_f).ceil
+        within '#paginate_footer nav' do
+          expect(page.has_link?(page_size.to_s)).to be true
+          expect(page.has_link?((page_size + 1).to_s)).not_to be true
+        end
+      end
+
+      it 'checks results count by page' do
+        patients_count = Patient.all.count
+        page_size = (patients_count / 15.to_f).ceil
+        within '#paginate_footer nav' do
+          expect(page.has_link?(page_size.to_s)).to be true
+          expect(page.has_link?((page_size + 1).to_s)).not_to be true
+        end
+        within '#patients' do
+          expect(page.has_css?('tr', count: 15)).to be true
+        end
+
+        page.select '30', from: 'page-size-selection'
+        sleep 1
+        within '#patients' do
+          expect(page.has_css?('tr', count: 30)).to be true
+        end
+        page_size = (patients_count / 30.to_f).ceil
+        within '#paginate_footer nav' do
+          expect(page.has_link?(page_size.to_s)).to be true
+          expect(page.has_link?((page_size + 1).to_s)).not_to be true
+        end
+      end
+    end
   end
 end
