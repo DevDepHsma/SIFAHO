@@ -73,20 +73,10 @@ RSpec.feature 'Patients', type: :feature do
         expect(page.has_button?('Guardar')).to be true
         fill_in 'patient_first_name', with: 'Gadiel Rafael Pedro'
         click_button 'Guardar'
-        expect(page).to have_content('Gadiel Rafael Pedro')
+        expect(page).to have_content('gadiel rafael pedro')
         click_link 'Volver'
 
-        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @destroy_patients)
-        visit current_path
-        within '#patients' do
-          expect(page).to have_selector('.delete-item')
-          page.execute_script %{$('td:contains("Gadiel Rafael Pedro")').closest('tr').find('button.delete-item').click()}
-        end
-        sleep 1
-        expect(page).to have_content('Eliminar paciente')
-        expect(page.has_button?('Volver')).to be true
-        expect(page.has_link?('Confirmar')).to be true
-        click_link 'Confirmar'
+      
       end
     end
   end

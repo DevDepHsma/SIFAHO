@@ -222,6 +222,25 @@ RSpec.feature 'PatientsFilters', type: :feature do
           expect(page.first('tr').find('td:nth-child(2)')).to have_text(sorted_by_first_name_desc.first_name)
         end
       end
+  ################## Require patients remove prescriptions######################################    
+      # it 'delete-patient' do
+      #   PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @destroy_patients)
+      #   within '#patients-filter' do
+      #     fill_in 'filter[full_name]', with: "Gadiel Rafael"
+      #     click_button 'Buscar'
+      #     sleep 1
+      #   end
+      #   visit current_path
+      #   within '#patients' do
+      #     expect(page).to have_selector('.delete-item')
+      #     page.execute_script %{$('td:contains("Gadiel Rafael")').closest('tr').find('button.delete-item').click()}
+      #   end
+      #   sleep 1
+      #   expect(page).to have_content('Eliminar paciente')
+      #   expect(page.has_button?('Volver')).to be true
+      #   expect(page.has_link?('Confirmar')).to be true
+      #   click_link 'Confirmar'
+      # end
     end
   end
 end
