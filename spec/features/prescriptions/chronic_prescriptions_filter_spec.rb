@@ -27,7 +27,7 @@ RSpec.feature 'Prescriptions::ChronicPrescriptionsFilters', type: :feature do
     sign_in_as(@farm_provider)
   end
 
-  describe 'Chronic Recipes ::', js: true do
+  describe '', js: true do
     subject { page }
 
     before(:each) do
@@ -37,7 +37,6 @@ RSpec.feature 'Prescriptions::ChronicPrescriptionsFilters', type: :feature do
 
     describe 'form filter' do
       it 'has fields' do
-        sleep 25
         within '#chronic-prescriptions-filter' do
           expect(page).to have_field('filter[code]', type: 'text')
           expect(page).to have_field('filter[professional_full_name]', type: 'text')
@@ -50,137 +49,137 @@ RSpec.feature 'Prescriptions::ChronicPrescriptionsFilters', type: :feature do
         end
       end
 
-      # it 'by remit_code' do
-      #   @op_prescriptions.each do |opp|
-      #     within '#chronic-prescriptions-filter' do
-      #       fill_in 'filter[code]', with: opp.remit_code
-      #       click_button 'Buscar'
-      #       sleep 1
-      #     end
-      #     within '#chronic_prescriptions' do
-      #       expect(page.first('tr').first('td')).to have_selector('mark.highlight', text: opp.remit_code)
-      #     end
-      #     within '#chronic-prescriptions-filter' do
-      #       page.first('button.btn-clean-filters').click
-      #       sleep 1
-      #     end
-      #   end
-      # end
+      it 'by remit_code' do
+        @cp_prescriptions.each do |opp|
+          within '#chronic-prescriptions-filter' do
+            fill_in 'filter[code]', with: opp.remit_code
+            click_button 'Buscar'
+            sleep 1
+          end
+          within '#chronic_prescriptions' do
+            expect(page.first('tr').first('td')).to have_selector('mark.highlight', text: opp.remit_code)
+          end
+          within '#chronic-prescriptions-filter' do
+            page.first('button.btn-clean-filters').click
+            sleep 1
+          end
+        end
+      end
 
-      # it 'by professional fullname' do
-      #   @op_prescriptions.each do |opp|
-      #     # By first name
-      #     within '#chronic-prescriptions-filter' do
-      #       fill_in 'filter[professional_full_name]', with: opp.professional.first_name
-      #       click_button 'Buscar'
-      #       sleep 1
-      #     end
-      #     within '#chronic_prescriptions' do
-      #       expect(page.first('tr').find('td:nth-child(2)')).to have_selector('mark.highlight-1',
-      #                                                                         text: opp.professional.first_name)
-      #     end
-      #     within '#chronic-prescriptions-filter' do
-      #       page.first('button.btn-clean-filters').click
-      #       sleep 1
-      #     end
-      #     # By last name
-      #     within '#chronic-prescriptions-filter' do
-      #       fill_in 'filter[professional_full_name]', with: opp.professional.last_name
-      #       click_button 'Buscar'
-      #       sleep 1
-      #     end
-      #     within '#chronic_prescriptions' do
-      #       expect(page.first('tr').find('td:nth-child(2)')).to have_selector('mark.highlight-1',
-      #                                                                         text: opp.professional.last_name)
-      #     end
-      #     within '#chronic-prescriptions-filter' do
-      #       page.first('button.btn-clean-filters').click
-      #       sleep 1
-      #     end
-      #   end
-      # end
+      it 'by professional fullname' do
+        @cp_prescriptions.each do |opp|
+          # By first name
+          within '#chronic-prescriptions-filter' do
+            fill_in 'filter[professional_full_name]', with: opp.professional.first_name
+            click_button 'Buscar'
+            sleep 1
+          end
+          within '#chronic_prescriptions' do
+            expect(page.first('tr').find('td:nth-child(2)')).to have_selector('mark.highlight-1',
+                                                                              text: opp.professional.first_name)
+          end
+          within '#chronic-prescriptions-filter' do
+            page.first('button.btn-clean-filters').click
+            sleep 1
+          end
+          # By last name
+          within '#chronic-prescriptions-filter' do
+            fill_in 'filter[professional_full_name]', with: opp.professional.last_name
+            click_button 'Buscar'
+            sleep 1
+          end
+          within '#chronic_prescriptions' do
+            expect(page.first('tr').find('td:nth-child(2)')).to have_selector('mark.highlight-1',
+                                                                              text: opp.professional.last_name)
+          end
+          within '#chronic-prescriptions-filter' do
+            page.first('button.btn-clean-filters').click
+            sleep 1
+          end
+        end
+      end
 
-      # it 'by patient full_name' do
-      #   @op_prescriptions.each do |opp|
-      #     within '#chronic-prescriptions-filter' do
-      #       # By dni
-      #       fill_in 'filter[patient_full_name]', with: opp.patient.dni
-      #       click_button 'Buscar'
-      #       sleep 1
-      #     end
-      #     within '#chronic_prescriptions' do
-      #       expect(page.first('tr').find('td:nth-child(3)')).to have_selector('mark.highlight-2',
-      #                                                                         text: opp.patient.dni)
-      #     end
-      #     within '#chronic-prescriptions-filter' do
-      #       page.first('button.btn-clean-filters').click
-      #       sleep 1
-      #     end
-      #     # By first name
-      #     within '#chronic-prescriptions-filter' do
-      #       fill_in 'filter[patient_full_name]', with: opp.patient.first_name
-      #       click_button 'Buscar'
-      #       sleep 1
-      #     end
-      #     within '#chronic_prescriptions' do
-      #       expect(page.first('tr').find('td:nth-child(3)')).to have_selector('mark.highlight-2',
-      #                                                                         text: opp.patient.first_name)
-      #     end
-      #     within '#chronic-prescriptions-filter' do
-      #       page.first('button.btn-clean-filters').click
-      #       sleep 1
-      #     end
-      #     # By last name
-      #     within '#chronic-prescriptions-filter' do
-      #       fill_in 'filter[patient_full_name]', with: opp.patient.last_name
-      #       click_button 'Buscar'
-      #       sleep 1
-      #     end
-      #     within '#chronic_prescriptions' do
-      #       expect(page.first('tr').find('td:nth-child(3)')).to have_selector('mark.highlight-2',
-      #                                                                         text: opp.patient.last_name)
-      #     end
-      #     within '#chronic-prescriptions-filter' do
-      #       page.first('button.btn-clean-filters').click
-      #       sleep 1
-      #     end
-      #   end
-      # end
+      it 'by patient full_name' do
+        @cp_prescriptions.each do |opp|
+          within '#chronic-prescriptions-filter' do
+            # By dni
+            fill_in 'filter[patient_full_name]', with: opp.patient.dni
+            click_button 'Buscar'
+            sleep 1
+          end
+          within '#chronic_prescriptions' do
+            expect(page.first('tr').find('td:nth-child(3)')).to have_selector('mark.highlight-2',
+                                                                              text: opp.patient.dni)
+          end
+          within '#chronic-prescriptions-filter' do
+            page.first('button.btn-clean-filters').click
+            sleep 1
+          end
+          # By first name
+          within '#chronic-prescriptions-filter' do
+            fill_in 'filter[patient_full_name]', with: opp.patient.first_name
+            click_button 'Buscar'
+            sleep 1
+          end
+          within '#chronic_prescriptions' do
+            expect(page.first('tr').find('td:nth-child(3)')).to have_selector('mark.highlight-2',
+                                                                              text: opp.patient.first_name)
+          end
+          within '#chronic-prescriptions-filter' do
+            page.first('button.btn-clean-filters').click
+            sleep 1
+          end
+          # By last name
+          within '#chronic-prescriptions-filter' do
+            fill_in 'filter[patient_full_name]', with: opp.patient.last_name
+            click_button 'Buscar'
+            sleep 1
+          end
+          within '#chronic_prescriptions' do
+            expect(page.first('tr').find('td:nth-child(3)')).to have_selector('mark.highlight-2',
+                                                                              text: opp.patient.last_name)
+          end
+          within '#chronic-prescriptions-filter' do
+            page.first('button.btn-clean-filters').click
+            sleep 1
+          end
+        end
+      end
 
-      # it 'by date_prescribed_since and date_prescribed_to' do
-      #   @op_prescriptions.each do |opp|
-      #     within '#chronic-prescriptions-filter' do
-      #       fill_in 'filter[date_prescribed_since]', with: opp.date_prescribed.strftime('%d/%m/%Y')
-      #       fill_in 'filter[date_prescribed_to]', with: opp.date_prescribed.strftime('%d/%m/%Y')
-      #       click_button 'Buscar'
-      #       sleep 1
-      #     end
-      #     within '#chronic_prescriptions' do
-      #       expect(page.first('tr').find('td:nth-child(6)')).to have_content(opp.date_prescribed.strftime('%d/%m/%Y'))
-      #     end
-      #     within '#chronic-prescriptions-filter' do
-      #       page.first('button.btn-clean-filters').click
-      #       sleep 1
-      #     end
-      #   end
-      # end
+      it 'by date_prescribed_since and date_prescribed_to' do
+        @cp_prescriptions.each do |opp|
+          within '#chronic-prescriptions-filter' do
+            fill_in 'filter[date_prescribed_since]', with: opp.date_prescribed.strftime('%d/%m/%Y')
+            fill_in 'filter[date_prescribed_to]', with: opp.date_prescribed.strftime('%d/%m/%Y')
+            click_button 'Buscar'
+            sleep 1
+          end
+          within '#chronic_prescriptions' do
+            expect(page.first('tr').find('td:nth-child(6)')).to have_content(opp.date_prescribed.strftime('%d/%m/%Y'))
+          end
+          within '#chronic-prescriptions-filter' do
+            page.first('button.btn-clean-filters').click
+            sleep 1
+          end
+        end
+      end
 
-      # it 'by status' do
-      #   @op_prescriptions.each do |opp|
-      #     within '#chronic-prescriptions-filter' do
-      #       page.select opp.status, from: 'filter[status]'
-      #       click_button 'Buscar'
-      #       sleep 1
-      #     end
-      #     within '#chronic_prescriptions' do
-      #       expect(page.first('tr').find('td:nth-child(4)')).to have_content(opp.status.underscore.humanize)
-      #     end
-      #     within '#chronic-prescriptions-filter' do
-      #       page.first('button.btn-clean-filters').click
-      #       sleep 1
-      #     end
-      #   end
-      # end
+      it 'by status' do
+        @cp_prescriptions.each do |opp|
+          within '#chronic-prescriptions-filter' do
+            page.select opp.status, from: 'filter[status]'
+            click_button 'Buscar'
+            sleep 1
+          end
+          within '#chronic_prescriptions' do
+            expect(page.first('tr').find('td:nth-child(4)')).to have_content(opp.status.underscore.humanize)
+          end
+          within '#chronic-prescriptions-filter' do
+            page.first('button.btn-clean-filters').click
+            sleep 1
+          end
+        end
+      end
     end
 
     # describe 'pagination' do

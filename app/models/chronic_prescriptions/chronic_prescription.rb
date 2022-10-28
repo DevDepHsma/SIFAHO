@@ -83,13 +83,17 @@ class ChronicPrescription < ApplicationRecord
   }
   # Where string match with %...% (support accents / unaccents)
   scope :like_professional_full_name, lambda { |word|
-    where('unaccent(lower(professionals.fullname)) LIKE ?', "%#{word.downcase.parameterize}%")
+    where('unaccent(lower(professionals.fullname)) LIKE ?', "%#{word.downcase.removeaccents}%")
   }
   # Where string match with %...% (support accents / unaccents)
   scope :like_patient_full_name_and_dni, lambda { |word|
-    where('unaccent(lower(patients.first_name)) LIKE ? OR unaccent(lower(patients.last_name)) LIKE ? OR unaccent(lower(patients.dni)) LIKE ?', "%#{word.downcase.parameterize}%", "%#{word.downcase.parameterize}%", "%#{word.downcase.parameterize}%")
+    where('unaccent(lower(patients.first_name)) LIKE ? OR unaccent(lower(patients.last_name)) LIKE ? OR unaccent(lower(patients.dni)) LIKE ?',
+          "%#{word.downcase.removeaccents}%",
+          "%#{word.downcase.removeaccents}%",
+          "%#{word.downcase.removeaccents}%")
   }
   scope :like_date_prescribed_since, lambda { |reference_time|
+    puts "<===========".colorize(background: :red)
     where('date_prescribed >= ?', reference_time)
   }
   scope :like_date_prescribed_to, lambda { |reference_time|
@@ -103,33 +107,32 @@ class ChronicPrescription < ApplicationRecord
   scope :with_establishment, lambda { |a_establishment|
     where('chronic_prescriptions.establishment_id = ?', a_establishment)
   }
-  
+
   def self.options_for_statuses
     [
-      ['Pendiente', 'pendiente', 'secondary'],
-      ['Dispensada', 'dispensada', 'success'],
+      %w[Pendiente pendiente secondary],
+      %w[Dispensada dispensada success],
       ['Dispensada parcial', 'dispensada_parcial', 'primary'],
-      ['Vencida', 'vencida', 'danger']
+      %w[Vencida vencida danger]
     ]
-  end 
-
-  def self.last_week
-    where("date_prescribed >= :last_week", { last_week: 1.weeks.ago.midnight })
   end
 
+  def self.last_week
+    where('date_prescribed >= :last_week', { last_week: 1.weeks.ago.midnight })
+  end
 
+  # scope :for_statuses, ->(values) do
+  #   return all if values.blank?
 
-
-    # scope :for_statuses, ->(values) do
-    #   return all if values.blank?
-
-    #   where(status: statuses.values_at(*Array(values)))
-    # end
+  #   where(status: statuses.values_at(*Array(values)))
+  # end
 
   def create_notification(of_user, action_type)
-    ChronicPrescriptionMovement.create(user: of_user, chronic_prescription: self, action: action_type, sector: of_user.sector)
+    ChronicPrescriptionMovement.create(user: of_user, chronic_prescription: self, action: action_type,
+                                       sector: of_user.sector)
     (of_user.sector.users.uniq - [of_user]).each do |user|
-      @not = Notification.where( actor: of_user, user: user, target: self, notify_type: "cronica", action_type: action_type, actor_sector: of_user.sector ).first_or_create
+      @not = Notification.where(actor: of_user, user: user, target: self, notify_type: 'cronica',
+                                action_type: action_type, actor_sector: of_user.sector).first_or_create
       @not.updated_at = DateTime.now
       @not.read_at = nil
       @not.save
@@ -140,11 +143,9 @@ class ChronicPrescription < ApplicationRecord
   # se actualiza el estado de la receta a "dispensada"
   def dispense_by
     # dispensacion completa: cambio de estado a "dispensada"
-    if sum_request_quantity <= sum_delivery_quantity
-      self.dispensada!
-    end
+    dispensada! if sum_request_quantity <= sum_delivery_quantity
   end
-    
+
   def return_dispense_by(a_user)
     # dispensacion incompleta con previo estado "dispensada": cambio de estado a "dispensada_parcial"
     update_status
@@ -154,17 +155,17 @@ class ChronicPrescription < ApplicationRecord
     #   self.pendiente!
     # end
 
-    self.create_notification(a_user, "retornó una dispensación")
+    create_notification(a_user, 'retornó una dispensación')
   end
 
   # Returns the name of the efetor who deliver the products
   def origin_name
-    self.professional.full_info
+    professional.full_info
   end
 
   # Returns the name of the efetor who receive the products
   def destiny_name
-    self.patient.dni.to_s+" "+self.patient.fullname
+    patient.dni.to_s + ' ' + patient.fullname
   end
 
   # Return the i18n model name
@@ -174,7 +175,7 @@ class ChronicPrescription < ApplicationRecord
 
   # Update status prescription based on expiry date and delivered quantity
   def update_status
-    if !vencida? && Date.today > self.expiry_date
+    if !vencida? && Date.today > expiry_date
       self.status = 'vencida'
     elsif (sum_request_quantity <= sum_delivery_quantity) || !any_product_without_dispensing?
       self.status = 'dispensada'
@@ -184,15 +185,16 @@ class ChronicPrescription < ApplicationRecord
       self.status = 'pendiente'
     end
   end
-  
+
   # Return true if all products are 'Terminado' or 'Terminado manual'
   def any_product_without_dispensing?
-    return self.original_chronic_prescription_products.for_treatment_statuses(['pendiente']).present?
+    original_chronic_prescription_products.for_treatment_statuses(['pendiente']).present?
   end
 
   # Finish chronic prescription if there any product without dispense
   def finish_by(a_user)
     raise ArgumentError, 'Tratamientos pendientes' if any_product_without_dispensing?
+
     dispensada!
     create_notification(a_user, 'finalizó la receta')
   end
@@ -200,12 +202,12 @@ class ChronicPrescription < ApplicationRecord
   def pa_full_info
     "#{pa_last_name} #{pa_first_name} #{pa_dni}"
   end
-  
+
   private
-  
+
   def presence_of_products_into_the_order
-    if self.original_chronic_prescription_products.size == 0
-      errors.add(:presence_of_products_into_the_order, "Debe agregar almenos 1 producto")
+    if original_chronic_prescription_products.size == 0
+      errors.add(:presence_of_products_into_the_order, 'Debe agregar almenos 1 producto')
     end
   end
 
@@ -218,5 +220,4 @@ class ChronicPrescription < ApplicationRecord
   def sum_delivery_quantity
     original_chronic_prescription_products.sum(:total_delivered_quantity)
   end
-
 end
