@@ -170,7 +170,7 @@ class PatientsController < ApplicationController
       end
     end
 
-    @patients = Patient.search_dni(params[:term]).order(:dni).limit(15)
+    @patients = Patient.like_dni(params[:term]).order(:dni).limit(15)
     if @patients.present?
       @patients.map do |pat|
         @json_patients << {
