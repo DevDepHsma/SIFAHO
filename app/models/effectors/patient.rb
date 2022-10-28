@@ -58,7 +58,7 @@ class Patient < ApplicationRecord
     query = if filter_params.present? && filter_params['sort'].present?
               query.sorted_by(filter_params['sort'])
             else
-              query.reorder(last_name: :desc)
+              query.reorder(first_name: :desc)
             end
 
     return query

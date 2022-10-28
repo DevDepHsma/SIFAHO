@@ -162,5 +162,66 @@ RSpec.feature 'PatientsFilters', type: :feature do
         end
       end
     end
+
+    describe 'Sort' do
+      before(:each) do
+        within '#sidebar-wrapper' do
+          expect(page.has_link?('Pacientes')).to be true
+          click_link 'Pacientes'
+        end
+      end
+      it 'has sort buttons' do
+        within '#table_results thead' do
+          expect(page).to have_button('Dni')
+          expect(page).to have_button('Nombre y apellido')
+        end
+      end
+
+      it 'by code' do
+        sorted_by_dni_asc = Patient.select(:dni).order(dni: :asc).first
+        sorted_by_dni_desc = Patient.select(:dni).order(dni: :desc).first
+
+        within '#table_results' do
+          click_button 'Dni'
+          sleep 1
+        end
+
+        within '#patients' do
+          expect(page.first('tr').first('td')).to have_content(sorted_by_dni_asc.dni)
+        end
+
+        within '#table_results' do
+          click_button 'Dni'
+          sleep 1
+        end
+
+        within '#patients' do
+          expect(page.first('tr').first('td')).to have_content(sorted_by_dni_desc.dni)
+        end
+      end
+
+      it 'by name' do
+        sorted_by_first_name_asc = Patient.select(:first_name).order(first_name: :asc).first
+        sorted_by_first_name_desc = Patient.select(:first_name).order(first_name: :desc).first
+
+        within '#table_results' do
+          click_button 'Nombre y apellido'
+          sleep 1
+        end
+
+        within '#patients' do
+          expect(page.first('tr').find('td:nth-child(2)')).to have_text(sorted_by_first_name_asc.first_name)
+        end
+
+        within '#table_results' do
+          click_button 'Nombre y apellido'
+          sleep 1
+        end
+
+        within '#patients' do
+          expect(page.first('tr').find('td:nth-child(2)')).to have_text(sorted_by_first_name_desc.first_name)
+        end
+      end
+    end
   end
 end
