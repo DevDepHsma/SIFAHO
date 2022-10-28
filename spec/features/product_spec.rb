@@ -1,3 +1,14 @@
+#  Test information
+
+#  Testing modules:
+#  Access permissions: List / Show /Create / Edit
+#  Present fields on create
+#  Present fields and values on edit
+#  Save product
+#  Validations on empty form
+#  Check present field values on Save fails
+#
+
 require 'rails_helper'
 
 RSpec.feature 'Products', type: :feature do
@@ -6,7 +17,9 @@ RSpec.feature 'Products', type: :feature do
     @read_products = permission_module.permissions.find_by(name: 'read_products')
     @create_products = permission_module.permissions.find_by(name: 'create_products')
     @update_products = permission_module.permissions.find_by(name: 'update_products')
-    @destroy_products = permission_module.permissions.find_by(name: 'destroy_products')
+    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @read_products)
+    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @create_products)
+    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @update_products)
   end
 
   background do
@@ -15,90 +28,190 @@ RSpec.feature 'Products', type: :feature do
   describe '', js: true do
     subject { page }
 
-    it 'Nav Menu link' do
-      expect(page.has_css?('#sidebar-wrapper')).to be false
-    end
-
-    describe 'Add permission:' do
-      before(:each) do
-        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @read_products)
+    describe 'Permission:' do
+      it 'List' do
         visit '/'
-      end
-
-      it 'Nav Menu link' do
-        expect(page.has_css?('#sidebar-wrapper', visible: false)).to be true
+        expect(page).to have_css('#sidebar-wrapper', visible: false)
         within '#sidebar-wrapper' do
-          expect(page.has_link?('Productos')).to be true
+          expect(page).to have_link('Productos')
           click_link 'Productos'
         end
         within '#dropdown-menu-header' do
-          expect(page.has_link?('Productos')).to be true
+          expect(page).to have_link('Productos')
         end
+      end
 
+      it 'Show' do
+        visit '/productos'
         within '#products' do
-          expect(page).to have_selector('.btn-detail')
-          page.execute_script %{$('a.btn-detail')[0].click()}
+          expect(page).to have_css('.btn-detail')
         end
-        expect(page).to have_content('Viendo producto')
-        expect(page.has_link?('Volver')).to be true
-        click_link 'Volver'
-        # Create
-        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @create_products)
-        visit current_path
+        product = Product.all.sample
+        visit "/productos/#{product.id}"
+        expect(page).to have_content("Viendo producto #{product.name}")
+        expect(page).to have_content('Código')
+        expect(page).to have_content(product.code.to_s)
+        expect(page).to have_content('Nombre')
+        expect(page).to have_content(product.name.to_s)
+        expect(page).to have_content('Unidad')
+        expect(page).to have_content(product.unity.name.to_s)
+        expect(page).to have_content('Rubro')
+        expect(page).to have_content(product.area.name.to_s)
+        expect(page).to have_content('Descripción')
+        expect(page).to have_content('Observación')
+        expect(page).to have_link('Volver')
+      end
+
+      it 'Create: form and fields' do
+        visit '/productos'
         within '#dropdown-menu-header' do
-          expect(page.has_link?('Agregar')).to be true
+          expect(page).to have_link('Agregar')
           click_link 'Agregar'
         end
-        expect(page.has_css?('#product_code')).to be true
-        expect(page.has_css?('#product_name')).to be true
-        expect(page.has_css?('#product_unity_id', visible: false)).to be true
-        expect(page.has_css?('#product_area_id', visible: false)).to be true
-        expect(page.has_css?('#product_description')).to be true
-        expect(page.has_css?('#product_observation')).to be true
         within '#new_product' do
-          fill_in 'product_code', with: '20818'
-          fill_in 'product_name', with: 'Hidroclorotiazida 0.5% suspensión 100 ml (Magistral)'
-          page.execute_script %{$('button:contains(Seleccionar unidad)').first().click()}
-          page.execute_script %{$('button:contains(Seleccionar unidad)').first().siblings('.dropdown-menu').first().keydown('unidad')}
-          page.execute_script %{$('a:contains(Unidad)').first().click()}
+          expect(page).to have_field('product[code]', type: 'number')
+          expect(page).to have_field('product[name]', type: 'text')
+          expect(page).to have_select('product[unity_id]', visible: false)
+          expect(page).to have_select('product[area_id]', visible: false)
+          expect(page).to have_field('product[description]', type: 'textarea')
+          expect(page).to have_field('product[observation]', type: 'textarea')
+        end
+        expect(page).to have_link('Volver')
+        expect(page).to have_button('Guardar')
+      end
 
-          page.execute_script %{$('button:contains(Seleccionar rubro)').first().click()}
-          page.execute_script %{$('button:contains(Seleccionar rubro)').first().siblings('.dropdown-menu').first().keydown('Medicamentos')}
-          page.execute_script %{$('a:contains(Medicamentos)').first().click()}
-        end
-        click_button 'Guardar'
-        click_link 'Volver'
+      it 'Edit: form and fields' do
+        visit '/productos'
         within '#products' do
-          expect(page).to have_selector('.btn-detail')
-          expect(page).not_to have_selector('.btn-edit')
+          expect(page).to have_css('.btn-edit')
         end
-        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @update_products)
-        visit current_path
-        within '#products' do
-          expect(page).to have_selector('.btn-edit')
-          page.execute_script %{$('a.btn-edit')[0].click()}
+        product = Product.all.sample
+        visit "/productos/#{product.id}/editar"
+        within "#edit_product_#{product.id}" do
+          expect(page).to have_field('product[code]', type: 'number', with: product.code)
+          expect(page).to have_field('product[name]', type: 'text', with: product.name)
+          expect(page).to have_select('product[unity_id]', visible: false, with_selected: product.unity.name)
+          expect(page).to have_select('product[area_id]', visible: false, with_selected: product.area.name)
+          expect(page).to have_field('product[description]', type: 'textarea', with: product.description)
+          expect(page).to have_field('product[observation]', type: 'textarea', with: product.observation)
         end
-        expect(page).to have_content('Editando producto')
-        expect(page.has_link?('Volver')).to be true
-        expect(page.has_button?('Guardar')).to be true
-        click_link 'Volver'
-        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @destroy_products)
-        visit current_path
-        page.execute_script %{$('#filterrific_search_code').val('20818').keydown()}
-        sleep 1
-        within '#products' do
-          expect(page).to have_selector('.delete-item')
-          page.execute_script %{$('td:contains(Hidroclorotiazida 0.5% suspensión 100 ml (Magistral))').closest('tr').find('button.delete-item').first().click()}
+        expect(page).to have_link('Volver')
+        expect(page).to have_button('Guardar')
+      end
+    end
+
+    describe 'Form' do
+      describe 'Send' do
+        it 'successfully' do
+          visit '/productos/nuevo'
+
+          within '#new_product' do
+            fill_in 'product[code]', with: '20818'
+            fill_in 'product[name]', with: 'Hidroclorotiazida 0.5% suspensión 100 ml (Magistral)'
+            page.execute_script %{$('button:contains(Seleccionar unidad)').first().click()}
+            page.execute_script %{$('button:contains(Seleccionar unidad)').first().siblings('.dropdown-menu').first().keydown('unidad')}
+            page.execute_script %{$('a:contains(Unidad)').first().click()}
+
+            page.execute_script %{$('button:contains(Seleccionar rubro)').first().click()}
+            page.execute_script %{$('button:contains(Seleccionar rubro)').first().siblings('.dropdown-menu').first().keydown('Medicamentos')}
+            page.execute_script %{$('a:contains(Medicamentos)').first().click()}
+          end
+          click_button 'Guardar'
+          expect(page).to have_content('Viendo producto hidroclorotiazida 0.5% suspensión 100 ml (magistral)')
+          expect(page).to have_content('Código: 20818')
+          expect(page).to have_content('Unidad: Unidad')
+          expect(page).to have_content('Rubro: Medicamentos')
         end
-        sleep 1
-        expect(page).to have_content('Eliminar producto')
-        expect(page.has_button?('Volver')).to be true
-        expect(page.has_link?('Confirmar')).to be true
-        click_link 'Confirmar'
-        sleep 1
-        within '#products' do
-          expect(page).to have_selector('.delete-item', count: 0)
-          page.execute_script %{$('button.delete-item')[0].click()}
+
+        describe 'Fail and validations' do
+          before(:each) do
+            visit '/productos/nuevo'
+          end
+
+          it 'displays required fields' do
+            click_button 'Guardar'
+            within '#new_product' do
+              expect(page).to have_css('input[name="product[code]"].is-invalid')
+              expect(page.find('input[name="product[code]"]+.invalid-feedback')).to have_content('Código no puede estar en blanco')
+
+              expect(page).to have_css('input[name="product[name]"].is-invalid')
+              expect(page.find('input[name="product[name]"]+.invalid-feedback')).to have_content('Nombre no puede estar en blanco')
+
+              expect(page).to have_css('select[name="product[unity_id]"].is-invalid', visible: false)
+              expect(page).to have_content('Unidad no puede estar en blanco')
+
+              expect(page).to have_css('select[name="product[area_id]"].is-invalid', visible: false)
+              expect(page).to have_content('Rubro no puede estar en blanco')
+            end
+          end
+
+          it 'keep code attribute' do
+            within '#new_product' do
+              fill_in 'product[code]', with: 10_972
+            end
+            click_button 'Guardar'
+            within '#new_product' do
+              expect(page).to have_field('product[code]', with: 10_972)
+            end
+          end
+
+          it 'keep name attribute' do
+            within '#new_product' do
+              fill_in 'product[name]', with: 'Cánula de alto flujo Drager Hi-Flow Star Tamaño L'
+            end
+            click_button 'Guardar'
+            within '#new_product' do
+              expect(page).to have_field('product[name]', with: 'Cánula de alto flujo Drager Hi-Flow Star Tamaño L')
+            end
+          end
+
+          it 'keep unidad attribute' do
+            within '#new_product' do
+              page.execute_script %{$('button:contains(Seleccionar unidad)').first().click()}
+              page.execute_script %{$('button:contains(Seleccionar unidad)').first().siblings('.dropdown-menu').first().keydown('unidad')}
+              page.execute_script %{$('a:contains(Unidad)').first().click()}
+            end
+            click_button 'Guardar'
+            within '#new_product' do
+              expect(page).to have_select('product[unity_id]', visible: false, with_selected: 'Unidad')
+            end
+          end
+
+          it 'keep medicamentos attribute' do
+            within '#new_product' do
+              page.execute_script %{$('button:contains(Seleccionar rubro)').first().click()}
+              page.execute_script %{$('button:contains(Seleccionar rubro)').first().siblings('.dropdown-menu').first().keydown('Medicamentos')}
+              page.execute_script %{$('a:contains(Medicamentos)').first().click()}
+            end
+            click_button 'Guardar'
+            within '#new_product' do
+              expect(page).to have_select('product[area_id]', visible: false, with_selected: 'Medicamentos')
+            end
+          end
+
+          it 'keep description attribute' do
+            within '#new_product' do
+              fill_in 'product[description]',
+                      with: 'A description for: Cánula de alto flujo Drager Hi-Flow Star Tamaño L'
+            end
+            click_button 'Guardar'
+            within '#new_product' do
+              expect(page).to have_field('product[description]',
+                                         with: 'A description for: Cánula de alto flujo Drager Hi-Flow Star Tamaño L')
+            end
+          end
+
+          it 'keep observation attribute' do
+            within '#new_product' do
+              fill_in 'product[observation]',
+                      with: 'An observation for: Cánula de alto flujo Drager Hi-Flow Star Tamaño L'
+            end
+            click_button 'Guardar'
+            within '#new_product' do
+              expect(page).to have_field('product[observation]',
+                                         with: 'An observation for: Cánula de alto flujo Drager Hi-Flow Star Tamaño L')
+            end
+          end
         end
       end
     end

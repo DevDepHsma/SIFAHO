@@ -1,3 +1,13 @@
+# == Schema Information
+
+# Table name: chronic_dispensations
+
+# chronic_prescription_id    :bigint   not null
+# observation                :text     optional
+# status                     :integer  not null, default 0, options {pendiente: 0, dispensada: 1}
+# provider_sector_id         :bigint   not null
+#
+
 class ChronicDispensation < ApplicationRecord
   belongs_to :chronic_prescription
   has_many :dispensation_types, dependent: :destroy, class_name: 'DispensationType'

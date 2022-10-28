@@ -1,9 +1,9 @@
 <button type="button" class="btn-unselect-item" 
         onclick="toggleSelectItem(event, 'product');"
-        data-url="<%= unselect_product_reports_path(@product.id) %>"
-        id="sp-<%=@product.id%>">
+        data-url="<%= unselect_product_reports_path(product.id) %>"
+        id="sp-<%=product.id%>">
   <span class="mr-2">
-    <%= "#{@product.code} | #{@product.name.upcase}" %>
+    <%= "#{product.code} | #{product.name.upcase}" %>
   </span>
   <span class="times-icon">
     <%= fa_icon 'times', class: 'text-danger' %>

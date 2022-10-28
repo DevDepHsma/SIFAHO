@@ -177,6 +177,7 @@ es:
         finished_by_professional: 'Terminado por el médico'
         finished_by_professional_id: 'Médico'
         finished_observation: 'Observaciones'
+        request_quantity: "Dosis mensual"
       inpatient_prescription:
         date_prescribed: 'Fecha recetada'
         patient_id: 'Paciente'
@@ -209,6 +210,7 @@ es:
         other_sector: 'Sector'
       report:
         report_type: 
+          one: 'Por paciente'
           by_patient: 'Por paciente'
   user_status:
     permission_req: 'Solicitud'

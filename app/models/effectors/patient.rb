@@ -1,3 +1,22 @@
+# == Schema Information
+
+# Table name: patients
+
+# id                      :bigint     not null, primary key
+# first_name              :string     not null
+# last_name               :string     not null
+# dni                     :string     not null
+# sex                     :integer    not null, by default 0
+# birthdate               :datetime   optional
+# email                   :string     optional
+# marital_status          :integer    not null, by default 1
+# status                  :integer    not null, by default 0
+# cuil                    :string     optional
+# address_id              :bigint     not null, unity
+# andes_id                :bigint     not null, area
+# bed_id                  :bigint     optional
+#
+
 class Patient < ApplicationRecord
   include PgSearch::Model
   include QuerySort
@@ -15,7 +34,7 @@ class Patient < ApplicationRecord
   has_one_attached :file
   has_many :patient_phones, dependent: :destroy
   has_many :inpatient_movements
-
+  before_save :format_full_name
   # Validations
   validates_presence_of :first_name, :last_name, :dni
   validates_uniqueness_of :dni
@@ -32,7 +51,7 @@ class Patient < ApplicationRecord
   scope :filter_by_params, lambda { |filter_params|
     query = self.select(:id, :dni, :status, :sex, :birthdate, :first_name, :last_name)
     query = query.like_dni(filter_params[:dni]) if filter_params.present? && filter_params[:dni].present?
-    if filter_params.present? &&  filter_params[:full_name].present?
+    if filter_params.present? && filter_params[:full_name].present?
 
       query = query.like_full_name(filter_params[:full_name])
     end
@@ -53,20 +72,28 @@ class Patient < ApplicationRecord
   scope :like_dni, lambda { |dni|
     where('dni LIKE ?', "%#{dni}%")
   }
-  scope :like_full_name, ->(word) { where('unaccent(lower(patients.first_name))  like ? or unaccent(lower(patients.last_name))  like ? or unaccent(lower(CONCAT(patients.last_name,\' \',patients.first_name)))  like ?', "%#{word.downcase.removeaccents}%","%#{word.downcase.removeaccents}%","%#{word.downcase.removeaccents}%") }
+  scope :like_full_name, lambda { |word|
+                           where('unaccent(lower(patients.first_name))  like ? or unaccent(lower(patients.last_name))  like ? or unaccent(lower(CONCAT(patients.last_name,\' \',patients.first_name)))  like ?', "%#{word.downcase.removeaccents}%", "%#{word.downcase.removeaccents}%", "%#{word.downcase.removeaccents}%")
+                         }
+
+  # Get all dispensed patients by a sector: OutPatientPrescriptions / ChronicPrescriptions
   scope :filter_by_sector_dispensation, lambda { |filter_params|
-    op_patient_ids = OutpatientPrescription.where(provider_sector_id: filter_params[:sector_id], status: 'dispensada').pluck(:patient_id).uniq
-    cr_patient_ids = ChronicPrescription.where(provider_sector_id: filter_params[:sector_id], status: %w[dispensada dispensada_parcial]).pluck(:patient_id).uniq
-    patient_ids = (op_patient_ids + cr_patient_ids).uniq
-    query = where(id: patient_ids)
+    query = by_stock(filter_params[:sector_id])
     if filter_params[:patient].present?
       query = query.where('unaccent(lower(last_name)) like ? OR unaccent(lower(first_name)) like ? OR unaccent(lower(dni)) like ?',
                           "%#{filter_params[:patient].downcase.parameterize(separator: ' ')}%",
                           "%#{filter_params[:patient].downcase.parameterize(separator: ' ')}%",
                           "%#{filter_params[:patient]}%")
     end
-    query = query.where.not(id: filter_params[:patient_ids]) if filter_params[:patient_ids]
+    query = query.where.not(id: filter_params[:patients_ids]) if filter_params[:patients_ids]
     return query
+  }
+
+  scope :by_stock, lambda { |sector_id|
+    op_patient_ids = OutpatientPrescription.where(provider_sector_id: sector_id, status: 'dispensada').pluck(:patient_id).uniq
+    cr_patient_ids = ChronicPrescription.where(provider_sector_id: sector_id, status: %w[dispensada dispensada_parcial]).pluck(:patient_id).uniq
+    patient_ids = (op_patient_ids + cr_patient_ids).uniq
+    where(id: patient_ids)
   }
 
   def full_info
@@ -94,5 +121,10 @@ class Patient < ApplicationRecord
   # Return the last hospitalization
   def last_hospitalization
     inpatient_movements.admissions.last
+  end
+
+  def format_full_name
+    self.first_name = first_name.downcase.to_permite_accents
+    self.last_name = last_name.downcase.to_permite_accents
   end
 end

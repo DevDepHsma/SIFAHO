@@ -1,79 +1,45 @@
+# == Test Information
+
+#  Testing modules:
+#  Filter: fields and results
+#  Pagination: presence and results
+#  Sort: buttons and results
+#  Destroy action
+#
+
 require 'rails_helper'
 
 RSpec.feature 'ProductsFilters', type: :feature do
   before(:all) do
     permission_module = PermissionModule.includes(:permissions).find_by(name: 'Productos')
     @read_products = permission_module.permissions.find_by(name: 'read_products')
+    @destroy_products = permission_module.permissions.find_by(name: 'destroy_products')
+    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @read_products)
+    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @destroy_products)
   end
 
   background do
     sign_in_as(@farm_applicant)
   end
+
   describe '', js: true do
     subject { page }
 
     before(:each) do
-      PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @read_products)
-      visit '/'
+      visit '/productos'
     end
 
-    after(:each) do
-      sleep 1
-      sign_out_as(@farm_applicant)
-    end
-    it 'Nav Menu link' do
-      expect(page.has_css?('#sidebar-wrapper', visible: false)).to be true
-      within '#sidebar-wrapper' do
-        expect(page.has_link?('Productos')).to be true
-        click_link 'Productos'
-      end
-    end
-    describe 'filter form' do
-      before(:each) do
-        within '#sidebar-wrapper' do
-          expect(page.has_link?('Productos')).to be true
-          click_link 'Productos'
-        end
-      end
-      it 'displays filters form' do
-        expect(page.has_css?('#products-filter')).to be true
-      end
-      it 'displays code input' do
+    describe 'form filters' do
+      it 'has fields' do
         within '#products-filter' do
-          expect(page.has_css?('input[name="filter[code]"]')).to be true
+          expect(page).to have_field('filter[code]', type: 'text')
+          expect(page).to have_field('filter[name]', type: 'text')
+          expect(page).to have_button('Buscar')
+          expect(page).to have_selector('button.btn-clean-filters')
         end
       end
 
-      it 'displays name input' do
-        within '#products-filter' do
-          expect(page.has_css?('input[name="filter[name]"]')).to be true
-        end
-      end
-      it 'displays button "Buscar"' do
-        within '#products-filter' do
-          expect(page.has_button?('Buscar')).to be true
-        end
-      end
-      it 'displays button limpiar' do
-        within '#products-filter' do
-          expect(page.has_css?('.btn-clean-filters')).to be true
-        end
-      end
-    end
-
-    describe 'form actions' do
-      before(:each) do
-        within '#sidebar-wrapper' do
-          expect(page.has_link?('Productos')).to be true
-          click_link 'Productos'
-        end
-      end
-      it 'displays loader on click "Buscar"' do
-        within '#products-filter' do
-          click_button 'Buscar'
-        end
-      end
-      it 'displays code results' do
+      it 'by code' do
         products = Product.all.sample(5)
         products.each do |product|
           within '#products-filter' do
@@ -82,143 +48,170 @@ RSpec.feature 'ProductsFilters', type: :feature do
             sleep 1
           end
           within '#products' do
-            expect(page.first('tr').first('td')).to have_content(product.code)
+            expect(page.first('tr').first('td')).to have_selector('mark.highlight-1', text: product.code)
           end
           within '#products-filter' do
-            page.execute_script %{$("button.btn-clean-filters")[0].click()}
+            page.first('button.btn-clean-filters').click
+            sleep 1
           end
-          sleep 1
-        end
-      end
-      # it 'displays name results' do
-      #   products = Product.all.sample(5)
-      #   products.each do |product|
-      #     within '#products-filter' do
-      #       fill_in 'filter[name]', with: product.name
-      #       click_button 'Buscar'
-      #       sleep 1
-      #       puts product.name
-      #     end
-      #     within '#products' do
-      #       expect(page.first('tr').has_css?('td', text: product.name)).to be true
-      #       # expect(page.has_css?('tr', count: 1)).to be true
-      #       # sleep 1
-      #       # page.execute_script %{$("button.btn-clean-filters")[0].click()}
-      #     end
-      #   end
-      # end
-    end
-
-    describe 'paginator actions' do
-      before(:each) do
-        within '#sidebar-wrapper' do
-          expect(page.has_link?('Productos')).to be true
-          click_link 'Productos'
         end
       end
 
-      it 'change page' do
-        sleep 1
-        within '#paginate_footer nav' do
-          # page.execute_script %{$(".page-item a")[0].click()}
-          expect(page.has_css?('li.active', text: '1')).to be true
-          click_link '2'
-          sleep 1
-          expect(page.has_css?('li.active', text: '2')).to be true
-          # page.execute_script %{$(".page-item")[2].getAttribute('class').indexOf('active')!=-1}
-        end
-      end
-      it 'checks pages count' do
-        products_count = Product.all.count
-        page_size = (products_count / 15.to_f).ceil
-        within '#paginate_footer nav' do
-          expect(page.has_link?(page_size.to_s)).to be true
-          expect(page.has_link?((page_size + 1).to_s)).not_to be true
-        end
-      end
-
-      it 'checks results count by page' do
-        products_count = Product.all.count
-        page_size = (products_count / 15.to_f).ceil
-        within '#paginate_footer nav' do
-          expect(page.has_link?(page_size.to_s)).to be true
-          expect(page.has_link?((page_size + 1).to_s)).not_to be true
-        end
-        within '#products' do
-          expect(page.has_css?('tr', count: 15)).to be true
-        end
-
-        page.select '30', from: 'page-size-selection'
-        sleep 1
-        within '#products' do
-          expect(page.has_css?('tr', count: 30)).to be true
-        end
-        page_size = (products_count / 30.to_f).ceil
-        within '#paginate_footer nav' do
-          expect(page.has_link?(page_size.to_s)).to be true
-          expect(page.has_link?((page_size + 1).to_s)).not_to be true
+      it 'by name' do
+        products = Product.all.sample(5)
+        products.each do |product|
+          within '#products-filter' do
+            fill_in 'filter[name]', with: product.name
+            click_button 'Buscar'
+            sleep 1
+          end
+          within '#products' do
+            expect(page.first('tr').find('td:nth-child(2)')).to have_selector('mark.highlight-1', text: product.name)
+          end
+          within '#products-filter' do
+            page.first('button.btn-clean-filters').click
+            sleep 1
+          end
         end
       end
     end
 
-    describe 'sort action' do
+    describe 'pagination' do
       before(:each) do
-        within '#sidebar-wrapper' do
-          expect(page.has_link?('Productos')).to be true
-          click_link 'Productos'
+        @last_page = (Product.all.count / 15.to_f).ceil
+      end
+
+      it 'has pagination' do
+        within '#paginate_footer nav' do
+          expect(page).to have_selector('a.page-link', text: @last_page.to_s)
         end
       end
-      it 'sort by code' do
+
+      it 'has pagination size selector' do
+        within '#paginate_footer' do
+          expect(page).to have_select('page-size-selection', with_options: %w[15 30 50 100])
+        end
+      end
+
+      it 'change page number' do
+        within '#paginate_footer nav' do
+          expect(page).to have_selector('li.active', text: '1')
+          click_link @last_page.to_s
+          sleep 1
+          expect(page).to have_selector('li.active', text: @last_page.to_s)
+        end
+      end
+
+      it 'has 15 items per page by default' do
+        within '#products' do
+          expect(page).to have_selector('tr', count: 15)
+        end
+      end
+
+      it 'change items per page to 30' do
+        within '#paginate_footer' do
+          page.select '30', from: 'page-size-selection'
+          sleep 1
+        end
+        within '#products' do
+          expect(page).to have_selector('tr', count: 30)
+        end
+      end
+    end
+
+    describe 'Sort' do
+      it 'has sort buttons' do
+        within '#table_results thead' do
+          expect(page).to have_button('Código')
+          expect(page).to have_button('Nombre')
+        end
+      end
+
+      it 'by code' do
         sorted_by_code_asc = Product.select(:code).order(code: :asc).first
         sorted_by_code_desc = Product.select(:code).order(code: :desc).first
-        # page.execute_script %{($("button.custom-sort-v1.btn-list-sort")[0]).click();}
+
         within '#table_results' do
           click_button 'Código'
+          sleep 1
+        end
+
+        within '#products' do
+          expect(page.first('tr').first('td')).to have_content(sorted_by_code_asc.code)
+        end
+
+        within '#table_results' do
+          click_button 'Código'
+          sleep 1
         end
 
         within '#products' do
           expect(page.first('tr').first('td')).to have_content(sorted_by_code_desc.code)
         end
-        sleep 1
+      end
+
+      it 'by name' do
+        sorted_by_name_asc = Product.select(:name).order(name: :asc).first
+        sorted_by_name_desc = Product.select(:name).order(name: :desc).first
+
         within '#table_results' do
-          click_button 'Código'
+          click_button 'Nombre'
+          sleep 1
         end
+
         within '#products' do
-          expect(page.first('tr').first('td')).to have_content(sorted_by_code_asc.code)
+          expect(page.first('tr').find('td:nth-child(2)')).to have_text(sorted_by_name_asc.name)
         end
-        sleep 1
+
         within '#table_results' do
-          click_button 'Código'
+          click_button 'Nombre'
+          sleep 1
+        end
+
+        within '#products' do
+          expect(page.first('tr').find('td:nth-child(2)')).to have_text(sorted_by_name_desc.name)
+        end
+      end
+    end
+
+    describe 'Destroy permission' do
+      before(:each) do
+        @product_to_del = @products_without_stock.sample
+        within '#products-filter' do
+          fill_in 'filter[name]', with: @product_to_del.name
+          click_button 'Buscar'
+          sleep 1
         end
       end
 
-      it 'sort by name' do
-        sleep 3
-        sorted_by_name_asc = Product.select(:name).order(name: :asc).first
-        sorted_by_name_desc = Product.select(:name).order(name: :desc).first
-        # page.execute_script %{($("button.custom-sort-v1.btn-list-sort")[0]).click();}
-        within '#table_results' do
-          click_button 'Nombre'
-        end
-        sleep 1
+      it 'has button destroy' do
         within '#products' do
-          puts sorted_by_name_asc.name
-          sleep 5
-          expect(page.first('tr').has_css?('td', text: sorted_by_name_asc.name)).to be true
+          expect(page).to have_selector('button.delete-item')
         end
+      end
 
-        within '#table_results' do
-          click_button 'Nombre'
-        end
-        sleep 1
+      it 'shown modal on button destroy click' do
         within '#products' do
-          expect(page.first('tr').has_css?('td', text: sorted_by_name_desc.name)).to be true
+          page.first('button.delete-item').click
+          sleep 1
         end
-        sleep 1
-        within '#table_results' do
-          click_button 'Nombre'
+        within '#delete-item' do
+          expect(page).to have_content('Eliminar producto')
+          expect(page).to have_button('Volver')
+          expect(page).to have_link('Confirmar')
         end
-        sleep 3
+      end
+
+      it 'destroy items' do
+        within '#products' do
+          page.first('button.delete-item').click
+          sleep 1
+        end
+        within '#delete-item' do
+          click_link 'Confirmar'
+          sleep 1
+        end
+        expect(page).to have_text("El suministro #{@product_to_del.name} se ha eliminado correctamente.")
       end
     end
   end
