@@ -18,10 +18,16 @@
     <% else %>
       <%= render(
         partial: 'shared/not_found_filter',
-        locals: { object_name: 'productos' }
+        locals: { object_name: 'pacientes' }
       ) %>
     <% end %>
 </div>
+<div class="card-footer" id="paginate_footer">
+    <%= render(
+          partial: 'shared/paginate_index',
+          locals: { model: @patients, form_id: 'patients-filter' }
+        ) %>
+  </div>
 <% content_for :modal do %>
   <div id="modals">
     <%= render(partial: 'shared/modals/delete_confirmation') %>
