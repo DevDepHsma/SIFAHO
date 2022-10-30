@@ -150,41 +150,13 @@ class PatientsController < ApplicationController
     render json: @patients.map{ |pat| { id: pat.id, label: pat.dni.to_s+" "+pat.last_name+" "+pat.first_name, dni: pat.dni }  }
   end
 
-  def get_by_dni
-    @exac_patient = Patient.find_by(dni: params[:term])
-    @json_patients = []
+  def find_from_sifaho_or_andes
+    # First: find from SIFAHO DB 
+    @patient_from_sifaho = Patient.find_by(dni: params[:term])
+    # Second: if patient doesn´t been found, try Andes MPI
+    @json_patients = @patient_from_sifaho.present? ? [] : PatientService.new(params[:term]).find_patients
 
-    if @exac_patient.nil?
-      dni = params[:term]
-      token = ENV['ANDES_TOKEN']
-      url = ENV['ANDES_MPI_URL']
-      andes_patients = RestClient::Request.execute( method: :get, url: url.to_s,
-                                                    verify_ssl: false,
-                                                    timeout: 30, headers: {
-                                                      'Authorization' => "JWT #{token}",
-                                                      params: { 'documento': dni },
-                                                    })
-
-      if JSON.parse(andes_patients).count.positive?
-        JSON.parse(andes_patients).map { |pat|
-          patient_photo_res = get_patient_photo_from_andes(pat['_id'], pat['fotoId'])
-          patient_photo = (Base64.strict_encode64(patient_photo_res) if patient_photo_res.present?)
-          @json_patients << {
-            create: true,
-            label: "#{pat['documento']} #{pat['apellido']} #{pat['nombre']}",
-            dni: pat['documento'],
-            lastname: pat['apellido'],
-            firstname: pat['nombre'],
-            fullname: "#{pat['apellido']} #{pat['nombre']}",
-            sex: pat['genero'],
-            status: pat['estado'],
-            avatar: patient_photo,
-            data: pat
-          }
-        }
-      end
-    end
-
+    # Third: use partial search with " where like" statement from SIFAHO
     @patients = Patient.search_dni(params[:term]).order(:dni).limit(15)
     if @patients.present?
       @patients.map { |pat|
@@ -202,10 +174,10 @@ class PatientsController < ApplicationController
       }
     end
 
+    # Four: No patients found
     if @json_patients.count.zero?
       @json_patients = [0].map { { create: true, dni: params[:term], label: 'Agregar paciente' } }
     end
-
     render json: @json_patients
   end
 
@@ -263,18 +235,5 @@ class PatientsController < ApplicationController
 
   def remote?
     return params[:commit] == "remote"
-  end
-
-  def get_patient_photo_from_andes(patient_id, patient_photo_id)
-    return unless patient_photo_id
-
-    token = ENV['ANDES_TOKEN']
-    url = ENV['ANDES_MPI_URL']
-    RestClient::Request.execute(method: :get, url: "#{url}/#{patient_id}/foto/#{patient_photo_id}",
-                                verify_ssl: false,
-                                timeout: 30, headers: {
-                                  'Authorization' => "JWT #{token}",
-                                }
-                              )
   end
 end
