@@ -125,7 +125,7 @@
               <% if policy(dis_type.object.original_chronic_prescription_product).deliver? %>
                 <%= link_to_add_association dis_type,
                   :chronic_prescription_products,
-                  class: 'btn btn-primary btn-sm',
+                  class: 'btn btn-primary btn-sm btn-asign-product',
                   partial: "prescriptions/chronic_dispensations/partials/order_products_fields", 
                   data: {
                     "association-insertion-node" => "tbody#chronic-product-cocoon-container#{dis_type.object.original_chronic_prescription_product.id}",
