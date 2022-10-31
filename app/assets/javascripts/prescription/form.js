@@ -13,7 +13,6 @@ $(document).on('turbolinks:load', function(e){
 
       let sexes = {'M':'Masculino', 'F':'Femenino', 'X':'Otro'};
       let barcodeArray =  barcode.split('@');
-      console.log('Barcode', barcodeArray);
       if ( barcodeArray.length <= 9 ){
         $("#patient-dni").val(barcodeArray[4]);
         $("#patient-lastname").val(barcodeArray[1]).attr('readonly', true);

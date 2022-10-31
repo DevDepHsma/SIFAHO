@@ -3,7 +3,7 @@
     <%= image_tag patient_avatar(recipe.patient), size: '162x200', class:"img-thumbnail" %>
   </div>
   <div class="w-75">
-    <h5 id="patient-name" data-insurance-url="<%= get_insurance_path %>" data-patient-dni="<%= recipe.patient.dni %>">
+    <h5 id="patient-name" data-insurance-url="<%= find_insurances_patients_path %>" data-patient-dni="<%= recipe.patient.dni %>">
       <strong><%= recipe.patient.last_name %>,</strong>
       <%= recipe.patient.first_name %>
     </h5>

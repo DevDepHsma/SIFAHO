@@ -15,7 +15,7 @@ class PatientService
                                                  })
 
     JSON.parse(andes_patients).map do |pat|
-      patient_photo_res = get_patient_photo_from_andes(pat['_id'], pat['fotoId'])
+      patient_photo_res = find_photo_from_andes(pat['_id'], pat['fotoId'])
       patient_photo = (Base64.strict_encode64(patient_photo_res) if patient_photo_res.present?)
       {
         create: true,
@@ -43,7 +43,7 @@ class PatientService
                                            }))
   end
 
-  def get_patient_photo_from_andes(patient_id, patient_photo_id)
+  def find_photo_from_andes(patient_id, patient_photo_id)
     return unless patient_photo_id
 
     RestClient::Request.execute(method: :get, url: "#{@andes_mpi_url}/#{patient_id}/foto/#{patient_photo_id}",
