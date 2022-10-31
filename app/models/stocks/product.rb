@@ -68,7 +68,7 @@ class Product < ApplicationRecord
     query = query.like_code("%#{filter_params[:code]}%") if filter_params.present? && filter_params[:code].present?
     if filter_params.present? &&  filter_params[:name].present?
 
-      query = query.like_name("%#{filter_params[:name].downcase.removeaccents}%")
+      query = query.like_name(filter_params[:name])
     end
     query = if filter_params.present? && filter_params['sort'].present?
               query.sorted_by(filter_params['sort'])
@@ -80,18 +80,9 @@ class Product < ApplicationRecord
   }
 
   scope :by_stock, ->(sector_id) { where(id: Stock.where(sector_id: sector_id).pluck(:product_id)) }
-  scope :like_name, ->(product_name) { where('unaccent(lower(products.name))  like ?', product_name) }
+  scope :like_name, ->(product_name) { where('unaccent(lower(products.name))  like ?', "%#{product_name.downcase.removeaccents}%") }
   scope :like_code, ->(product_code) { where('code::VARCHAR like ?', product_code) }
   scope :with_code, ->(product_code) { where('products.code = ?', product_code) }
-
-  #### DEPRECATED #####
-
-  pg_search_scope :search_name,
-                  against: :name,
-                  using: {
-                    tsearch: { prefix: true } # Buscar coincidencia desde las primeras letras.
-                  },
-                  ignoring: :accents # Ignorar tildes.
 
   def self.search_supply(a_name)
     Supply.search_text(a_name).with_pg_search_rank

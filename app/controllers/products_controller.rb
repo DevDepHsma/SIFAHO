@@ -122,7 +122,7 @@ class ProductsController < ApplicationController
   end
 
   def search_by_name
-    @products = Product.active.order(:name).search_name(params[:term]).limit(8)
+    @products = Product.active.order(:name).like_name(params[:term]).limit(8)
     render json: @products.map { |product|
       {
         label: product.name,
