@@ -235,7 +235,7 @@ module DataMock
         ['23205761', 'Femenino', 'ZYLBERSZAC', 'ARIELA VERONICA', 'soltero'],
         ['43215471', 'Femenino', 'ZYGADLO', 'ALDANA ABRIL', 'soltero'],
         ['28285284', 'Masculino', 'ZYGADLO', 'GERARDO EZEQUIEL', 'soltero'],
-        ['50173226', 'Masculino', 'ZWONKO CARRERA', 'JUAN MARTIN ', 'soltero']
+        ['50173226', 'Masculino', 'ZWONKO CARRERA', 'JUAN MARTIN', 'soltero']
 
       ]
     end
