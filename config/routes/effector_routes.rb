@@ -3,9 +3,10 @@ Rails.application.routes.draw do
     # Patients
     resources :patients do
       collection do
+        get :find_from_sifaho_or_andes
+        get 'find_insurances(/:dni)', to: 'patients#find_insurances', as: :find_insurances
         get :search
         get :get_by_dni_and_fullname
-        get :get_by_dni
         get :get_by_fullname
       end
     end

@@ -193,7 +193,7 @@
                     <!-- FINISH TREATMENT ACTION -->
                     <% if policy(org_chron_pres_prod).finish_treatment? %>
                       <%= link_to finish_treatment_chronic_prescription_path(id: @chronic_prescription.id, original_product_id: org_chron_pres_prod.id), 
-                        class: 'btn btn-sm btn-warning', remote: true, data: { toggle: 'tooltip', placement: 'top'}, title: 'Terminar tratamiento' do %>
+                        class: 'btn btn-sm btn-warning btn-finish-treatment', remote: true, data: { toggle: 'tooltip', placement: 'top'}, title: 'Terminar tratamiento' do %>
                         <%= fa_icon 'check' %>
                       <% end %>
                     <% end %>

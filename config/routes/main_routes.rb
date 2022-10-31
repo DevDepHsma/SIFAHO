@@ -15,8 +15,6 @@ Rails.application.routes.draw do
     mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
     mount Notifications::Engine => '/notifications'
 
-    get 'insurances/get_by_dni(/:dni)', to: 'insurances#get_by_dni', as: :get_insurance
-
     resources :purchases do
       member do
         get 'set_products'
