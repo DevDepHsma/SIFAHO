@@ -1,7 +1,5 @@
 $(document).on('turbolinks:load', function(e){
   if(!(_PAGE.controller === 'prescriptions/chronic_prescriptions' && (['new', 'edit', 'create', 'update'].includes(_PAGE.action))) ) return false;
-  
-  showInsurances();
 
   initEvents();
   // button submit
@@ -184,10 +182,12 @@ $(document).on('turbolinks:load', function(e){
     }
   }
 
-  function showInsurances(){
-    const url = $("#patient-name").attr('data-insurance-url');
-    const dni = $("#patient-name").attr('data-patient-dni');
-    getInsurances(url, dni);
-  }
+  //** Deprecated: insurances aren't showing on chronic prescription detail ***/
+  //** And chronic prescriptions rspec, y throing up a OpenSSL error at this point ***/
+  // function showInsurances(){
+  //   const url = $("#patient-name").attr('data-insurance-url');
+  //   const dni = $("#patient-name").attr('data-patient-dni');
+  //   getInsurances(url, dni);
+  // }
 
 });

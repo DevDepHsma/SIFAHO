@@ -93,11 +93,10 @@ class ChronicPrescription < ApplicationRecord
           "%#{word.downcase.removeaccents}%")
   }
   scope :like_date_prescribed_since, lambda { |reference_time|
-    puts "<===========".colorize(background: :red)
-    where('date_prescribed >= ?', reference_time)
+    where('date_prescribed >= ?', DateTime.strptime(reference_time, '%d/%m/%Y').beginning_of_day)
   }
   scope :like_date_prescribed_to, lambda { |reference_time|
-    where('date_prescribed <= ?', reference_time)
+    where('date_prescribed <= ?', DateTime.strptime(reference_time, '%d/%m/%Y').end_of_day)
   }
   scope :like_status, lambda { |status|
     where('chronic_prescriptions.status = ?', status)

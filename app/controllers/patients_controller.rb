@@ -1,5 +1,5 @@
 class PatientsController < ApplicationController
-  before_action :set_patient, only: [:show, :edit, :update, :destroy, :delete]
+  before_action :set_patient, only: %i[show edit update destroy delete]
 
   # GET /patients
   # GET /patients.json
@@ -12,11 +12,11 @@ class PatientsController < ApplicationController
         sorted_by: Patient.options_for_sorted_by
       },
       persistence_id: false,
-      default_filter_params: {sorted_by: 'created_at_desc'},
-      available_filters: [
-        :sorted_by,
-        :search_fullname,
-        :search_dni
+      default_filter_params: { sorted_by: 'created_at_desc' },
+      available_filters: %i[
+        sorted_by
+        search_fullname
+        search_dni
       ]
     ) or return
     @patients = @filterrific.find.page(params[:page]).per_page(15)
@@ -59,7 +59,8 @@ class PatientsController < ApplicationController
     file = Tempfile.new(['avatar', '.jpg'], Rails.root.join('tmp'))
 
     if params[:patient][:andes_id].present? && params[:patient][:photo_andes_id].present?
-      patient_photo_res = get_patient_photo_from_andes(params[:patient][:andes_id], params[:patient][:photo_andes_id])
+      patient_photo_res = PatientService.new(@patient.dni).find_photo_from_andes(params[:patient][:andes_id],
+                                                                                 params[:patient][:photo_andes_id])
       file.binmode
       file.write(patient_photo_res)
       file.rewind
@@ -69,21 +70,19 @@ class PatientsController < ApplicationController
     file.close
 
     respond_to do |format|
-      begin
-        @patient.save!
-        # Eliminamos el archivo temporal
-        File.delete(file.path) if File.exist?(file.path)
+      @patient.save!
+      # Eliminamos el archivo temporal
+      File.delete(file.path) if File.exist?(file.path)
 
-        flash.now[:success] = "#{@patient.full_info} se ha creado correctamente."
-        format.html { redirect_to @patient }
-        format.js
-      rescue ArgumentError => e
-        flash[:alert] = e.message
-      rescue ActiveRecord::RecordInvalid
-      ensure
-        format.html { render :new }
-        format.js
-      end
+      flash.now[:success] = "#{@patient.full_info} se ha creado correctamente."
+      format.html { redirect_to @patient }
+      format.js
+    rescue ArgumentError => e
+      flash[:alert] = e.message
+    rescue ActiveRecord::RecordInvalid
+    ensure
+      format.html { render :new }
+      format.js
     end
   end
 
@@ -100,7 +99,8 @@ class PatientsController < ApplicationController
     file = Tempfile.new(['avatar', '.jpg'], Rails.root.join('tmp'))
 
     if params[:patient][:andes_id].present? && params[:patient][:photo_andes_id].present?
-      patient_photo_res = get_patient_photo_from_andes(params[:patient][:andes_id], params[:patient][:photo_andes_id])
+      patient_photo_res = PatientService.new(@patient.dni).find_photo_from_andes(params[:patient][:andes_id],
+                                                                                 params[:patient][:photo_andes_id])
       file.binmode
       file.write(patient_photo_res)
       file.rewind
@@ -110,21 +110,19 @@ class PatientsController < ApplicationController
     file.close
 
     respond_to do |format|
-      begin
-        @patient.save!
-        # Eliminamos el archivo temporal
-        File.delete(file.path) if File.exist?(file.path)
+      @patient.save!
+      # Eliminamos el archivo temporal
+      File.delete(file.path) if File.exist?(file.path)
 
-        flash.now[:success] = "#{@patient.full_info} se ha modificado correctamente."
-        format.html { redirect_to @patient }
-        format.js
-      rescue ArgumentError => e
-        flash[:alert] = e.message
-      rescue ActiveRecord::RecordInvalid
-      ensure
-        format.html { render :new }
-        format.js
-      end
+      flash.now[:success] = "#{@patient.full_info} se ha modificado correctamente."
+      format.html { redirect_to @patient }
+      format.js
+    rescue ArgumentError => e
+      flash[:alert] = e.message
+    rescue ActiveRecord::RecordInvalid
+    ensure
+      format.html { render :new }
+      format.js
     end
   end
 
@@ -142,52 +140,26 @@ class PatientsController < ApplicationController
 
   def search
     @patients = Patient.order(:first_name).search_query(params[:term]).limit(10)
-    render json: @patients.map{ |pat| { id: pat.id, dni: pat.dni, label: pat.fullname } }
+    render json: @patients.map { |pat| { id: pat.id, dni: pat.dni, label: pat.fullname } }
   end
 
   def get_by_dni_and_fullname
     @patients = Patient.get_by_dni_and_fullname(params[:term]).limit(10).order(:last_name)
-    render json: @patients.map{ |pat| { id: pat.id, label: pat.dni.to_s+" "+pat.last_name+" "+pat.first_name, dni: pat.dni }  }
+    render json: @patients.map { |pat|
+                   { id: pat.id, label: pat.dni.to_s + ' ' + pat.last_name + ' ' + pat.first_name, dni: pat.dni }
+                 }
   end
 
-  def get_by_dni
-    @exac_patient = Patient.find_by(dni: params[:term])
-    @json_patients = []
+  def find_from_sifaho_or_andes
+    # First: find from SIFAHO DB
+    @patient_from_sifaho = Patient.find_by(dni: params[:term])
+    # Second: if patient doesn´t been found, try Andes MPI
+    @json_patients = @patient_from_sifaho.present? ? [] : PatientService.new(params[:term]).find_patients
 
-    if @exac_patient.nil?
-      dni = params[:term]
-      token = ENV['ANDES_TOKEN']
-      url = ENV['ANDES_MPI_URL']
-      andes_patients = RestClient::Request.execute( method: :get, url: url.to_s,
-                                                    verify_ssl: false,
-                                                    timeout: 30, headers: {
-                                                      'Authorization' => "JWT #{token}",
-                                                      params: { 'documento': dni },
-                                                    })
-
-      if JSON.parse(andes_patients).count.positive?
-        JSON.parse(andes_patients).map { |pat|
-          patient_photo_res = get_patient_photo_from_andes(pat['_id'], pat['fotoId'])
-          patient_photo = (Base64.strict_encode64(patient_photo_res) if patient_photo_res.present?)
-          @json_patients << {
-            create: true,
-            label: "#{pat['documento']} #{pat['apellido']} #{pat['nombre']}",
-            dni: pat['documento'],
-            lastname: pat['apellido'],
-            firstname: pat['nombre'],
-            fullname: "#{pat['apellido']} #{pat['nombre']}",
-            sex: pat['genero'],
-            status: pat['estado'],
-            avatar: patient_photo,
-            data: pat
-          }
-        }
-      end
-    end
-
+    # Third: use partial search with " where like" statement from SIFAHO
     @patients = Patient.search_dni(params[:term]).order(:dni).limit(15)
     if @patients.present?
-      @patients.map { |pat|
+      @patients.map do |pat|
         @json_patients << {
           id: pat.id,
           label: "#{pat.dni} #{pat.last_name} #{pat.first_name}",
@@ -199,19 +171,28 @@ class PatientsController < ApplicationController
           status: pat.status,
           avatar_url: (url_for(pat.avatar) if pat.avatar.attached?)
         }
-      }
+      end
     end
 
+    # Four: No patients found
     if @json_patients.count.zero?
       @json_patients = [0].map { { create: true, dni: params[:term], label: 'Agregar paciente' } }
     end
-
     render json: @json_patients
+  end
+
+  def find_insurances
+    @insurances = PatientService.new(params[:dni]).find_insurances
+    respond_to do |format|
+      format.js { render :find_insurances }
+    end
   end
 
   def get_by_fullname
     @patients = Patient.search_fullname(params[:term]).limit(10).order(:last_name)
-    render json: @patients.map{ |pat| { id: pat.id, label: pat.dni.to_s+" "+pat.fullname, dni: pat.dni, fullname: pat.fullname  }  }
+    render json: @patients.map { |pat|
+                   { id: pat.id, label: pat.dni.to_s + ' ' + pat.fullname, dni: pat.dni, fullname: pat.fullname }
+                 }
   end
 
   private
@@ -233,8 +214,9 @@ class PatientsController < ApplicationController
                               country_id: @country.id,
                               state_id: @state.id)
 
-    return @address
+    @address
   end
+
   # Use callbacks to share common setup or constraints between actions.
   def set_patient
     @patient = Patient.find(params[:id])
@@ -253,28 +235,16 @@ class PatientsController < ApplicationController
       :status,
       :address,
       :andes_id,
-      patient_phones_attributes: [
-        :id, 
-        :phone_type, 
-        :number, 
-        :_destroy
-      ])
+      patient_phones_attributes: %i[
+        id
+        phone_type
+        number
+        _destroy
+      ]
+    )
   end
 
   def remote?
-    return params[:commit] == "remote"
-  end
-
-  def get_patient_photo_from_andes(patient_id, patient_photo_id)
-    return unless patient_photo_id
-
-    token = ENV['ANDES_TOKEN']
-    url = ENV['ANDES_MPI_URL']
-    RestClient::Request.execute(method: :get, url: "#{url}/#{patient_id}/foto/#{patient_photo_id}",
-                                verify_ssl: false,
-                                timeout: 30, headers: {
-                                  'Authorization' => "JWT #{token}",
-                                }
-                              )
+    params[:commit] == 'remote'
   end
 end
