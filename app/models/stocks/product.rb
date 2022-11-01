@@ -56,7 +56,7 @@ class Product < ApplicationRecord
   scope :filter_by_stock, lambda { |filter_params|
     query = self.select(:id, :name, :code).by_stock(filter_params[:sector_id])
     if filter_params[:product]
-      query = query.like_code("%#{filter_params[:product]}%").or(query.like_name("%#{filter_params[:product].downcase.removeaccents}%"))      
+      query = query.like_code("%#{filter_params[:product]}%").or(query.like_name("%#{filter_params[:product].downcase.removeaccents}%"))
     end
     query = query.where.not(id: filter_params[:products_ids]) if filter_params[:products_ids]
 
@@ -65,11 +65,8 @@ class Product < ApplicationRecord
 
   scope :filter_by_params, lambda { |filter_params|
     query = self.select(:id, 'products.name as product_name', :status, :code, 'unities.name as unity_name', 'areas.name as area_name').joins(:unity, :area)
-    query = query.like_code("%#{filter_params[:code]}%") if filter_params.present? && filter_params[:code].present?
-    if filter_params.present? &&  filter_params[:name].present?
-
-      query = query.like_name(filter_params[:name])
-    end
+    query = query.like_code(filter_params[:code]) if filter_params.present? && filter_params[:code].present?
+    query = query.like_name(filter_params[:name]) if filter_params.present? && filter_params[:name].present?
     query = if filter_params.present? && filter_params['sort'].present?
               query.sorted_by(filter_params['sort'])
             else
@@ -80,9 +77,10 @@ class Product < ApplicationRecord
   }
 
   scope :by_stock, ->(sector_id) { where(id: Stock.where(sector_id: sector_id).pluck(:product_id)) }
-  scope :like_name, ->(product_name) { where('unaccent(lower(products.name))  like ?', "%#{product_name.downcase.removeaccents}%") }
-  scope :like_code, ->(product_code) { where('code::VARCHAR like ?', product_code) }
-  scope :with_code, ->(product_code) { where('products.code = ?', product_code) }
+  scope :like_name, lambda { |product_name|
+                      where('unaccent(lower(products.name))  like ?', "%#{product_name.downcase.removeaccents}%")
+                    }
+  scope :like_code, ->(product_code) { where('code::VARCHAR like ?', "%#{product_code}%") }
 
   def self.search_supply(a_name)
     Supply.search_text(a_name).with_pg_search_rank

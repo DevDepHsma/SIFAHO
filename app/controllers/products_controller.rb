@@ -136,7 +136,7 @@ class ProductsController < ApplicationController
   end
 
   def search_by_code
-    @products = Product.active.order(:id).with_code(params[:term]).limit(8)
+    @products = Product.active.order(:id).like_code(params[:term]).limit(8)
     render json: @products.map { |product|
       {
         label: product.code,
