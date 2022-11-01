@@ -8,71 +8,40 @@ RSpec.feature 'PatientsFilters', type: :feature do
     @update_patients = patient_module.permissions.find_by(name: 'update_patients')
     @destroy_patients = patient_module.permissions.find_by(name: 'destroy_patients')
     @patients = Patient.all
+    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @read_patients)
   end
 
   background do
-    sign_in_as(@farm_applicant)
+    sign_in @farm_applicant
   end
   describe '', js: true do
     subject { page }
     before(:each) do
-      PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @read_patients)
       visit '/'
     end
-    after(:each) do
-      sleep 1
-      sign_out_as(@farm_applicant)
-    end
     it 'Nav Menu link' do
-      expect(page.has_css?('#sidebar-wrapper', visible: false)).to be true
+      expect(page).to have_selector('#sidebar-wrapper', visible: false)
       within '#sidebar-wrapper' do
-        expect(page.has_link?('Pacientes')).to be true
+        expect(page).to have_selector('.list-group-item.list-group-item-action.list-custom', text: 'Pacientes')
         click_link 'Pacientes'
       end
+      expect(page).to have_selector('tbody#patients')
     end
 
     describe 'filter form' do
       before(:each) do
-        within '#sidebar-wrapper' do
-          expect(page.has_link?('Pacientes')).to be true
-          click_link 'Pacientes'
-        end
+        visit '/pacientes'
       end
-      it 'displays dni' do
+      it 'has_fields' do
         within '#patients-filter' do
-          expect(page.has_css?('input[name="filter[dni]"]')).to be true
+          expect(page).to have_field('filter[dni]', type: 'text')
+          expect(page).to have_field('filter[full_name]', type: 'text')
+          expect(page).to have_button('Buscar')
+          expect(page).to have_selector('button', class: 'btn-clean-filters')
         end
       end
-      it 'displays search full name' do
-        within '#patients-filter' do
-          expect(page.has_css?('input[name="filter[full_name]"]')).to be true
-        end
-      end
-      it 'displays button "Buscar"' do
-        within '#patients-filter' do
-          expect(page.has_button?('Buscar')).to be true
-        end
-      end
-      it 'displays button limpiar' do
-        within '#patients-filter' do
-          expect(page.has_css?('.btn-clean-filters')).to be true
-        end
-      end
-    end
 
-    describe 'form actions' do
-      before(:each) do
-        within '#sidebar-wrapper' do
-          expect(page.has_link?('Pacientes')).to be true
-          click_link 'Pacientes'
-        end
-      end
-      it 'displays loader on click "Buscar"' do
-        within '#patients-filter' do
-          click_button 'Buscar'
-        end
-      end
-      it 'displays dni results' do
+      it 'by dni' do
         patients = Patient.all.sample(5)
         patients.each do |patient|
           within '#patients-filter' do
@@ -83,15 +52,14 @@ RSpec.feature 'PatientsFilters', type: :feature do
           within '#patients' do
             expect(page.first('tr').first('td')).to have_content(patient.dni)
           end
-
           within '#patients-filter' do
-            page.execute_script %{$("button.btn-clean-filters")[0].click()}
+            page.first('button.btn-clean-filters').click
           end
           sleep 1
         end
       end
 
-      it 'displays fullname results' do
+      it 'by fullname' do
         patients = Patient.all.sample(5)
         patients.each do |patient|
           within '#patients-filter' do
@@ -104,7 +72,7 @@ RSpec.feature 'PatientsFilters', type: :feature do
           end
 
           within '#patients-filter' do
-            page.execute_script %{$("button.btn-clean-filters")[0].click()}
+            page.first('button.btn-clean-filters').click
           end
           sleep 1
         end
@@ -113,62 +81,51 @@ RSpec.feature 'PatientsFilters', type: :feature do
 
     describe 'paginator actions' do
       before(:each) do
-        within '#sidebar-wrapper' do
-          expect(page.has_link?('Pacientes')).to be true
-          click_link 'Pacientes'
+        @last_page = (Patient.all.count / 15.to_f).ceil
+        visit '/pacientes'
+      end
+
+      it 'has pagination' do
+        within '#paginate_footer nav' do
+          expect(page).to have_selector('a.page-link', text: @last_page.to_s)
         end
       end
 
-      it 'change page' do
-        sleep 1
+      it 'has pagination size selector' do
+        within '#paginate_footer' do
+          expect(page).to have_select('page-size-selection', with_options: %w[15 30 50 100])
+        end
+      end
+
+      it 'change page number' do
         within '#paginate_footer nav' do
-          # page.execute_script %{$(".page-item a")[0].click()}
-          expect(page.has_css?('li.active', text: '1')).to be true
-          click_link '2'
+          expect(page).to have_selector('li.active', text: '1')
+          click_link @last_page.to_s
           sleep 1
-          expect(page.has_css?('li.active', text: '2')).to be true
-          # page.execute_script %{$(".page-item")[2].getAttribute('class').indexOf('active')!=-1}
-        end
-      end
-      it 'checks pages count' do
-        patients_count = Patient.all.count
-        page_size = (patients_count / 15.to_f).ceil
-        within '#paginate_footer nav' do
-          expect(page.has_link?(page_size.to_s)).to be true
-          expect(page.has_link?((page_size + 1).to_s)).not_to be true
+          expect(page).to have_selector('li.active', text: @last_page.to_s)
         end
       end
 
-      it 'checks results count by page' do
-        patients_count = Patient.all.count
-        page_size = (patients_count / 15.to_f).ceil
-        within '#paginate_footer nav' do
-          expect(page.has_link?(page_size.to_s)).to be true
-          expect(page.has_link?((page_size + 1).to_s)).not_to be true
-        end
+      it 'has 15 items per page by default' do
         within '#patients' do
-          expect(page.has_css?('tr', count: 15)).to be true
+          expect(page).to have_selector('tr', count: 15)
         end
+      end
 
-        page.select '30', from: 'page-size-selection'
-        sleep 1
-        within '#patients' do
-          expect(page.has_css?('tr', count: 30)).to be true
+      it 'change items per page to 30' do
+        within '#paginate_footer' do
+          page.select '30', from: 'page-size-selection'
+          sleep 1
         end
-        page_size = (patients_count / 30.to_f).ceil
-        within '#paginate_footer nav' do
-          expect(page.has_link?(page_size.to_s)).to be true
-          expect(page.has_link?((page_size + 1).to_s)).not_to be true
+        within '#patients' do
+          expect(page).to have_selector('tr', count: 30)
         end
       end
     end
 
     describe 'Sort' do
       before(:each) do
-        within '#sidebar-wrapper' do
-          expect(page.has_link?('Pacientes')).to be true
-          click_link 'Pacientes'
-        end
+        visit '/pacientes'
       end
       it 'has sort buttons' do
         within '#table_results thead' do
@@ -222,7 +179,7 @@ RSpec.feature 'PatientsFilters', type: :feature do
           expect(page.first('tr').find('td:nth-child(2)')).to have_text(sorted_by_first_name_desc.first_name)
         end
       end
-  ################## Require patients remove prescriptions######################################    
+      ################## Require patients remove prescriptions######################################
       # it 'delete-patient' do
       #   PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @destroy_patients)
       #   within '#patients-filter' do
