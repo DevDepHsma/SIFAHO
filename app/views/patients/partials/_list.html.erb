@@ -2,14 +2,14 @@
   <table class="table table-hover table-striped table-sm">
     <thead >
       <tr>
-         <%= th_label name: 'Dni', form: 'patients-filter', sort_field: 'dni', icon_type: 'numeric' %>
+        <%= th_label name: 'Dni', form: 'patients-filter', sort_field: 'dni', icon_type: 'numeric' %>
         <%= th_label name: 'Nombre y apellido', form: 'patients-filter', sort_field: 'patients.first_name', icon_type: 'alpha' %>
-        <th>Estado</th>
-        <th>Edad</th>
-        <th>Sexo</th>
-        <th>Recetas ambulatorias</th>
-        <th>Recetas crónicas</th>
-        <th class="text-center">Acciones</th>
+        <%= th_label name: 'Estado' %>
+        <%= th_label name: 'Edad' %>
+        <%= th_label name: 'Sexo' %>
+        <%= th_label name: 'Recetas ambulatorias' %>
+        <%= th_label name: 'Recetas crónicas' %>
+        <%= th_label name: 'Estado',class:'text-center' %>
       </tr>
     </thead>
     <tbody id="patients">
