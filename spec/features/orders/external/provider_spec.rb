@@ -10,7 +10,7 @@ RSpec.feature 'Orders::External::Providers', type: :feature do
     @send_external_order_provider = permission_module.permissions.find_by(name: 'send_external_order_provider')
     @return_external_order_provider = permission_module.permissions.find_by(name: 'return_external_order_provider')
     @destroy_external_order_provider = permission_module.permissions.find_by(name: 'destroy_external_order_provider')
-    sign_in_as(@depo_provider)
+    sign_in @depo_provider
   end
 
   describe 'Permissions', js: true do

@@ -9,7 +9,7 @@ RSpec.feature 'Orders::Internal::Providers', type: :feature do
     @send_internal_order_provider = permission_module.permissions.find_by(name: 'send_internal_order_provider')
     @return_internal_order_provider = permission_module.permissions.find_by(name: 'return_internal_order_provider')
     @destroy_internal_order_provider = permission_module.permissions.find_by(name: 'destroy_internal_order_provider')
-    sign_in_as(@depo_provider)
+    sign_in @depo_provider
   end
 
   describe 'Permissions', js: true do

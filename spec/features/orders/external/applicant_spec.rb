@@ -9,7 +9,7 @@ RSpec.feature 'Orders::External::Applicants', type: :feature do
     @send_external_order_applicant = permission_module.permissions.find_by(name: 'send_external_order_applicant')
     @return_external_order_applicant = permission_module.permissions.find_by(name: 'return_external_order_applicant')
     @destroy_external_order_applicant = permission_module.permissions.find_by(name: 'destroy_external_order_applicant')
-    sign_in_as(@farm_applicant)
+    sign_in @farm_applicant
   end
 
   describe 'Permissions', js: true do

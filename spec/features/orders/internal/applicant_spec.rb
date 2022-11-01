@@ -9,7 +9,7 @@ RSpec.feature 'Orders::Internal::Applicants', type: :feature do
     @send_internal_order_applicant = perimssion_module.permissions.find_by(name: 'send_internal_order_applicant')
     @return_internal_order_applicant = perimssion_module.permissions.find_by(name: 'return_internal_order_applicant')
     @destroy_internal_order_applicant = perimssion_module.permissions.find_by(name: 'destroy_internal_order_applicant')
-    sign_in_as(@farm_applicant)
+    sign_in @farm_applicant
   end
 
   describe 'Permissions', js: true do
