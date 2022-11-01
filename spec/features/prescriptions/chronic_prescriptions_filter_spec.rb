@@ -33,7 +33,7 @@ RSpec.feature 'Prescriptions::ChronicPrescriptionsFilters', type: :feature do
   end
 
   background do
-    sign_in_as(@farm_provider)
+    sign_in @farm_provider
   end
 
   describe '', js: true do

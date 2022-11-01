@@ -12,7 +12,7 @@ RSpec.feature 'Reports::IndexAndFilters', type: :feature do
   end
 
   background do
-    sign_in_as(@farm_applicant)
+    sign_in @farm_applicant
   end
   describe 'Report Index', js: true do
     subject { page }

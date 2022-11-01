@@ -8,12 +8,13 @@ RSpec.feature 'PermissionRequests', type: :feature, js: true do
 
   describe 'Permission Requests' do
     background do
-      sign_in_as(@user_requested)
+      sign_in @user_requested
     end
 
     subject { page }
 
     before(:each) do
+      visit '/'
       expect(page).to have_content('Solicitud de permisos')
       expect(page).to have_content('Complete el formulario para comenzar a utilizar el sistema.')
       expect(page.has_button?('Enviar')).to be true

@@ -26,7 +26,7 @@ RSpec.feature 'OutpatientsPrescriptionsFilters', type: :feature do
   end
 
   background do
-    sign_in_as(@farm_provider)
+    sign_in @farm_provider
   end
 
   describe 'Outpatient Recipes ::', js: true do

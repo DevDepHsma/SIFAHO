@@ -26,7 +26,7 @@ RSpec.feature 'Prescriptions::ChronicPrescriptions', type: :feature do
   end
 
   background do
-    sign_in_as(@farm_provider)
+    sign_in @farm_provider
   end
 
   describe '', js: true do

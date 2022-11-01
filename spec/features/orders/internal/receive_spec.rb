@@ -13,13 +13,14 @@ RSpec.feature "Orders::Internal::Receives", type: :feature do
   end
 
   background do
-    sign_in_as(@farm_applicant)
+    sign_in @farm_applicant
   end
 
   describe 'Permissions::Receive', js: true do
     subject { page }
 
     it ':: READ :: success' do
+      visit '/'
       expect(page.has_link?('Sectores')).to be true
       within '#sidebar-wrapper' do
         click_link 'Sectores'

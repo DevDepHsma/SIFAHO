@@ -23,7 +23,7 @@ RSpec.feature 'Products', type: :feature do
   end
 
   background do
-    sign_in_as(@farm_applicant)
+    sign_in @farm_applicant
   end
   describe '', js: true do
     subject { page }
