@@ -110,8 +110,7 @@ RSpec.feature 'OutpatientsPrescriptionsFilters', type: :feature do
             sleep 1
           end
           within '#outpatient_prescriptions' do
-            expect(page.first('tr').find('td:nth-child(3)')).to have_selector('mark.highlight-2',
-                                                                              text: opp.patient.dni)
+            expect(page.first('tr').find('td:nth-child(3)')).to have_content(opp.patient.dni)
           end
           within '#outpatient-prescriptions-filter' do
             page.first('button.btn-clean-filters').click

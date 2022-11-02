@@ -1,52 +1,33 @@
 <%= render 'header' %>
 <div class="card fixed-custom-card">
   <div class="card-header">
-    <%= form_for_filterrific @filterrific do |f| %>
-      <div class="row d-flex justify-content-between">
-        <div class="col-md-3 col-sm-3">
-          <label>DNI</label>
-          <%= f.text_field(
-              :search_dni,
-              class: 'filterrific-periodically-observed form-control input-sm'
-                ) %>
-        </div>
-        <div class="col-md-3 col-sm-3">
-          <label>Nombre o Apellido</label>
-          <%# give the search field the 'filterrific-periodically-observed' class for live updates %>
-          <%= f.text_field(
-              :search_fullname,
-              class: 'filterrific-periodically-observed form-control input-sm',
-              autocomplete: 'off'
-            ) %>
-        </div>
-        <div class="col-md-3 col-sm-3">
-          <label>Ordenar por</label>
-          <%= f.select(:sorted_by, @filterrific.select_options[:sorted_by],{}, {class: 'form-control input-sm'}) %>
-        </div>
-        <%= link_to reset_filterrific_url, class: "btn btn-sm pull-right", 'data-disable-with' => "<i class='fa fa-redo fa-spin'></i>".html_safe do %>
-          <%= fa_icon "redo" %>
-        <% end %>
-        <!-- Spinner para la carga -->
-        <%= render_filterrific_spinner %>
-      </div>
-    <% end %>
+  <%= render(
+          partial: 'patients/partials/filter',
+          locals: { products: @patients }
+        ) %>
+ 
   </div>
   <div class="card-body fixed-panel-index">
-    <% if @patients.present? %>
-      <div id="filterrific_results">
+   <% if @patients.present? %>
+      <div id="table_results">
         <%= render(
-            partial: 'patients/list',
-            locals: { patients: @patients }
-          ) %>
+          partial: 'patients/partials/list',
+          locals: { patientss: @patients }
+        ) %>
       </div>
     <% else %>
       <%= render(
-          partial: 'shared/not_found_filter',
-          locals: { object_name: 'pacientes' }
-        ) %>
+        partial: 'shared/not_found_filter',
+        locals: { object_name: 'pacientes' }
+      ) %>
     <% end %>
-  </div>
 </div>
+<div class="card-footer" id="paginate_footer">
+    <%= render(
+          partial: 'shared/paginate_index',
+          locals: { model: @patients, form_id: 'patients-filter' }
+        ) %>
+  </div>
 <% content_for :modal do %>
   <div id="modals">
     <%= render(partial: 'shared/modals/delete_confirmation') %>

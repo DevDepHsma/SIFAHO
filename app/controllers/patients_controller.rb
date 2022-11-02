@@ -5,21 +5,8 @@ class PatientsController < ApplicationController
   # GET /patients.json
   def index
     authorize Patient
-    @filterrific = initialize_filterrific(
-      Patient,
-      params[:filterrific],
-      select_options: {
-        sorted_by: Patient.options_for_sorted_by
-      },
-      persistence_id: false,
-      default_filter_params: { sorted_by: 'created_at_desc' },
-      available_filters: %i[
-        sorted_by
-        search_fullname
-        search_dni
-      ]
-    ) or return
-    @patients = @filterrific.find.page(params[:page]).per_page(15)
+    @patients = Patient.filter_by_params(params[:filter])
+                       .paginate(page: params[:page], per_page: params[:per_page] || 15)
   end
 
   # GET /patients/1
@@ -157,7 +144,7 @@ class PatientsController < ApplicationController
     @json_patients = @patient_from_sifaho.present? ? [] : PatientService.new(params[:term]).find_patients
 
     # Third: use partial search with " where like" statement from SIFAHO
-    @patients = Patient.search_dni(params[:term]).order(:dni).limit(15)
+    @patients = Patient.like_dni(params[:term]).order(:dni).limit(15)
     if @patients.present?
       @patients.map do |pat|
         @json_patients << {

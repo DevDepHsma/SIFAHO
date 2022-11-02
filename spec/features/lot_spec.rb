@@ -86,7 +86,7 @@ RSpec.feature "Lots", type: :feature do
         page.execute_script %Q{$('#filterrific_search_lot_code').val('BC456').keydown()}
         sleep 1
         within '#lots' do
-          expect(page).to have_selector('.delete-item', count: 1)
+          expect(page).to have_selector('.delete-item')
           page.execute_script %Q{$('td:contains("BC456")').closest('tr').find('button.delete-item').click()}
         end
         sleep 1

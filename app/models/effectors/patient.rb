@@ -19,7 +19,7 @@
 
 class Patient < ApplicationRecord
   include PgSearch::Model
-
+  include QuerySort
   enum status: { Temporal: 0, Validado: 1 }
   enum sex: { Otro: 1, Femenino: 2, Masculino: 3 }
   enum marital_status: { soltero: 1, casado: 2, separado: 3, divorciado: 4, viudo: 5, otro: 6 }
@@ -34,7 +34,7 @@ class Patient < ApplicationRecord
   has_one_attached :file
   has_many :patient_phones, dependent: :destroy
   has_many :inpatient_movements
-
+  before_save :format_full_name
   # Validations
   validates_presence_of :first_name, :last_name, :dni
   validates_uniqueness_of :dni
@@ -48,55 +48,33 @@ class Patient < ApplicationRecord
                                 reject_if: proc { |attributes| attributes['number'].blank? },
                                 allow_destroy: true
 
-  before_save :format_full_name
+  scope :filter_by_params, lambda { |filter_params|
+    query = self.select(:id, :dni, :status, :sex, :birthdate, :first_name, :last_name)
+    query = query.like_dni(filter_params[:dni]) if filter_params.present? && filter_params[:dni].present?
+    if filter_params.present? && filter_params[:full_name].present?
 
-  filterrific(
-    default_filter_params: { sorted_by: 'created_at_desc' },
-    available_filters: %i[
-      sorted_by
-      search_fullname
-      search_dni
-    ]
-  )
+      query = query.like_full_name(filter_params[:full_name])
+    end
+    query = if filter_params.present? && filter_params['sort'].present?
+              query.sorted_by(filter_params['sort'])
+            else
+              query.reorder(first_name: :desc)
+            end
+
+    return query
+  }
+
   pg_search_scope :get_by_dni_and_fullname,
                   against: %i[dni first_name last_name],
                   using: { tsearch: { prefix: true } }, # Buscar coincidencia desde las primeras letras.
                   ignoring: :accents # Ignorar tildes.
 
-  pg_search_scope :search_fullname,
-                  against: %i[first_name last_name],
-                  using: { tsearch: { prefix: true } }, # Buscar coincidencia desde las primeras letras.
-                  ignoring: :accents # Ignorar tildes.
-
-  scope :search_dni, lambda { |query|
-    string = query.to_s
-    where('dni::text LIKE ?', "%#{string}%")
+  scope :like_dni, lambda { |dni|
+    where('dni LIKE ?', "%#{dni}%")
   }
-
-  scope :sorted_by, lambda { |sort_option|
-    # extract the sort direction from the param value.
-    direction = sort_option =~ /desc$/ ? 'desc' : 'asc'
-    case sort_option.to_s
-    when /^created_at_/s
-      # Ordenamiento por fecha de creación en la BD
-      order("patients.created_at #{direction}")
-    when /^nacimiento_/
-      # Ordenamiento por fecha de creación en la BD
-      order("patients.birthdate #{direction}")
-    when /^dni_/
-      # Ordenamiento por fecha de creación en la BD
-      order("patients.dni #{direction}")
-    when /^nombre_/
-      # Ordenamiento por nombre de paciente
-      order("LOWER(patients.first_name) #{direction}")
-    when /^apellido_/
-      # Ordenamiento por apellido de paciente
-      order("LOWER(patients.last_name) #{direction}")
-    else
-      # Si no existe la opcion de ordenamiento se levanta la excepcion
-      raise(ArgumentError, "Invalid sort option: #{sort_option.inspect}")
-    end
-  }
+  scope :like_full_name, lambda { |word|
+                           where('unaccent(lower(patients.first_name))  like ? or unaccent(lower(patients.last_name))  like ? or unaccent(lower(CONCAT(patients.last_name,\' \',patients.first_name)))  like ?', "%#{word.downcase.removeaccents}%", "%#{word.downcase.removeaccents}%", "%#{word.downcase.removeaccents}%")
+                         }
 
   # Get all dispensed patients by a sector: OutPatientPrescriptions / ChronicPrescriptions
   scope :filter_by_sector_dispensation, lambda { |filter_params|
@@ -117,16 +95,6 @@ class Patient < ApplicationRecord
     patient_ids = (op_patient_ids + cr_patient_ids).uniq
     where(id: patient_ids)
   }
-
-  # Método para establecer las opciones del select input del filtro
-  # Es llamado por el controlador como parte de `initialize_filterrific`.
-  def self.options_for_sorted_by
-    [
-      ['Creación (desc)', 'created_at_desc'],
-      ['Nombre (a-z)', 'nombre_asc'],
-      ['Apellido (a-z)', 'apellido_asc']
-    ]
-  end
 
   def full_info
     "#{last_name} #{first_name} #{dni}"
