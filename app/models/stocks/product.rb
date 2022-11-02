@@ -56,7 +56,7 @@ class Product < ApplicationRecord
   scope :filter_by_stock, lambda { |filter_params|
     query = self.select(:id, :name, :code).by_stock(filter_params[:sector_id])
     if filter_params[:product]
-      query = query.like_code("%#{filter_params[:product]}%").or(query.like_name("%#{filter_params[:product].downcase.removeaccents}%"))
+      query = query.like_code(filter_params[:product]).or(query.like_name(filter_params[:product]))
     end
     query = query.where.not(id: filter_params[:products_ids]) if filter_params[:products_ids]
 

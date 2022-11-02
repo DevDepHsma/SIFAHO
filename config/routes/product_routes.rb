@@ -11,8 +11,8 @@ Rails.application.routes.draw do
         get :trash_index
         get :search_by_code
         get :search_by_name
-        get :search_by_name_to_order
-        get :search_by_code_to_order
+        # get :search_by_name_to_order
+        # get :search_by_code_to_order
       end
     end
 
