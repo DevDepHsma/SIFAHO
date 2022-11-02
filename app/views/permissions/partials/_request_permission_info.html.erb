@@ -1,0 +1,19 @@
+<div class="alert alert-warning fade show" role="alert">
+  <p><strong>Solicitud de permisos:</strong></p>
+  <p>
+    <strong>Establecimiento indicado:</strong> <%= @user.permission_requests.last.establishment.present? ? @user.permission_requests.last.establishment.name : @user.permission_requests.last.other_establishment %>. <strong>Sector indicado:</strong> <%= @user.permission_requests.last.sector.present? ? @user.permission_requests.last.sector.name : @user.permission_requests.last.other_sector %>.
+  </p>
+  <p class="mb-0">
+    <strong>Funciones selccionadas:</strong>
+  </p>
+  <ul>
+    <% @user.permission_requests.last.roles.each do |role| %>
+      <li><%= role.name %></li>
+    <% end %>
+  </ul>
+  <p><strong>Observaciones:</strong> <%= @user.permission_requests.last.observation %>.</p>
+  <hr>
+  <div class="text-right">
+    <button class="btn btn-sm btn-success">Aplicar</button>
+  </div>
+</div>
