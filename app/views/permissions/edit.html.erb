@@ -48,37 +48,30 @@
             </div>
 
           </div>
-          <%# roles %>
-          <div class="mt-2">
-            <p class="mb-1">Modulos</p>
-              <% @roles.each do |role| %>
-                <div class="custom-control custom-checkbox mb-1">
-                  <input type="checkbox" class="custom-control-input" id="role-<%=role.id%>" required>
-                  <label class="custom-control-label" for="role-<%=role.id%>"><%= role.name %></label>
-                </div>
-              <% end %>
-            </ul>
-          </div>
+          <% if @user.sector.present? %>
+            <%# roles %>
+            <div class="mt-2">
+              <p class="mb-1">Modulos</p>
+                <% @roles.each do |role| %>
+                  <div class="custom-control custom-checkbox mb-1">
+                    <input type="checkbox" class="custom-control-input" id="role-<%=role.id%>" required>
+                    <label class="custom-control-label" for="role-<%=role.id%>"><%= role.name %></label>
+                  </div>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
         </div>
         <div class="col-9">
           <%= render( partial: 'permissions/partials/request_permission_info' ) %>
-          <%= simple_form_for 'remote_form', remote: true, url: permissions_users_admin_path(@user), method: 'GET', html: { novalidate: true} do |f| %>
-            <div class="input-group mb-2">
-              <input class="form-control" type="hidden" name="remote_form[sector]" id="remote_form_input_sector" value="<%= @sector.present? ? @sector.id : '' %>">
-              <input class="form-control" placeholder="Módulo" type="text" name="remote_form[search_name]" id="remote_form_search_name" autocomplete="off">
-              <div class="input-group-append">
-                <div class="input-group-text" id="btnGroupAddon">
-                  <%= fa_icon 'search' %>
-                </div>
-              </div>                  
-            </div>
-          <% end %>
 
           <div id="permissions_list"> 
-            <%= render(
-              partial: 'permissions/partials/list',
-              locals: { permission_modules: @permission_modules }
-            ) %>
+            <% if @user.sector.present? %>
+              <%= render(
+                partial: 'permissions/partials/list',
+                locals: { permission_modules: @permission_modules }
+              ) %>
+            <% end %>
           </div>
         </div>
       </div>

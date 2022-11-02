@@ -1,5 +1,5 @@
 <div class="alert alert-warning fade show" role="alert">
-  <p><strong>Solicitud de permisos:</strong></p>
+  <p><strong>Nueva solicitud de permisos:</strong></p>
   <p>
     <strong>Establecimiento indicado:</strong> <%= @user.permission_requests.last.establishment.present? ? @user.permission_requests.last.establishment.name : @user.permission_requests.last.other_establishment %>. <strong>Sector indicado:</strong> <%= @user.permission_requests.last.sector.present? ? @user.permission_requests.last.sector.name : @user.permission_requests.last.other_sector %>.
   </p>
@@ -14,6 +14,7 @@
   <p><strong>Observaciones:</strong> <%= @user.permission_requests.last.observation %>.</p>
   <hr>
   <div class="text-right">
+    <button class="btn btn-sm btn-danger">Anular</button>
     <button class="btn btn-sm btn-success">Aplicar</button>
   </div>
 </div>
