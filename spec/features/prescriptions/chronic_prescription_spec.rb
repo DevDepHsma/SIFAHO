@@ -190,23 +190,22 @@ RSpec.feature 'Prescriptions::ChronicPrescriptions', type: :feature do
         end
       end
 
-      # Require update products scope search
-      # it 'create successfully' do
-      #   10.times do
-      #     qualification = @qualifications.sample
-      #     find_and_fill_professional_attribute(qualification) # Add professional
-      #     add_original_product_to_recipe(rand(2..4), rand(5..15)) # Add product
-      #     click_button 'Guardar'
-      #     expect(page).to have_content('Viendo receta crónica Pendiente')
-      #     expect(page).to have_content("La receta crónica de #{@patient.fullname} se ha creado correctamente.")
-      #     visit '/recetas'
-      #     @patient = @patients.sample
-      #     find_and_fill_patient_attributes(@patient.dni)
-      #     within '#new-receipt-buttons' do
-      #       click_link 'Crónica'
-      #     end
-      #   end
-      # end
+      it 'create successfully' do
+        10.times do
+          qualification = @qualifications.sample
+          find_and_fill_professional_attribute(qualification) # Add professional
+          add_original_product_to_recipe(rand(2..4), rand(5..15)) # Add product
+          click_button 'Guardar'
+          expect(page).to have_content('Viendo receta crónica Pendiente')
+          expect(page).to have_content("La receta crónica de #{@patient.fullname} se ha creado correctamente.")
+          visit '/recetas'
+          @patient = @patients.sample
+          find_and_fill_patient_attributes(@patient.dni)
+          within '#new-receipt-buttons' do
+            click_link 'Crónica'
+          end
+        end
+      end
 
       it 'create fail' do
         click_button 'Guardar'

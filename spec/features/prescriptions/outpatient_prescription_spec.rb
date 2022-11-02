@@ -195,22 +195,21 @@ RSpec.feature 'OutpatientPrescriptions', type: :feature do
         end
       end
 
-      # Require update products scope search
-      # it 'dispense successfully' do
-      #   10.times do |_prescription|
-      #     visit '/recetas'
-      #     patient = @patients.sample
-      #     qualification = @qualifications.sample
-      #     find_and_fill_patient_attributes(patient.dni) # Fill first patient form
-      #     within '#new-receipt-buttons' do
-      #       click_link 'Ambulatoria'
-      #     end
-      #     find_and_fill_professional_attribute(qualification) # Add professional
-      #     add_products_to_recipe(rand(3..9), rand(5..20), rand(5..20)) # Add product
-      #     click_button 'Dispensar'
-      #     expect(page).to have_content('Viendo receta ambulatoria')
-      #   end
-      # end
+      it 'dispense successfully' do
+        10.times do |_prescription|
+          visit '/recetas'
+          patient = @patients.sample
+          qualification = @qualifications.sample
+          find_and_fill_patient_attributes(patient.dni) # Fill first patient form
+          within '#new-receipt-buttons' do
+            click_link 'Ambulatoria'
+          end
+          find_and_fill_professional_attribute(qualification) # Add professional
+          add_products_to_recipe(rand(3..9), rand(5..20), rand(5..20)) # Add product
+          click_button 'Dispensar'
+          expect(page).to have_content('Viendo receta ambulatoria')
+        end
+      end
 
       it 'dispense fail' do
         click_button 'Dispensar'
