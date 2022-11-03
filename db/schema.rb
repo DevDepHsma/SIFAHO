@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_10_12_142608) do
+ActiveRecord::Schema.define(version: 2022_11_03_105725) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "fuzzystrmatch"
@@ -1286,7 +1286,7 @@ ActiveRecord::Schema.define(version: 2022_10_12_142608) do
     t.string "establishment_name"
     t.datetime "generated_date"
     t.bigint "generated_by_user_id"
-    t.integer "report_type"
+    t.integer "report_type", default: 0
     t.datetime "from_date"
     t.datetime "to_date"
     t.string "products_ids"
@@ -1297,13 +1297,9 @@ ActiveRecord::Schema.define(version: 2022_10_12_142608) do
 
   create_table "roles", id: :serial, force: :cascade do |t|
     t.string "name"
-    t.string "resource_type"
-    t.integer "resource_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["name", "resource_type", "resource_id"], name: "index_roles_on_name_and_resource_type_and_resource_id"
     t.index ["name"], name: "index_roles_on_name"
-    t.index ["resource_type", "resource_id"], name: "index_roles_on_resource_type_and_resource_id"
   end
 
   create_table "sanitary_zones", force: :cascade do |t|
@@ -1463,6 +1459,13 @@ ActiveRecord::Schema.define(version: 2022_10_12_142608) do
     t.decimal "simela_relation", precision: 10, scale: 4
   end
 
+  create_table "user_roles", force: :cascade do |t|
+    t.bigint "user_id"
+    t.bigint "role_id"
+    t.index ["role_id"], name: "index_user_roles_on_role_id"
+    t.index ["user_id"], name: "index_user_roles_on_user_id"
+  end
+
   create_table "user_sectors", force: :cascade do |t|
     t.bigint "user_id"
     t.bigint "sector_id"
@@ -1534,5 +1537,7 @@ ActiveRecord::Schema.define(version: 2022_10_12_142608) do
   add_foreign_key "supply_lots", "supplies"
   add_foreign_key "unify_products", "products", column: "origin_product_id"
   add_foreign_key "unify_products", "products", column: "target_product_id"
+  add_foreign_key "user_roles", "roles"
+  add_foreign_key "user_roles", "users"
   add_foreign_key "users", "sectors"
 end

@@ -1,5 +1,24 @@
+# == Schema Information
+
+# Table name: users
+
+#  username                 :string, default: "", null: false
+#  encrypted_password       :string, default: "", null: false
+#  reset_password_token     :string
+#  reset_password_sent_at   :datetime
+#  remember_created_at      :datetime
+#  sign_in_count            :integer, default: 0, null: false
+#  current_sign_in_at       :datetime
+#  last_sign_in_at          :datetime
+#  current_sign_in_ip       :inet
+#  last_sign_in_ip          :inet
+#  created_at               :datetime, null: false
+#  updated_at               :datetime, null: false
+#  sector_id                :bigint
+#  status                   :integer, default: 0
+
 class User < ApplicationRecord
-  rolify
+  # rolify
   include PgSearch::Model
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable and :omniauthable
@@ -20,6 +39,8 @@ class User < ApplicationRecord
   has_many :reports, dependent: :destroy
   has_many :permission_requests, dependent: :destroy
   has_many :inpatient_prescription_products
+  has_many :user_roles, dependent: :delete_all
+  has_many :roles, through: :user_roles
 
   accepts_nested_attributes_for :profile, :professional
   accepts_nested_attributes_for :permission_users, allow_destroy: true
@@ -43,7 +64,7 @@ class User < ApplicationRecord
     # first_name = Devise::LDAP::Adapter.get_ldap_param("Test", "givenname").first # Uncomment in test
     if Rails.env.test?
       profile = Profile.new(user: self, first_name: 'Test', last_name: 'Reimann', email: 'reimann@example.com',
-                            dni: 000001111)
+                            dni: 0o00001111)
     else
       # Comment in production
       first_name = Devise::LDAP::Adapter.get_ldap_param(username, 'givenname').first.encode('Windows-1252',
@@ -157,7 +178,7 @@ class User < ApplicationRecord
       permission.name == permissions_target.to_s && permission.permission_users.any? { |pu| pu.sector_id == sector_id }
     end
   end
-  
+
   def has_permissions_any?(*permissions_target)
     permissions.joins(:permission_users).where(name: permissions_target, 'permission_users.sector_id': sector_id).any?
   end
