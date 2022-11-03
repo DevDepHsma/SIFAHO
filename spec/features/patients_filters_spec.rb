@@ -7,8 +7,8 @@ RSpec.feature 'PatientsFilters', type: :feature do
     @create_patients = patient_module.permissions.find_by(name: 'create_patients')
     @update_patients = patient_module.permissions.find_by(name: 'update_patients')
     @destroy_patients = patient_module.permissions.find_by(name: 'destroy_patients')
-    @patients = Patient.all
     PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @read_patients)
+    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @destroy_patients)
   end
 
   background do
@@ -179,25 +179,47 @@ RSpec.feature 'PatientsFilters', type: :feature do
           expect(page.first('tr').find('td:nth-child(2)')).to have_text(sorted_by_first_name_desc.first_name)
         end
       end
-      ################## Require patients remove prescriptions######################################
-      # it 'delete-patient' do
-      #   PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @destroy_patients)
-      #   within '#patients-filter' do
-      #     fill_in 'filter[full_name]', with: "Gadiel Rafael"
-      #     click_button 'Buscar'
-      #     sleep 1
-      #   end
-      #   visit current_path
-      #   within '#patients' do
-      #     expect(page).to have_selector('.delete-item')
-      #     page.execute_script %{$('td:contains("Gadiel Rafael")').closest('tr').find('button.delete-item').click()}
-      #   end
-      #   sleep 1
-      #   expect(page).to have_content('Eliminar paciente')
-      #   expect(page.has_button?('Volver')).to be true
-      #   expect(page.has_link?('Confirmar')).to be true
-      #   click_link 'Confirmar'
-      # end
+    end
+    describe 'Destroy permission' do
+      before(:each) do
+        click_link 'Pacientes'
+        @patient_to_del = @patients_without_prescriptions.sample
+        within '#patients-filter' do
+          fill_in 'filter[dni]', with: @patient_to_del.dni
+          click_button 'Buscar'
+          sleep 1
+        end
+      end
+
+      it 'has button destroy' do
+        within '#patients' do
+          expect(page).to have_selector('button.delete-item')
+        end
+      end
+
+      it 'shown modal on button destroy click' do
+        within '#patients' do
+          page.first('button.delete-item').click
+          sleep 2
+        end
+        within '#delete-item' do
+          expect(page).to have_content('Eliminar paciente')
+          expect(page).to have_button('Volver')
+          expect(page).to have_link('Confirmar')
+        end
+      end
+
+      it 'destroy items' do
+        within '#patients' do
+          page.first('button.delete-item').click
+          sleep 1
+        end
+        within '#delete-item' do
+          click_link 'Confirmar'
+          sleep 1
+        end
+        expect(page).to have_text("El paciente #{@patient_to_del.last_name} #{@patient_to_del.first_name} #{@patient_to_del.dni} se ha eliminado correctamente.")
+      end
     end
   end
 end

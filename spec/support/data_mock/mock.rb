@@ -205,39 +205,47 @@ module DataMock
   module Patients
     def get_patients
       [
-        ['57122312', 'Masculino', 'Quintulen Curruhinca', 'Gadiel Rafael', 'soltero'],
-        %w[56757987 Otro Aguirre Verónica soltero],
-        %w[29298088 Masculino BAUER GABRIEL soltero],
-        ['56757352', 'Masculino', 'CHEUQUEPAN', 'EMILIO MACIEL', 'soltero'],
-        ['57122317', 'Masculino', 'INAL SANGIULIANO', 'LORENZO NAHITAN', 'soltero'],
-        ['44463371', 'Masculino', 'OLAVE ZAPATA', 'SEBASTIAN GABRIEL', 'soltero'],
-        ['33292171', 'Femenino', 'RAMOS', 'SABRINA GISELA', 'soltero'],
-        ['25259816', 'Femenino', 'GONZALEZ', 'ANDREA VERONICA', 'soltero'],
-        ['11155707', 'Masculino', 'RAMOS', 'BARTOLOMÈ JUAN', 'soltero'],
-        ['32320564', 'Femenino', 'MOYANO LAURIN', 'URSULA BELEN', 'soltero'],
-        ['39179882', 'Masculino', 'JEREZ', 'RODRIGO MAXIMILIANO', 'soltero'],
-        %w[94328242 Masculino RUSCONI ANTONIO soltero],
-        ['54495846', 'Femenino', 'ALMENDRA FUENTES', 'LUCERO ELIZABETH', 'soltero'],
-        ['93660013', 'Masculino', 'RAMOS FIGUEROA', 'HUGO ALEJANDRO', 'soltero'],
-        ['29873762', 'Femenino', 'MOLINA', 'VALERIA RAQUEL', 'soltero'],
-        ['95875884', 'Masculino', 'HERBAS VARGAS', 'JHONNY', 'soltero'],
-        ['22116376', 'Femenino', 'RODRIGUEZ REUMAY', 'MARTHA SUSANA', 'casado'],
-        %w[56005098 Femenino MENDEZ ASHLEY soltero],
-        ['28390235', 'Femenino', 'CASTILLO', 'VERONICA ANDREA', 'soltero'],
-        ['92422065', 'Femenino', 'VALENZUELA CARRASCO', 'ROSA ESTER', 'casado'],
-        ['34034559', 'Femenino', 'HERNANDEZ', 'NOELIA RUTH', 'casado'],
-        ['16007692', 'Femenino', 'AVILA', 'MARIA GABRIELA', 'soltero'],
-        ['95939909', 'Femenino', 'DELGADILLO COVA', 'LAUREN VALERIA', 'soltero'],
-        ['28614606', 'Femenino', 'SOTO', 'ELIANA MERCEDES', 'soltero'],
-        ['28863021', 'Masculino', 'TURREIRO', 'MATIAS RAUL', 'soltero'],
-        ['55158894', 'Femenino', 'SAAVEDRA', 'LUPE HEREDIA', 'soltero'],
-        ['16524092', 'Masculino', 'ZYSKINDOWICZ', 'DARIO ALEJANDRO', 'soltero'],
-        ['23205761', 'Femenino', 'ZYLBERSZAC', 'ARIELA VERONICA', 'soltero'],
-        ['43215471', 'Femenino', 'ZYGADLO', 'ALDANA ABRIL', 'soltero'],
-        ['28285284', 'Masculino', 'ZYGADLO', 'GERARDO EZEQUIEL', 'soltero'],
-        ['50173226', 'Masculino', 'ZWONKO CARRERA', 'JUAN MARTIN', 'soltero']
+        ['57122312', 'Masculino', 'Quintulen Curruhinca', 'Gadiel Rafael', 'soltero', '24/03/2018'],
+        %w[56757987 Otro Aguirre Verónica soltero 26/11/2018],
+        %w[29298088 Masculino BAUER GABRIEL soltero 18/07/2018],
+        ['56757352', 'Masculino', 'CHEUQUEPAN', 'EMILIO MACIEL', 'soltero', '06/07/1987'],
+        ['57122317', 'Masculino', 'INAL SANGIULIANO', 'LORENZO NAHITAN', 'soltero', '02/02/1973'],
+        ['44463371', 'Masculino', 'OLAVE ZAPATA', 'SEBASTIAN GABRIEL', 'soltero', '27/10/2002'],
+        ['33292171', 'Femenino', 'RAMOS', 'SABRINA GISELA', 'soltero', '27/09/2017'],
+        ['25259816', 'Femenino', 'GONZALEZ', 'ANDREA VERONICA', 'soltero', '07/03/1983'],
+        ['11155707', 'Masculino', 'RAMOS', 'BARTOLOMÈ JUAN', 'soltero', '22/10/1988'],
+        ['32320564', 'Femenino', 'MOYANO LAURIN', 'URSULA BELEN', 'soltero', '18/07/2018'],
+        ['39179882', 'Masculino', 'JEREZ', 'RODRIGO MAXIMILIANO', 'soltero', '19/01/2017'],
+        %w[94328242 Masculino RUSCONI ANTONIO soltero 08/09/1937],
+        ['54495846', 'Femenino', 'ALMENDRA FUENTES', 'LUCERO ELIZABETH', 'soltero', '02/10/2002'],
+        ['93660013', 'Masculino', 'RAMOS FIGUEROA', 'HUGO ALEJANDRO', 'soltero', '10/08/1980'],
+        ['29873762', 'Femenino', 'MOLINA', 'VALERIA RAQUEL', 'soltero', '17/04/1954'],
+        ['95875884', 'Masculino', 'HERBAS VARGAS', 'JHONNY', 'soltero', '15/05/1986'],
+        ['22116376', 'Femenino', 'RODRIGUEZ REUMAY', 'MARTHA SUSANA', 'casado', '13/03/1963'],
+        %w[56005098 Femenino MENDEZ ASHLEY soltero 11/01/2019],
+        ['28390235', 'Femenino', 'CASTILLO', 'VERONICA ANDREA', 'soltero', '14/05/1981'],
+        ['92422065', 'Femenino', 'VALENZUELA CARRASCO', 'ROSA ESTER', 'casado', '31/12/1961'],
+        ['34034559', 'Femenino', 'HERNANDEZ', 'NOELIA RUTH', 'casado', '14/02/1981'],
+        ['16007692', 'Femenino', 'AVILA', 'MARIA GABRIELA', 'soltero', '04/01/1981'],
+        ['95939909', 'Femenino', 'DELGADILLO COVA', 'LAUREN VALERIA', 'soltero', '01/04/2001'],
+        ['28614606', 'Femenino', 'SOTO', 'ELIANA MERCEDES', 'soltero', '01/04/2001'],
+        ['28863021', 'Masculino', 'TURREIRO', 'MATIAS RAUL', 'soltero', '11/11/1937'],
+        ['55158894', 'Femenino', 'SAAVEDRA', 'LUPE HEREDIA', 'soltero', '17/01/2013'],
+        ['16524092', 'Masculino', 'ZYSKINDOWICZ', 'DARIO ALEJANDRO', 'soltero', '14/06/2016'],
+        ['23205761', 'Femenino', 'ZYLBERSZAC', 'ARIELA VERONICA', 'soltero', '21/04/1971'],
+        ['43215471', 'Femenino', 'ZYGADLO', 'ALDANA ABRIL', 'soltero', '31/12/1961'],
+        ['28285284', 'Masculino', 'ZYGADLO', 'GERARDO EZEQUIEL', 'soltero', '11/09/1980'],
+        ['50173226', 'Masculino', 'ZWONKO CARRERA', 'JUAN MARTIN', 'soltero', '18/04/2010']
 
       ]
+    end
+
+    def get_patients_without_prescriptions
+      [['33917539', 'Masculino', 'MENDOZA', 'GUSTAVO ALFREDO', 'soltero', '28/07/1988'],
+       ['33770666', 'Masculino', 'PLAZA', 'NAHUEL ADRIAN', 'soltero', '22/02/1988'],
+       ['38812534', 'Femenino', 'GODOY', 'CARLA ANDREA', 'soltero', '06/04/1994'],
+       ['49721321', 'Femenino', 'ROCA ROMERO', 'CANDELA ITATÍ', 'soltero', '16/07/2009'],
+       ['54851274', 'Masculino', 'BLANCO', 'LUKA MAXIMILIANO', 'soltero', '02/06/2015']]
     end
   end
 
