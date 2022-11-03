@@ -1,4 +1,4 @@
-<%= render 'header' %>
+<%= render 'users/partials/header' %>
 <div class="card fixed-custom-card">
 
   <div class="card-header d-flex align-items-center justify-content-between">
@@ -36,7 +36,7 @@
             <h5>Sin perfil</h5>
           <% end %>
           
-          <strong>Roles activados:</strong> <%= @user.roles.map(&:name).join(", ").humanize %>.
+          <strong>Roles activados:</strong> <%#= @user.roles.map(&:name).join(", ").humanize %>.
         </div>
       </div>
     </div><!-- End panel body -->

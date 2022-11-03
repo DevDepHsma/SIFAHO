@@ -1,4 +1,4 @@
-<%= render 'users/header' %>
+<%= render 'users/partials/header' %>
 
   <div class="card fixed-custom-card">
     <div class="card-header d-flex align-items-center justify-content-between">
@@ -30,22 +30,15 @@
                 <p class="mb-0"><%= @user.profile.dni %></p>
               </div>
             </div>
-            <%# if @user.permission_requests.any? && policy(@user.permission_requests.last).update? %>
-              <%# <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#permission_req_in_progress"> %>
-                <%#= fa_icon 'info' %>
-              <%# </button> %>
-            <%# end %>
           </div>
-          <div class="mt-2 d-flex w-100">
-            <div id="location_select_container">
+          <div class="mt-2">
+            <%# <div id="location_select_container"> %>
               <%= render "permissions/partials/location_select" %>
-            </div>
+            <%# </div> %>
 
-            <div>
-              <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#sector-selection" id="open-sectors-select-modal">
-                <%= fa_icon 'plus' %>
-              </button>
-            </div>
+            <%# <div> %>
+              
+            <%# </div> %>
 
           </div>
           <% if @user.sector.present? %>

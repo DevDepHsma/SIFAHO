@@ -16,7 +16,7 @@
           </tr>
         </thead>
         <tbody id="users">
-          <%= render @users %>
+          <%= render(partial: 'users/partials/user', collection: @users, as: :user) %>
         </tbody>
       </table>
     </div>

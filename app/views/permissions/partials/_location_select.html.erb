@@ -1,6 +1,18 @@
- <%= simple_form_for 'remote_form', remote: true, url: permissions_users_admin_path(@user), method: 'GET', html: { novalidate: true} do |f| %>
-  <div class="form-inputs">
-      <%= f.select( :sector, 
+<button type="button" class="btn btn-primary w-100" data-toggle="modal" data-target="#sector-selection" id="open-sectors-select-modal">
+  Agregar sector <%= fa_icon 'plus' %>
+</button>
+<ul class="mt-3">
+  <% @user.sectors.each do |sector| %>
+    <li>
+    <button class="btn btn-primary">
+      <%= sector.name %> - <%= sector.establishment.name%>
+      </button>
+    </li>
+  <%end%>
+</ul>
+<%#= simple_form_for 'remote_form', remote: true, url: permissions_users_admin_path(@user), method: 'GET', html: { novalidate: true} do |f| %>
+  <%# <div class="form-inputs"> %>
+    <%#= f.select( :sector, 
         @user.sectors.all.map { 
           |sector| ["#{sector.name} - #{sector.establishment.name}", sector.id] 
         },
@@ -15,5 +27,5 @@
           "data-live-search-normalize"=>"true"
         }
       ) %>
-  </div>
-<% end %>
+  <%# </div> %>
+<%# end %>

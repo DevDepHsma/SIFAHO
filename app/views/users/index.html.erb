@@ -1,4 +1,4 @@
-<%= render 'header' %>
+<%= render 'users/partials/header' %>
 
 <% if @users.present? %>
   <div class="card fixed-custom-card">
@@ -39,7 +39,7 @@
     </div>
     <div class="card-body fixed-panel-index">
       <%= render(
-        partial: 'users/list',
+        partial: 'users/partials/list',
         locals: { users: @users }
       ) %>
     </div>
