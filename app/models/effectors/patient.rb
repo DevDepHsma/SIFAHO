@@ -36,7 +36,7 @@ class Patient < ApplicationRecord
   has_many :inpatient_movements
   before_save :format_full_name
   # Validations
-  validates_presence_of :first_name, :last_name, :dni
+  validates_presence_of :first_name, :last_name, :dni, :birthdate
   validates_uniqueness_of :dni
   validates :dni, numericality: { only_integer: true }
   validates_associated :patient_phones
