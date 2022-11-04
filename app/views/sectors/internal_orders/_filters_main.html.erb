@@ -1,90 +1,127 @@
-  <%= form_for_filterrific @filterrific do |f| %>
-    <div class="row justify-content-between">
-      <div class="col d-flex justify-content-end align-items-center">
-        <%= render_filterrific_spinner %>
-        <%= yield(:reset_filters) %>
-        
-          <%#= link_to provider_index_internal_orders_path(reset: true), class: 'btn btn-secondary ml-2',
-            title: 'Reiniciar', data: { toggle: 'tooltip', placement: 'top' }, 
-            'data-disable-with' => "<i class='fa fa-redo fa-spin'></i>".html_safe do %>
-            <%#= fa_icon 'redo' %>
-          <%# end %>
-      </div>
-      <div class="col">
+<%= simple_form_for internal_orders_applicants_path, remote: true, html: { method: 'GET', class: 'custom-filters-v1', id: "internal-orders-applicants-filter" } do |f| %>
+  <div class="filter-form-row">
+    <div class="filter-form-col">
+      <div class="form-group">
         <label>Código</label>
-        <%= f.text_field(
-          :search_code,
-          class: 'filterrific-periodically-observed form-control input-sm',
-          placeholder: 'Cód'
-        ) %>
+        <input class="form-control" 
+               autocomplete="off" 
+               type="text" 
+               name="filter[code]" 
+               id="filter_code" 
+               placeholder="Código"
+               value="<%= get_value_from_filter(:code) %>">
       </div>
-      <div class="col">
+    </div>
+    <div class="filter-form-col">
+      <div class="form-group">
         <%= yield(:field_filters) %>
-        
-          <!--label>Solicitante</label-->
-          <%#= f.text_field(
+      </div>
+    </div>
+    <div class="filter-form-col">
+      <div class="form-group">
+        <div class="filter-form-col">
+          <div class="form-group">
+            <select class="form-control custom-select " name="filter[with_order_type]" onchange="mark_selected(event)">
+              <option value=""></option>
+            <option value="0">Provision</option>
+              <option value="1">Solicitud</option>
+          
+            </select>
+            <label>Origen</label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="filter-form-col">
+      <div class="form-group">
+        <div class="filter-form-col">
+          <div class="form-group">
+            <select class="form-control custom-select " name="filter[with_status]" onchange="mark_selected(event)">
+              <option  value=""></option>
+              <option  value="0">Solicitud auditoria</option>
+              <option  value="1">Solicitud enviada</option>
+              <option  value="2">Proveedor auditoria</option>
+              <option  value="3">Provision en camino</option>
+              <option  value="4">Provision entregada</option>
+              <option  value="5">Anulado</option>
+            </select>
+            <label>Estado</label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <input type="hidden" name="filter[sort]" value="<%= get_value_from_filter(:sort) %>">
+    <input type="hidden" name="per_page" value="<%= params[:per_page] || 15 %>">
+    <div class="filter-form-btn-group">
+      <button class="btn btn-primary" type="submit" form="<%= "internal-orders-applicants-filter" %>">
+        Buscar
+      </button>
+      <button class="btn btn-danger btn-clean-filters" type="button" form="<%= "internal-orders-applicants-filter" %>">
+        <%= fa_icon 'times' %>
+      </button>
+    </div>
+    <!--label>Solicitante</label-->
+    <%#= f.text_field(
             :search_applicant,
             class: 'filterrific-periodically-observed form-control input-sm',
             placeholder: 'Sector',
             autocomplete: 'off'
           ) %>
-      </div>
-      <div class="col">
+    <%# <div class="col">
         <label>Origen</label>
         <%= f.select(:with_order_type,
           InternalOrder.order_types.map{ |type| [type.first.humanize, type.second] },{:include_blank => 'Todos'},
           { class: "selectpicker custom-select-pick show-tick", "data-width"=>"100%"}) %>
-      </div>
-      <div class="col">
-        <label>Estado</label>
-        <%= f.select(:with_status,
+    <%# </div>  %>
+    <%# <div class="col">
+        <label>Estado</label> %>
+    <%# <%= f.select(:with_status,
           @filterrific.select_options[:with_status].map {
             |status| [status.first, status.second, data: {'content': "<span class='label label-"+status.third+"'>"+status.first+"</span>"}]
           },{},
           { class: "selectpicker custom-select-pick show-tick", "data-width"=>"100%"}) %>
-      </div>
-      <div class="col">
+    <%# </div> %>
+    <%# <div class="col">
         <label>Solicitado</label>
         <div class="row">
-          <div class="col-md-6">
-            <%= f.text_field(
+          <div class="col-md-6"> %>
+    <%# <%= f.text_field(
               :requested_date_since,
               class: 'form-control filterrific-periodically-observed datepicker  input-sm',
               placeholder: "Desde",
               autocomplete: 'off',
               data: { date_format: 'DD/MM/YY'}) %>
-          </div>
-          <div class="col-md-6">
-            <%= f.text_field(
+    <%# </div> %>
+    <%# <div class="col-md-6"> %>
+    <%# <%= f.text_field(
               :requested_date_to,
               class: 'form-control filterrific-periodically-observed datepicker input-sm',
               placeholder: "Hasta",
               autocomplete: 'off',
               data: { date_format: 'DD/MM/YY'}) %>
-          </div>
-        </div>
-      </div>
-      <div class="col">
-        <div class="d-flex justify-content-between align-items-center">
-          <%= yield(:date_filter_label) %>
-          
-        </div>
-        <div class="row">
-          <div class="col-md-6">
-            <%= f.text_field(:date_received_since,
+    <%# </div> %>
+    <%# </div> %>
+    <%# </div> %>
+    <%# <div class="col">
+        <div class="d-flex justify-content-between align-items-center"> %>
+    <%# <%= yield(:date_filter_label) %>
+    <%# </div> %>
+    <%# <div class="row">
+          <div class="col-md-6"> %>
+    <%# <%= f.text_field(:date_received_since,
             class: 'form-control filterrific-periodically-observed datepicker input-sm',
             placeholder: "Desde",
             autocomplete: 'off',
             data: { date_format: 'DD/MM/YY'}) %>
-          </div>
-          <div class="col-md-6">
-            <%= f.text_field(:date_received_to,
+    <%# </div> %>
+    <%# <div class="col-md-6"> %>
+    <%# <%= f.text_field(:date_received_to,
             class: 'form-control filterrific-periodically-observed datepicker input-sm',
             placeholder: "Hasta",
             autocomplete: 'off',
             data: { date_format: 'DD/MM/YY'}) %>
-          </div>
-        </div>
-      </div>
+    <%# </div> %>
+    <%# </div> %>
+    <%# </div> %>
   </div>
-<% end %>
+<% end%>
