@@ -15,6 +15,6 @@
   <hr>
   <div class="text-right">
     <button class="btn btn-sm btn-danger">Anular</button>
-    <button class="btn btn-sm btn-success">Aplicar</button>
+    <%= link_to 'Aplicar', build_from_request_users_admin_path, remote: true, class: 'btn btn-sm btn-success' %>
   </div>
 </div>

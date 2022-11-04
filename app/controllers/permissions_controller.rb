@@ -1,6 +1,7 @@
 class PermissionsController < ApplicationController
 
-  before_action :set_user, only: [:index, :edit, :update]
+  before_action :set_user, only: [:index, :edit, :update, :build_from_request]
+  before_action :set_permission_request, only: [:build_from_request]
 
   def index
     @filterrific = initialize_filterrific(
@@ -11,6 +12,14 @@ class PermissionsController < ApplicationController
     @permission_modules = @filterrific.find
     @sector = params[:remote_form].present? && params[:remote_form][:sector].present? ? Sector.find(params[:remote_form][:sector]) : @user.sector
     @enable_permissions = @user.permission_users.where(sector: @sector).pluck(:permission_id)
+  end
+
+  def build_from_request
+    @user = @permission_request.build_user_permissions
+    @roles = Role.all.order(name: :asc)
+    @permission_modules = PermissionModule.eager_load(:permissions).all
+    @sector = @permission_request.sector
+    @enable_permissions = PermissionRole.where(role_id: @user.user_roles.map(&:role_id)).pluck(:permission_id)
   end
 
   def edit
@@ -64,6 +73,9 @@ class PermissionsController < ApplicationController
   private
   def set_user
     @user = User.eager_load(:sectors).find(params[:id])
+  end
+  def set_permission_request
+    @permission_request = @user.permission_requests.last
   end
 
   def permission_params

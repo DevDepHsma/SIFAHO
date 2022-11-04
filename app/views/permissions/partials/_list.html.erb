@@ -1,59 +1,61 @@
-<%= simple_form_for 'remote_form', remote: true, url: permissions_users_admin_path(@user), method: 'GET', html: { novalidate: true} do |f| %>
-  <div class="input-group mb-2">
-    <input class="form-control" type="hidden" name="remote_form[sector]" id="remote_form_input_sector" value="<%= @sector.present? ? @sector.id : '' %>">
-    <input class="form-control" placeholder="Módulo" type="text" name="remote_form[search_name]" id="remote_form_search_name" autocomplete="off">
-    <div class="input-group-append">
-      <div class="input-group-text" id="btnGroupAddon">
-        <%= fa_icon 'search' %>
+<% if @user.user_sectors.any? %>
+  <%= simple_form_for 'remote_form', remote: true, url: permissions_users_admin_path(@user), method: 'GET', html: { novalidate: true} do |f| %>
+    <div class="input-group mb-2">
+      <input class="form-control" type="hidden" name="remote_form[sector]" id="remote_form_input_sector" value="<%= @sector.present? ? @sector.id : '' %>">
+      <input class="form-control" placeholder="Módulo" type="text" name="remote_form[search_name]" id="remote_form_search_name" autocomplete="off">
+      <div class="input-group-append">
+        <div class="input-group-text" id="btnGroupAddon">
+          <%= fa_icon 'search' %>
+        </div>
       </div>
     </div>
-  </div>
-<% end %>
-<%= simple_form_for 'permission_users', url: update_permissions_users_admin_path(@user), remote: true, html: { method: 'PUT', name: 'permission_users', id: 'permission_users', novalidate: true} do |f| %>
-  <% @permission_modules.each do |permission_mod| %>
-    <div class="card">
-      <div class="card-header permission-mod-items" id="per-mod-header-<%= permission_mod.id %>">
-        <h2 class="mb-0 d-flex align-items-center">
-          <button class="btn btn-block text-left" type="button" data-toggle="collapse" data-target="#per_mod_<%=permission_mod.id%>" aria-expanded="true" aria-controls="per_mod_<%=permission_mod.id%>">
-            <%= fa_icon 'caret-down' %>
-            <span class="ml-2">
-              <%= permission_mod.name %>
-            </span>
-          </button>
-          <div class="custom-control custom-switch">
-            <div class="d-flex all-cl-container">
-              <label class="label-fs-1" for="perm-mod-check-<%= permission_mod.id %>">Todos</label>
-              <input type="checkbox" 
+  <% end %>
+  <%= simple_form_for 'permission_users', url: update_permissions_users_admin_path(@user), remote: true, html: { method: 'PUT', name: 'permission_users', id: 'permission_users', novalidate: true} do |f| %>
+    <% @permission_modules.each do |permission_mod| %>
+      <div class="card">
+        <div class="card-header permission-mod-items" id="per-mod-header-<%= permission_mod.id %>">
+          <h2 class="mb-0 d-flex align-items-center">
+            <button class="btn btn-block text-left" type="button" data-toggle="collapse" data-target="#per_mod_<%=permission_mod.id%>" aria-expanded="true" aria-controls="per_mod_<%=permission_mod.id%>">
+              <%= fa_icon 'caret-down' %>
+              <span class="ml-2">
+                <%= permission_mod.name %>
+              </span>
+            </button>
+            <div class="custom-control custom-switch">
+              <div class="d-flex all-cl-container">
+                <label class="label-fs-1" for="perm-mod-check-<%= permission_mod.id %>">Todos</label>
+                <input type="checkbox" 
                      class="custom-control-input perm-mod-toggle-button" 
                      id="perm-mod-check-<%= permission_mod.id %>"
                      <%= (permission_mod.permissions.pluck(:id) - @enable_permissions).empty? ? 'checked': '' %>>
-              <label class="custom-control-label" for="perm-mod-check-<%= permission_mod.id %>"></label>
+                <label class="custom-control-label" for="perm-mod-check-<%= permission_mod.id %>"></label>
+              </div>
             </div>
-          </div>
-        </h2>
-      </div>
-      <div id="per_mod_<%=permission_mod.id%>" class="collapse show" aria-labelledby="per-mod-header-<%= permission_mod.id %>">
-        <% permission_mod.permissions_build(@user, @sector).each do |perm| %>
-          <div class="card-body p-0">
-            <label for="perm-check-<%= perm.permission_id %>" class="mb-0 d-flex flex-row w-100 justify-content-between w-100 p-2">
-              <span><%= t("permissions.name.#{perm.permission.name}") %></span>
-              <div class="custom-control custom-switch">
-                <input type="checkbox" 
+          </h2>
+        </div>
+        <div id="per_mod_<%=permission_mod.id%>" class="collapse show" aria-labelledby="per-mod-header-<%= permission_mod.id %>">
+          <% permission_mod.permissions_build(@user, @sector).each do |perm| %>
+            <div class="card-body p-0">
+              <label for="perm-check-<%= perm.permission_id %>" class="mb-0 d-flex flex-row w-100 justify-content-between w-100 p-2">
+                <span><%= t("permissions.name.#{perm.permission.name}") %></span>
+                <div class="custom-control custom-switch">
+                  <input type="checkbox" 
                        class="custom-control-input perm-toggle-button" 
                        id="perm-check-<%= perm.permission_id %>" 
                        value="<%=perm.permission_id%>"
                        name="permission[permission_users_attributes][<%= perm.permission_id %>][permission_id]"
                        <%= @enable_permissions.include?(perm.permission.id) ? 'checked': '' %>>
-                <input type="hidden" name="permission[permission_users_attributes][<%= perm.permission_id %>][_destroy]" value="<%= !@enable_permissions.include?(perm.permission.id) %>">
-                <label class="custom-control-label" for="perm-check-<%= perm.permission.id %>">
-                </label>
-              </div>
-            </label>
-          </div>
-          <input type="hidden" name="permission[permission_users_attributes][<%= perm.permission_id %>][id]" value="<%= perm.id %>">
-          <input type="hidden" name="permission[permission_users_attributes][<%= perm.permission_id %>][sector_id]" value="<%= perm.sector_id %>">
-        <% end %>
+                  <input type="hidden" name="permission[permission_users_attributes][<%= perm.permission_id %>][_destroy]" value="<%= !@enable_permissions.include?(perm.permission.id) %>">
+                  <label class="custom-control-label" for="perm-check-<%= perm.permission.id %>">
+                  </label>
+                </div>
+              </label>
+            </div>
+            <input type="hidden" name="permission[permission_users_attributes][<%= perm.permission_id %>][id]" value="<%= perm.id %>">
+            <input type="hidden" name="permission[permission_users_attributes][<%= perm.permission_id %>][sector_id]" value="<%= perm.sector_id %>">
+          <% end %>
+        </div>
       </div>
-    </div>
+    <% end %>
   <% end %>
 <% end %>

@@ -1,102 +1,66 @@
 <%= render 'users/partials/header' %>
-
-  <div class="card fixed-custom-card">
-    <div class="card-header d-flex align-items-center justify-content-between">
-      <div class="d-flex align-items-center">
-        <%= fa_icon "lock" %>
-        <h5 class="card-title mb-0 ml-2">
-          <% if @user.permission_requests.any? && @user.permission_requests.first.in_progress? %>
-            Solicitud de permisos <span class="badge badge-primary"> <%=
+<div class="card fixed-custom-card">
+  <div class="card-header d-flex align-items-center justify-content-between">
+    <div class="d-flex align-items-center">
+      <%= fa_icon "lock" %>
+      <h5 class="card-title mb-0 ml-2">
+        <% if @user.permission_requests.any? && @user.permission_requests.first.in_progress? %>
+          Solicitud de permisos <span class="badge badge-primary"> <%=
               t("permission_request_status.#{@user.permission_requests.first.status}").downcase
             %> </span>
-          <% else %>
-            Editando permisos
-          <% end %>
-        </h5>
-      </div>
-      <%= link_to users_admin_index_path, class: 'btn btn-light' do %>
-        <%= fa_icon 'times' %>
-      <% end %>
+        <% else %>
+          Editando permisos
+        <% end %>
+      </h5>
     </div>
-      
-    <div class="card-body">
-      <div class="row">
-        <div class="col-3 border-right">
-          <div class="d-flex align-items-center justify-content-between">
-            <div class="d-flex">
-              <img src="<%= user_avatar(@user, 25) %>" onError='loadImage(event, "<%= image_path('profile-placeholder.jpg') %>")' class="rounded-circle mr-2 user-thumbnail-40" />
-              <div>
-                <p class="mb-0"><%= @user.full_name %></p>
-                <p class="mb-0"><%= @user.profile.dni %></p>
-              </div>
-            </div>
-          </div>
-          <div class="mt-2">
-            <%# <div id="location_select_container"> %>
-              <%= render "permissions/partials/location_select" %>
-            <%# </div> %>
-
-            <%# <div> %>
-              
-            <%# </div> %>
-
-          </div>
-          <% if @user.sector.present? %>
-            <%# roles %>
-            <div class="mt-2">
-              <p class="mb-1">Modulos</p>
-                <% @roles.each do |role| %>
-                  <div class="custom-control custom-checkbox mb-1">
-                    <input type="checkbox" class="custom-control-input" id="role-<%=role.id%>" required>
-                    <label class="custom-control-label" for="role-<%=role.id%>"><%= role.name %></label>
-                  </div>
-                <% end %>
-              </ul>
-            </div>
-          <% end %>
-        </div>
-        <div class="col-9">
-          <%= render( partial: 'permissions/partials/request_permission_info' ) %>
-
-          <div id="permissions_list"> 
-            <% if @user.sector.present? %>
-              <%= render(
-                partial: 'permissions/partials/list',
-                locals: { permission_modules: @permission_modules }
-              ) %>
-            <% end %>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-    <div class="card-footer d-flex justify-content-end">
-      <%= link_to 'Volver', :back, class: 'btn btn-light mr-2' %>
-      <button type='submit' name='commit' class='btn btn-secondary btn-success' form='permission_users'>
-        <%= fa_icon 'save' %> Guardar
-      </button>
-    </div> 
-
+    <%= link_to users_admin_index_path, class: 'btn btn-light' do %>
+      <%= fa_icon 'times' %>
+    <% end %>
   </div>
-
-
+  <div class="card-body">
+    <div class="row">
+      <div class="col-3 border-right">
+        <div class="d-flex align-items-center justify-content-between">
+          <div class="d-flex">
+            <img src="<%= user_avatar(@user, 25) %>" onError='loadImage(event, "<%= image_path('profile-placeholder.jpg') %>")' class="rounded-circle mr-2 user-thumbnail-40" />
+            <div>
+              <p class="mb-0"><%= @user.full_name %></p>
+              <p class="mb-0"><%= @user.profile.dni %></p>
+            </div>
+          </div>
+        </div>
+        <div class="mt-2" id="location_select_container">
+          <%= render "permissions/partials/location_select"%>
+        </div>
+      </div>
+      <div class="col-9">
+        <%= render( partial: 'permissions/partials/request_permission_info' ) %>
+        <div id="permissions_list">
+          <%= render( partial: 'permissions/partials/list' ) %>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card-footer d-flex justify-content-end">
+    <%= link_to 'Volver', :back, class: 'btn btn-light mr-2' %>
+    <button type='submit' name='commit' class='btn btn-secondary btn-success' form='permission_users'>
+      <%= fa_icon 'save' %> Guardar
+    </button>
+  </div>
+</div>
 <% content_for :available_sectors_count do %>
   <%= @user.sectors.count %>
 <% end %>
-
 <% content_for :available_sectors do %>
   <%= render "permissions/partials/available_sectors" %>
 <% end %>
-
 <% content_for :select_sector do %>
   <%= render "permissions/partials/select_sector" %>
 <% end %>
-
 <% content_for :modal do %>
   <%= render "shared/modals/sector_selection" %>
   <% if @user.permission_requests.any? && policy(@user.permission_requests.last).update? %>
-    <%= render "permissions/partials/show_modal" %>  
+    <%= render "permissions/partials/show_modal" %>
   <% end %>
-
   <%= render(partial: 'shared/modals/delete_confirmation') %>
 <% end %>

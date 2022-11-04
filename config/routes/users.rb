@@ -22,6 +22,7 @@ Rails.application.routes.draw do
         delete '/sector/:sector_id', to: 'users#removes_sector', as: :removes_sector
         get :change_sector
         get :permissions, to: 'permissions#index'
+        get :permissions_build_from_request, to: 'permissions#build_from_request', as: :build_from_request
         get '/permisos', to: 'permissions#edit', as: :edit_permissions
         put '/permisos', to: 'permissions#update', as: :update_permissions
       end

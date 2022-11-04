@@ -98,4 +98,13 @@ class PermissionRequest < ApplicationRecord
   def set_permission_req_to_user
     user.permission_req! if user.active?
   end
+
+  def build_user_permissions
+    if sector_id.present?
+      user.user_sectors.build(sector_id: sector.id)
+      user.sector_id = sector.id unless user.sector.present?
+    end
+    roles.each { |role| user.user_roles.build(role_id: role.id) } if roles.present?
+    user
+  end
 end
