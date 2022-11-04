@@ -2,7 +2,7 @@
 <% content_for :field_filters do %>
   <div class="filter-form-col">
     <div class="form-group">
-      <label>Proveedor</label>
+      
       <input class="form-control" 
                autocomplete="off" 
                type="text" 
@@ -10,6 +10,7 @@
                id="filter_provider" 
                placeholder="Sector"
                value="<%= get_value_from_filter(:provider) %>">
+               <label>Proveedor</label>
     </div>
   </div>
 <% end %>
