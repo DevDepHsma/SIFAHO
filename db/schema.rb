@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_11_03_105725) do
+ActiveRecord::Schema.define(version: 2022_11_07_150959) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "fuzzystrmatch"
@@ -954,12 +954,13 @@ ActiveRecord::Schema.define(version: 2022_11_03_105725) do
     t.integer "status", default: 0
     t.string "other_establishment"
     t.string "other_sector"
-    t.string "role"
     t.text "observation"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "establishment_id"
     t.bigint "sector_id"
+    t.bigint "aproved_by_id", default: 1
+    t.index ["aproved_by_id"], name: "index_permission_requests_on_aproved_by_id"
     t.index ["establishment_id"], name: "index_permission_requests_on_establishment_id"
     t.index ["sector_id"], name: "index_permission_requests_on_sector_id"
     t.index ["user_id"], name: "index_permission_requests_on_user_id"
