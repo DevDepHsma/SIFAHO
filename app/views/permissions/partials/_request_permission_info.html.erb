@@ -4,7 +4,7 @@
     <strong>Establecimiento indicado:</strong> <%= @user.permission_requests.last.establishment.present? ? @user.permission_requests.last.establishment.name : @user.permission_requests.last.other_establishment %>. <strong>Sector indicado:</strong> <%= @user.permission_requests.last.sector.present? ? @user.permission_requests.last.sector.name : @user.permission_requests.last.other_sector %>.
   </p>
   <p class="mb-0">
-    <strong>Funciones selccionadas:</strong>
+    <strong>Funciones seleccionadas:</strong>
   </p>
   <ul>
     <% @user.permission_requests.last.roles.each do |role| %>

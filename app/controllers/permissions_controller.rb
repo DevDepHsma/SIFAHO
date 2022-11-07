@@ -1,7 +1,7 @@
 class PermissionsController < ApplicationController
 
   before_action :set_user, only: [:index, :edit, :update, :build_from_request]
-  before_action :set_permission_request, only: [:build_from_request]
+  before_action :set_permission_request, only: [:build_from_request, :edit]
 
   def index
     @filterrific = initialize_filterrific(
@@ -47,8 +47,8 @@ class PermissionsController < ApplicationController
       redirect_back(fallback_location: root_path)
     end
     respond_to do |format|
+      @user.update_user_permissions!(permission_params, params[:permission][:permission_request_id])
       begin
-        @user.update!(permission_params)
         flash.now[:success] = 'Permisos asignados correctamente.'
         format.js
         format.html { redirect_to users_admin_url(@user) }
@@ -75,15 +75,21 @@ class PermissionsController < ApplicationController
     @user = User.eager_load(:sectors).find(params[:id])
   end
   def set_permission_request
-    @permission_request = @user.permission_requests.last
+    @permission_request = @user.permission_requests.in_progress.last
   end
 
   def permission_params
     params.require(:permission).permit(
+      :sector_id,
       permission_users_attributes: [
         :id,
         :permission_id,
         :sector_id,
+        :_destroy
+      ],
+      user_roles_attributes: [
+        :id,
+        :role_id,
         :_destroy
       ])
   end

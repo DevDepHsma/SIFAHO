@@ -18,10 +18,8 @@
 #  status                   :integer, default: 0
 
 class User < ApplicationRecord
-  # rolify
+  
   include PgSearch::Model
-  # Include default devise modules. Others available are:
-  # :confirmable, :lockable, :timeoutable and :omniauthable
   devise :rememberable, :trackable, :database_authenticatable
   devise :ldap_authenticatable, authentication_keys: [:username]
 
@@ -44,11 +42,11 @@ class User < ApplicationRecord
 
   accepts_nested_attributes_for :profile, :professional
   accepts_nested_attributes_for :permission_users, allow_destroy: true
+  accepts_nested_attributes_for :user_roles, allow_destroy: true
 
   validates :username, presence: true, uniqueness: true
 
   after_create :create_profile
-  after_update :update_permission_request
   after_save :verify_profile
 
   # Delegaciones
@@ -93,13 +91,6 @@ class User < ApplicationRecord
     profile.avatar.attach(io: File.open(Rails.root.join('app', 'assets', 'images', 'profile-placeholder.jpg')),
                           filename: 'profile-placeholder.jpg', content_type: 'image/jpg')
     profile.save!
-  end
-
-  def update_permission_request
-    if permissions.any? && sectors.any? && permission_req? && permission_requests.any?(&:in_progress?)
-      permission_requests.find_by(status: 'in_progress').done!
-      active!
-    end
   end
 
   def verify_profile
@@ -156,6 +147,17 @@ class User < ApplicationRecord
   scope :with_sector_id, lambda { |an_id|
     where(sector_id: [*an_id])
   }
+
+  def update_user_permissions!(user_params, permission_request_id)
+    ActiveRecord::Base.transaction do
+      update!(user_params)
+      sectors << Sector.find(user_params[:sector_id])
+      permission_request = PermissionRequest.find(permission_request_id)
+      permission_request.done!
+      active!
+      self
+    end
+  end
 
   def full_name
     if profile.present?

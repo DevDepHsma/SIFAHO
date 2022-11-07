@@ -1,9 +1,23 @@
+# == Schema Information
+
+# Table name: permission_requests
+
+# user_id                         :bigint
+# status                          :integer, default: 0, options: { in_progress: 0, done: 1 }
+# other_establishment             :string
+# other_sector                    :string
+# observation                     :text
+# aproved_by_id                   :bigint
+# establishment_id                :bigint
+# sector_id                       :bigint
+
 class PermissionRequest < ApplicationRecord
   include PgSearch::Model
 
   enum status: { in_progress: 0, done: 1 }
   # Relationships
   belongs_to :user
+  belongs_to :aproved_by, class_name: 'User'
   has_one :profile, through: :user
   belongs_to :establishment, optional: true
   belongs_to :sector, optional: true

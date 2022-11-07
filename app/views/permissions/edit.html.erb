@@ -4,9 +4,9 @@
     <div class="d-flex align-items-center">
       <%= fa_icon "lock" %>
       <h5 class="card-title mb-0 ml-2">
-        <% if @user.permission_requests.any? && @user.permission_requests.first.in_progress? %>
+        <% if @permission_request.present? %>
           Solicitud de permisos <span class="badge badge-primary"> <%=
-              t("permission_request_status.#{@user.permission_requests.first.status}").downcase
+              t("permission_request_status.#{@permission_request.status}").downcase
             %> </span>
         <% else %>
           Editando permisos
@@ -34,7 +34,9 @@
         </div>
       </div>
       <div class="col-9">
-        <%= render( partial: 'permissions/partials/request_permission_info' ) %>
+        <% if @permission_request.present? %>
+          <%= render( partial: 'permissions/partials/request_permission_info' ) %>
+        <% end %>
         <div id="permissions_list">
           <%= render( partial: 'permissions/partials/list' ) %>
         </div>
