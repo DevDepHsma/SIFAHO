@@ -21,8 +21,8 @@ RSpec.configure do |config|
     effectors_populate
     products_populate
     stocks_populate
-    users_populate
     roles_populate
+    users_populate
     patients_populate
     professionals_populate
     outpatient_prescriptions_populate
