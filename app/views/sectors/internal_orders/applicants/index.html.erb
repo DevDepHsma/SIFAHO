@@ -4,9 +4,26 @@
     <%= render "sectors/internal_orders/applicants/partials/filter" %>
   </div>
   <div class="card-body fixed-panel-index">
-    <%= render(
-      partial: 'sectors/internal_orders/applicants/partials/list',
-      locals: { applicant_orders: @applicant_orders }
-    ) %>
+    <% if @internal_orders.present? %>
+      <div id="table_results">
+        <%= render(
+          partial: 'sectors/internal_orders/applicants/partials/list',
+          locals: { internal_orders: @internal_orders }
+        ) %>
+      </div>
+    <% else %>
+      <%= render(
+        partial: 'shared/not_found_filter',
+        locals: { object_name: 'Solicitudes' }
+      ) %>
+    <% end %>
   </div>
+  
+  <%# ------------------------Falta hacer la paginación------------------------------------------------------------- %>
+  <%# <div class="card-footer" id="paginate_footer">
+    <%= render(
+          partial: 'shared/paginate_index',
+          locals: { model: @internal_orders, form_id: 'internal-filter' }
+        ) %>
+  <%# </div> %>
 </div>
