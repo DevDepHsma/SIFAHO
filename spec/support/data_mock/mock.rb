@@ -283,4 +283,11 @@ module DataMock
       ]
     end
   end
+
+  module Users
+    def get_users_for_request
+      %w[35597253 20903226 30010383 27662544 21932202 35864726 24422906 20233982 30917178
+         35311523 22638851]
+    end
+  end
 end

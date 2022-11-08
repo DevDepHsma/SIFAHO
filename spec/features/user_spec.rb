@@ -19,6 +19,9 @@ RSpec.feature 'Users', type: :feature, js: true do
     PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @read_users)
     PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @answer_permission_request)
     PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @update_permissions)
+
+    @user_permission_requested = User.where(username: get_users_for_request).sample
+    @permission_request = PermissionRequest.where(user_id: @user_permission_requested.id).first
   end
 
   background do
@@ -109,24 +112,33 @@ RSpec.feature 'Users', type: :feature, js: true do
         end
       end
 
-      # this expect should be run before be modify 
       it 'Search by module input' do
         visit "/usuarios/#{@user_permission_requested.id}/permisos"
         click_link 'Aplicar'
 
         fill_in 'permission[search_name]', with: 'usua'
-        sleep 10
+        within '#permission_users' do
+          expect(page).to have_button('Usuario')
+        end
+
+        fill_in 'permission[search_name]', with: 'sto'
+        within '#permission_users' do
+          expect(page).to have_button('Stock')
+        end
       end
 
       it 'Edit permissions apply and save permission request' do
-        visit "/usuarios/#{@user_permission_requested.id}/permisos"
+        permission_requested_to_approve = User.where(username: get_users_for_request)
+                                              .where
+                                              .not(id: @user_permission_requested.id)
+                                              .sample
+        visit "/usuarios/#{permission_requested_to_approve.id}/permisos"
         click_link 'Aplicar'
         sleep 1
         click_button 'Guardar'
         expect(page).to have_content('Permisos asignados correctamente.')
       end
 
-      
       # it 'Nav Menu link' do
 
       #   page.execute_script %Q{

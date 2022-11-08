@@ -15,6 +15,7 @@ RSpec.configure do |config|
   config.include DataMock::Patients, type: :feature
   config.include DataMock::Professionals, type: :feature
   config.include DataMock::Reports, type: :feature
+  config.include DataMock::Users, type: :feature
 
   config.before(:all, type: :feature) do
     permissions_populate
