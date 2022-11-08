@@ -99,8 +99,7 @@ RSpec.feature 'Users', type: :feature, js: true do
         end
 
         within '#permissions_list' do
-          # Update filter by module
-          # expect(page).to have_field('search_module_name')
+          expect(page).to have_field('permission[search_name]')
           @permission_request.roles.each do |role|
             role.permissions.each do |permission|
               expect(page).to have_field("permission[permission_users_attributes][#{permission.id}][permission_id]",
@@ -108,6 +107,15 @@ RSpec.feature 'Users', type: :feature, js: true do
             end
           end
         end
+      end
+
+      # this expect should be run before be modify 
+      it 'Search by module input' do
+        visit "/usuarios/#{@user_permission_requested.id}/permisos"
+        click_link 'Aplicar'
+
+        fill_in 'permission[search_name]', with: 'usua'
+        sleep 10
       end
 
       it 'Edit permissions apply and save permission request' do
@@ -118,6 +126,7 @@ RSpec.feature 'Users', type: :feature, js: true do
         expect(page).to have_content('Permisos asignados correctamente.')
       end
 
+      
       # it 'Nav Menu link' do
 
       #   page.execute_script %Q{
