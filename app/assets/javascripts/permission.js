@@ -29,3 +29,14 @@ $(document).on('turbolinks:load', function() {
   });
   
 });
+
+function searchModule(e){
+  const regexp = new RegExp(e.target.value, 'i');
+  $("#permission_users button").each((index, ele) => {
+    if( regexp.test($(ele).text()) ){
+      $(ele).closest('div.card').show();
+    }else{
+      $(ele).closest('div.card').hide();
+    }
+  });
+}

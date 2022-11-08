@@ -1,15 +1,12 @@
 <% if @user.user_sectors.any? %>
-  <%= simple_form_for 'remote_form', remote: true, url: permissions_users_admin_path(@user), method: 'GET', html: { novalidate: true} do |f| %>
-    <div class="input-group mb-2">
-      <input class="form-control" type="hidden" name="remote_form[sector]" id="remote_form_input_sector" value="<%= @sector.present? ? @sector.id : '' %>">
-      <input class="form-control" placeholder="Módulo" type="text" name="remote_form[search_name]" id="remote_form_search_name" autocomplete="off">
-      <div class="input-group-append">
-        <div class="input-group-text" id="btnGroupAddon">
-          <%= fa_icon 'search' %>
-        </div>
+  <div class="input-group mb-2">
+    <input class="form-control" placeholder="Módulo" type="text" name="permission[search_name]" id="permission_search_name" autocomplete="off" onkeyup="searchModule(event);">
+    <div class="input-group-append">
+      <div class="input-group-text" id="btnGroupAddon">
+        <%= fa_icon 'search' %>
       </div>
     </div>
-  <% end %>
+  </div>
   <%= simple_form_for 'permission_users', url: update_permissions_users_admin_path(@user), remote: true, html: { method: 'PUT', name: 'permission_users', id: 'permission_users', novalidate: true} do |f| %>
     
     <input type="hidden" name="permission[sector_id]" value="<%= @user.sector_id %>">
