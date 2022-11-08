@@ -215,7 +215,8 @@ class InternalOrder < ApplicationRecord
   private
 
   def record_remit_code
-    self.remit_code = "SE#{DateTime.now.to_s(:number)}"
+    self.remit_code = "SE#{DateTime.now.to_s(:number)}" unless Rails.env.test?
+   
   end
 
   def presence_of_products_into_the_order
