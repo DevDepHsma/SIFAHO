@@ -23,7 +23,7 @@ class InternalOrder < ApplicationRecord
                                 allow_destroy: true
 
   scope :filter_by_params, lambda { |filter_params, sector_id|
-    query = self.select(:id,:requested_date,:date_received, :remit_code, :status, :provider_sector_id, :order_type, :applicant_sector_id, 'sectors.name').joins(:provider_sector).where(applicant_sector_id: sector_id)
+    query = self.select(:id, :requested_date, :date_received, :remit_code, :status, :provider_sector_id, :order_type, :applicant_sector_id, 'sectors.name').joins(:provider_sector).where(applicant_sector_id: sector_id)
     query = query.like_remit_code(filter_params[:code]) if filter_params.present? && filter_params[:code].present?
     query = query.like_provider(filter_params[:provider]) if filter_params.present? && filter_params[:provider].present?
     if filter_params.present? && filter_params[:with_order_type].present?
@@ -38,6 +38,7 @@ class InternalOrder < ApplicationRecord
             else
               query.reorder(remit_code: :desc)
             end
+
     return query
   }
 
@@ -69,33 +70,7 @@ class InternalOrder < ApplicationRecord
                   using: { tsearch: { prefix: true } }, # Buscar coincidencia desde las primeras letras.
                   ignoring: :accents # Ignorar tildes.
 
-  scope :sorted_by, lambda { |sort_option|
-    # extract the sort direction from the param value.
-    direction = sort_option =~ /desc$/ ? 'desc' : 'asc'
-    case sort_option.to_s
-    when /^created_at_/s
-      # Ordenamiento por fecha de creación en la BD
-      order("internal_orders.created_at #{direction}")
-    when /^solicitante_/
-      # Ordenamiento por nombre de responsable
-      order("LOWER(applicant_sector.name) #{direction}").joins('INNER JOIN sectors as applicant_sector ON applicant_sector.id = internal_orders.applicant_sector_id')
-    when /^insumos_solicitados_/
-      # Ordenamiento por nombre de sector
-      order("supplies.name #{direction}").joins(:supplies)
-    when /^estado_/
-      # Ordenamiento por nombre de estado
-      order("internal_orders.status #{direction}")
-    when /^recibido_/
-      # Ordenamiento por la fecha de recepción
-      order("internal_orders.date_received #{direction}")
-    when /^entregado_/
-      # Ordenamiento por la fecha de dispensación
-      order("internal_orders.date_delivered #{direction}")
-    else
-      # Si no existe la opcion de ordenamiento se levanta la excepcion
-      raise(ArgumentError, "Invalid sort option: #{sort_option.inspect}")
-    end
-  }
+
 
   scope :date_received_since, lambda { |a_date|
     where('internal_orders.date_received >= ?', a_date)
