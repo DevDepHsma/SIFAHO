@@ -22,132 +22,132 @@ RSpec.feature 'InternalOrdersApplicantFilters', type: :feature do
       visit '/sectores/pedidos/recibos'
     end
 
-    # describe 'form filters' do
-    #   it 'has fields' do
-    #     within '#internal-filter' do
-    #       expect(page).to have_field('filter[code]', type: 'text')
-    #       expect(page).to have_field('filter[provider]', type: 'text')
-    #       expect(page).to have_button('Buscar')
-    #       expect(page).to have_selector('button.btn-clean-filters')
-    #     end
-    #   end
+    describe 'form filters' do
+      it 'has fields' do
+        within '#internal-filter' do
+          expect(page).to have_field('filter[code]', type: 'text')
+          expect(page).to have_field('filter[provider]', type: 'text')
+          expect(page).to have_button('Buscar')
+          expect(page).to have_selector('button.btn-clean-filters')
+        end
+      end
 
-    #   it 'by code' do
-    #     internal_orders = InternalOrder.all.sample(5)
-    #     internal_orders.each do |internal_order|
-    #       within '#internal-filter' do
-    #         fill_in 'filter[code]', with: internal_order.remit_code
-    #         click_button 'Buscar'
-    #         sleep 1
-    #       end
-    #       within '#internal_orders' do
-    #         expect(page.first('tr').first('td')).to have_selector('mark.highlight-1',
-    #                                                               text: internal_order.remit_code)
-    #       end
-    #       within '#internal-filter' do
-    #         page.first('button.btn-clean-filters').click
-    #         sleep 1
-    #       end
-    #     end
-    #   end
+      it 'by code' do
+        internal_orders = InternalOrder.all.sample(5)
+        internal_orders.each do |internal_order|
+          within '#internal-filter' do
+            fill_in 'filter[code]', with: internal_order.remit_code
+            click_button 'Buscar'
+            sleep 1
+          end
+          within '#internal_orders' do
+            expect(page.first('tr').first('td')).to have_selector('mark.highlight-1',
+                                                                  text: internal_order.remit_code)
+          end
+          within '#internal-filter' do
+            page.first('button.btn-clean-filters').click
+            sleep 1
+          end
+        end
+      end
 
-    #   it 'by provider' do
-    #     internal_orders = InternalOrder.all.sample(5)
-    #     internal_orders.each do |internal_order|
-    #       within '#internal-filter' do
-    #         fill_in 'filter[provider]', with: internal_order.provider_sector.name
-    #         click_button 'Buscar'
-    #         sleep 1
-    #       end
-    #       within '#internal_orders' do
-    #         expect(page.first('tr').find('td:nth-child(2)')).to have_selector('mark.highlight-1',
-    #                                                                           text: internal_order.provider_sector.name)
-    #       end
-    #       within '#internal-filter' do
-    #         page.first('button.btn-clean-filters').click
-    #         sleep 1
-    #       end
-    #     end
-    #   end
-    #   it 'by order_type ' do
-    #     internal_orders = InternalOrder.all.sample(5)
-    #     internal_orders.each do |internal_order|
-    #       within '#internal-filter' do
-    #         page.select internal_order.order_type.capitalize, from:'filter[with_order_type]'
-    #         click_button 'Buscar'
-    #         sleep 1
-    #       end
-    #       within '#internal_orders' do
-    #         expect(page.first('tr').find('td:nth-child(3)')).to have_content(internal_order.order_type.capitalize)
-    #       end
-    #       within '#internal-filter' do
-    #         page.first('button.btn-clean-filters').click
-    #         sleep 1
-    #       end
-    #     end
-    #   end
+      it 'by provider' do
+        internal_orders = InternalOrder.all.sample(5)
+        internal_orders.each do |internal_order|
+          within '#internal-filter' do
+            fill_in 'filter[provider]', with: internal_order.provider_sector.name
+            click_button 'Buscar'
+            sleep 1
+          end
+          within '#internal_orders' do
+            expect(page.first('tr').find('td:nth-child(2)')).to have_selector('mark.highlight-1',
+                                                                              text: internal_order.provider_sector.name)
+          end
+          within '#internal-filter' do
+            page.first('button.btn-clean-filters').click
+            sleep 1
+          end
+        end
+      end
+      it 'by order_type ' do
+        internal_orders = InternalOrder.all.sample(5)
+        internal_orders.each do |internal_order|
+          within '#internal-filter' do
+            page.select internal_order.order_type.capitalize, from:'filter[with_order_type]'
+            click_button 'Buscar'
+            sleep 1
+          end
+          within '#internal_orders' do
+            expect(page.first('tr').find('td:nth-child(3)')).to have_content(internal_order.order_type.capitalize)
+          end
+          within '#internal-filter' do
+            page.first('button.btn-clean-filters').click
+            sleep 1
+          end
+        end
+      end
 
-    #   it 'by status' do
-    #     internal_orders = InternalOrder.all.sample(5)
-    #     internal_orders.each do |internal_order|
-    #       within '#internal-filter' do
-    #         page.select internal_order.status.capitalize.gsub('_', ' '), from:'filter[with_status]'
-    #         click_button 'Buscar'
-    #         sleep 1
-    #       end
-    #       within '#internal_orders' do
-    #         expect(page.first('tr').find('td:nth-child(4)')).to have_content(internal_order.status.capitalize.gsub('_', ' '))
-    #       end
-    #       within '#internal-filter' do
-    #         page.first('button.btn-clean-filters').click
-    #         sleep 1
-    #       end
-    #     end
-    #   end
-    # end
+      it 'by status' do
+        internal_orders = InternalOrder.all.sample(5)
+        internal_orders.each do |internal_order|
+          within '#internal-filter' do
+            page.select internal_order.status.capitalize.gsub('_', ' '), from:'filter[with_status]'
+            click_button 'Buscar'
+            sleep 1
+          end
+          within '#internal_orders' do
+            expect(page.first('tr').find('td:nth-child(4)')).to have_content(internal_order.status.capitalize.gsub('_', ' '))
+          end
+          within '#internal-filter' do
+            page.first('button.btn-clean-filters').click
+            sleep 1
+          end
+        end
+      end
+    end
 
-    # describe 'pagination' do
-    #   before(:each) do
-    #     @last_page = (InternalOrder.all.count / 15.to_f).ceil
-    #   end
+    describe 'pagination' do
+      before(:each) do
+        @last_page = (InternalOrder.all.count / 15.to_f).ceil
+      end
 
-    #   it 'has pagination' do
-    #     within '#paginate_footer nav' do
-    #       expect(page).to have_selector('a.page-link', text: @last_page.to_s)
-    #     end
-    #   end
+      it 'has pagination' do
+        within '#paginate_footer nav' do
+          expect(page).to have_selector('a.page-link', text: @last_page.to_s)
+        end
+      end
 
-    #   it 'has pagination size selector' do
-    #     within '#paginate_footer' do
-    #       expect(page).to have_select('page-size-selection', with_options: %w[15 30 50 100])
-    #     end
-    #   end
+      it 'has pagination size selector' do
+        within '#paginate_footer' do
+          expect(page).to have_select('page-size-selection', with_options: %w[15 30 50 100])
+        end
+      end
 
-    #   it 'change page number' do
-    #     within '#paginate_footer nav' do
-    #       expect(page).to have_selector('li.active', text: '1')
-    #       click_link @last_page.to_s
-    #       sleep 1
-    #       expect(page).to have_selector('li.active', text: @last_page.to_s)
-    #     end
-    #   end
+      it 'change page number' do
+        within '#paginate_footer nav' do
+          expect(page).to have_selector('li.active', text: '1')
+          click_link @last_page.to_s
+          sleep 1
+          expect(page).to have_selector('li.active', text: @last_page.to_s)
+        end
+      end
 
-    #   it 'has 15 items per page by default' do
-    #     within '#internal_orders' do
-    #       expect(page).to have_selector('tr', count: 15)
-    #     end
-    #   end
+      it 'has 15 items per page by default' do
+        within '#internal_orders' do
+          expect(page).to have_selector('tr', count: 15)
+        end
+      end
 
-    #   it 'change items per page to 30' do
-    #     within '#paginate_footer' do
-    #       page.select '30', from: 'page-size-selection'
-    #       sleep 1
-    #     end
-    #     within '#internal_orders' do
-    #       expect(page).to have_selector('tr', count: 30)
-    #     end
-    #   end
-    # end
+      it 'change items per page to 30' do
+        within '#paginate_footer' do
+          page.select '30', from: 'page-size-selection'
+          sleep 1
+        end
+        within '#internal_orders' do
+          expect(page).to have_selector('tr', count: 30)
+        end
+      end
+    end
 
     describe 'Sort' do
       it 'has sort buttons' do
@@ -207,9 +207,10 @@ RSpec.feature 'InternalOrdersApplicantFilters', type: :feature do
 
     # describe 'Destroy permission' do
     #   before(:each) do
-    #     @product_to_del = @products_without_stock.sample
-    #     within '#internal_orders-filter' do
-    #       fill_in 'filter[name]', with: @product_to_del.name
+      
+    #     internal_order = InternalOrder.sample
+    #     within '#internal-filter' do
+    #       fill_in 'filter[name]', with: internal_order.name
     #       click_button 'Buscar'
     #       sleep 1
     #     end
@@ -227,7 +228,7 @@ RSpec.feature 'InternalOrdersApplicantFilters', type: :feature do
     #       sleep 1
     #     end
     #     within '#delete-item' do
-    #       expect(page).to have_content('Eliminar producto')
+    #       expect(page).to have_content('Eliminar solicitud')
     #       expect(page).to have_button('Volver')
     #       expect(page).to have_link('Confirmar')
     #     end
@@ -242,7 +243,7 @@ RSpec.feature 'InternalOrdersApplicantFilters', type: :feature do
     #       click_link 'Confirmar'
     #       sleep 1
     #     end
-    #     expect(page).to have_text("El suministro #{@product_to_del.name} se ha eliminado correctamente.")
+    #     expect(page).to have_text("El pedido interno se ha eliminado correctamente.")
     #   end
     # end
   end
