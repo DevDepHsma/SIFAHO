@@ -8,6 +8,7 @@ require 'support/db_populate/roles'
 require 'support/db_populate/patients'
 require 'support/db_populate/reports'
 require 'support/db_populate/internal_orders_applicant'
+require 'support/db_populate/internal_orders_provider'
 
 RSpec.configure do |config|
   config.include DataMock::Products, type: :feature
@@ -30,5 +31,6 @@ RSpec.configure do |config|
     chronic_prescriptions_populate
     reports_populate
     internal_orders_applicant_populate
+    internal_orders_provider_populate
   end
 end
