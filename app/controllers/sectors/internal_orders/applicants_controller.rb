@@ -7,7 +7,7 @@ class Sectors::InternalOrders::ApplicantsController < Sectors::InternalOrders::I
   # GET /internal_orders/applicants.json
   def index
     policy(:internal_order_applicant).index?
-    @internal_orders = InternalOrder.filter_by_params(params[:filter],@current_user.sector)
+    @internal_orders = InternalOrder.by_applicant(@current_user.sector).filter_by_params(params[:filter])
                                      .paginate(page: params[:page], per_page: params[:per_page] || 15)
                                     
                                      

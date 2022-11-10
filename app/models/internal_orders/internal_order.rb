@@ -22,10 +22,15 @@ class InternalOrder < ApplicationRecord
                                 reject_if: proc { |attributes| attributes['product_id'].blank? },
                                 allow_destroy: true
 
-  scope :filter_by_params, lambda { |filter_params, sector_id|
-    query = self.select(:id, :requested_date, :date_received, :remit_code, :status, :provider_sector_id, :order_type, :applicant_sector_id, 'sectors.name').joins(:provider_sector).where(applicant_sector_id: sector_id)
+  scope :filter_by_params, lambda { |filter_params|
+    query = self.select(:id, :requested_date, :date_received, :remit_code, :status, :provider_sector_id, :order_type, :applicant_sector_id, 'sectors.name')
+    query = query.like_sector_name(filter_params[:provider]) if filter_params.present? && filter_params[:provider].present?
+
+    if filter_params.present? && filter_params[:search_applicant].present?
+      query = query.like_sector_name(filter_params[:search_applicant])
+    end
+
     query = query.like_remit_code(filter_params[:code]) if filter_params.present? && filter_params[:code].present?
-    query = query.like_provider(filter_params[:provider]) if filter_params.present? && filter_params[:provider].present?
     if filter_params.present? && filter_params[:with_order_type].present?
       query = query.with_order_type(filter_params[:with_order_type])
     end
@@ -42,9 +47,17 @@ class InternalOrder < ApplicationRecord
     return query
   }
 
-  scope :like_provider, lambda { |provider_name|
-    where('unaccent(lower(sectors.name))  like ?', "%#{provider_name.downcase.removeaccents}%")
+  scope :by_applicant, lambda { |sector_id|
+    joins(:provider_sector).where(applicant_sector_id: sector_id)
   }
+  scope :by_provider, lambda { |sector_id|
+    joins(:applicant_sector).where(provider_sector_id: sector_id)
+  }
+
+  scope :like_sector_name, lambda { |sector_name|
+    where('unaccent(lower(sectors.name))  like ?', "%#{sector_name.downcase.removeaccents}%")
+  }
+  
   scope :like_remit_code, lambda { |remit_code|
                             where('unaccent(lower(remit_code)) like ?', "%#{remit_code.downcase.removeaccents}%")
                           }
@@ -69,8 +82,6 @@ class InternalOrder < ApplicationRecord
                   associated_against: { provider_sector: :name },
                   using: { tsearch: { prefix: true } }, # Buscar coincidencia desde las primeras letras.
                   ignoring: :accents # Ignorar tildes.
-
-
 
   scope :date_received_since, lambda { |a_date|
     where('internal_orders.date_received >= ?', a_date)
@@ -216,7 +227,6 @@ class InternalOrder < ApplicationRecord
 
   def record_remit_code
     self.remit_code = "SE#{DateTime.now.to_s(:number)}" unless Rails.env.test?
-   
   end
 
   def presence_of_products_into_the_order

@@ -9,15 +9,9 @@ class Sectors::InternalOrders::ProvidersController < Sectors::InternalOrders::In
   # GET /internal_orders/provider.json
   def index
     policy(:internal_order_provider).index?
-    @filterrific = initialize_filterrific(
-      InternalOrder.provider(current_user.sector).without_status(0),
-      params[:filterrific],
-      select_options: {
-        with_status: InternalOrder.options_for_status
-      },
-      persistence_id: false
-    ) or return
-    @internal_orders = @filterrific.find.page(params[:page]).per_page(15)
+    params[:invocator]='providers'
+    @internal_orders = InternalOrder.by_provider(@current_user.sector).filter_by_params(params[:filter])
+    .paginate(page: params[:page], per_page: params[:per_page] || 15)
   end
 
   # GET /internal_orders/provider/new
