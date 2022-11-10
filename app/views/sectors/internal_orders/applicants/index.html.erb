@@ -18,13 +18,10 @@
       ) %>
     <% end %>
   </div>
-  
-  <%# ------------------------Falta hacer la paginación------------------------------------------------------------- %>
-  
-  <div class="card-footer" id="paginate_footer"> 
-     <%= render(
+  <div class="card-footer" id="paginate_footer">
+    <%= render(
           partial: 'shared/paginate_index',
           locals: { model: @internal_orders, form_id: 'internal-filter' }
-        ) %> 
-  </div> 
+        ) %>
+  </div>
 </div>

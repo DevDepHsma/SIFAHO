@@ -17,4 +17,4 @@
 <% content_for :date_filter_label do %>
   <label> Recibido </label>
 <% end %>
-<%= render "sectors/internal_orders/filters_main" %>
+<%= render(partial:"sectors/internal_orders/filters_main",locals:{internal_orders_xpath:internal_orders_applicants_path}) %>

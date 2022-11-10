@@ -1,3 +1,4 @@
+<% if @internal_orders.present? %>
 <div class="card fixed-panel-list">
   <table class="table table-hover table-striped table-sm">
     <thead >
@@ -26,7 +27,12 @@
     </tbody>
   
   </table>
-   
+   <% else %>
+  <%= render(
+    partial: 'shared/not_found_filter',
+    locals: { object_name: 'solicitudes' }
+  ) %>
+<% end %>
 </div>
 
 

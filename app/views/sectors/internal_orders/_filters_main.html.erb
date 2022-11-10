@@ -1,8 +1,7 @@
-<%= simple_form_for internal_orders_applicants_path, remote: true, html: { method: 'GET', class: 'custom-filters-v1', id: "internal-filter" } do |f| %>
+<%= simple_form_for internal_orders_xpath, remote: true, html: { method: 'GET', class: 'custom-filters-v1', id: "internal-filter" } do |f| %>
   <div class="filter-form-row">
     <div class="filter-form-col">
       <div class="form-group">
-       
         <input class="form-control" 
                autocomplete="off" 
                type="text" 
@@ -10,7 +9,7 @@
                id="filter_code" 
                placeholder="Código"
                value="<%= get_value_from_filter(:code) %>">
-                <label>Código</label>
+        <label>Código</label>
       </div>
     </div>
     <div class="filter-form-col">
@@ -24,9 +23,8 @@
           <div class="form-group">
             <select class="form-control custom-select " name="filter[with_order_type]" onchange="mark_selected(event)">
               <option value=""></option>
-            <option value="0">Provision</option>
+              <option value="0">Provision</option>
               <option value="1">Solicitud</option>
-          
             </select>
             <label>Origen</label>
           </div>
