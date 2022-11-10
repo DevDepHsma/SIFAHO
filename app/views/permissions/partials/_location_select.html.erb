@@ -5,6 +5,9 @@
   <ul class="mt-3">
     <% @user.user_sectors.each do |us| %>
       <li>
+        <input type="hidden" name="permission[user_sectors_attributes][<%= us.sector_id %>][_destroy]" value="0">
+        <input type="hidden" name="permission[user_sectors_attributes][<%= us.sector_id %>][sector_id]" value="<%= us.sector_id %>">
+        <input type="hidden" name="permission[user_sectors_attributes][<%= us.sector_id %>][id]" value="<%= us.id %>">
         <button class="btn btn-primary">
           <%= us.sector.name %> - <%= us.sector.establishment.name%>
         </button>

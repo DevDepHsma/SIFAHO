@@ -18,7 +18,8 @@ $(document).on('turbolinks:load', function() {
     parentCheckbox.prop('checked', !anyUnchecked);
   });
   
-  $('#remote_form_sector, #remote_form_sector_selector').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+  $('#remote_form_sector, #remote_form_sector_selector').on('changed.bs.select', function (e) {
+    toggleLoading();
     $("#remote_form_input_sector").val($(e.target).val());
     $("#remote_form_search_name").val("");
     $(e.target).closest('form').submit();
@@ -32,7 +33,7 @@ $(document).on('turbolinks:load', function() {
 
 function searchModule(e){
   const regexp = new RegExp(e.target.value, 'i');
-  $("#permission_users button").each((index, ele) => {
+  $("#permission_users button.btn-block").each((index, ele) => {
     if( regexp.test($(ele).text()) ){
       $(ele).closest('div.card').show();
     }else{

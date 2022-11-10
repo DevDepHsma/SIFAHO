@@ -18,7 +18,6 @@
 #  status                   :integer, default: 0
 
 class User < ApplicationRecord
-  
   include PgSearch::Model
   devise :rememberable, :trackable, :database_authenticatable
   devise :ldap_authenticatable, authentication_keys: [:username]
@@ -41,10 +40,12 @@ class User < ApplicationRecord
   has_many :roles, through: :user_roles
 
   accepts_nested_attributes_for :profile, :professional
-  accepts_nested_attributes_for :permission_users, allow_destroy: true
-  accepts_nested_attributes_for :user_roles, allow_destroy: true
+  accepts_nested_attributes_for :permission_users, allow_destroy: true, update_only: true
+  accepts_nested_attributes_for :user_roles, allow_destroy: true, update_only: true
+  accepts_nested_attributes_for :user_sectors, allow_destroy: true, update_only: true, limit: 5
 
   validates :username, presence: true, uniqueness: true
+  validates_with CustomValidators::UserValidator, on: :update
 
   after_create :create_profile
   after_save :verify_profile
@@ -148,12 +149,15 @@ class User < ApplicationRecord
     where(sector_id: [*an_id])
   }
 
-  def update_user_permissions!(user_params, permission_request_id)
+  def update_user_permissions!(user_params, aproved_by)
     ActiveRecord::Base.transaction do
-      update!(user_params)
-      sectors << Sector.find(user_params[:sector_id])
-      permission_request = PermissionRequest.find(permission_request_id)
-      permission_request.done!
+      update!(user_params.except(:permission_request_id))
+      user_sectors.first.active! unless user_sectors.active.any?
+      if user_params[:permission_request_id].present?
+        permission_request = PermissionRequest.find(user_params[:permission_request_id])
+        permission_request.aproved_by_id = aproved_by.id
+        permission_request.done!
+      end
       active!
       self
     end

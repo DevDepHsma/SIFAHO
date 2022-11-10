@@ -185,4 +185,11 @@ function loadImage(e, img_path){
   e.onerror = null;
 }
 
+function toggleLoading(){
+  if($("#loader-container").hasClass('d-flex')){
+    $("#loader-container").removeClass('d-flex');
+  }else{
+    $("#loader-container").addClass('d-flex');
+  }
+}
 // delete confirm

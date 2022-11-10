@@ -7,11 +7,9 @@
       </div>
     </div>
   </div>
-  <%= simple_form_for 'permission_users', url: update_permissions_users_admin_path(@user), remote: true, html: { method: 'PUT', name: 'permission_users', id: 'permission_users', novalidate: true} do |f| %>
-    
-    <input type="hidden" name="permission[sector_id]" value="<%= @user.sector_id %>">
-    <% if @permission_request.present? %>
-      <input type="hidden" name="permission[permission_request_id]" value="<%= @permission_request.id %>">
+  
+    <% if @applied_permission_request.present? %>
+      <input type="hidden" name="permission[permission_request_id]" value="<%= @applied_permission_request.id %>">
     <% end%>
     <% @roles.each do |role| %>
       <input type="hidden" name="permission[user_roles_attributes][<%= role.id %>][_destroy]" value="<%= !@user.user_roles.map(&:role_id).include?(role.id) %>">
@@ -65,4 +63,3 @@
       </div>
     <% end %>
   <% end %>
-<% end %>

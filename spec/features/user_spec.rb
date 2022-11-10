@@ -30,88 +30,90 @@ RSpec.feature 'Users', type: :feature, js: true do
   describe '', js: true do
     subject { page }
 
-    describe 'Permission:' do
-      it 'List' do
-        visit '/'
-        expect(page).to have_css('#sidebar-wrapper', visible: false)
-        within '#sidebar-wrapper' do
-          expect(page).to have_link('Usuarios')
-          click_link 'Usuarios'
-        end
-        within '#dropdown-menu-header' do
-          expect(page).to have_link('Usuarios')
-        end
-      end
+    # describe 'Permission:' do
+    #   it 'List' do
+    #     visit '/'
+    #     expect(page).to have_css('#sidebar-wrapper', visible: false)
+    #     within '#sidebar-wrapper' do
+    #       expect(page).to have_link('Usuarios')
+    #       click_link 'Usuarios'
+    #     end
+    #     within '#dropdown-menu-header' do
+    #       expect(page).to have_link('Usuarios')
+    #     end
+    #   end
 
-      it 'Show' do
-        visit '/usuarios'
-        within '#users' do
-          expect(page).to have_css('.btn-detail')
-        end
-        user = User.all.sample
-        visit "/usuarios/#{user.id}"
-        expect(page).to have_content("Viendo usuario #{user.full_name.titleize}")
-        expect(page).to have_content('Sector actual')
-        expect(page).to have_content('Sectores habilitados')
-        expect(page).to have_content('DNI')
-        expect(page).to have_content(user.profile.dni)
-        expect(page).to have_link('Volver')
-        expect(page).to have_link('Editar')
-      end
+    #   it 'Show' do
+    #     visit '/usuarios'
+    #     within '#users' do
+    #       expect(page).to have_css('.btn-detail')
+    #     end
+    #     user = User.all.sample
+    #     visit "/usuarios/#{user.id}"
+    #     expect(page).to have_content("Viendo usuario #{user.full_name.titleize}")
+    #     expect(page).to have_content('Sector actual')
+    #     expect(page).to have_content('Sectores habilitados')
+    #     expect(page).to have_content('DNI')
+    #     expect(page).to have_content(user.profile.dni)
+    #     expect(page).to have_link('Volver')
+    #     expect(page).to have_link('Editar')
+    #   end
 
-      it 'Request Permissions list' do
-        visit '/usuarios'
-        within '#dropdown-menu-header' do
-          expect(page).to have_link('Solicitud de permisos')
-          click_link 'Solicitud de permisos'
-        end
-        expect(page).to have_css('#permission_requests')
-      end
+    #   it 'Request Permissions list' do
+    #     visit '/usuarios'
+    #     within '#dropdown-menu-header' do
+    #       expect(page).to have_link('Solicitud de permisos')
+    #       click_link 'Solicitud de permisos'
+    #     end
+    #     expect(page).to have_css('#permission_requests')
+    #   end
 
-      it 'Edit permissions' do
-        visit "/usuarios/#{@user_permission_requested.id}/permisos"
+    #   it 'Edit permissions' do
+    #     visit "/usuarios/#{@user_permission_requested.id}/permisos"
 
-        expect(page).to have_content('Solicitud de permisos en progreso')
-        expect(page).to have_button('Agregar sector')
-        expect(page).to have_content('Nueva solicitud de permisos:')
-        expect(page).to have_content("Establecimiento indicado: #{@permission_request.establishment.name}")
-        expect(page).to have_content("Sector indicado: #{@permission_request.sector.name}")
-        expect(page).to have_content('Funciones seleccionadas:')
-        expect(page).to have_content('Observaciones')
-        expect(page).to have_button('Anular')
-        expect(page).to have_link('Aplicar')
-        expect(page).to have_link('Volver')
-        expect(page).to have_button('Guardar')
-      end
+    #     expect(page).to have_content('Solicitud de permisos en progreso')
+    #     expect(page).to have_button('Agregar sector')
+    #     expect(page).to have_content('Nueva solicitud de permisos:')
+    #     expect(page).to have_content("Establecimiento indicado: #{@permission_request.establishment.name}")
+    #     expect(page).to have_content("Sector indicado: #{@permission_request.sector.name}")
+    #     expect(page).to have_content('Funciones seleccionadas:')
+    #     expect(page).to have_content('Observaciones')
+    #     expect(page).to have_button('Anular')
+    #     expect(page).to have_link('Aplicar')
+    #     expect(page).to have_link('Volver')
+    #     expect(page).to have_button('Guardar')
+    #   end
 
-      it 'Edit permissions apply permission request' do
-        visit "/usuarios/#{@user_permission_requested.id}/permisos"
+    #   it 'Edit permissions apply permission request' do
+    #     visit "/usuarios/#{@user_permission_requested.id}/permisos"
 
-        click_link 'Aplicar'
-        sleep 1
-        within '#location_select_container' do
-          expect(page).to have_button("#{@permission_request.sector.name} - #{@permission_request.establishment.name}")
-          expect(page).to have_content('Modulos')
-          Role.all.each do |role|
-            expect(page).to have_field("role-#{role.id}", type: 'checkbox', visible: false)
-          end
+    #     click_link 'Aplicar'
+    #     sleep 1
+    #     within '#location_select_container' do
+    #       expect(page).to have_button("#{@permission_request.sector.name} - #{@permission_request.establishment.name}")
+    #       expect(page).to have_content('Modulos')
+    #       Role.all.each do |role|
+    #         expect(page).to have_field("role-#{role.id}", type: 'checkbox', visible: false)
+    #       end
 
-          @permission_request.roles.all.each do |role|
-            expect(page).to have_field("role-#{role.id}", type: 'checkbox', visible: false, checked: true)
-          end
-        end
+    #       @permission_request.roles.all.each do |role|
+    #         expect(page).to have_field("role-#{role.id}", type: 'checkbox', visible: false, checked: true)
+    #       end
+    #     end
 
-        within '#permissions_list' do
-          expect(page).to have_field('permission[search_name]')
-          @permission_request.roles.each do |role|
-            role.permissions.each do |permission|
-              expect(page).to have_field("permission[permission_users_attributes][#{permission.id}][permission_id]",
-                                         type: 'checkbox', visible: false, checked: true)
-            end
-          end
-        end
-      end
+    #     within '#permissions_list' do
+    #       expect(page).to have_field('permission[search_name]')
+    #       @permission_request.roles.each do |role|
+    #         role.permissions.each do |permission|
+    #           expect(page).to have_field("permission[permission_users_attributes][#{permission.id}][permission_id]",
+    #                                      type: 'checkbox', visible: false, checked: true)
+    #         end
+    #       end
+    #     end
+    #   end
+    # end
 
+    describe 'Form' do
       it 'Search by module input' do
         visit "/usuarios/#{@user_permission_requested.id}/permisos"
         click_link 'Aplicar'
@@ -127,7 +129,7 @@ RSpec.feature 'Users', type: :feature, js: true do
         end
       end
 
-      it 'Edit permissions apply and save permission request' do
+      it 'Save successfully permissions' do
         permission_requested_to_approve = User.where(username: get_users_for_request)
                                               .where
                                               .not(id: @user_permission_requested.id)
@@ -139,6 +141,35 @@ RSpec.feature 'Users', type: :feature, js: true do
         expect(page).to have_content('Permisos asignados correctamente.')
       end
 
+      it 'validate empty form sent' do
+        visit "/usuarios/#{@user_permission_requested.id}/permisos"
+        click_button 'Guardar'
+        expect(page).to have_content('Debe seleccionar un sector valido')
+      end
+
+      it 'anular' do
+      end
+
+      it 'shows add sector modal' do
+        visit "/usuarios/#{@user_permission_requested.id}/permisos"
+        click_button 'Agregar sector'
+        sleep 1
+        expect(page).to have_selector('#sector-selection', visible: true)
+        expect(page).to have_content('Selección de sectores')
+        expect(page).to have_select('remote_form[sector]', visible: false)
+        expect(page).to have_button('Cerrar')
+      end
+      
+      it 'adds sector' do
+        visit "/usuarios/#{@user_permission_requested.id}/permisos"
+        click_button 'Agregar sector'
+        sleep 1
+        find('select#remote_form_sector_selector + button').click
+        expect(page).to have_content(@depo_est_1.name)
+        
+        sleep 10
+        # click_link ''
+      end
       # it 'Nav Menu link' do
 
       #   page.execute_script %Q{

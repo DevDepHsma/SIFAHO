@@ -39,3 +39,6 @@ $('.delete-item').on('click', function(e) {
 $("#remote_form_sector_selector").on('loaded.bs.select', function(e){
   $(e.target).siblings('.dropdown-menu').first().find('.bs-searchbox input.form-control').first().attr('id', $(e.target).attr('id') + '_inp_search');
 });
+
+$("#sector-selection").modal('hide');
+toggleLoading();
