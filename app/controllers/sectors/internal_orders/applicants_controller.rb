@@ -8,9 +8,7 @@ class Sectors::InternalOrders::ApplicantsController < Sectors::InternalOrders::I
   def index
     policy(:internal_order_applicant).index?
     @internal_orders = InternalOrder.by_applicant(@current_user.sector).filter_by_params(params[:filter])
-                                     .paginate(page: params[:page], per_page: params[:per_page] || 15)
-                                    
-                                     
+                                    .paginate(page: params[:page], per_page: params[:per_page] || 15)
   end
 
   # GET /internal_orders/applicants/new_applicant
