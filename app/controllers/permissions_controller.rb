@@ -42,13 +42,10 @@ class PermissionsController < ApplicationController
       flash.now[:success] = 'Permisos asignados correctamente.'
       format.js
       format.html { redirect_to users_admin_url(@user) }
-    rescue StandardError => e
-      puts "<==========".colorize(background: :red)
-      puts e.message
-      puts "<==========".colorize(background: :red)
-      flash.now[:error] = e.message
     rescue ActiveRecord::RecordInvalid => e
-      flash.now[:error] = "No se pudo actualizar los permisos del usuario #{@user.full_name}"
+      flash.now[:error] = e.record.errors.full_messages.to_sentence
+    rescue StandardError => e
+      flash.now[:error] = e.message
     ensure
       @filterrific = initialize_filterrific(
         PermissionModule.eager_load(:permissions),

@@ -42,10 +42,12 @@ class User < ApplicationRecord
   accepts_nested_attributes_for :profile, :professional
   accepts_nested_attributes_for :permission_users, allow_destroy: true, update_only: true
   accepts_nested_attributes_for :user_roles, allow_destroy: true, update_only: true
-  accepts_nested_attributes_for :user_sectors, allow_destroy: true, update_only: true, limit: 5
+  accepts_nested_attributes_for :user_sectors, allow_destroy: true, update_only: true
 
   validates :username, presence: true, uniqueness: true
-  validates_with CustomValidators::UserValidator, on: :update
+  validate :validate_max_sectors
+
+  # validates_with CustomValidators::UserValidator, on: :update
 
   after_create :create_profile
   after_save :verify_profile
@@ -187,5 +189,12 @@ class User < ApplicationRecord
 
   def has_permissions_any?(*permissions_target)
     permissions.joins(:permission_users).where(name: permissions_target, 'permission_users.sector_id': sector_id).any?
+  end
+
+  private
+
+  def validate_max_sectors
+    max_sectors = 3
+    errors.add(:max_sectors, "supera el máximo de #{max_sectors}.") if user_sectors.size > max_sectors
   end
 end

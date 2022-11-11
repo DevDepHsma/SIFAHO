@@ -289,5 +289,10 @@ module DataMock
       %w[35597253 20903226 30010383 27662544 21932202 35864726 24422906 20233982 30917178
          35311523 22638851]
     end
+
+    def get_sectors
+      ['Quirófano', 'Informática', 'Consultorios Ginecología', 'Lavadero', 'Cocina', 'Informes', 'Nutrición',
+       'Mantenimiento', 'Prácticas Residencia Medicina General', 'Sala de partos']
+    end
   end
 end

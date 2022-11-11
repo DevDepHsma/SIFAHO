@@ -18,17 +18,10 @@ $(document).on('turbolinks:load', function() {
     parentCheckbox.prop('checked', !anyUnchecked);
   });
   
-  $('#remote_form_sector, #remote_form_sector_selector').on('changed.bs.select', function (e) {
+  $('#remote_form_sector_selector').on('changed.bs.select', function (e) {
     toggleLoading();
-    $("#remote_form_input_sector").val($(e.target).val());
-    $("#remote_form_search_name").val("");
     $(e.target).closest('form').submit();
   });
-
-  $("#remote_form_sector_selector").on('loaded.bs.select', function(e){
-    $(e.target).siblings('.dropdown-menu').first().find('.bs-searchbox input.form-control').first().attr('id', $(e.target).attr('id') + '_inp_search');
-  });
-  
 });
 
 function searchModule(e){
