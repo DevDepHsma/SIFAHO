@@ -13,6 +13,7 @@
     <% end%>
     <% @roles.each do |role| %>
       <input type="hidden" name="permission[user_roles_attributes][<%= role.id %>][_destroy]" value="<%= !@user.user_roles.map(&:role_id).include?(role.id) %>">
+      <input type="hidden" name="permission[user_roles_attributes][<%= role.id %>][sector_id]" value="<%= @active_sector.id %>">
       <input type="hidden" name="permission[user_roles_attributes][<%= role.id %>][role_id]" value="<%= role.id %>">
     <% end %>
 
@@ -39,7 +40,7 @@
           </h2>
         </div>
         <div id="per_mod_<%=permission_mod.id%>" class="collapse show" aria-labelledby="per-mod-header-<%= permission_mod.id %>">
-          <% permission_mod.permissions_build(@user, @sector).each do |perm| %>
+          <% permission_mod.permissions_build(@user, @active_sector).each do |perm| %>
             <div class="card-body p-0">
               <label for="perm-check-<%= perm.permission_id %>" class="mb-0 d-flex flex-row w-100 justify-content-between w-100 p-2">
                 <span><%= t("permissions.name.#{perm.permission.name}") %></span>

@@ -1,0 +1,11 @@
+<% lotcation_select = escape_javascript(
+  render(partial: 'permissions/partials/location_select')
+) %>
+$("#location_select_container").html("<%= lotcation_select %>");
+
+<% permissions_list = escape_javascript(
+  render(partial: 'permissions/partials/list')
+) %>
+$("#permissions_list").html("<%= permissions_list %>");
+
+toggleLoading();

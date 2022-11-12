@@ -17,7 +17,7 @@ class PermissionRequest < ApplicationRecord
   enum status: { in_progress: 0, done: 1 }
   # Relationships
   belongs_to :user
-  belongs_to :aproved_by, class_name: 'User'
+  belongs_to :aproved_by, class_name: 'User', optional: true
   has_one :profile, through: :user
   belongs_to :establishment, optional: true
   belongs_to :sector, optional: true
@@ -118,7 +118,7 @@ class PermissionRequest < ApplicationRecord
       user.user_sectors.build(sector_id: sector.id)
       user.sector_id = sector.id unless user.sector.present?
     end
-    roles.each { |role| user.user_roles.build(role_id: role.id) } if roles.present?
+    roles.each { |role| user.user_roles.build(role_id: role.id, sector_id: sector.id) } if roles.present?
     user
   end
 end

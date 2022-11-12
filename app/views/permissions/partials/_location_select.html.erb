@@ -8,12 +8,17 @@
         <input type="hidden" name="permission[user_sectors_attributes][<%= us.sector_id %>][_destroy]" value="0">
         <input type="hidden" name="permission[user_sectors_attributes][<%= us.sector_id %>][sector_id]" value="<%= us.sector_id %>">
         <input type="hidden" name="permission[user_sectors_attributes][<%= us.sector_id %>][id]" value="<%= us.id %>">
-        <button class="btn btn-primary">
+        <a href="<%= permission_change_sector_users_admin_path(active_sector_id: us.sector_id) %>" 
+           class="btn btn-primary <%= (@active_sector.present? && @active_sector.id  == us.sector_id) ? 'active' : '' %>" 
+           data-remote="true" onclick="toggleLoading();">
           <%= us.sector.name %> - <%= us.sector.establishment.name%>
-        </button>
+        </a>
       </li>
     <%end%>
   </ul>
+  <% if @active_sector.present? %>
+    <input type="hidden" name="active_sector_id" value="<%= @active_sector.id%>">
+  <% end %>
 </div>
 <% if @user.user_sectors.present? %>
   <%# roles %>
@@ -21,7 +26,11 @@
     <p class="mb-1">Modulos</p>
     <% @roles.each do |role| %>
       <div class="custom-control custom-checkbox mb-1">
-        <input type="checkbox" class="custom-control-input" id="role-<%=role.id%>" required <%= 'checked' if @user.user_roles.map(&:role_id).include?(role.id)%>>
+        <input type="checkbox" 
+               class="custom-control-input" 
+               id="role-<%=role.id%>" 
+               required 
+               <%= 'checked' if @user.user_roles.any?{|us| us.role_id == role.id && us.sector_id == @active_sector.id }%>>
         <label class="custom-control-label" for="role-<%=role.id%>"><%= role.name %></label>
       </div>
     <% end %>

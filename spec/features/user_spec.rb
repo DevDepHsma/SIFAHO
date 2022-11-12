@@ -169,29 +169,25 @@ RSpec.feature 'Users', type: :feature, js: true do
         find('a', text: "#{@depo_est_1.name} - #{@depo_est_1.establishment.name}").click
         sleep 1
         within '#location_select_container' do
-          expect(page).to have_selector('button', text: "#{@depo_est_1.name} - #{@depo_est_1.establishment.name}")
+          expect(page).to have_selector('a', text: "#{@depo_est_1.name} - #{@depo_est_1.establishment.name}")
         end
       end
 
       it 'has max sector selection' do
         visit "/usuarios/#{@user_permission_requested.id}/permisos"
         sectors = Sector.all.sample(4)
-        puts sectors
-        puts "<===========".colorize(background: :red)
         sectors.each do |sector|
-
           click_button 'Agregar sector'
           sleep 1
           find('select#remote_form_sector_selector + button').click
           find('a', text: "#{sector.name} - #{sector.establishment.name}").click
-          sleep 5
+          sleep 1
           click_button 'Guardar'
           sleep 1
         end
-        expect(page).to have_content("La cantidad de sectores seleccionados supera el máximo de 3")
+        expect(page).to have_content('La cantidad de sectores seleccionados supera el máximo de 3')
       end
 
-      
       # it 'Nav Menu link' do
 
       #   page.execute_script %Q{

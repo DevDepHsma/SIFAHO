@@ -76,9 +76,6 @@ class UsersController < ApplicationController
   def adds_sector
     @sector = Sector.find(params[:remote_form][:sector])
     @user.user_sectors.build(sector_id: @sector.id)
-    # @user.sectors << @sector
-    # @user.sector = @sector if @user.sector_id.nil?
-    # @user.save
     @sectors = Sector.includes(:establishment)
                      .order('establishments.name ASC', 'sectors.name ASC')
                      .where.not(id: @user.user_sectors.pluck(:sector_id))

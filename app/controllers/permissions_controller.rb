@@ -1,14 +1,21 @@
 class PermissionsController < ApplicationController
-  before_action :set_user, only: %i[edit update build_from_request]
+  before_action :set_user, only: %i[edit update build_from_request permission_change_sector]
   before_action :set_permission_request, only: %i[build_from_request edit]
 
   def build_from_request
     @user = @permission_request.build_user_permissions
     @roles = Role.all.order(name: :asc)
     @permission_modules = PermissionModule.eager_load(:permissions).all
-    @sector = @permission_request.sector
+    @active_sector = @permission_request.sector
     @enable_permissions = PermissionRole.where(role_id: @user.user_roles.map(&:role_id)).pluck(:permission_id)
     @applied_permission_request = @permission_request
+  end
+
+  def permission_change_sector
+    @roles = Role.all.order(name: :asc)
+    @permission_modules = PermissionModule.eager_load(:permissions).all
+    @active_sector = Sector.find(params[:active_sector_id])
+    @enable_permissions = @user.permission_users.where(sector_id: @active_sector).pluck(:permission_id)
   end
 
   def edit
@@ -16,14 +23,9 @@ class PermissionsController < ApplicationController
       flash[:error] = 'Usted no está autorizado para realizar esta acción.'
       redirect_back(fallback_location: root_path)
     end
-    @filterrific = initialize_filterrific(
-      PermissionModule.eager_load(:permissions),
-      params[:remote_form],
-      persistence_id: false
-    )
-    @permission_modules = @filterrific.find
-    @sector = @user.user_sectors.active.any? ? @user.user_sectors.active.first.sector : @user.sectors.first
-    @enable_permissions = @user.permission_users.where(sector: @sector).pluck(:permission_id)
+    @permission_modules = PermissionModule.eager_load(:permissions).all
+    @active_sector = @user.user_sectors.active.any? ? @user.user_sectors.active.first.sector : @user.sectors.first
+    @enable_permissions = @user.permission_users.where(sector: @active_sector).pluck(:permission_id)
     @sectors = Sector.includes(:establishment)
                      .order('establishments.name ASC', 'sectors.name ASC')
                      .where.not(id: @user.sectors.pluck(:id))
@@ -40,25 +42,11 @@ class PermissionsController < ApplicationController
 
       @user.update_user_permissions!(permission_params, @current_user)
       flash.now[:success] = 'Permisos asignados correctamente.'
-      format.js
-      format.html { redirect_to users_admin_url(@user) }
     rescue ActiveRecord::RecordInvalid => e
       flash.now[:error] = e.record.errors.full_messages.to_sentence
     rescue StandardError => e
       flash.now[:error] = e.message
     ensure
-      @filterrific = initialize_filterrific(
-        PermissionModule.eager_load(:permissions),
-        params[:remote_form],
-        persistence_id: false
-      )
-      @sectors = Sector.includes(:establishment)
-                       .order('establishments.name ASC', 'sectors.name ASC')
-                       .where.not(id: @user.sectors.pluck(:id))
-      @permission_modules = @filterrific.find
-      @sector = params[:remote_form].present? ? Sector.find(params[:remote_form][:sector]) : @user.sector
-      @enable_permissions = @user.permission_users.where(sector: @sector).pluck(:permission_id)
-      # format.html { render :edit }
       format.js
     end
   end
@@ -89,6 +77,7 @@ class PermissionsController < ApplicationController
       ],
       user_roles_attributes: %i[
         id
+        sector_id
         role_id
         _destroy
       ]
