@@ -2,14 +2,14 @@
   <button type="button" class="btn btn-primary w-100" data-toggle="modal" data-target="#sector-selection" id="open-sectors-select-modal">
     Agregar sector <%= fa_icon 'plus' %>
   </button>
-  <ul class="mt-3">
+  <ul class="mt-3" id ="sectors-list">
     <% @user.user_sectors.each do |us| %>
       <li>
         <input type="hidden" name="permission[user_sectors_attributes][<%= us.sector_id %>][_destroy]" value="0">
         <input type="hidden" name="permission[user_sectors_attributes][<%= us.sector_id %>][sector_id]" value="<%= us.sector_id %>">
         <input type="hidden" name="permission[user_sectors_attributes][<%= us.sector_id %>][id]" value="<%= us.id %>">
         <a href="<%= permission_change_sector_users_admin_path(active_sector_id: us.sector_id) %>" 
-           class="btn btn-primary <%= (@active_sector.present? && @active_sector.id  == us.sector_id) ? 'active' : '' %>" 
+           class="btn btn-sector <%= 'active' if @active_sector.id == us.sector_id %>" 
            data-remote="true" onclick="toggleLoading();">
           <%= us.sector.name %> - <%= us.sector.establishment.name%>
         </a>

@@ -1,3 +1,5 @@
+@import 'variables';
+
 .all-cl-container{
   display: flex;
   justify-content: space-between;
@@ -11,5 +13,28 @@
 
 #location_select_container{
   width: calc(100% - 40px);
+  #sectors-list{
+    list-style: none;
+    padding: 0;
+    li {
+      background-color: rgb(240,241,242);
+      a.btn-sector {
+        text-align: left;
+        font-size: 0.75rem;
+        font-weight: bold;
+        width: 100%;
+        &:hover{
+          background-color: $cblue3;
+          border-color: $cblue3;
+          color: #fff;
+        }
+        &.active{
+          background-color: $cblue2;
+          color: #fff;
+        }
+      }
+    }
+
+  }
 }
 
