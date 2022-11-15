@@ -74,12 +74,15 @@ class UsersController < ApplicationController
   end
 
   def adds_sector
-    @sector = Sector.find(params[:remote_form][:sector])
-    @user.user_sectors.build(sector_id: @sector.id)
+    @active_sector = Sector.find(params[:remote_form][:sector])
+    @user.user_sectors.build(sector_id: @active_sector.id)
+    @roles = Role.all.order(name: :asc)
+    @permission_modules = PermissionModule.eager_load(:permissions).all
+    @enable_permissions = @user.permission_users.where(sector_id: @active_sector).pluck(:permission_id)
     @sectors = Sector.includes(:establishment)
                      .order('establishments.name ASC', 'sectors.name ASC')
                      .where.not(id: @user.user_sectors.pluck(:sector_id))
-                     @roles = Role.all.order(name: :asc)
+    #                  @roles = Role.all.order(name: :asc)
 
   end
 

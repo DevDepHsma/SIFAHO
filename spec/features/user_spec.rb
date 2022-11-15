@@ -187,6 +187,11 @@ RSpec.feature 'Users', type: :feature, js: true do
         end
         expect(page).to have_content('La cantidad de sectores seleccionados supera el máximo de 3')
       end
+      
+      it 'has active sector' do
+        visit "/usuarios/#{@user_permission_requested.id}/permisos"
+        sleep 10
+      end
 
       # it 'Nav Menu link' do
 
