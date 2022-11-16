@@ -31,6 +31,7 @@ RSpec.feature 'Orders::Internal::Applicants', type: :feature do
         visit '/sectores'
       end
       it 'list' do
+        click_link 'Recibos'
         expect(page).to have_css('#table_results')
       end
 
@@ -82,6 +83,7 @@ RSpec.feature 'Orders::Internal::Applicants', type: :feature do
         expect(page).to have_content('Unidad')
         expect(page).to have_content('Tu stock')
         expect(page).to have_content('Solicitar')
+        expect(page).to have_content('Solicitado')
         expect(page).to have_content('Tu observación')
         expect(page).to have_link('Volver')
         expect(page).to have_button('Enviar')
