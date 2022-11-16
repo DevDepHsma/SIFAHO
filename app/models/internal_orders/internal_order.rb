@@ -24,7 +24,9 @@ class InternalOrder < ApplicationRecord
 
   scope :filter_by_params, lambda { |filter_params|
     query = self.select(:id, :requested_date, :date_received, :remit_code, :status, :provider_sector_id, :order_type, :applicant_sector_id, 'sectors.name')
-    query = query.like_sector_name(filter_params[:provider]) if filter_params.present? && filter_params[:provider].present?
+    if filter_params.present? && filter_params[:provider].present?
+      query = query.like_sector_name(filter_params[:provider])
+    end
 
     if filter_params.present? && filter_params[:search_applicant].present?
       query = query.like_sector_name(filter_params[:search_applicant])
@@ -57,7 +59,7 @@ class InternalOrder < ApplicationRecord
   scope :like_sector_name, lambda { |sector_name|
     where('unaccent(lower(sectors.name))  like ?', "%#{sector_name.downcase.removeaccents}%")
   }
-  
+
   scope :like_remit_code, lambda { |remit_code|
                             where('unaccent(lower(remit_code)) like ?', "%#{remit_code.downcase.removeaccents}%")
                           }
@@ -226,7 +228,7 @@ class InternalOrder < ApplicationRecord
   private
 
   def record_remit_code
-    self.remit_code = "SE#{DateTime.now.to_s(:number)}" unless Rails.env.test?
+    self.remit_code = "SE#{DateTime.now.to_s(:number)}"
   end
 
   def presence_of_products_into_the_order
