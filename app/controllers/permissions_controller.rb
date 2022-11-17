@@ -1,5 +1,5 @@
 class PermissionsController < ApplicationController
-  before_action :set_user, only: %i[edit update build_from_request permission_change_sector]
+  before_action :set_user, only: %i[edit update build_from_request permission_change_sector build_permission_from_role]
   before_action :set_permission_request, only: %i[build_from_request edit]
 
   def build_from_request
@@ -9,6 +9,14 @@ class PermissionsController < ApplicationController
     @active_sector = @permission_request.sector
     @enable_permissions = PermissionRole.where(role_id: @user.user_roles.map(&:role_id)).pluck(:permission_id)
     @applied_permission_request = @permission_request
+  end
+
+  def build_permission_from_role
+    @user.build_permissions_from_role(permission_params[:user_roles_attributes])
+    @roles = Role.all.order(name: :asc)
+    @permission_modules = PermissionModule.eager_load(:permissions).all
+    @active_sector = Sector.find(params[:active_sector_id])
+    @enable_permissions = PermissionRole.where(role_id: @user.user_roles.map(&:role_id)).pluck(:permission_id)
   end
 
   def permission_change_sector

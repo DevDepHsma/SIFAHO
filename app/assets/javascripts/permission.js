@@ -34,3 +34,15 @@ function searchModule(e){
     }
   });
 }
+
+function toggleRole(e){
+  toggleLoading();
+  const url_to_build_permissions = $(e.target).attr('data-url');
+  const target = $(e.target).attr('data-target');
+  $('input[name="'+target+'"]').val(!$(e.target).is(':checked'))
+  $.ajax({
+    url: url_to_build_permissions,
+    method: 'POST',
+    data: $(e.target).closest('form').serialize()
+  });
+}

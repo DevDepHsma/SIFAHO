@@ -40,9 +40,10 @@ class User < ApplicationRecord
   has_many :roles, through: :user_roles
 
   accepts_nested_attributes_for :profile, :professional
-  accepts_nested_attributes_for :permission_users, allow_destroy: true, update_only: true
-  accepts_nested_attributes_for :user_roles, allow_destroy: true, update_only: true
-  accepts_nested_attributes_for :user_sectors, allow_destroy: true, update_only: true
+  accepts_nested_attributes_for :permission_users, allow_destroy: true, update_only: true,
+                                                   reject_if: :permission_exists?
+  accepts_nested_attributes_for :user_roles, allow_destroy: true, update_only: true, reject_if: :role_exists?
+  accepts_nested_attributes_for :user_sectors, allow_destroy: true, update_only: true, reject_if: :sector_exists?
 
   validates :username, presence: true, uniqueness: true
   validate :validate_max_sectors
@@ -165,6 +166,14 @@ class User < ApplicationRecord
     end
   end
 
+  def build_permissions_from_role(roles_attributes)
+    roles_attributes.each do |role_attr|
+      user_roles.build(role_attr[1].except(:_destroy)) if role_attr[1]['_destroy'] == 'false'
+      user_roles.build(role_attr[1].except(:_destroy)) if role_attr[1]['_destroy'] == 'true'
+    end
+    self
+  end
+
   def full_name
     if profile.present?
       profile.full_name
@@ -189,6 +198,18 @@ class User < ApplicationRecord
 
   def has_permissions_any?(*permissions_target)
     permissions.joins(:permission_users).where(name: permissions_target, 'permission_users.sector_id': sector_id).any?
+  end
+
+  def role_exists?(attributes)
+    user_roles.exists?(role_id: attributes[:role_id], sector_id: attributes[:sector_id])
+  end
+
+  def permission_exists?(attributes)
+    permission_users.exists?(permission_id: attributes[:permission_id], sector_id: attributes[:sector_id])
+  end
+
+  def sector_exists?(attributes)
+    user_sectors.exists?(sector_id: attributes[:sector_id])
   end
 
   private

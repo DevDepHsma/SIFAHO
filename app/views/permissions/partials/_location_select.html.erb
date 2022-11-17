@@ -34,9 +34,12 @@
       <input type="hidden" name="permission[user_roles_attributes][<%= role.id %>][role_id]" value="<%= role.id %>">
       <div class="custom-control custom-checkbox mb-1">
         <input type="checkbox" 
-               class="custom-control-input" 
+               class="custom-control-input role-checkbox" 
+               onchange="toggleRole(event)"
                id="role-<%=role.id%>" 
                required 
+               data-url="<%= build_permission_from_role_users_admin_path %>"
+               data-target="permission[user_roles_attributes][<%= role.id %>][_destroy]"
                <%= 'checked' if @user.user_roles.any?{|us| us.role_id == role.id && us.sector_id == @active_sector.id }%>>
         <label class="custom-control-label" for="role-<%=role.id%>"><%= role.name %></label>
       </div>
