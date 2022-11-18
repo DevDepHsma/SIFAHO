@@ -151,8 +151,6 @@ RSpec.feature 'Orders::Internal::Providers', type: :feature do
           page.find('a', text: 'Enviar').click
         end
         expect(page).to have_content('La provision se ha enviado correctamente.')
-        
-       
       end
     end
   end
