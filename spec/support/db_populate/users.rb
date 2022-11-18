@@ -19,7 +19,7 @@ def users_populate
   end
 
   # Get 3 users with "in progress" status and complete request for test 
-  # Actives sectors & active roles
+  # Actives sectors 
   @user_build_from_pr = User.where(username: get_users_for_request).sample(3)
   @user_build_from_pr.each do |user|
     permission_request = user.permission_requests.in_progress.first
@@ -31,6 +31,15 @@ def users_populate
     end
     user.active!
   end
+
+  # Get 1 users with "in progress" status and complete request for test 
+  # Active roles
+  @user_build_without_role = User.where(status: 'permission_req').sample
+  permission_request = @user_build_without_role.permission_requests.in_progress.first
+  @user_build_without_role.user_sectors.build(sector_id: permission_request.sector_id, status: 'active')
+  permission_request.aproved_by_id = [@farm_applicant, @depo_applicant, @farm_provider, @depo_provider].sample.id
+  permission_request.done!
+  @user_build_without_role.active!
 
   @users_permission_requested = User.where(status: 'permission_req')
 end

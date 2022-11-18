@@ -194,6 +194,15 @@ RSpec.feature 'Users', type: :feature, js: true do
                                              text: "#{active_sector.name} - #{active_sector.establishment.name}")
         end
       end
+
+      it 'set permissions by role' do
+        role = Role.all.sample
+        visit "/usuarios/#{@user_build_without_role.id}/permisos"
+        within '#location_select_container' do
+          page.first('label', text: role.name).click
+        end
+        sleep 10
+      end
     end
   end
 end
