@@ -24,5 +24,5 @@ def users_populate
     user.save!
   end
 
-  @users_permission_requested = User.where.not(id: @user_build_from_pr.pluck(:id))
+  @users_permission_requested = User.where(status: 'permission_req')
 end
