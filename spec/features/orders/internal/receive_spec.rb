@@ -41,7 +41,8 @@ RSpec.feature "Orders::Internal::Receives", type: :feature do
       within '#sidebar-wrapper' do
         click_link 'Sectores'
       end
-      within '#provider_orders' do
+      visit '/sectores/pedidos/despachos'
+      within '#internal_orders' do
         expect(page).to have_selector('tr')
         expect(page).to have_selector('.btn-edit-product')
         expect(page).to have_selector('.btn-nullify')
@@ -53,7 +54,7 @@ RSpec.feature "Orders::Internal::Receives", type: :feature do
       expect(page.has_link?('Anular')).to be true
       click_link 'Cancelar'
       sleep 1
-      within '#provider_orders' do
+      within '#internal_orders' do
         page.execute_script %Q{$('a.btn-edit-product')[0].click()}
       end
       sleep 1
@@ -76,11 +77,13 @@ RSpec.feature "Orders::Internal::Receives", type: :feature do
       within '#sidebar-wrapper' do
         click_link 'Sectores'
       end
-      within '#applicant_orders' do
+      visit '/sectores/pedidos/recibos'
+      within '#internal_orders' do
         expect(page).to have_selector('tr')
         expect(page).to have_selector('.btn-detail')
         page.execute_script %Q{$('a.btn-detail')[0].click()}
       end
+      sleep 1
       expect(page.has_button?('Recibir')).to be true
       click_button 'Recibir'
       sleep 1
@@ -89,7 +92,7 @@ RSpec.feature "Orders::Internal::Receives", type: :feature do
       expect(page.has_link?('Confirmar')).to be true
       click_link 'Confirmar'
       sleep 1
-      expect(page).to have_content('La solicitud se ha recibido correctamente')
+      expect(page).to have_content('La provision se ha recibido correctamente')
       expect(page).to have_content('Provision entregada')
     end
   end
