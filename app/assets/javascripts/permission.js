@@ -39,7 +39,7 @@ function toggleRole(e){
   toggleLoading();
   const url_to_build_permissions = $(e.target).attr('data-url');
   const target = $(e.target).attr('data-target');
-  $('input[name="'+target+'"]').val(!$(e.target).is(':checked'))
+  $('input[name="'+target+'"]').val($(e.target).is(':checked') ? 0 : 1)
   $.ajax({
     url: url_to_build_permissions,
     method: 'POST',

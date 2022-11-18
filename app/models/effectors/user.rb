@@ -166,12 +166,9 @@ class User < ApplicationRecord
     end
   end
 
+  # return user_roles at least user
   def build_permissions_from_role(roles_attributes)
-    roles_attributes.each do |role_attr|
-      user_roles.build(role_attr[1].except(:_destroy)) if role_attr[1]['_destroy'] == 'false'
-      user_roles.build(role_attr[1].except(:_destroy)) if role_attr[1]['_destroy'] == 'true'
-    end
-    self
+    roles_attributes.values.select { |role_attr| role_attr['_destroy'] == '0' }
   end
 
   def full_name
@@ -210,6 +207,11 @@ class User < ApplicationRecord
 
   def sector_exists?(attributes)
     user_sectors.exists?(sector_id: attributes[:sector_id])
+  end
+
+  def get_active_user_role_id(role_id)
+    user_role = user_roles.select { |us| us.role_id == role_id }.first
+    user_role.id if user_role.present? && user_role.id.present?
   end
 
   private

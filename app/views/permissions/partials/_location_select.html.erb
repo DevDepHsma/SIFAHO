@@ -29,9 +29,6 @@
   <div class="mt-2">
     <p class="mb-1">Modulos</p>
     <% @roles.each do |role| %>
-      <input type="hidden" name="permission[user_roles_attributes][<%= role.id %>][_destroy]" value="<%= !@user.user_roles.map(&:role_id).include?(role.id) %>">
-      <input type="hidden" name="permission[user_roles_attributes][<%= role.id %>][sector_id]" value="<%= @active_sector.id %>">
-      <input type="hidden" name="permission[user_roles_attributes][<%= role.id %>][role_id]" value="<%= role.id %>">
       <div class="custom-control custom-checkbox mb-1">
         <input type="checkbox" 
                class="custom-control-input role-checkbox" 
@@ -43,6 +40,10 @@
                <%= 'checked' if @user.user_roles.any?{|us| us.role_id == role.id && us.sector_id == @active_sector.id }%>>
         <label class="custom-control-label" for="role-<%=role.id%>"><%= role.name %></label>
       </div>
+      <input type="hidden" name="permission[user_roles_attributes][<%= role.id %>][id]" value="<%= @user.get_active_user_role_id(role.id) %>">
+      <input type="hidden" name="permission[user_roles_attributes][<%= role.id %>][sector_id]" value="<%= @active_sector.id %>">
+      <input type="hidden" name="permission[user_roles_attributes][<%= role.id %>][role_id]" value="<%= role.id %>">
+      <input type="hidden" name="permission[user_roles_attributes][<%= role.id %>][_destroy]" value="<%= @user.user_roles.map(&:role_id).include?(role.id) ? 0 : 1 %>">
     <% end %>
   </div>
 <% end %>

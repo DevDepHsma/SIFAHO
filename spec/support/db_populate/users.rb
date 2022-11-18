@@ -17,4 +17,12 @@ def users_populate
       role_ids: [role_sample.id]
     )
   end
+
+  @user_build_from_pr = User.where(username: get_users_for_request).sample(3)
+  @user_build_from_pr.each do |user|
+    user = user.permission_requests.in_progress.last.build_user_permissions
+    user.save!
+  end
+
+  @users_permission_requested = User.where.not(id: @user_build_from_pr.pluck(:id))
 end
