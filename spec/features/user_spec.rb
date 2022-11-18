@@ -88,7 +88,7 @@ RSpec.feature 'Users', type: :feature, js: true do
         visit "/usuarios/#{@user_permission_requested.id}/permisos"
 
         click_link 'Aplicar'
-        sleep 20
+        sleep 1
         within '#location_select_container' do
           expect(page).to have_link("#{@permission_request.sector.name} - #{@permission_request.establishment.name}")
           expect(page).to have_content('Modulos')
@@ -130,10 +130,7 @@ RSpec.feature 'Users', type: :feature, js: true do
       end
 
       it 'Save successfully permissions' do
-        permission_requested_to_approve = User.where(username: get_users_for_request)
-                                              .where
-                                              .not(id: @user_permission_requested.id)
-                                              .sample
+        permission_requested_to_approve = @users_permission_requested.where.not(id: @user_permission_requested.id).sample
         visit "/usuarios/#{permission_requested_to_approve.id}/permisos"
         click_link 'Aplicar'
         sleep 1
@@ -190,14 +187,13 @@ RSpec.feature 'Users', type: :feature, js: true do
 
       it 'has active sector' do
         user = @user_build_from_pr.sample
+        active_sector = user.user_sectors.active.first.sector
         visit "/usuarios/#{user.id}/permisos"
-
-        sleep 10
+        within '#location_select_container' do
+          expect(page).to have_selector('a', class: 'active',
+                                             text: "#{active_sector.name} - #{active_sector.establishment.name}")
+        end
       end
-
-      # it 'set permissions by role' do
-
-      # end
     end
   end
 end
