@@ -201,7 +201,11 @@ RSpec.feature 'Users', type: :feature, js: true do
         within '#location_select_container' do
           page.first('label', text: role.name).click
         end
-        sleep 10
+        role.permissions.each do |permission|
+          expect(page).to have_checked_field(
+            "permission[permission_users_attributes][#{permission.id}][permission_id]", visible: false
+          )
+        end
       end
     end
   end
