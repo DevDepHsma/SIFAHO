@@ -96,3 +96,8 @@ es:
       read_lot_stocks: 'Ver / Listar lotes'
       read_movement_stocks: 'Ver / Listar movimientos'
       external_order_by_products: 'Reporte de establecimientos por productos'
+      report_by_patients: 'Reporte por paciente'
+      report_by_sectors: 'Reporte por sectores (en desarrollo)'
+      report_by_establishments: 'Reporte por establecimientos (en desarrollo)'
+      read_reports: 'Ver / Listar'
+      destroy_reports: 'Eliminar'
