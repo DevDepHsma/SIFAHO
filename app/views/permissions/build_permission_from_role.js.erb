@@ -1,6 +1,5 @@
-toggleLoading();
-
 <% permissions_list = escape_javascript(
   render(partial: 'permissions/partials/list')
 ) %>
 $("#permissions_list").html("<%= permissions_list %>");
+toggleLoading();

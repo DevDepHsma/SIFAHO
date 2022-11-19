@@ -22,6 +22,10 @@ $(document).on('turbolinks:load', function() {
     toggleLoading();
     $(e.target).closest('form').submit();
   });
+
+  $("#permission_users").on('submit', () => {
+    toggleLoading();
+  });
 });
 
 function searchModule(e){

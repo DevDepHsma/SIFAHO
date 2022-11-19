@@ -1,1 +1,6 @@
 <%= render 'shared/flash_message' %>
+<% sidebar = escape_javascript(
+  render(partial: 'layouts/side_navigation')
+) %>
+$("#sidebar-wrapper").replaceWith("<%= sidebar %>")
+toggleLoading();
