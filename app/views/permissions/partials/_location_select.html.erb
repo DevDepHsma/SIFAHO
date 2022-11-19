@@ -16,7 +16,7 @@
         <% if @applied_permission_request.present? && @applied_permission_request.sector_id == us.sector_id %>
           <span class="badge badge-warning">solicitud en progreso</span>
         <% end %>
-        <% if @user.active_sector.id == us.sector_id %>
+        <% if @user.active_sector.present? && @user.active_sector.id == us.sector_id %>
           <span class="badge badge-success">activo</span>
         <% end %>
       </li>

@@ -239,7 +239,8 @@ RSpec.feature 'Users', type: :feature, js: true do
       it 'save from adds sector and set role' do
         role = Role.all.sample
         sector = Sector.all.sample
-        visit "/usuarios/#{@user_permission_requested.id}/permisos"
+        user = @users_permission_requested.where.not(id: @user_permission_requested.id).sample
+        visit "/usuarios/#{user.id}/permisos"
         click_button 'Agregar sector'
         sleep 1
         find('select#remote_form_sector_selector + button').click

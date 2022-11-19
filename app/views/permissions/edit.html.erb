@@ -1,26 +1,17 @@
 <% content_for :title, "Usuarios" %>
 
 <% content_for :page_header do %>
-  <%= render 'users/partials/header' %>
+  
 <% end %>
 
 <div class="card fixed-custom-card">
   <div class="card-header d-flex align-items-center justify-content-between">
     <div class="d-flex align-items-center">
       <%= fa_icon "lock" %>
-      <h5 class="card-title mb-0 ml-2">
-        <% if @permission_request.present? %>
-          Solicitud de permisos <span class="badge badge-primary"> <%=
-              t("permission_request_status.#{@permission_request.status}").downcase
-            %> </span>
-        <% else %>
-          Editando permisos
-        <% end %>
+      <h5 class="card-title mb-0 ml-2" id="edit-title">
+        <%= render 'permissions/partials/edit_title' %>
       </h5>
     </div>
-    <%= link_to users_admin_index_path, class: 'btn btn-light' do %>
-      <%= fa_icon 'times' %>
-    <% end %>
   </div>
   <div class="card-body">
     <%= simple_form_for 'permission_users', url: update_permissions_users_admin_path(@user), remote: true, html: { method: 'PUT', name: 'permission_users', id: 'permission_users', novalidate: true} do |f| %>

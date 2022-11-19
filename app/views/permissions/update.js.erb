@@ -5,6 +5,17 @@
 <% header = escape_javascript(
   render(partial: 'users/partials/header')
 ) %>
+
+<% edit_title = escape_javascript(
+  render(partial: 'permissions/partials/edit_title')
+) %>
+
+<% lotcation_select = escape_javascript(
+  render(partial: 'permissions/partials/location_select')
+) %>
+
 $("#sidebar-wrapper").replaceWith("<%= sidebar %>")
 $("#modules-links").html("<%= header %>")
+$("#edit-title").html("<%= edit_title %>")
+$("#location_select_container").html("<%= lotcation_select %>");
 toggleLoading();

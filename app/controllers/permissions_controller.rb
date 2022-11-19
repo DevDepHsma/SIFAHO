@@ -62,6 +62,8 @@ class PermissionsController < ApplicationController
     rescue StandardError => e
       flash.now[:error] = e.message
     ensure
+      @active_sector = @user.active_sector
+      @roles = Role.all.order(name: :asc)
       format.js
     end
   end
