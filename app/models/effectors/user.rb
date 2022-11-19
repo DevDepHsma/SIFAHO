@@ -219,6 +219,10 @@ class User < ApplicationRecord
     user_role.id if user_role.present? && user_role.id.present?
   end
 
+  def active_sector
+    user_sectors.active.first.sector if user_sectors.active.first.present?
+  end
+
   private
 
   def validate_max_sectors

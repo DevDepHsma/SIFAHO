@@ -14,7 +14,10 @@
           <%= us.sector.name %> - <%= us.sector.establishment.name%>
         </a>
         <% if @applied_permission_request.present? && @applied_permission_request.sector_id == us.sector_id %>
-          <span class="badge badge-success">solicitud en progreso</span>
+          <span class="badge badge-warning">solicitud en progreso</span>
+        <% end %>
+        <% if @user.active_sector.id == us.sector_id %>
+          <span class="badge badge-success">activo</span>
         <% end %>
       </li>
     <% end %>
