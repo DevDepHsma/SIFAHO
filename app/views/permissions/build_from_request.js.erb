@@ -7,3 +7,7 @@ $("#location_select_container").html("<%= lotcation_select %>");
   render(partial: 'permissions/partials/list')
 ) %>
 $("#permissions_list").html("<%= permissions_list %>");
+
+$("#permission-request-summary").alert('close');
+
+toggleLoading();

@@ -1,4 +1,4 @@
-<div class="alert alert-warning fade show" role="alert">
+<div class="alert alert-warning fade show" role="alert" id="permission-request-summary">
   <p><strong>Nueva solicitud de permisos:</strong></p>
   <p>
     <strong>Establecimiento indicado:</strong> <%= @user.permission_requests.last.establishment.present? ? @user.permission_requests.last.establishment.name : @user.permission_requests.last.other_establishment %>. <strong>Sector indicado:</strong> <%= @user.permission_requests.last.sector.present? ? @user.permission_requests.last.sector.name : @user.permission_requests.last.other_sector %>.
@@ -15,6 +15,8 @@
   <hr>
   <div class="text-right">
     <button class="btn btn-sm btn-danger">Anular</button>
-    <%= link_to 'Aplicar', build_from_request_users_admin_path, remote: true, class: 'btn btn-sm btn-success' %>
+    <a href="<%= build_from_request_users_admin_path %>" data-remote="true" class="btn btn-sm btn-success" onclick="toggleLoading();">
+      Aplicar
+    </a>
   </div>
 </div>

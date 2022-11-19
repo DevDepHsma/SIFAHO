@@ -4,7 +4,7 @@
   </button>
   <ul class="mt-3" id ="sectors-list">
     <% @user.user_sectors.each do |us| %>
-      <li>
+      <li class="position-relative">
         <input type="hidden" name="permission[user_sectors_attributes][<%= us.sector_id %>][_destroy]" value="0">
         <input type="hidden" name="permission[user_sectors_attributes][<%= us.sector_id %>][sector_id]" value="<%= us.sector_id %>">
         <input type="hidden" name="permission[user_sectors_attributes][<%= us.sector_id %>][id]" value="<%= us.id %>">
@@ -13,6 +13,9 @@
            data-remote="true" onclick="toggleLoading();">
           <%= us.sector.name %> - <%= us.sector.establishment.name%>
         </a>
+        <% if @applied_permission_request.present? && @applied_permission_request.sector_id == us.sector_id %>
+          <span class="badge badge-success">solicitud en progreso</span>
+        <%end%>
       </li>
     <%end%>
   </ul>
