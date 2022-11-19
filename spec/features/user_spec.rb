@@ -195,7 +195,7 @@ RSpec.feature 'Users', type: :feature, js: true do
         end
       end
 
-      it 'set permissions by role' do
+      it 'set toggle permissions by role' do
         role = Role.all.sample
         visit "/usuarios/#{@user_build_without_role.id}/permisos"
         within '#location_select_container' do
@@ -203,6 +203,14 @@ RSpec.feature 'Users', type: :feature, js: true do
         end
         role.permissions.each do |permission|
           expect(page).to have_checked_field(
+            "permission[permission_users_attributes][#{permission.id}][permission_id]", visible: false
+          )
+        end
+        within '#location_select_container' do
+          page.first('label', text: role.name).click
+        end
+        role.permissions.each do |permission|
+          expect(page).to have_unchecked_field(
             "permission[permission_users_attributes][#{permission.id}][permission_id]", visible: false
           )
         end
