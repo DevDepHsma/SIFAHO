@@ -1,4 +1,8 @@
-<%= render 'users/partials/header' %>
+<% content_for :title, "Usuarios" %>
+
+<% content_for :page_header do %>
+  <%= render 'users/partials/header' %>
+<% end %>
 
 <% if @users.present? %>
   <div class="card fixed-custom-card">

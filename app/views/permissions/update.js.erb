@@ -2,5 +2,9 @@
 <% sidebar = escape_javascript(
   render(partial: 'layouts/side_navigation')
 ) %>
+<% header = escape_javascript(
+  render(partial: 'users/partials/header')
+) %>
 $("#sidebar-wrapper").replaceWith("<%= sidebar %>")
+$("#modules-links").html("<%= header %>")
 toggleLoading();
