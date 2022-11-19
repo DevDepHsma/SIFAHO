@@ -15,9 +15,9 @@
         </a>
         <% if @applied_permission_request.present? && @applied_permission_request.sector_id == us.sector_id %>
           <span class="badge badge-success">solicitud en progreso</span>
-        <%end%>
+        <% end %>
       </li>
-    <%end%>
+    <% end %>
   </ul>
   <% if @active_sector.present? %>
     <input type="hidden" name="active_sector_id" value="<%= @active_sector.id%>">
@@ -27,7 +27,7 @@
   <%# permission_request %>
   <% if @applied_permission_request.present? %>
     <input type="hidden" name="permission[permission_request_id]" value="<%= @applied_permission_request.id %>">
-  <% end%>
+  <% end %>
   <%# roles %>
   <div class="mt-2">
     <p class="mb-1">Modulos</p>

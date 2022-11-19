@@ -167,8 +167,13 @@ class User < ApplicationRecord
   end
 
   # return user_roles at least user
-  def build_permissions_from_role(roles_attributes)
+  def build_role(roles_attributes)
     roles_attributes.values.select { |role_attr| role_attr['_destroy'] == '0' }
+  end
+
+  def build_permissions_from_sector(sector)
+    user_sectors.build(sector_id: sector.id)
+    self
   end
 
   def full_name

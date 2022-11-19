@@ -16,10 +16,11 @@ class PermissionsController < ApplicationController
   # Buid from role: build none persisted object.
   # Should consider the active sector
   def build_permission_from_role
-    user_roles_ids_from_active_sector = @user.build_permissions_from_role(permission_params[:user_roles_attributes]).map do |us|
+    user_roles_ids_from_active_sector = @user.build_role(permission_params[:user_roles_attributes]).map do |us|
       us['role_id']
     end
     @active_sector = Sector.find(params[:active_sector_id])
+    @user.build_permissions_from_sector(@active_sector)
     @roles = Role.all.order(name: :asc)
     @permission_modules = PermissionModule.eager_load(:permissions).all
     @enable_permissions = PermissionRole.where(role_id: user_roles_ids_from_active_sector).pluck(:permission_id)

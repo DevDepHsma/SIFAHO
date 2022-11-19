@@ -235,6 +235,28 @@ RSpec.feature 'Users', type: :feature, js: true do
           end
         end
       end
+
+      it 'save from adds sector and set role' do
+        role = Role.all.sample
+        sector = Sector.all.sample
+        visit "/usuarios/#{@user_permission_requested.id}/permisos"
+        click_button 'Agregar sector'
+        sleep 1
+        find('select#remote_form_sector_selector + button').click
+        find('a', text: "#{sector.name} - #{sector.establishment.name}").click
+        sleep 1
+        within '#location_select_container' do
+          page.first('label', text: role.name).click
+        end
+        sleep 1
+        role.permissions.each do |permission|
+          expect(page).to have_checked_field(
+            "permission[permission_users_attributes][#{permission.id}][permission_id]", visible: false
+          )
+        end
+        click_button 'Guardar'
+        expect(page).to have_content('Permisos asignados correctamente.')
+      end
     end
   end
 end
