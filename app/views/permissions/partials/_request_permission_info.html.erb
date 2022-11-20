@@ -1,20 +1,25 @@
 <div class="alert alert-warning fade show" role="alert" id="permission-request-summary">
   <p><strong>Nueva solicitud de permisos:</strong></p>
   <p>
-    <strong>Establecimiento indicado:</strong> <%= @user.permission_requests.last.establishment.present? ? @user.permission_requests.last.establishment.name : @user.permission_requests.last.other_establishment %>. <strong>Sector indicado:</strong> <%= @user.permission_requests.last.sector.present? ? @user.permission_requests.last.sector.name : @user.permission_requests.last.other_sector %>.
+    <strong>Establecimiento indicado:</strong> <%= @permission_request.establishment.present? ? @permission_request.establishment.name : @permission_request.other_establishment %>. <strong>Sector indicado:</strong> <%= @permission_request.sector.present? ? @permission_request.sector.name : @permission_request.other_sector %>.
   </p>
   <p class="mb-0">
     <strong>Funciones seleccionadas:</strong>
   </p>
   <ul>
-    <% @user.permission_requests.last.roles.each do |role| %>
+    <% @permission_request.roles.each do |role| %>
       <li><%= role.name %></li>
     <% end %>
   </ul>
-  <p><strong>Observaciones:</strong> <%= @user.permission_requests.last.observation %>.</p>
+  <p><strong>Observaciones:</strong> <%= @permission_request.observation %>.</p>
   <hr>
   <div class="text-right">
-    <button class="btn btn-sm btn-danger">Anular</button>
+    <button type="button" 
+      class="btn btn-danger btn-sm mr-1 ml-1"
+      data-target="#reject-permission-request"
+      data-toggle="modal">
+        Anular
+    </button>
     <a href="<%= build_from_request_users_admin_path %>" data-remote="true" class="btn btn-sm btn-success" onclick="toggleLoading();">
       Aplicar
     </a>

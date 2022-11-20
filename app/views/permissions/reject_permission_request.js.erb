@@ -1,0 +1,13 @@
+<%= render 'shared/flash_message' %>
+<% header = escape_javascript(
+  render(partial: 'users/partials/header')
+) %>
+
+<% edit_title = escape_javascript(
+  render(partial: 'permissions/partials/edit_title')
+) %>
+
+$("#modules-links").html("<%= header %>");
+$("#edit-title").html("<%= edit_title %>");
+$("#permission-request-summary").alert('close');
+toggleLoading();

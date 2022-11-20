@@ -68,6 +68,12 @@ class PermissionsController < ApplicationController
     end
   end
 
+  def reject_permission_request
+    @permission_request = PermissionRequest.find(params[:pr_id])
+    @permission_request.rejected!
+    flash.now[:success] = 'Solicitud anulada correctamente.'
+  end
+
   private
 
   def set_user

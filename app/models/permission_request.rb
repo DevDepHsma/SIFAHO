@@ -3,7 +3,7 @@
 # Table name: permission_requests
 
 # user_id                         :bigint
-# status                          :integer, default: 0, options: { in_progress: 0, done: 1 }
+# status                          :integer, default: 0, options: { in_progress: 0, done: 1, rejected: 2 }
 # other_establishment             :string
 # other_sector                    :string
 # observation                     :text
@@ -14,7 +14,7 @@
 class PermissionRequest < ApplicationRecord
   include PgSearch::Model
 
-  enum status: { in_progress: 0, done: 1 }
+  enum status: { in_progress: 0, done: 1, rejected: 2 }
   # Relationships
   belongs_to :user
   belongs_to :aproved_by, class_name: 'User', optional: true

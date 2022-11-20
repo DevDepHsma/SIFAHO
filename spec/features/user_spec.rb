@@ -145,6 +145,21 @@ RSpec.feature 'Users', type: :feature, js: true do
       end
 
       it 'anular' do
+        user = @users_permission_requested.where.not(id: @user_permission_requested.id).sample
+        visit "/usuarios/#{user.id}/permisos"
+        within '#permission-request-summary' do
+          click_button 'Anular'
+        end
+        sleep 1
+        within '#reject-permission-request' do
+          expect(page).to have_content('Al anular la solicitud su información no se volverá a mostrar. ¿Desea anular la solicitud?')
+          expect(page).to have_button('Volver')
+          expect(page).to have_link('Confirmar')
+          click_link 'Confirmar'
+        end
+        sleep 1
+        expect(page).to have_content('Solicitud anulada correctamente.')
+        expect(page).not_to have_selector('#permission-request-summary')
       end
 
       it 'shows add sector modal' do
@@ -239,7 +254,7 @@ RSpec.feature 'Users', type: :feature, js: true do
       it 'save from adds sector and set role' do
         role = Role.all.sample
         sector = Sector.all.sample
-        user = @users_permission_requested.where.not(id: @user_permission_requested.id).sample
+        user = @users_permission_requested.permission_req.where.not(id: @user_permission_requested.id).sample
         visit "/usuarios/#{user.id}/permisos"
         click_button 'Agregar sector'
         sleep 1

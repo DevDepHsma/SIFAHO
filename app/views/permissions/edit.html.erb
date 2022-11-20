@@ -60,4 +60,34 @@
 <% content_for :modal do %>
   <%= render "shared/modals/sector_selection" %>
   <%= render(partial: 'shared/modals/delete_confirmation') %>
+  <% if @permission_request.present? && @permission_request.in_progress? %>
+    <div class="modal fade" tabindex="-1" role="dialog" id="reject-permission-request">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header bg-danger text-white">
+            <h5 class="modal-title">
+              Anular solicitud
+            </h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            Al anular la solicitud su información no se volverá a mostrar. ¿Desea anular la solicitud?
+          </div>
+          <div class="modal-footer text-right">
+            <button type='button' class='btn btn-secondary' data-dismiss='modal'>Volver</button>
+            <a data-remote='true' 
+              data-method='put' 
+              href='<%= reject_permission_request_users_admin_path(@user.id, @permission_request.id) %>' 
+              data-dismiss='modal' 
+              data-disable-with="<i class='fa fa-spinner'></i>" 
+              class='btn commit btn-danger pull-right' 
+              rel='nofollow'
+              onclick="toggleLoading();">Confirmar</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
 <% end %>
