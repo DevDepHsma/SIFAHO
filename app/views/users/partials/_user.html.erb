@@ -4,10 +4,28 @@
       <span><%= image_tag user_avatar(user, 25), size: '25', class: "rounded" %></span>
     <% end %>
   </td>
-  <td><%= user.username %></td>
+  <td><%= 
+  
+  highlight(user.username, 
+                  get_value_from_filter(:dni), 
+                  highlighter: '<mark class="highlight-1">\1</mark>'
+                  ) %>
+  </td>
   <% if user.profile.present? %>
-    <td><%= user.profile.last_name.present? ? user.profile.last_name : '----' %></td>
-    <td><%= user.profile.first_name.present? ? user.profile.first_name : '----'%></td>
+    <td><%= 
+    
+     user.profile.last_name.present? ? highlight(user.profile.last_name, 
+                  get_value_from_filter(:fullname), 
+                  highlighter: '<mark class="highlight-1">\1</mark>',
+                  ignore_special_chars: true): '----' %>
+    </td>
+    <td><%= 
+    
+     user.profile.first_name.present? ? highlight(user.profile.first_name, 
+                  get_value_from_filter(:fullname), 
+                  highlighter: '<mark class="highlight-1">\1</mark>',
+                  ignore_special_chars: true): '----' %>
+    </td>
     <td><%= user.profile.email.present? ? user.profile.email : '----' %></td>
   <% else %>
     <td>Sin perfil</td>
