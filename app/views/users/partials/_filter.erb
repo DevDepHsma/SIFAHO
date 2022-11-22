@@ -1,0 +1,38 @@
+<%= simple_form_for 'users', remote: true, html: { method: 'GET', class: 'custom-filters-v1', id: "users-filter" } do |f| %>
+  <div class="filter-form-row">
+    <div class="filter-form-col">
+      <div class="form-group">
+        <input class="form-control" 
+               autocomplete="off" 
+               type="text" 
+               name="filter[dni]" 
+               id="filter_dni" 
+               placeholder="Código"
+               value="<%= get_value_from_filter(:dni) %>">
+        <label>Dni</label>
+      </div>
+    </div>
+    <div class="filter-form-col">
+      <div class="form-group">
+        <input class="form-control" 
+               autocomplete="off" 
+               type="text" 
+               name="filter[fullname]" 
+               id="filter_fullname" 
+               placeholder="Nombre o apellido"
+               value="<%= get_value_from_filter(:fullname) %>">
+        <label>Nombre</label>
+      </div>
+    </div>
+    <input type="hidden" name="filter[sort]" value="<%= get_value_from_filter(:sort) %>">
+    <input type="hidden" name="per_page" value="<%= params[:per_page] || 15 %>">
+    <div class="filter-form-btn-group">
+      <button class="btn btn-primary" type="submit" form="<%= "users-filter" %>">
+        Buscar
+      </button>
+      <button class="btn btn-danger btn-clean-filters" type="button" form="<%= "users-filter" %>">
+        <%= fa_icon 'times' %>
+      </button>
+    </div>
+  </div>
+<% end %>

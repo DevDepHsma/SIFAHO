@@ -1,32 +1,21 @@
-<div id="filterrific_results">
-  <% if @users.present? %>
-    <div class="card">
-      <table class="table table-hover table-striped table-sm">
-        <thead >
-          <tr>
-            <th></th>
-            <th>Usuario</th>
-            <th>Apellido</th>
-            <th>Nombre</th>
-            <th>Email</th>
-            <th>Estado</th>
-            <th>Sectores</th>
-            <th>Última conexión</th>
-            <th class="text-center">Acciones</th>
-          </tr>
-        </thead>
-        <tbody id="users">
-          <%= render(partial: 'users/partials/user', collection: @users, as: :user) %>
-        </tbody>
-      </table>
-    </div>
-    <div class="d-flex align-items-center justify-content-center" style="height: 50px">
-      <%= will_paginate @users, list_classes: %w(pagination mb-0), renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
-    </div>
-  <% else %>
-    <%= render(
-      partial: 'shared/not_found_filter',
-      locals: { object_name: 'usuarios' }
-    ) %>
-  <% end %>
+<div class="card fixed-panel-list">
+  <table class="table table-hover table-striped table-sm">
+    <thead >
+      <tr>
+      <th></th>
+        <%= th_label name: 'Usuario', form: 'users-filter', sort_field: 'profiles.dni', icon_type: 'numeric' %>
+        <%= th_label name: 'Apellido', form: 'users-filter', sort_field: 'profiles.fullname', icon_type: 'alpha' %>
+        <%= th_label name: 'Nombre', form: 'users-filter', sort_field: 'profiles.fullname', icon_type: 'alpha' %>
+        <%= th_label name: 'Email' %>
+        <%= th_label name: 'Estado' %>
+        <%= th_label name: 'Sectores' %>
+        <%= th_label name: 'Última conexión' %>
+        <%= th_label name: 'Acciones' %>
+      </tr>
+    </thead>
+    <tbody id="users">
+            <%= render(partial: 'users/partials/user', collection: @users, as: :user) %>
+    </tbody>
+  </table>
 </div>
+

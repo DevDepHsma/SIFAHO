@@ -19,6 +19,8 @@
 
 class User < ApplicationRecord
   include PgSearch::Model
+  include EnumTranslation
+  include QuerySort
   devise :rememberable, :trackable, :database_authenticatable
   devise :ldap_authenticatable, authentication_keys: [:username]
 
@@ -116,14 +118,28 @@ class User < ApplicationRecord
     Digest::SHA1.hexdigest(username)[0, 29]
   end
 
-  filterrific(
-    default_filter_params: { sorted_by: 'created_at_desc' },
-    available_filters: %i[
-      search_username
-      search_by_fullname
-      sorted_by
-    ]
-  )
+  scope :filter_by_params, lambda { |filter_params|
+    query = self.select(:id, :username, :status, :last_sign_in_at, 'profiles.dni', 'profiles.email', 'profiles.first_name', 'profiles.last_name').joins(:profile)
+    query = query.like_dni(filter_params[:dni]) if filter_params.present? && filter_params[:dni].present?
+    query = query.like_fullname(filter_params[:fullname]) if filter_params.present? && filter_params[:fullname].present?
+    puts query.to_sql.colorize(background: :green)
+    query = if filter_params.present? && filter_params['sort'].present?
+              query.sorted_by(filter_params['sort'])
+            else
+              query.reorder(dni: :desc)
+            end
+
+    return query
+  }
+  scope :like_dni, lambda { |dni|
+    where('profiles.dni::VARCHAR  like ?', "%#{dni}%")
+  }
+  scope :like_fullname, lambda { |fullname|
+                          where('unaccent(lower(profiles.first_name)) like ?
+  OR unaccent(lower(profiles.last_name)) like ?
+  OR CONCAT(unaccent(lower(profiles.last_name)),\' \',unaccent(lower(profiles.first_name))) like ?
+  OR CONCAT(unaccent(lower(profiles.first_name)),\' \',unaccent(lower(profiles.last_name))) like ? ', "%#{fullname.downcase.removeaccents}%", "%#{fullname.downcase.removeaccents}%", "%#{fullname.downcase.removeaccents}%", "%#{fullname.downcase.removeaccents}%")
+                        }
 
   pg_search_scope :search_username,
                   against: :username,

@@ -3,21 +3,10 @@ class UsersController < ApplicationController
 
   def index
     authorize User
-    @filterrific = initialize_filterrific(
-      User.where(status: [1, 2]),
-      params[:filterrific],
-      select_options: {
-        with_status: InternalOrder.options_for_status
-      },
-      persistence_id: false,
-      default_filter_params: { sorted_by: 'created_at_desc' },
-      available_filters: [
-        :search_username,
-        :search_by_fullname,
-        :sorted_by
-      ],
-    ) or return
-    @users = @filterrific.find.page(params[:page]).per_page(14)
+    @users = User.filter_by_params(params[:filter])
+                       .paginate(page: params[:page], per_page: params[:per_page] || 15)
+  
+    
   end
 
   def show
