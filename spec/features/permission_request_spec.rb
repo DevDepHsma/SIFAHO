@@ -183,6 +183,26 @@ RSpec.feature 'PermissionRequests', type: :feature, js: true do
           expect(page).to have_content('Sector no puede estar en blanco')
         end
       end
+
+      it 'Other sector are required on sector select "Otro.." option' do
+        establishment = Establishment.all.sample
+        role = Role.all.sample
+        within '#new_permission_request' do
+          element = page.find('select#permission_request_establishment_id', visible: false)
+          element.sibling('button', class: 'dropdown-toggle').click
+          page.find('li', text: establishment.name).click
+
+          element = page.find('select#permission_request_sector_id', visible: false)
+          element.sibling('button', class: 'dropdown-toggle').click
+          page.find('li', text: 'Otro...').click
+
+          page.first('label', text: role.name).click
+        end
+        click_button 'Enviar'
+        within '#new_permission_request' do
+          expect(page).to have_content('Sector no puede estar en blanco')
+        end
+      end
     end
   end
 end
