@@ -30,6 +30,8 @@ Rails.application.routes.draw do
                                                      as: :build_permission_from_role
         put 'reject_permission_request/:pr_id', to: 'permissions#reject_permission_request',
                                                 as: :reject_permission_request
+        put 'finish_permission_request/:pr_id', to: 'permissions#finish_permission_request',
+                                                as: :finish_permission_request
       end
     end
 

@@ -74,6 +74,12 @@ class PermissionsController < ApplicationController
     flash.now[:success] = 'Solicitud anulada correctamente.'
   end
 
+  def finish_permission_request
+    @permission_request = PermissionRequest.find(params[:pr_id])
+    @permission_request.done!
+    flash.now[:success] = 'Solicitud terminada correctamente.'
+  end
+
   private
 
   def set_user
