@@ -122,7 +122,6 @@ class User < ApplicationRecord
     query = self.select(:id, :username, :status, :last_sign_in_at, 'profiles.dni', 'profiles.email', 'profiles.first_name', 'profiles.last_name').joins(:profile)
     query = query.like_dni(filter_params[:dni]) if filter_params.present? && filter_params[:dni].present?
     query = query.like_fullname(filter_params[:fullname]) if filter_params.present? && filter_params[:fullname].present?
-    puts query.to_sql.colorize(background: :green)
     query = if filter_params.present? && filter_params['sort'].present?
               query.sorted_by(filter_params['sort'])
             else
