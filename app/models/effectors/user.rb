@@ -120,18 +120,18 @@ class User < ApplicationRecord
 
   scope :filter_by_params, lambda { |filter_params|
     query = self.select(:id, :username, :status, :last_sign_in_at, 'profiles.dni', 'profiles.email', 'profiles.first_name', 'profiles.last_name').joins(:profile)
-    query = query.like_dni(filter_params[:dni]) if filter_params.present? && filter_params[:dni].present?
+    query = query.like_username(filter_params[:username]) if filter_params.present? && filter_params[:username].present?
     query = query.like_fullname(filter_params[:fullname]) if filter_params.present? && filter_params[:fullname].present?
     query = if filter_params.present? && filter_params['sort'].present?
               query.sorted_by(filter_params['sort'])
             else
-              query.reorder(dni: :desc)
+              query.reorder(username: :desc)
             end
 
     return query
   }
-  scope :like_dni, lambda { |dni|
-    where('profiles.dni::VARCHAR  like ?', "%#{dni}%")
+  scope :like_username, lambda { |username|
+    where('username  like ?', "%#{username}%")
   }
   scope :like_fullname, lambda { |fullname|
                           where('unaccent(lower(profiles.first_name)) like ?

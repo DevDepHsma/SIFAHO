@@ -28,7 +28,7 @@ RSpec.feature 'UsersFilters', type: :feature do
     describe 'form filters' do
       it 'has fields' do
         within '#users-filter' do
-          expect(page).to have_field('filter[dni]', type: 'text')
+          expect(page).to have_field('filter[username]', type: 'text')
           expect(page).to have_field('filter[fullname]', type: 'text')
           expect(page).to have_button('Buscar')
           expect(page).to have_selector('button.btn-clean-filters')
@@ -39,7 +39,7 @@ RSpec.feature 'UsersFilters', type: :feature do
         users = User.all.sample(5)
         users.each do |user|
           within '#users-filter' do
-            fill_in 'filter[dni]', with: user.username
+            fill_in 'filter[username]', with: user.username
             click_button 'Buscar'
             sleep 1
           end
@@ -74,51 +74,51 @@ RSpec.feature 'UsersFilters', type: :feature do
       end
     end
 
-    describe 'pagination' do
-      before(:each) do
-        visit '/usuarios'
-        @last_page = (User.all.count / 15.to_f).ceil
-      end
+    # describe 'pagination' do
+    #   before(:each) do
+    #     visit '/usuarios'
+    #     @last_page = (User.all.count / 15.to_f).ceil
+    #   end
 
-      # #####################Registros insuficentes para generar la paginación#####################################
+    # #####################Registros insuficentes para generar la paginación#####################################
 
-      # it 'has pagination' do
-      #   within '#paginate_footer nav' do
-      #     expect(page).to have_selector('a.page-link', text: @last_page.to_s)
-      #   end
-      # end
+    # it 'has pagination' do
+    #   within '#paginate_footer nav' do
+    #     expect(page).to have_selector('a.page-link', text: @last_page.to_s)
+    #   end
+    # end
 
-      it 'has pagination size selector' do
-        within '#paginate_footer' do
-          expect(page).to have_select('page-size-selection', with_options: %w[15 30 50 100])
-        end
-      end
+    # it 'has pagination size selector' do
+    #   within '#paginate_footer' do
+    #     expect(page).to have_select('page-size-selection', with_options: %w[15 30 50 100])
+    #   end
+    # end
 
-      # it 'change page number' do
-      #   within '#paginate_footer nav' do
-      #     expect(page).to have_selector('li.active', text: '1')
-      #     click_link @last_page.to_s
-      #     sleep 1
-      #     expect(page).to have_selector('li.active', text: @last_page.to_s)
-      #   end
-      # end
+    # it 'change page number' do
+    #   within '#paginate_footer nav' do
+    #     expect(page).to have_selector('li.active', text: '1')
+    #     click_link @last_page.to_s
+    #     sleep 1
+    #     expect(page).to have_selector('li.active', text: @last_page.to_s)
+    #   end
+    # end
 
-      it 'has 15 items per page by default' do
-        within '#users' do
-          expect(page).to have_selector('tr', count: 15)
-        end
-      end
+    #   it 'has 15 items per page by default' do
+    #     within '#users' do
+    #       expect(page).to have_selector('tr', count: 15)
+    #     end
+    #   end
 
-      it 'change items per page to 30' do
-        within '#paginate_footer' do
-          page.select '30', from: 'page-size-selection'
-          sleep 1
-        end
-        within '#users' do
-          expect(page).to have_selector('tr', count: 15)
-        end
-      end
-    end
+    #   it 'change items per page to 30' do
+    #     within '#paginate_footer' do
+    #       page.select '30', from: 'page-size-selection'
+    #       sleep 1
+    #     end
+    #     within '#users' do
+    #       expect(page).to have_selector('tr', count: 15)
+    #     end
+    #   end
+    # end
 
     describe 'Sort' do
       it 'has sort buttons' do
@@ -156,7 +156,6 @@ RSpec.feature 'UsersFilters', type: :feature do
         sorted_by_name_asc = User.joins(:profile).all.order(first_name: :asc).first
 
         sorted_by_name_desc = User.joins(:profile).all.order(first_name: :desc).first
-
 
         within '#table_results' do
           click_button 'Nombre'
