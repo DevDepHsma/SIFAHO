@@ -144,7 +144,7 @@ RSpec.feature 'Users', type: :feature, js: true do
         expect(page).to have_content('Debe seleccionar un sector valido')
       end
 
-      it 'anular' do
+      it 'reject a permission request' do
         user = @users_permission_requested.where.not(id: @user_permission_requested.id).sample
         visit "/usuarios/#{user.id}/permisos"
         within '#permission-request-summary' do
@@ -200,7 +200,7 @@ RSpec.feature 'Users', type: :feature, js: true do
         expect(page).to have_content('La cantidad de sectores seleccionados supera el máximo de 3')
       end
 
-      it 'has active sector' do
+      it 'has active an sector' do
         user = @user_build_from_pr.sample
         active_sector = user.user_sectors.active.first.sector
         visit "/usuarios/#{user.id}/permisos"
@@ -251,7 +251,7 @@ RSpec.feature 'Users', type: :feature, js: true do
         end
       end
 
-      it 'save from adds sector and set role' do
+      it 'save from add new sector and set role' do
         role = Role.all.sample
         sector = Sector.all.sample
         user = @users_permission_requested.permission_req.where.not(id: @user_permission_requested.id).sample
@@ -272,6 +272,21 @@ RSpec.feature 'Users', type: :feature, js: true do
         end
         click_button 'Guardar'
         expect(page).to have_content('Permisos asignados correctamente.')
+      end
+
+      it 'finish permission request without apply' do
+        user = User.where(username: get_users_for_permission_request).sample
+        visit "/usuarios/#{user.id}/permisos"
+        expect(page).to have_content('El sector o el establecimiento indicados en la solicitud no existen en nuestra base de datos o hubo un error en la selección.')
+        expect(page).to have_content('Verificar que el establecimiento o sector solicitado existan, de lo contrario deben ser creados.')
+        expect(page).to have_content('La creación de establecimientos y sectores debe ser aprobada por las autoridades que correspondan.')
+        expect(page).to have_content('Seleccionar manualmente el sector del establecimiento solicitado.')
+        expect(page).to have_content('Para dar por terminada la solicitud, deberá hacer click sobre el botón "Terminar".')
+        expect(page).to have_link('Terminar')
+
+        click_link 'Terminar'
+        sleep 1
+        expect(page).to have_content('Solicitud terminada correctamente.')
       end
     end
   end

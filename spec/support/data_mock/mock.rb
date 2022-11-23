@@ -290,6 +290,10 @@ module DataMock
          35311523 22638851]
     end
 
+    def get_users_for_permission_request
+      %w[23364799 31525455 23384640 24017924 20087911 25835333 20816456 16528191 32334072 23993125]
+    end
+
     def get_sectors
       ['Quirófano', 'Informática', 'Consultorios Ginecología', 'Lavadero', 'Cocina', 'Informes', 'Nutrición',
        'Mantenimiento', 'Prácticas Residencia Medicina General', 'Sala de partos']
