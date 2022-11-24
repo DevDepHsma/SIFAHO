@@ -286,6 +286,7 @@ RSpec.feature 'Users', type: :feature, js: true do
         expect(page).to have_content('Cambios sin guardar')
         expect(page).to have_content('Desea salir igualmente?')
         click_button 'Continuar de todos modos'
+        sleep 1
         find('select#remote_form_sector_selector + button').click
         find('a', text: "#{sectors[1].name} - #{sectors[1].establishment.name}").click
       end
