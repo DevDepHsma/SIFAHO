@@ -23,7 +23,7 @@ RSpec.feature 'Receipts', type: :feature do
 
     describe 'Add permission:' do
       before(:each) do
-        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @read_receipts)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @read_receipts)
         visit '/'
       end
 
@@ -36,7 +36,7 @@ RSpec.feature 'Receipts', type: :feature do
         within '#dropdown-menu-header' do
           expect(page.has_link?('Recibos')).to be true
         end
-        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @create_receipts)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @create_receipts)
         visit current_path
         within '#dropdown-menu-header' do
           expect(page.has_link?('Cargar por recibo')).to be true
@@ -63,7 +63,7 @@ RSpec.feature 'Receipts', type: :feature do
         within '#receipts' do
           expect(page).to have_selector('.btn-detail', count: 1)
         end
-        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @update_receipts)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @update_receipts)
         visit current_path
         within '#receipts' do
           expect(page).to have_selector('.btn-edit', count: 1)
@@ -78,7 +78,7 @@ RSpec.feature 'Receipts', type: :feature do
 
         expect(page).to have_content('Viendo recibo')
         expect(page.has_button?('Recibir')).to be false
-        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @receive_receipts)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @receive_receipts)
         visit current_path
         expect(page.has_button?('Recibir')).to be true
 
@@ -91,7 +91,7 @@ RSpec.feature 'Receipts', type: :feature do
         sleep 1
 
         expect(page.has_button?('Retornar')).to be false
-        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @rollback_receipts)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @rollback_receipts)
         visit current_path
         expect(page.has_button?('Retornar')).to be true
         click_button 'Retornar'
@@ -103,7 +103,7 @@ RSpec.feature 'Receipts', type: :feature do
         sleep 1
         click_link 'Volver'
 
-        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @destroy_receipts)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @destroy_receipts)
         visit current_path
         within '#receipts' do
           expect(page).to have_selector('.delete-item', count: 1)

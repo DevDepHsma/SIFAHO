@@ -6,7 +6,7 @@ class ReceiptsController < ApplicationController
   def index
     authorize Receipt
     @filterrific = initialize_filterrific(
-      Receipt.applicant(current_user.sector).order(created_at: :desc),
+      Receipt.applicant(@current_user.active_sector).order(created_at: :desc),
       params[:filterrific],
       select_options: { },
       persistence_id: false
@@ -20,7 +20,7 @@ class ReceiptsController < ApplicationController
     respond_to do |format|
       format.html
       format.pdf do
-        pdf = ReportServices::ReceiptReportService.new(current_user, @receipt).generate_pdf
+        pdf = ReportServices::ReceiptReportService.new(@current_user, @receipt).generate_pdf
         send_data pdf, filename: "recibo_#{@receipt.remit_code}.pdf", type: 'application/pdf', disposition: 'inline'
       end
     end
@@ -44,12 +44,12 @@ class ReceiptsController < ApplicationController
     @receipt = Receipt.new(receipt_params)
     authorize @receipt
     respond_to do |format|
-      @receipt.applicant_sector = current_user.sector
-      @receipt.created_by = current_user
+      @receipt.applicant_sector = @current_user.active_sector
+      @receipt.created_by = @current_user
       @receipt.code = "RE"+DateTime.now.to_s(:number)
       begin
         @receipt.auditoria! #default status
-        @receipt.create_notification(current_user, "creó")
+        @receipt.create_notification(@current_user, "creó")
         message = 'El recibo se ha creado y se encuentra en auditoría.'
 
         format.html { redirect_to @receipt, notice: message }
@@ -75,7 +75,7 @@ class ReceiptsController < ApplicationController
       @receipt.update(receipt_params)
       begin
         @receipt.save!
-        @receipt.create_notification(current_user, "auditó")
+        @receipt.create_notification(@current_user, "auditó")
         message = 'El recibo se ha auditado correctamente'
         format.html { redirect_to @receipt, notice: message }
         format.json { render :show, status: :ok, location: @receipt }
@@ -115,8 +115,8 @@ class ReceiptsController < ApplicationController
 
   def receive_order
     authorize @receipt
-    @receipt.receive_remit(current_user)
-    @receipt.create_notification(current_user, 'recibió')
+    @receipt.receive_remit(@current_user)
+    @receipt.create_notification(@current_user, 'recibió')
     respond_to do |format|
       flash.now[:success] = "El recibo #{@receipt.remit_code} se ha realizado correctamente"
       format.html { redirect_to @receipt }

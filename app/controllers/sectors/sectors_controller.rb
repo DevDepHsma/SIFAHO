@@ -9,7 +9,7 @@ class SectorsController < ApplicationController
       redirect_back(fallback_location: root_path)
     end
     @filterrific = initialize_filterrific(
-      current_user.has_permission?(:read_other_establishments) ? Sector : Sector.where(establishment_id: current_user.sector.establishment.id),
+      @current_user.has_permission?(:read_other_establishments) ? Sector : Sector.where(establishment_id: @current_user.active_sector.establishment.id),
       params[:filterrific],
       persistence_id: false,
       available_filters: [

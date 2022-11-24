@@ -128,7 +128,7 @@
     if self.auditoria?
       if self.receipt_products.where.not(lot_code: nil).exists?
         self.status = 'recibido'
-        receipt_products.each { |r_product| r_product.increment_new_lot_to(a_user.sector) }
+        receipt_products.each { |r_product| r_product.increment_new_lot_to(a_user.active_sector) }
         self.received_date = DateTime.now
         self.received_by = a_user
         self.save!
@@ -158,15 +158,15 @@
   end
 
   def create_notification(of_user, action_type)
-    ReceiptMovement.create(user: of_user, receipt: self, action: action_type, sector: of_user.sector)
+    ReceiptMovement.create(user: of_user, receipt: self, action: action_type, sector: of_user.active_sector)
     (self.applicant_sector.users.uniq - [of_user]).each do |user|
-      @not = Notification.where( actor: of_user, user: user, target: self, notify_type: "recibo", action_type: action_type, actor_sector: of_user.sector ).first_or_create
+      @not = Notification.where( actor: of_user, user: user, target: self, notify_type: "recibo", action_type: action_type, actor_sector: of_user.active_sector ).first_or_create
       @not.updated_at = DateTime.now
       @not.read_at = nil
       @not.save
     end
     (self.provider_sector.users.uniq - [of_user]).each do |user|
-      @not = Notification.where( actor: of_user, user: user, target: self, notify_type: "recibo", action_type: action_type, actor_sector: of_user.sector ).first_or_create
+      @not = Notification.where( actor: of_user, user: user, target: self, notify_type: "recibo", action_type: action_type, actor_sector: of_user.active_sector ).first_or_create
       @not.updated_at = DateTime.now
       @not.read_at = nil
       @not.save
