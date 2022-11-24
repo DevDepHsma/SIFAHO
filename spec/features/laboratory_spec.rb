@@ -21,7 +21,7 @@ RSpec.feature "Laboratories", type: :feature do
 
     describe "Add permission:" do
       before(:each) do
-        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @read_laboratories)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @read_laboratories)
         visit '/'
       end
 
@@ -42,7 +42,7 @@ RSpec.feature "Laboratories", type: :feature do
         expect(page).to have_content('Viendo laboratorio')
         expect(page.has_link?('Volver')).to be true
         click_link 'Volver'
-        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @create_laboratories)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @create_laboratories)
         visit current_path
         within '#dropdown-menu-header' do
           expect(page.has_link?('Agregar')).to be true
@@ -62,7 +62,7 @@ RSpec.feature "Laboratories", type: :feature do
         within '#laboratories' do
           expect(page).to have_selector('.btn-detail', count: 2)
         end
-        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @update_laboratories)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @update_laboratories)
         visit current_path
         within '#laboratories' do
           expect(page).to have_selector('.btn-edit', count: 2)
@@ -72,7 +72,7 @@ RSpec.feature "Laboratories", type: :feature do
         expect(page.has_link?('Volver')).to be true
         expect(page.has_button?('Guardar')).to be true
         click_link 'Volver'
-        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @destroy_laboratories)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @destroy_laboratories)
         visit current_path
         within '#laboratories' do
           expect(page).to have_selector('.delete-item', count: 1)
