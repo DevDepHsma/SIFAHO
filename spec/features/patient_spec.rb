@@ -22,7 +22,7 @@ RSpec.feature 'Patients', type: :feature do
 
     describe 'Add permission:' do
       before(:each) do
-        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @read_patients)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @read_patients)
         visit '/'
       end
 
@@ -36,7 +36,7 @@ RSpec.feature 'Patients', type: :feature do
           expect(page.has_link?('Pacientes')).to be true
         end
 
-        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @create_patients)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @create_patients)
         visit current_path
         within '#dropdown-menu-header' do
           expect(page.has_link?('Agregar')).to be true
@@ -62,7 +62,7 @@ RSpec.feature 'Patients', type: :feature do
         within '#patients' do
           expect(page).to have_selector('.btn-detail')
         end
-        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @update_patients)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @update_patients)
         visit current_path
         within '#patients' do
           expect(page).to have_selector('.btn-edit')
