@@ -17,7 +17,8 @@ RSpec.feature 'Users', type: :feature, js: true do
     @answer_permission_request = permission_module.permissions.find_by(name: 'answer_permission_request')
     @update_permissions = permission_module.permissions.find_by(name: 'update_permissions')
     PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @read_users)
-    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @answer_permission_request)
+    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector,
+                          permission: @answer_permission_request)
     PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @update_permissions)
 
     @user_permission_requested = @users_permission_requested.sample
@@ -289,6 +290,5 @@ RSpec.feature 'Users', type: :feature, js: true do
         expect(page).to have_content('Solicitud terminada correctamente.')
       end
     end
-
   end
 end

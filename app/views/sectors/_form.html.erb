@@ -24,7 +24,7 @@
           <% if policy(@sector).select_establishment? %>
             <%= f.input :establishment_id, label: 'Establecimiento',
               collection: @establishments.map {|establishment|  [establishment.name, establishment.id ]},
-              selected: current_user.sector.establishment.id,
+              selected: @current_user.active_sector.establishment.id,
               :input_html => {
                 required: true,
                 include_blank: false,
@@ -38,8 +38,8 @@
             %>
           <% else %>
             <%# mostramos el nombre del establecimiento (segun el sector activo)%>
-            <span><%= current_user.sector.establishment.name %></span>
-            <%= f.hidden_field :establishment_id, value: current_user.sector.establishment.id %>
+            <span><%= @current_user.active_sector.establishment.name %></span>
+            <%= f.hidden_field :establishment_id, value: @current_user.active_sector.establishment.id %>
           <% end %>
         </div>
 

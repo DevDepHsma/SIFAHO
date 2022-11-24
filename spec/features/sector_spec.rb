@@ -25,7 +25,7 @@ RSpec.feature 'Sectors', type: :feature do
 
     describe 'Add permission:' do
       before(:each) do
-        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @read_sectors)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @read_sectors)
         visit '/'
       end
 
@@ -49,7 +49,7 @@ RSpec.feature 'Sectors', type: :feature do
         expect(page).to have_content('Usuarios')
         expect(page.has_link?('Volver')).to be true
         click_link 'Volver'
-        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @create_sectors)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @create_sectors)
         visit current_path
         within '#dropdown-menu-header' do
           expect(page.has_link?('Crear sector')).to be true
@@ -57,9 +57,9 @@ RSpec.feature 'Sectors', type: :feature do
         end
         expect(page.has_css?('#sector_name')).to be true
         expect(page.has_css?('#sector_description')).to be true
-        expect(page).to have_content(@farm_applicant.sector.establishment.name)
+        expect(page).to have_content(@farm_applicant.active_sector.establishment.name)
         expect(page.has_css?('#sector_establishment_id')).to be false
-        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @select_establishment)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @select_establishment)
         visit current_path
         expect(page.has_css?('#sector_establishment_id', visible: false)).to be true
         within '#new_sector' do
@@ -71,8 +71,8 @@ RSpec.feature 'Sectors', type: :feature do
         within '#sectors' do
           expect(page).to have_selector('.btn-detail')
         end
-        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @update_sectors)
-        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector,
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @update_sectors)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector,
                               permission: @read_other_establishments)
         visit current_path
         within '#sectors' do
@@ -83,7 +83,7 @@ RSpec.feature 'Sectors', type: :feature do
         expect(page.has_link?('Volver')).to be true
         expect(page.has_button?('Guardar')).to be true
         click_link 'Volver'
-        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @destroy_sectors)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @destroy_sectors)
         visit current_path
         within '#sectors' do
           expect(page).to have_selector('.delete-item')
