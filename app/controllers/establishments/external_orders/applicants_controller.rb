@@ -11,7 +11,7 @@ class Establishments::ExternalOrders::ApplicantsController < Establishments::Ext
       redirect_back(fallback_location: root_path)
     end
     @filterrific = initialize_filterrific(
-      ExternalOrder.applicant(current_user.sector),
+      ExternalOrder.applicant(@current_user.active_sector),
       params[:filterrific],
       select_options: {
         sorted_by: ExternalOrder.options_for_sorted_by,
@@ -28,7 +28,7 @@ class Establishments::ExternalOrders::ApplicantsController < Establishments::Ext
     flash[:error] = 'No se ha encontrado la plantilla' if params[:template].present?
     @external_order = ExternalOrder.new
     @external_order.order_type = 'solicitud'
-    @external_order.applicant_sector = current_user.sector
+    @external_order.applicant_sector = @current_user.active_sector
     @sectors = []
     @external_order.order_products.build
   end
@@ -46,7 +46,7 @@ class Establishments::ExternalOrders::ApplicantsController < Establishments::Ext
     policy(:external_order_applicant).create?
     @external_order = ExternalOrder.new(external_order_params)
     @external_order.requested_date = DateTime.now
-    @external_order.applicant_sector = current_user.sector
+    @external_order.applicant_sector = @current_user.active_sector
     @external_order.order_type = 'solicitud'
     @external_order.status = 'solicitud_auditoria'
 
@@ -56,7 +56,7 @@ class Establishments::ExternalOrders::ApplicantsController < Establishments::Ext
         message = 'La solicitud de abastecimiento se ha creado y se encuentra en auditoría.'
         notification_type = 'creó y auditó'
 
-        @external_order.create_notification(current_user, notification_type)
+        @external_order.create_notification(@current_user, notification_type)
 
         format.html { redirect_to edit_products_external_orders_applicant_url(@external_order), notice: message }
       rescue ArgumentError => e
@@ -99,7 +99,7 @@ class Establishments::ExternalOrders::ApplicantsController < Establishments::Ext
         message = 'La solicitud se ha auditado y se encuentra en auditoria.'
         notification_type = 'auditó'
 
-        @external_order.create_notification(current_user, notification_type)
+        @external_order.create_notification(@current_user, notification_type)
 
         format.html { redirect_to edit_products_external_orders_applicant_url(@external_order), notice: message }
       rescue ArgumentError => e
@@ -118,7 +118,7 @@ class Establishments::ExternalOrders::ApplicantsController < Establishments::Ext
     policy(:external_order_applicant).can_send?(@external_order)
     respond_to do |format|
       begin
-        @external_order.send_request_by(current_user)
+        @external_order.send_request_by(@current_user)
         format.html { redirect_to external_orders_applicant_url(@external_order), notice: 'La solicitud se ha enviado correctamente.' }
       rescue ArgumentError => e
         flash[:alert] = e.message
@@ -134,7 +134,7 @@ class Establishments::ExternalOrders::ApplicantsController < Establishments::Ext
     policy(:external_order_applicant).rollback_order?(@external_order)
     respond_to do |format|
       begin
-        @external_order.return_applicant_status_by(current_user)
+        @external_order.return_applicant_status_by(@current_user)
         flash[:notice] = 'La solicitud se ha retornado a un estado anterior.'
       rescue ArgumentError => e
         flash[:alert] = e.message
@@ -148,7 +148,7 @@ class Establishments::ExternalOrders::ApplicantsController < Establishments::Ext
     policy(:external_order_applicant).receive_order?(@external_order)
     respond_to do |format|
       begin
-        @external_order.receive_order_by(current_user)
+        @external_order.receive_order_by(@current_user)
         flash[:success] = "La #{@external_order.order_type} se ha recibido correctamente"
       rescue ArgumentError => e
         flash[:error] = e.message
@@ -175,6 +175,6 @@ class Establishments::ExternalOrders::ApplicantsController < Establishments::Ext
   end
 
   def set_last_requests
-    @last_requests = current_user.sector_applicant_external_orders.order(created_at: :asc).last(10)
+    @last_requests = @current_user.active_sector.applicant_external_orders.order(created_at: :asc).last(10)
   end
 end

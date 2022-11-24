@@ -8,7 +8,7 @@ class Establishments::ExternalOrders::CommentsController < ApplicationController
     @external_order_comment = ExternalOrderComment.new(external_order_comment_params)
     authorize @external_order_comment
 
-    @external_order_comment.user = current_user
+    @external_order_comment.user = @current_user
 
     respond_to do |format|
       if @external_order_comment.save!

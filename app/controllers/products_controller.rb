@@ -144,7 +144,7 @@ class ProductsController < ApplicationController
         id: product.id,
         name: product.name,
         unity: product.unity.name,
-        stock: current_user.sector.stock_to(product.id)
+        stock: @current_user.active_sector.stock_to(product.id)
       }
     }
   end

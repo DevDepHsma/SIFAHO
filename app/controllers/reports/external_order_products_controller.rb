@@ -30,13 +30,13 @@ class Reports::ExternalOrderProductsController < ApplicationController
     authorize ExternalOrderProductReport
     @external_order_product_report = ExternalOrderProductReport.new
     @external_order_product_report.report_products.build
-    @last_reports = ExternalOrderProductReport.where(sector_id: current_user.sector_id).limit(10).order(created_at: :desc)
+    @last_reports = ExternalOrderProductReport.where(sector_id: @current_user.active_sector_id).limit(10).order(created_at: :desc)
   end
 
   def create
     @external_order_product_report = ExternalOrderProductReport.new(external_order_product_report_params)
     @external_order_product_report.created_by = current_user
-    @external_order_product_report.sector = current_user.sector
+    @external_order_product_report.sector = @current_user.active_sector
     authorize @external_order_product_report
 
     respond_to do |format|
