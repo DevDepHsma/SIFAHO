@@ -28,7 +28,7 @@ class User < ApplicationRecord
   has_many :permissions, through: :permission_users
   has_many :user_sectors
   has_many :sectors, through: :user_sectors
-  belongs_to :sector, optional: true
+  # belongs_to :sector, optional: true
   has_many :establishments, through: :sectors
   has_one :profile, dependent: :destroy
   has_one :professional, dependent: :destroy
@@ -47,8 +47,6 @@ class User < ApplicationRecord
 
   validates :username, presence: true, uniqueness: true
   validate :validate_max_sectors
-
-  # validates_with CustomValidators::UserValidator, on: :update
 
   after_create :create_profile
   after_save :verify_profile
@@ -96,9 +94,9 @@ class User < ApplicationRecord
     unless profile.present?
       create_profile # Comment in development
     end
-    if !sector.present? && sectors.present?
-      self.sector = sectors.first
-      save
+    if !active_sector.present? && sectors.present?
+      user_sector = user_sectors.first
+      user_sector.active!
     end
   end
 
