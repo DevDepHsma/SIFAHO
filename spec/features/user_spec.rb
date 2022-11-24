@@ -19,7 +19,6 @@ RSpec.feature 'Users', type: :feature, js: true do
     PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @read_users)
     PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @answer_permission_request)
     PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @update_permissions)
-
     @user_permission_requested = @users_permission_requested.sample
     @permission_request = PermissionRequest.where(user_id: @user_permission_requested.id).first
   end
@@ -272,6 +271,23 @@ RSpec.feature 'Users', type: :feature, js: true do
         end
         click_button 'Guardar'
         expect(page).to have_content('Permisos asignados correctamente.')
+      end
+
+      it 'continue without saving' do
+        visit "/usuarios/#{@user_permission_requested.id}/permisos"
+        sectors = Sector.all.sample(2)
+        click_button 'Agregar sector'
+        sleep 1
+        find('select#remote_form_sector_selector + button').click
+        find('a', text: "#{sectors[0].name} - #{sectors[0].establishment.name}").click
+        sleep 1
+        click_button 'Agregar sector'
+        sleep 1
+        expect(page).to have_content('Cambios sin guardar')
+        expect(page).to have_content('Desea salir igualmente?')
+        click_button 'Continuar de todos modos'
+        find('select#remote_form_sector_selector + button').click
+        find('a', text: "#{sectors[1].name} - #{sectors[1].establishment.name}").click
       end
 
       it 'finish permission request without apply' do
