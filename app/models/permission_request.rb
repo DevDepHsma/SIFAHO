@@ -117,7 +117,7 @@ class PermissionRequest < ApplicationRecord
   def build_user_permissions
     if sector_id.present?
       user.user_sectors.build(sector_id: sector.id)
-      user.sector_id = sector.id unless user.sector.present?
+      user.sector_id = sector.id unless user.active_sector.present?
     end
     roles.each { |role| user.user_roles.build(role_id: role.id, sector_id: sector.id) } if roles.present?
     user
