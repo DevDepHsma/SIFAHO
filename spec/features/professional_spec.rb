@@ -21,7 +21,7 @@ RSpec.feature 'Professionals', type: :feature do
 
     describe 'Add permission:' do
       before(:each) do
-        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @read_professionals)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @read_professionals)
         visit '/'
       end
 
@@ -35,7 +35,7 @@ RSpec.feature 'Professionals', type: :feature do
           expect(page.has_link?('Médicos')).to be true
         end
 
-        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @create_professionals)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @create_professionals)
         visit current_path
         within '#dropdown-menu-header' do
           expect(page.has_link?('Agregar')).to be true
@@ -61,7 +61,7 @@ RSpec.feature 'Professionals', type: :feature do
         within '#professionals' do
           expect(page).to have_selector('.btn-detail')
         end
-        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @update_professionals)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @update_professionals)
         visit current_path
         within '#professionals' do
           expect(page).to have_selector('.btn-edit')
@@ -72,7 +72,7 @@ RSpec.feature 'Professionals', type: :feature do
         expect(page.has_link?('Volver')).to be true
         expect(page.has_button?('Guardar')).to be true
         click_link 'Volver'
-        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @destroy_professionals)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @destroy_professionals)
         visit current_path
         within '#professionals' do
           expect(page).to have_selector('.delete-item')
