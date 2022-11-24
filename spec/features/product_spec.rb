@@ -17,9 +17,9 @@ RSpec.feature 'Products', type: :feature do
     @read_products = permission_module.permissions.find_by(name: 'read_products')
     @create_products = permission_module.permissions.find_by(name: 'create_products')
     @update_products = permission_module.permissions.find_by(name: 'update_products')
-    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @read_products)
-    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @create_products)
-    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @update_products)
+    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @read_products)
+    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @create_products)
+    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @update_products)
   end
 
   background do
