@@ -18,7 +18,7 @@ class ApplicationController < ActionController::Base
   end
 
   def set_current_user
-    @current_user = User.includes(:profile, :sector).find(current_user.id)
+    @current_user = User.includes(:profile, :sectors).find(current_user.id)
   end
 
   def pundit_user

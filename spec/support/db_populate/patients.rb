@@ -17,8 +17,8 @@ def outpatient_prescriptions_populate
           date_dispensed: date_prescribed.to_datetime,
           professional_id: Professional.all.sample.id,
           patient_id: patient.id,
-          provider_sector_id: user.sector_id,
-          establishment_id: user.sector.establishment_id,
+          provider_sector_id: user.active_sector.id,
+          establishment_id: user.active_sector.establishment_id,
           remit_code: "AM#{date_prescribed.to_datetime.to_s(:number)}-#{index}",
           date_prescribed: date_prescribed.to_datetime,
           expiry_date: (date_prescribed + 1.month).to_datetime,
@@ -35,7 +35,7 @@ def outpatient_prescriptions_populate
 
           opp.order_prod_lot_stocks.build({
                                             quantity: quantity,
-                                            lot_stock_id: Stock.where(sector_id: user.sector_id,
+                                            lot_stock_id: Stock.where(sector_id: user.active_sector.id,
                                                                       product_id: product.id).first.lot_stocks.first.id
                                           })
 
@@ -60,8 +60,8 @@ def chronic_prescriptions_populate
         diagnostic: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
         professional_id: Professional.all.sample.id,
         patient_id: patient.id,
-        provider_sector_id: user.sector_id,
-        establishment_id: user.sector.establishment_id
+        provider_sector_id: user.active_sector.id,
+        establishment_id: user.active_sector.establishment_id
       )
 
       @products_to_dispense.each do |product|
@@ -78,7 +78,7 @@ def chronic_prescriptions_populate
   end
 
   [@farm_applicant, @depo_applicant, @farm_provider].each do |user|
-    cp_full_dispense = ChronicPrescription.where(provider_sector_id: user.sector_id).sample(2)
+    cp_full_dispense = ChronicPrescription.where(provider_sector_id: user.active_sector.id).sample(2)
 
     cp_full_dispense.each do |cp|
       3.times do
@@ -86,7 +86,7 @@ def chronic_prescriptions_populate
           chronic_prescription_id: cp.id,
           observation: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.',
           status: 'dispensada',
-          provider_sector_id: user.sector_id
+          provider_sector_id: user.active_sector.id
         )
 
         cp.original_chronic_prescription_products.each do |ocpp|
@@ -100,7 +100,7 @@ def chronic_prescriptions_populate
                                             observation: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.',
                                             order_prod_lot_stocks_attributes: [{
                                               quantity: ocpp.request_quantity,
-                                              lot_stock_id: Stock.where(sector_id: user.sector_id,
+                                              lot_stock_id: Stock.where(sector_id: user.active_sector.id,
                                                                         product_id: ocpp.product_id).first.lot_stocks.first.id
                                             }]
                                           }]
@@ -111,14 +111,14 @@ def chronic_prescriptions_populate
       cp.dispensada!
     end
 
-    cp_partial_dispense = ChronicPrescription.where(provider_sector_id: user.sector_id, status: 'pendiente').sample(2)
+    cp_partial_dispense = ChronicPrescription.where(provider_sector_id: user.active_sector.id, status: 'pendiente').sample(2)
 
     cp_partial_dispense.each do |cp|
       cdis = ChronicDispensation.new(
         chronic_prescription_id: cp.id,
         observation: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.',
         status: 'pendiente',
-        provider_sector_id: user.sector_id
+        provider_sector_id: user.active_sector.id
       )
 
       cp.original_chronic_prescription_products.each do |ocpp|
@@ -132,7 +132,7 @@ def chronic_prescriptions_populate
                                           observation: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.',
                                           order_prod_lot_stocks_attributes: [{
                                             quantity: ocpp.request_quantity,
-                                            lot_stock_id: Stock.where(sector_id: user.sector_id,
+                                            lot_stock_id: Stock.where(sector_id: user.active_sector.id,
                                                                       product_id: ocpp.product_id).first.lot_stocks.first.id
                                           }]
                                         }]

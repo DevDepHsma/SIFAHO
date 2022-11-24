@@ -1,23 +1,17 @@
 <% if user_signed_in? %>
   <li class="nav-item dropdown">
     <button class="nav-link btn dropdown-toggle" type="button" id="dropdown-btn-header-login" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-      <% if current_user.sector.present? %>
+      <% if @current_user.active_sector.present? %>
       <div class="dropdown-text-btn">
-        <%= current_user.sector_name %> <small><%= current_user.sector_establishment_short_name %></small>
+        <%= @current_user.active_sector.name %> <small><%= @current_user.active_sector.establishment.short_name %></small>
       </div>
       <% else %>
         <%= fa_icon "exclamation-triangle" %> Sin sector
       <% end %>
     </button>
     <div class="dropdown-menu dropdown-menu-right" id="dropdown-header-login" aria-labelledby="dropdown-btn-header-login">
-      <%# if current_user.has_role? :admin %>
-        <%#= link_to main_app.rails_admin_path, class: "dropdown-item" do %>
-          <%#= fa_icon "users-cog" %>
-          <%# Administración %>
-        <%# end %>
-      <%# end %>
-      <% if current_user.sector.present? %>
-        <%= link_to main_app.edit_profile_path(current_user.profile), class: "dropdown-item" do %>
+      <% if @current_user.active_sector.present? %>
+        <%= link_to main_app.edit_profile_path(@current_user.profile), class: "dropdown-item" do %>
           <%= fa_icon "user-edit" %>
           Editar perfil
         <% end %>
@@ -27,8 +21,8 @@
           <span>Tema</span>
           <input type="checkbox" 
                 name="theme" 
-                data-url="<%= main_app.profile_path(current_user.profile) %>"
-                data-toggle="switchbutton" <%= (current_user.profile.dark? ? "checked" : true) %> 
+                data-url="<%= main_app.profile_path(@current_user.profile) %>"
+                data-toggle="switchbutton" <%= (@current_user.profile.dark? ? "checked" : true) %> 
                 data-onlabel='<%= fa_icon "sun", class: "text-warning" %>'
                 data-offlabel='<%= fa_icon "moon" %>' 
                 data-onstyle="primary" 
@@ -37,8 +31,8 @@
         </div>
         <div class="dropdown-divider"></div>
       <% end %>
-      <% if policy(current_user).change_sector? %>
-        <%= link_to main_app.change_sector_users_admin_path(current_user), remote: true, class: "dropdown-item" do %>
+      <% if policy(@current_user).change_sector? %>
+        <%= link_to main_app.change_sector_users_admin_path(@current_user), remote: true, class: "dropdown-item" do %>
           <%= fa_icon "street-view" %>
           Cambiar ubicación
         <% end %>

@@ -71,10 +71,10 @@ class Report < ApplicationRecord
 
   def generate!(user, report_params)
     ActiveRecord::Base.transaction do
-      @report = Report.create!(sector_id: user.sector_id,
+      @report = Report.create!(sector_id: user.active_sector.id,
                               name: report_params[:name],
-                              sector_name: user.sector.name,
-                              establishment_name: user.sector.establishment.name,
+                              sector_name: user.active_sector.name,
+                              establishment_name: user.active_sector.establishment.name,
                               generated_date: Time.now,
                               generated_by_user_id: user.id,
                               report_type: report_params[:report_type],
