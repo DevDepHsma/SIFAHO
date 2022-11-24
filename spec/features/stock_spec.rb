@@ -27,7 +27,7 @@ RSpec.feature "Stocks", type: :feature do
 
     describe "Add permission:" do
       before(:each) do
-        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @read_stocks)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @read_stocks)
         visit '/'
       end
 
@@ -57,10 +57,10 @@ RSpec.feature "Stocks", type: :feature do
         expect(page.has_link?('Ver Lotes')).to be false
         expect(page.has_link?('Ver Movimientos')).to be false
         expect(page).not_to have_selector('.btn-detail-lot')
-        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @read_lot_stocks)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @read_lot_stocks)
         visit current_path
         expect(page).to have_selector('#lots-tab')
-        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @read_lots)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @read_lots)
         visit current_path
         expect(page).to have_selector('.btn-detail-lot')
 
@@ -74,12 +74,12 @@ RSpec.feature "Stocks", type: :feature do
         expect(page).not_to have_content('Archivos')
         expect(page.has_link?('Volver')).to be true
         # Archived
-        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @read_archive_stocks)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @read_archive_stocks)
         visit current_path
         expect(page).to have_content('Archivos')
         expect(page).to have_selector('#lot-archives', visible: false)
         # Lot stock Movements
-        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @read_movement_stocks)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @read_movement_stocks)
         visit current_path
         expect(page).to have_content('Últimos movimientos')
         expect(page).to have_selector('#movements-tab')
@@ -88,7 +88,7 @@ RSpec.feature "Stocks", type: :feature do
         # ======= Lot stocks list =========
         expect(page).to have_content('Últimos movimientos')
         expect(page).not_to have_selector('.btn-archive')
-        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @create_archive_stocks)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @create_archive_stocks)
         visit current_path
         expect(page).to have_selector('.btn-archive')
         page.execute_script %Q{$('a.btn-archive')[0].click()}
@@ -118,7 +118,7 @@ RSpec.feature "Stocks", type: :feature do
           expect(page).to have_selector('.btn-detail-archive')
           expect(page).not_to have_selector('.btn-return-archive')
         end
-        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @return_archive_stocks)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @return_archive_stocks)
         visit current_path
         click_link 'Archivos'
         expect(page).to have_selector('#lot-archives')
