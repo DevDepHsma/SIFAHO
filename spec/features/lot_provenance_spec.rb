@@ -21,7 +21,7 @@ RSpec.feature "LotProvenances", type: :feature do
 
     describe "Add permission:" do
       before(:each) do
-        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @read_lots_provenance)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @read_lots_provenance)
         visit '/'
       end
 
@@ -35,7 +35,7 @@ RSpec.feature "LotProvenances", type: :feature do
           expect(page.has_link?('Procedencia')).to be true
         end
         expect(page).to have_content('Procedencias')
-        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @create_lots_provenance)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @create_lots_provenance)
         visit current_path
         expect(page).to have_selector('.btn-create')
         page.execute_script %Q{$('a.btn-create').first().click()}
@@ -53,7 +53,7 @@ RSpec.feature "LotProvenances", type: :feature do
         sleep 1
         expect(page).to have_content('La procedencia se ha creado correctamente.')
         expect(page).to have_content('SUMAR')
-        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @update_lots_provenance)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @update_lots_provenance)
         visit current_path
         within '#lots_provenance' do
           expect(page).to have_selector('.btn-edit')
@@ -68,7 +68,7 @@ RSpec.feature "LotProvenances", type: :feature do
         sleep 1
         expect(page).to have_content('La procedencia se ha modificado correctamente.')
         expect(page).to have_content('SUMAR T')
-        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @destroy_lots_provenance)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @destroy_lots_provenance)
         visit current_path
         sleep 1
         within '#lots_provenance' do
