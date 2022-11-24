@@ -24,7 +24,11 @@
           <h5>Perfil médico</h5>
           <p><%= @user.professional_full_info || 'Sin perfil' %></p>
           <h5>Sector actual</h5>
-          <p><%= "#{@user.sector_name || 'Sin sector'} #{@user.establishment_name}" %></p>
+          <% if @user.active_sector.present? %>
+            <p><%= "#{@user.active_sector.name} #{@user.active_sector.establishment.name}" %></p>
+          <% else %>
+            Sin sector
+          <% end %>
           <%= render 'shared/sectors_table', sectors: @user.sectors, title: "Sectores habilitados" %>
         </div>
         <div class="col-6 text-center">

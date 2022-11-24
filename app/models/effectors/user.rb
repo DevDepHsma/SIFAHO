@@ -57,11 +57,6 @@ class User < ApplicationRecord
 
   # Delegaciones
   delegate :full_name, :first_name, :dni, :email, to: :profile
-  delegate :name, :applicant_internal_orders, :applicant_external_orders, :provider_internal_orders,
-           :provider_external_orders, :establishment_short_name,
-           to: :sector, prefix: :sector, allow_nil: true
-  delegate :establishment_name, to: :sector, allow_nil: true
-  delegate :establishment, to: :sector
   delegate :full_info, to: :professional, prefix: true, allow_nil: true
 
   def create_profile
@@ -198,12 +193,12 @@ class User < ApplicationRecord
 
   def has_permission?(permissions_target)
     permission_users.any? do |permission_user|
-      permission_user.permission.name == permissions_target.to_s && permission_user.sector_id == sector_id
+      permission_user.permission.name == permissions_target.to_s && permission_user.sector_id == active_sector.id
     end
   end
 
   def has_permissions_any?(*permissions_target)
-    permissions.joins(:permission_users).where(name: permissions_target, 'permission_users.sector_id': sector_id).any?
+    permissions.joins(:permission_users).where(name: permissions_target, 'permission_users.sector_id': active_sector.id).any?
   end
 
   def role_exists?(attributes)
