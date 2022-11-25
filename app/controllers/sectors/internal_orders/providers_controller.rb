@@ -10,7 +10,7 @@ class Sectors::InternalOrders::ProvidersController < Sectors::InternalOrders::In
   def index
     policy(:internal_order_provider).index?
     @filterrific = initialize_filterrific(
-      InternalOrder.provider(current_user.sector).without_status(0),
+      InternalOrder.provider(@current_user.active_sector).without_status(0),
       params[:filterrific],
       select_options: {
         with_status: InternalOrder.options_for_status
@@ -58,7 +58,7 @@ class Sectors::InternalOrders::ProvidersController < Sectors::InternalOrders::In
     policy(:internal_order_provider).create?
     @internal_order = InternalOrder.new(internal_order_params)
     @internal_order.requested_date = DateTime.now
-    @internal_order.provider_sector = current_user.sector
+    @internal_order.provider_sector = @current_user.active_sector
     @internal_order.order_type = 'provision'
     @internal_order.status = 'proveedor_auditoria'
 
@@ -66,7 +66,7 @@ class Sectors::InternalOrders::ProvidersController < Sectors::InternalOrders::In
       begin
         @internal_order.save!
         message = "La provisión interna de #{@internal_order.applicant_sector.name} se ha auditado correctamente."
-        @internal_order.create_notification(current_user, 'creó')
+        @internal_order.create_notification(@current_user, 'creó')
         format.html { redirect_to edit_products_internal_orders_provider_url(@internal_order), notice: message }
       rescue ArgumentError => e
         # si fallo la validacion de stock debemos modificar el estado a proveedor_auditoria
@@ -76,8 +76,8 @@ class Sectors::InternalOrders::ProvidersController < Sectors::InternalOrders::In
       ensure  
         @sectors = Sector
           .select(:id, :name)
-          .with_establishment_id(current_user.sector.establishment_id)
-          .where.not(id: current_user.sector_id).as_json
+          .with_establishment_id(@current_user.active_sector.establishment_id)
+          .where.not(id: @current_user.active_sector.id).as_json
         @order_products = @internal_order.order_products.present? ? @internal_order.order_products : @internal_order.order_products.build
         format.html { render :new }
       end
@@ -95,7 +95,7 @@ class Sectors::InternalOrders::ProvidersController < Sectors::InternalOrders::In
       begin
         @internal_order.update!(internal_order_params)
         message = 'La solicitud se ha editado y se encuentra en auditoria.'
-        @internal_order.create_notification(current_user, 'auditó')
+        @internal_order.create_notification(@current_user, 'auditó')
         format.html { redirect_to edit_products_internal_orders_provider_url(@internal_order), notice: message }
       rescue ArgumentError => e
         # si fallo la validación de stock, debemos volver atras el estado de la orden
@@ -105,8 +105,8 @@ class Sectors::InternalOrders::ProvidersController < Sectors::InternalOrders::In
         @internal_order.status = previous_status
         @sectors = Sector
           .select(:id, :name)
-          .with_establishment_id(current_user.sector.establishment_id)
-          .where.not(id: current_user.sector_id).as_json
+          .with_establishment_id(@current_user.active_sector.establishment_id)
+          .where.not(id: @current_user.active_sector.id).as_json
           @order_products = @internal_order.order_products.present? ? @internal_order.order_products : @internal_order.order_products.build
         format.html { render :edit }
       end
@@ -118,7 +118,7 @@ class Sectors::InternalOrders::ProvidersController < Sectors::InternalOrders::In
     policy(:internal_order_provider).can_send?(@internal_order)
     respond_to do |format|
       begin
-        @internal_order.send_order_by(current_user)
+        @internal_order.send_order_by(@current_user)
         message = 'La provision se ha enviado correctamente.'
 
         format.html { redirect_to internal_orders_provider_url(@internal_order), notice: message }
@@ -135,7 +135,7 @@ class Sectors::InternalOrders::ProvidersController < Sectors::InternalOrders::In
   # get /internal_orders/provider/1/nullify_order
   def nullify_order
     policy(:internal_order_provider).nullify_order?(@internal_order)
-    @internal_order.nullify_by(current_user)
+    @internal_order.nullify_by(@current_user)
     respond_to do |format|
       flash[:success] = "#{@internal_order.order_type.humanize} se ha anulado correctamente."
       format.html { redirect_to internal_orders_provider_url(@internal_order) }
@@ -161,12 +161,12 @@ class Sectors::InternalOrders::ProvidersController < Sectors::InternalOrders::In
 
   def set_sectors
     @sectors = Sector.select(:id, :name)
-                     .with_establishment_id(current_user.sector.establishment_id)
-                     .where.not(id: current_user.sector_id).as_json
+                     .with_establishment_id(@current_user.active_sector.establishment_id)
+                     .where.not(id: @current_user.active_sector.id).as_json
   end
 
   def set_last_requests
-    @last_delivers = current_user.sector_provider_internal_orders.order(created_at: :asc).last(10)
+    @last_delivers = @current_user.active_sector.provider_internal_orders.order(created_at: :asc).last(10)
   end
 end
 

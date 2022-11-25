@@ -5,8 +5,8 @@ class Sectors::InternalOrders::Templates::TemplatesController < ApplicationContr
   # GET /sectors/internal_orders/templates/templates.json
   def index
     authorize InternalOrderTemplate
-    @applicant_templates = InternalOrderTemplate.where(owner_sector: current_user.sector).solicitud
-    @provider_templates = InternalOrderTemplate.where(owner_sector: current_user.sector).provision
+    @applicant_templates = InternalOrderTemplate.where(owner_sector: @current_user.active_sector).solicitud
+    @provider_templates = InternalOrderTemplate.where(owner_sector: @current_user.active_sector).provision
   end
 
   # GET /sectors/internal_orders/templates/templates/1
@@ -16,7 +16,7 @@ class Sectors::InternalOrders::Templates::TemplatesController < ApplicationContr
     respond_to do |format|
       format.html
       format.pdf do
-        pdf = ReportServices::InternalOrderTemplateReportService.new(current_user, @internal_order_template).generate_pdf
+        pdf = ReportServices::InternalOrderTemplateReportService.new(@current_user, @internal_order_template).generate_pdf
         send_data pdf, filename: "Plantilla_#{@internal_order_template.order_type}_sector.pdf", type: 'application/pdf', disposition: 'inline'
       end
     end

@@ -21,7 +21,7 @@ RSpec.feature 'SanitaryZones', type: :feature do
 
     describe 'Add permission:' do
       before(:each) do
-        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @read_sanitary_zones)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @read_sanitary_zones)
         visit '/'
       end
 
@@ -44,7 +44,7 @@ RSpec.feature 'SanitaryZones', type: :feature do
         expect(page).to have_content('Provincia')
         expect(page.has_link?('Volver')).to be true
         click_link 'Volver'
-        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @create_sanitary_zones)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @create_sanitary_zones)
         visit current_path
         within '#dropdown-menu-header' do
           expect(page.has_link?('Agregar')).to be true
@@ -67,8 +67,8 @@ RSpec.feature 'SanitaryZones', type: :feature do
         within '#sanitary_zones' do
           expect(page).to have_selector('.btn-detail')
         end
-        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @update_sanitary_zones)
-        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @read_other_establishments)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @update_sanitary_zones)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @read_other_establishments)
         visit current_path
         within '#sanitary_zones' do
           expect(page).to have_selector('.btn-edit')
@@ -78,7 +78,7 @@ RSpec.feature 'SanitaryZones', type: :feature do
         expect(page.has_link?('Volver')).to be true
         expect(page.has_button?('Guardar')).to be true
         click_link 'Volver'
-        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @destroy_sanitary_zones)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @destroy_sanitary_zones)
         visit current_path
         within '#sanitary_zones' do
           expect(page).to have_selector('.delete-item')

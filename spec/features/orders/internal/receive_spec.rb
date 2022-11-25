@@ -4,11 +4,11 @@ RSpec.feature "Orders::Internal::Receives", type: :feature do
   before(:all) do
     permission_module_applicant = PermissionModule.includes(:permissions).find_by(name: 'Ordenes Internas Solicitud')
     permission_module_applicant.permissions.map { |permission|
-      PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: permission)
+      PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: permission)
     }
     permission_module_provider = PermissionModule.includes(:permissions).find_by(name: 'Ordenes Internas Proveedor')
     permission_module_provider.permissions.map { |permission|
-      PermissionUser.create(user: @depo_applicant, sector: @depo_applicant.sector, permission: permission)
+      PermissionUser.create(user: @depo_applicant, sector: @depo_applicant.active_sector, permission: permission)
     }
   end
 
@@ -27,9 +27,9 @@ RSpec.feature "Orders::Internal::Receives", type: :feature do
       end
       click_link 'Solicitar'
       within '#order-form' do
-        select_sector(@depo_applicant.sector.name, 'select#provider-sector')
+        select_sector(@depo_applicant.active_sector.name, 'select#provider-sector')
       end
-      expect(page).to have_content(@depo_applicant.sector.name)
+      expect(page).to have_content(@depo_applicant.active_sector.name)
       click_button 'Guardar y agregar productos'
       add_products(rand(1..3), request_quantity: true, observations: true)
       click_button 'Enviar'

@@ -63,7 +63,7 @@
             <tbody>
               <% order.order_products.joins(:product).order("name").each do |int_ord_prod| %>
                 <tr class="<%= highlight_row(int_ord_prod.product_id) %>">
-                  <% @stock = Stock.where(sector: current_user.sector, product: int_ord_prod.product ).first %>
+                  <% @stock = Stock.where(sector: @current_user.active_sector, product: int_ord_prod.product ).first %>
                   <td>
                     <% if @stock.present? %>
                       <%= link_to stock_path(@stock), class: 'btn btn-link text-left p-0', target: :_blank do %>

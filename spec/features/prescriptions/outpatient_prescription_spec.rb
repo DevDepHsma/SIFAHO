@@ -25,18 +25,18 @@ RSpec.feature 'OutpatientPrescriptions', type: :feature do
     @create_professional_permission = professionals_permission_module.permissions.find_by(name: 'create_professionals')
     @read_professional_permission = professionals_permission_module.permissions.find_by(name: 'read_professionals')
 
-    PermissionUser.create(user: @farm_provider, sector: @farm_provider.sector,
+    PermissionUser.create(user: @farm_provider, sector: @farm_provider.active_sector,
                           permission: @read_outpatient_permission)
-    PermissionUser.create(user: @farm_provider, sector: @farm_provider.sector,
+    PermissionUser.create(user: @farm_provider, sector: @farm_provider.active_sector,
                           permission: @dispense_recipe_permission)
-    PermissionUser.create(user: @farm_provider, sector: @farm_provider.sector,
+    PermissionUser.create(user: @farm_provider, sector: @farm_provider.active_sector,
                           permission: @update_recipe_permission)
 
-    PermissionUser.create(user: @farm_provider, sector: @farm_provider.sector,
+    PermissionUser.create(user: @farm_provider, sector: @farm_provider.active_sector,
                           permission: @create_professional_permission)
-    PermissionUser.create(user: @farm_provider, sector: @farm_provider.sector,
+    PermissionUser.create(user: @farm_provider, sector: @farm_provider.active_sector,
                           permission: @read_professional_permission)
-    PermissionUser.create(user: @farm_provider, sector: @farm_provider.sector, permission: @create_patient_permission)
+    PermissionUser.create(user: @farm_provider, sector: @farm_provider.active_sector, permission: @create_patient_permission)
   end
 
   background do
@@ -165,7 +165,7 @@ RSpec.feature 'OutpatientPrescriptions', type: :feature do
                 "outpatient_prescription[outpatient_prescription_products_attributes][#{index}][supply_unity_fake]", type: 'text', disabled: true, with: op.product.unity.name
               )
               expect(page).to have_field(
-                "outpatient_prescription[outpatient_prescription_products_attributes][#{index}][stock_fake]", type: 'text', disabled: true, with: @farm_provider.sector.stock_to(op.product)
+                "outpatient_prescription[outpatient_prescription_products_attributes][#{index}][stock_fake]", type: 'text', disabled: true, with: @farm_provider.active_sector.stock_to(op.product)
               )
               expect(page).to have_field(
                 "outpatient_prescription[outpatient_prescription_products_attributes][#{index}][request_quantity]", type: 'number', with: op.request_quantity

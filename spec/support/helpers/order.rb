@@ -11,7 +11,7 @@ module Helpers
         expect(find('ul.ui-autocomplete')).to have_content(establishment.first.name)
         page.execute_script("$('.ui-menu-item:contains(#{establishment.first.name})').first().click()")
       end
-      expect(page).to have_select('receipt[provider_sector_id]', visible: false)
+      sleep 1
       page.find("#{select_id}", visible: false).sibling('button').click
       expect(page.has_css?('ul.dropdown-menu')).to be true
       expect(page.has_css?('span', text: sector_name.to_s)).to be true

@@ -8,7 +8,7 @@ class Sectors::InternalOrders::ApplicantsController < Sectors::InternalOrders::I
   def index
     policy(:internal_order_applicant).index?
     @filterrific = initialize_filterrific(
-      InternalOrder.applicant(current_user.sector),
+      InternalOrder.applicant(@current_user.active_sector),
       params[:filterrific],
       select_options: {
         with_status: InternalOrder.options_for_status
@@ -56,7 +56,7 @@ class Sectors::InternalOrders::ApplicantsController < Sectors::InternalOrders::I
   def create
     policy(:internal_order_applicant).create?
     @internal_order = InternalOrder.new(internal_order_params)
-    @internal_order.applicant_sector = current_user.sector
+    @internal_order.applicant_sector = @current_user.active_sector
     @internal_order.order_type = 'solicitud'
 
     respond_to do |format|
@@ -90,7 +90,7 @@ class Sectors::InternalOrders::ApplicantsController < Sectors::InternalOrders::I
     policy(:internal_order_applicant).rollback_order?(@internal_order)
     respond_to do |format|
       begin
-        @internal_order.return_applicant_status_by(current_user)
+        @internal_order.return_applicant_status_by(@current_user)
         flash[:notice] = 'La solicitud se ha retornado a un estado anterior.'
       rescue ArgumentError => e
         flash[:alert] = e.message
@@ -104,7 +104,7 @@ class Sectors::InternalOrders::ApplicantsController < Sectors::InternalOrders::I
     policy(:internal_order_applicant).can_send?(@internal_order)
     respond_to do |format|
       begin
-        @internal_order.send_request_by(current_user)
+        @internal_order.send_request_by(@current_user)
         format.html { redirect_to internal_orders_applicant_url(@internal_order), notice: 'La solicitud se ha enviado correctamente.' }
       rescue ArgumentError => e
         flash[:alert] = e.message
@@ -122,7 +122,7 @@ class Sectors::InternalOrders::ApplicantsController < Sectors::InternalOrders::I
     respond_to do |format|
       begin
         unless @internal_order.provision_en_camino?; raise ArgumentError, 'La provisión aún no está en camino.'; end
-        @internal_order.receive_order_by(current_user)
+        @internal_order.receive_order_by(@current_user)
         flash[:success] = 'La '+@internal_order.order_type+' se ha recibido correctamente'
       rescue ArgumentError => e
         flash[:error] = e.message
@@ -142,12 +142,12 @@ class Sectors::InternalOrders::ApplicantsController < Sectors::InternalOrders::I
   # Set sectors to select
   def set_sectors
     @sectors = Sector.select(:id, :name)
-                     .with_establishment_id(current_user.sector.establishment_id)
-                     .where.not(id: current_user.sector_id).as_json
+                     .with_establishment_id(@current_user.active_sector.establishment_id)
+                     .where.not(id: @current_user.active_sector.id).as_json
   end
 
   def set_last_requests
-    @last_requests = current_user.sector_applicant_internal_orders.order(created_at: :asc).last(10)
+    @last_requests = @current_user.active_sector.applicant_internal_orders.order(created_at: :asc).last(10)
   end
 
   def new_from_template(template_id, order_type)

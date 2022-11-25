@@ -23,7 +23,7 @@ class Prescriptions::OutpatientPrescriptionsController < ApplicationController
       format.html
       format.js
       format.pdf do
-        pdf = ReportServices::OutpatientPrescriptionReportService.new(current_user,
+        pdf = ReportServices::OutpatientPrescriptionReportService.new(@current_user,
                                                                       @outpatient_prescription).generate_pdf
         send_data pdf, filename: "Pedido_#{@outpatient_prescription.remit_code}.pdf", type: 'application/pdf',
                        disposition: 'inline'
@@ -46,8 +46,8 @@ class Prescriptions::OutpatientPrescriptionsController < ApplicationController
   # POST /outpatient_prescriptions.json
   def create
     authorize @outpatient_prescription
-    @outpatient_prescription.provider_sector = current_user.sector
-    @outpatient_prescription.establishment = current_user.sector.establishment
+    @outpatient_prescription.provider_sector = @current_user.active_sector
+    @outpatient_prescription.establishment = @current_user.active_sector.establishment
     @outpatient_prescription.remit_code = "AM#{DateTime.now.to_s(:number)}"
     @outpatient_prescription.status = 'dispensada'
     @outpatient_prescription.date_dispensed = DateTime.now
@@ -56,12 +56,12 @@ class Prescriptions::OutpatientPrescriptionsController < ApplicationController
       # Si se entrega la receta
 
       @outpatient_prescription.save!
-      @outpatient_prescription.dispense_by(current_user)
+      @outpatient_prescription.dispense_by(@current_user)
 
       message = "La receta ambulatoria de #{@outpatient_prescription.patient.fullname} se ha creado y dispensado correctamente."
       notification_type = 'creó y dispensó'
 
-      @outpatient_prescription.create_notification(current_user, notification_type)
+      @outpatient_prescription.create_notification(@current_user, notification_type)
       format.html { redirect_to @outpatient_prescription, notice: message }
     rescue ArgumentError => e
       # si fallo la validacion de stock debemos modificar el estado a proveedor_auditoria
@@ -83,11 +83,11 @@ class Prescriptions::OutpatientPrescriptionsController < ApplicationController
 
     respond_to do |format|
       @outpatient_prescription.update!(outpatient_prescription_params)
-      @outpatient_prescription.dispense_by(current_user)
+      @outpatient_prescription.dispense_by(@current_user)
       message = "La receta ambulatoria de #{@outpatient_prescription.patient.fullname} se ha auditado y dispensado correctamente."
       notification_type = 'auditó y dispensó'
 
-      @outpatient_prescription.create_notification(current_user, notification_type)
+      @outpatient_prescription.create_notification(@current_user, notification_type)
       format.html { redirect_to @outpatient_prescription, notice: message }
     rescue ArgumentError => e
       flash[:error] = e.message
@@ -116,7 +116,7 @@ class Prescriptions::OutpatientPrescriptionsController < ApplicationController
     respond_to do |format|
       @outpatient_prescription.date_dispensed = DateTime.now
       @outpatient_prescription.dispensada!
-      @outpatient_prescription.dispense_by(current_user)
+      @outpatient_prescription.dispense_by(@current_user)
       flash.now[:success] =
         'La receta de ' + @outpatient_prescription.professional.fullname + ' se ha dispensado correctamente.'
       format.html { redirect_to @outpatient_prescription }
@@ -133,7 +133,7 @@ class Prescriptions::OutpatientPrescriptionsController < ApplicationController
     authorize @outpatient_prescription
     respond_to do |format|
       begin
-        @outpatient_prescription.return_dispensation(current_user)
+        @outpatient_prescription.return_dispensation(@current_user)
       rescue ArgumentError => e
         flash[:error] = e.message
       else

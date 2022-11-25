@@ -65,12 +65,12 @@ RSpec.feature 'Orders::External::Applicants', type: :feature do
               expect(page).to have_content('Nueva solicitud de establecimiento')
               expect(page).to have_content('Aún no hay solicitudes realizadas')
               expect(page.has_css?('input#effector-establishment', visible: false)).to be true
-              expect(page.has_css?('select#effector-sector', visible: false)).to be true
+              expect(page).to have_select('external_order[provider_sector_id]', visible: false)
               expect(page.has_css?('textarea#external_order_applicant_observation', visible: false)).to be true
               expect(page.has_link?('Volver')).to be true
               expect(page.has_button?('Guardar y agregar productos')).to be true
-              select_sector(@depo_provider.active_sector.name, 'select#effector-sector',
-                            @depo_provider.active_sector.establishment)
+
+              select_sector(@depo_provider.active_sector.name, 'select#effector-sector', @depo_provider.active_sector.establishment)
               expect(page).to have_content(@depo_provider.active_sector.name)
               click_button 'Guardar y agregar productos'
               expect(page).to have_content('La solicitud de abastecimiento se ha creado y se encuentra en auditoría.')

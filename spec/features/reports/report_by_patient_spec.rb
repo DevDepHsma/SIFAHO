@@ -15,7 +15,7 @@ RSpec.feature 'Reports::CreateAndShow', type: :feature do
 
     describe 'Add permission' do
       it 'list' do
-        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector,
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector,
                               permission: @read_reports)
         visit '/'
         expect(page).to have_css('#sidebar-wrapper')
@@ -29,10 +29,10 @@ RSpec.feature 'Reports::CreateAndShow', type: :feature do
       end
 
       it 'Create: form and fields' do
-        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector,
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector,
                               permission: @read_reports)
         visit '/'
-        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector,
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector,
                               permission: @report_by_patients)
         within '#sidebar-wrapper' do
           click_link 'Reportes'
@@ -70,9 +70,9 @@ RSpec.feature 'Reports::CreateAndShow', type: :feature do
     describe 'Form' do
       describe 'Products and Patients fields with search and multi selection' do
         before(:each) do
-          PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector,
+          PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector,
                                 permission: @read_reports)
-          PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector,
+          PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector,
                                 permission: @report_by_patients)
           visit '/reportes/nuevo'
           @patients = Patient.all.sample(5)
@@ -116,9 +116,9 @@ RSpec.feature 'Reports::CreateAndShow', type: :feature do
 
       describe 'Send' do
         before(:each) do
-          PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector,
+          PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector,
                                 permission: @read_reports)
-          PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector,
+          PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector,
                                 permission: @report_by_patients)
           visit '/reportes/nuevo'
           @sample_products = @products.sample(5)
