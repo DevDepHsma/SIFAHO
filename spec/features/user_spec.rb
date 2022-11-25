@@ -280,17 +280,23 @@ RSpec.feature 'Users', type: :feature, js: true do
         sectors = Sector.all.sample(2)
         click_button 'Agregar sector'
         sleep 1
-        find('select#remote_form_sector_selector + button').click
-        find('a', text: "#{sectors[0].name} - #{sectors[0].establishment.name}").click
-        sleep 1
+        within '#sector-selection' do
+          find('select#remote_form_sector_selector + button').click
+          find('span', text: "#{sectors[0].name} - #{sectors[0].establishment.name}").click
+          sleep 1
+        end
+
         click_button 'Agregar sector'
-        sleep 1
         expect(page).to have_content('Cambios sin guardar')
         expect(page).to have_content('Desea salir igualmente?')
         click_button 'Continuar de todos modos'
         sleep 1
-        find('select#remote_form_sector_selector + button').click
-        find('a', text: "#{sectors[1].name} - #{sectors[1].establishment.name}").click
+
+        within '#sector-selection' do
+          find('select#remote_form_sector_selector + button').click
+          find('span', text: "#{sectors[1].name} - #{sectors[1].establishment.name}").click
+          sleep 1
+        end
       end
 
       it 'finish permission request without apply' do
