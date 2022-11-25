@@ -20,15 +20,15 @@ RSpec.feature 'Prescriptions::ChronicPrescriptionsFilters', type: :feature do
     @return_chronic_recipe_permission = permission_module.permissions.find_by(name: 'return_chronic_prescriptions')
     @complete_treatment_chronic_recipe_permission = permission_module.permissions.find_by(name: 'complete_treatment_chronic_prescriptions')
     @destroy_chronic_recipe_permission = permission_module.permissions.find_by(name: 'destroy_chronic_prescriptions')
-    PermissionUser.create(user: @farm_provider, sector: @farm_provider.sector,
+    PermissionUser.create(user: @farm_provider, sector: @farm_provider.active_sector,
                           permission: @read_chronic_recipe_permission)
-    PermissionUser.create(user: @farm_provider, sector: @farm_provider.sector,
+    PermissionUser.create(user: @farm_provider, sector: @farm_provider.active_sector,
                           permission: @destroy_chronic_recipe_permission)
-    PermissionUser.create(user: @farm_provider, sector: @farm_provider.sector,
+    PermissionUser.create(user: @farm_provider, sector: @farm_provider.active_sector,
                           permission: @dispense_chronic_recipe_permission)
-    PermissionUser.create(user: @farm_provider, sector: @farm_provider.sector,
+    PermissionUser.create(user: @farm_provider, sector: @farm_provider.active_sector,
                           permission: @return_chronic_recipe_permission)
-    PermissionUser.create(user: @farm_provider, sector: @farm_provider.sector,
+    PermissionUser.create(user: @farm_provider, sector: @farm_provider.active_sector,
                           permission: @complete_treatment_chronic_recipe_permission)
   end
 

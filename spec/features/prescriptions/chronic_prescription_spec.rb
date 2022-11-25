@@ -8,20 +8,20 @@ RSpec.feature 'Prescriptions::ChronicPrescriptions', type: :feature do
     @update_chronic_recipe_permission = permission_module.permissions.find_by(name: 'update_chronic_prescriptions')
     @complete_treatment_chronic_recipe_permission = permission_module.permissions.find_by(name: 'complete_treatment_chronic_prescriptions')
 
-    PermissionUser.create(user: @farm_provider, sector: @farm_provider.sector,
+    PermissionUser.create(user: @farm_provider, sector: @farm_provider.active_sector,
                           permission: @read_chronic_recipe_permission)
-    PermissionUser.create(user: @farm_provider, sector: @farm_provider.sector,
+    PermissionUser.create(user: @farm_provider, sector: @farm_provider.active_sector,
                           permission: @create_chronic_recipe_permission)
-    PermissionUser.create(user: @farm_provider, sector: @farm_provider.sector,
+    PermissionUser.create(user: @farm_provider, sector: @farm_provider.active_sector,
                           permission: @update_chronic_recipe_permission)
 
     professionals_permission_module = PermissionModule.includes(:permissions).find_by(name: 'Profesionales')
     @create_professional_permission = professionals_permission_module.permissions.find_by(name: 'create_professionals')
     @read_professional_permission = professionals_permission_module.permissions.find_by(name: 'read_professionals')
 
-    PermissionUser.create(user: @farm_provider, sector: @farm_provider.sector,
+    PermissionUser.create(user: @farm_provider, sector: @farm_provider.active_sector,
                           permission: @create_professional_permission)
-    PermissionUser.create(user: @farm_provider, sector: @farm_provider.sector,
+    PermissionUser.create(user: @farm_provider, sector: @farm_provider.active_sector,
                           permission: @read_professional_permission)
   end
 

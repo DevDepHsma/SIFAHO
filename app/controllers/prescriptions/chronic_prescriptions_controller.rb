@@ -45,8 +45,8 @@ class Prescriptions::ChronicPrescriptionsController < ApplicationController
   # POST /chronic_prescriptions.json
   def create
     authorize @chronic_prescription
-    @chronic_prescription.provider_sector = current_user.sector
-    @chronic_prescription.establishment = current_user.sector.establishment
+    @chronic_prescription.provider_sector = @current_user.active_sector
+    @chronic_prescription.establishment = @current_user.active_sector.establishment
     @chronic_prescription.remit_code = 'CR' + DateTime.now.to_s(:number)
     @chronic_prescription.status = 'pendiente'
 
