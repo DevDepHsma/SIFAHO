@@ -8,9 +8,9 @@ class InternalOrderProductPolicy < ApplicationPolicy
   end
 
   def edit_product?
-    if record.added_by_sector_id == user.sector_id && record.is_proveedor_auditoria?
+    if record.added_by_sector_id == user.active_sector.id && record.is_proveedor_auditoria?
       user.has_permission?(:update_internal_order_provider)
-    elsif record.added_by_sector_id == user.sector_id && record.is_solicitud_auditoria?
+    elsif record.added_by_sector_id == user.active_sector.id && record.is_solicitud_auditoria?
       user.has_permission?(:update_internal_order_applicant)
     end
   end
@@ -26,7 +26,7 @@ class InternalOrderProductPolicy < ApplicationPolicy
   end
 
   def destroy?
-    if record.added_by_sector_id.present? && record.added_by_sector == user.sector
+    if record.added_by_sector_id.present? && record.added_by_sector == user.active_sector
       user.has_permission?(:update_internal_order_applicant) || user.has_permission?(:update_internal_order_provider)
     end
   end

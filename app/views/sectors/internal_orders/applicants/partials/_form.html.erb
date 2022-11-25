@@ -22,7 +22,7 @@
 
           <%# Sector Solicitante %>
           <label>Sector solicitante</label>
-          <h6><%= current_user.sector_name %></h6>
+          <h6><%= @current_user.active_sector.name %></h6>
 
           <%# Sector Proveedor %>
           <%= f.input :provider_sector_id, label: 'Sector proveedor',

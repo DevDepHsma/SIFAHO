@@ -17,13 +17,13 @@ class InternalOrderApplicantPolicy < ApplicationPolicy
   end
 
   def edit?(resource)
-    if resource.solicitud_auditoria? && resource.applicant_sector == user.sector
+    if resource.solicitud_auditoria? && resource.applicant_sector == user.active_sector
       user.has_permission?(:update_internal_order_applicant)
     end
   end
 
   def edit_products?(resource)
-    if resource.solicitud_auditoria? && resource.applicant_sector == user.sector
+    if resource.solicitud_auditoria? && resource.applicant_sector == user.active_sector
       user.has_permission?(:update_internal_order_applicant) || create?
     end
   end
@@ -33,25 +33,25 @@ class InternalOrderApplicantPolicy < ApplicationPolicy
   end
 
   def can_send?(resource)
-    if resource.solicitud_auditoria? && resource.applicant_sector == user.sector
+    if resource.solicitud_auditoria? && resource.applicant_sector == user.active_sector
       user.has_permission?(:send_internal_order_applicant)
     end
   end
 
   def destroy?(resource)
-    if resource.solicitud_auditoria? && resource.applicant_sector == user.sector
+    if resource.solicitud_auditoria? && resource.applicant_sector == user.active_sector
       user.has_permission?(:destroy_internal_order_applicant)
     end
   end
 
   def receive_order?(resource)
-    if resource.applicant_sector == user.sector && resource.provision_en_camino?
+    if resource.applicant_sector == user.active_sector && resource.provision_en_camino?
       user.has_permission?(:receive_internal_order_applicant)
     end
   end
 
   def rollback_order?(resource)
-    if resource.applicant_sector == user.sector && resource.solicitud_enviada?
+    if resource.applicant_sector == user.active_sector && resource.solicitud_enviada?
       user.has_permission?(:return_internal_order_applicant)
     end
   end
