@@ -6,9 +6,9 @@ RSpec.feature 'UsersFilters', type: :feature do
     @read_users = permission_module.permissions.find_by(name: 'read_users')
     @answer_permission_request = permission_module.permissions.find_by(name: 'answer_permission_request')
     @update_permissions = permission_module.permissions.find_by(name: 'update_permissions')
-    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @read_users)
-    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @answer_permission_request)
-    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @update_permissions)
+    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @read_users)
+    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @answer_permission_request)
+    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @update_permissions)
 
     @user_permission_requested = @users_permission_requested.sample
     @permission_request = PermissionRequest.where(user_id: @user_permission_requested.id).first
