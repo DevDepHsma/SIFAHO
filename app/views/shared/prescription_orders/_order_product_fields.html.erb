@@ -80,7 +80,7 @@
         class: 'stock-quantity input-sm',
         size: 6, 
         placeholder: "Cant",
-        value: "#{ f.object.product.present? ? current_user.sector.stock_to(f.object.product) : 0 }"
+        value: "#{ f.object.product.present? ? @current_user.active_sector.stock_to(f.object.product) : 0 }"
       } %>
   </td>
 

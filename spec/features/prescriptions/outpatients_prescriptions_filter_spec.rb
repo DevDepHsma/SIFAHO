@@ -16,11 +16,11 @@ RSpec.feature 'OutpatientsPrescriptionsFilters', type: :feature do
     @read_outpatient_permission = permission_module.permissions.find_by(name: 'read_outpatient_recipes')
     @return_recipe_permission = permission_module.permissions.find_by(name: 'return_outpatient_recipes')
     @destroy_recipe_permission = permission_module.permissions.find_by(name: 'destroy_outpatient_recipes')
-    PermissionUser.create(user: @farm_provider, sector: @farm_provider.sector,
+    PermissionUser.create(user: @farm_provider, sector: @farm_provider.active_sector,
                           permission: @return_recipe_permission)
-    PermissionUser.create(user: @farm_provider, sector: @farm_provider.sector,
+    PermissionUser.create(user: @farm_provider, sector: @farm_provider.active_sector,
                           permission: @read_outpatient_permission)
-    PermissionUser.create(user: @farm_provider, sector: @farm_provider.sector,
+    PermissionUser.create(user: @farm_provider, sector: @farm_provider.active_sector,
                           permission: @destroy_recipe_permission)
     @outpatients = OutpatientPrescription.all.sample(5)
   end
