@@ -287,7 +287,6 @@ RSpec.feature 'Users', type: :feature, js: true do
         end
         sleep 1
         click_button 'Agregar sector'
-        sleep 1
         expect(page).to have_content('Cambios sin guardar')
         expect(page).to have_content('Desea salir igualmente?')
         click_button 'Continuar de todos modos'

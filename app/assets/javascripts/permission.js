@@ -26,7 +26,6 @@ $(document).on('turbolinks:load', function () {
   $("#permission_users").on('submit', () => {
     toggleLoading();
   });
-
  
   $("#open-sectors-select-modal").on('click', (e) => {
     const modalId = $(e.target).attr('data-target')
@@ -40,14 +39,7 @@ $(document).on('turbolinks:load', function () {
       $(modalId).modal('show');
     }
   })
-
-
-
-
 });
-
-
-
 
 function searchModule(e) {
   const regexp = new RegExp(e.target.value, 'i');
