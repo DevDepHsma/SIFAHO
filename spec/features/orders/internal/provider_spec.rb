@@ -21,7 +21,7 @@ RSpec.feature 'Orders::Internal::Providers', type: :feature do
 
     describe '' do
       before(:each) do
-        PermissionUser.create(user: @depo_provider, sector: @depo_provider.sector,
+        PermissionUser.create(user: @depo_provider, sector: @depo_provider.active_sector,
                               permission: @read_internal_order_provider)
         visit '/'
       end
@@ -53,7 +53,7 @@ RSpec.feature 'Orders::Internal::Providers', type: :feature do
 
           describe '' do
             before(:each) do
-              PermissionUser.create(user: @depo_provider, sector: @depo_provider.sector,
+              PermissionUser.create(user: @depo_provider, sector: @depo_provider.active_sector,
                                     permission: @create_internal_order_provider)
             end
 
@@ -68,15 +68,15 @@ RSpec.feature 'Orders::Internal::Providers', type: :feature do
               expect(page.has_button?('Guardar y agregar productos')).to be true
 
               within '#order-form' do
-                select_sector(@farm_provider.sector.name, 'select#applicant-sector')
+                select_sector(@farm_provider.active_sector.name, 'select#applicant-sector')
               end
-              expect(page).to have_content(@farm_provider.sector.name)
+              expect(page).to have_content(@farm_provider.active_sector.name)
               click_button 'Guardar y agregar productos'
               expect(page).to have_content('Editando productos de provision de sector código')
               expect(page).to have_content('Solicitante')
-              expect(page).to have_content(@depo_provider.sector.name)
+              expect(page).to have_content(@depo_provider.active_sector.name)
               expect(page).to have_content('Proveedor')
-              expect(page).to have_content(@farm_provider.sector.name)
+              expect(page).to have_content(@farm_provider.active_sector.name)
               expect(page).to have_content('Código')
               expect(page).to have_content('Producto')
               expect(page).to have_content('Unidad')
@@ -88,12 +88,12 @@ RSpec.feature 'Orders::Internal::Providers', type: :feature do
               expect(page.has_button?('Enviar')).to be false
             end
             it ':: visit update form' do
-              PermissionUser.create(user: @depo_provider, sector: @depo_provider.sector,
+              PermissionUser.create(user: @depo_provider, sector: @depo_provider.active_sector,
                                     permission: @update_internal_order_provider)
               3.times do |_rp|
                 click_link 'Entregar'
                 within '#order-form' do
-                  select_sector(@farm_provider.sector.name, 'select#applicant-sector')
+                  select_sector(@farm_provider.active_sector.name, 'select#applicant-sector')
                 end
                 click_button 'Guardar y agregar productos'
                 add_products(rand(1..3), request_quantity: true, observations: true, select_lot_stock: true)
@@ -117,7 +117,7 @@ RSpec.feature 'Orders::Internal::Providers', type: :feature do
               expect(page.has_button?('Enviar')).to be false
 
               # Add send permission
-              PermissionUser.create(user: @depo_provider, sector: @depo_provider.sector,
+              PermissionUser.create(user: @depo_provider, sector: @depo_provider.active_sector,
                                     permission: @send_internal_order_provider)
               visit current_path
               expect(page.has_button?('Enviar')).to be true
@@ -141,7 +141,7 @@ RSpec.feature 'Orders::Internal::Providers', type: :feature do
               click_link 'Volver'
               click_link 'Entregar'
               within '#order-form' do
-                select_sector(@farm_provider.sector.name, 'select#applicant-sector')
+                select_sector(@farm_provider.active_sector.name, 'select#applicant-sector')
               end
               click_button 'Guardar y agregar productos'
               add_products(rand(1..3), request_quantity: true, observations: true, select_lot_stock: true)
@@ -152,7 +152,7 @@ RSpec.feature 'Orders::Internal::Providers', type: :feature do
                 expect(page).not_to have_selector('.delete-item')
               end
 
-              PermissionUser.create(user: @depo_provider, sector: @depo_provider.sector,
+              PermissionUser.create(user: @depo_provider, sector: @depo_provider.active_sector,
                                     permission: @destroy_internal_order_provider)
               visit current_path
               within '#provider_orders' do
@@ -184,7 +184,7 @@ RSpec.feature 'Orders::Internal::Providers', type: :feature do
                 template_name_input: 'internal_order_template_name',
                 template_name: 'Template Test',
                 sector_input: 'provider-sector',
-                sector: @farm_provider.sector,
+                sector: @farm_provider.active_sector,
                 products_size: 3
               )
 
