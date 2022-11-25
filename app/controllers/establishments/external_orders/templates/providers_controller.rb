@@ -18,8 +18,8 @@ class Establishments::ExternalOrders::Templates::ProvidersController < Establish
   def create
     policy(:external_order_template_provider).create?
     @external_order_template = ExternalOrderTemplate.new(external_order_template_params)
-    @external_order_template.owner_sector = current_user.sector
-    @external_order_template.created_by = current_user
+    @external_order_template.owner_sector = @current_user.active_sector
+    @external_order_template.created_by = @current_user
 
     respond_to do |format|
       @external_order_template.save!
@@ -59,7 +59,7 @@ class Establishments::ExternalOrders::Templates::ProvidersController < Establish
   def build_from_template
     respond_to do |format|
       @external_order = ExternalOrder.create(applicant_sector_id: @external_order_template.destination_sector_id,
-                                             provider_sector: current_user.sector,
+                                             provider_sector: @current_user.active_sector,
                                              requested_date: DateTime.now,
                                              status: 'proveedor_auditoria',
                                              provider_observation: @external_order_template.provider_observation,

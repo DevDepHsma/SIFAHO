@@ -20,13 +20,13 @@ class ExternalOrderTemplateProviderPolicy < ExternalOrderTemplatePolicy
   end
 
   def edit?(resource)
-    if resource.owner_sector == user.sector && resource.provision?
+    if resource.owner_sector == user.active_sector && resource.provision?
       user.has_permission?(:update_external_order_provider)
     end
   end
 
   def use_template?(resource)
-    if resource.provision? && resource.owner_sector == user.sector
+    if resource.provision? && resource.owner_sector == user.active_sector
       user.has_permission?(:create_external_order_provider)
     end
   end

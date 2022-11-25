@@ -22,7 +22,7 @@ RSpec.feature 'Orders::External::Providers', type: :feature do
 
     describe '' do
       before(:each) do
-        PermissionUser.create(user: @depo_provider, sector: @depo_provider.sector,
+        PermissionUser.create(user: @depo_provider, sector: @depo_provider.active_sector,
                               permission: @read_external_order_provider)
         visit '/'
       end
@@ -55,7 +55,7 @@ RSpec.feature 'Orders::External::Providers', type: :feature do
 
           describe '' do
             before(:each) do
-              PermissionUser.create(user: @depo_provider, sector: @depo_provider.sector,
+              PermissionUser.create(user: @depo_provider, sector: @depo_provider.active_sector,
                                     permission: @create_external_order_provider)
             end
 
@@ -70,14 +70,14 @@ RSpec.feature 'Orders::External::Providers', type: :feature do
               expect(page.has_link?('Volver')).to be true
               expect(page.has_button?('Guardar y agregar productos')).to be true
 
-              select_sector(@farm_applicant.sector.name, 'select#effector-sector', @farm_applicant.establishment)
+              select_sector(@farm_applicant.active_sector.name, 'select#effector-sector', @farm_applicant.active_sector.establishment)
               click_button 'Guardar y agregar productos'
               expect(page).to have_content('La provisión se ha creado y se encuentra en auditoria.')
               expect(page).to have_content('Editando provision de establecimiento código')
               expect(page).to have_content('Solicitante')
-              expect(page).to have_content(@farm_applicant.sector.name)
+              expect(page).to have_content(@farm_applicant.active_sector.name)
               expect(page).to have_content('Proveedor')
-              expect(page).to have_content(@depo_provider.sector.name)
+              expect(page).to have_content(@depo_provider.active_sector.name)
               expect(page).to have_content('Código')
               expect(page).to have_content('Producto')
               expect(page).to have_content('Unidad')
@@ -89,11 +89,11 @@ RSpec.feature 'Orders::External::Providers', type: :feature do
               expect(page.has_button?('Aceptar')).to be false
             end
             it ':: visit edit form' do
-              PermissionUser.create(user: @depo_provider, sector: @depo_provider.sector,
+              PermissionUser.create(user: @depo_provider, sector: @depo_provider.active_sector,
                                     permission: @update_external_order_provider)
               3.times do |_rp|
                 click_link 'Despachar'
-                select_sector(@farm_applicant.sector.name, 'select#effector-sector', @farm_applicant.establishment)
+                select_sector(@farm_applicant.active_sector.name, 'select#effector-sector', @farm_applicant.active_sector.establishment)
                 click_button 'Guardar y agregar productos'
                 visit current_path
                 add_products(rand(1..3), request_quantity: true, observations: true, select_lot_stock: true)
@@ -118,7 +118,7 @@ RSpec.feature 'Orders::External::Providers', type: :feature do
               expect(page.has_button?('Aceptar')).to be false
 
               # Add send permission
-              PermissionUser.create(user: @depo_provider, sector: @depo_provider.sector,
+              PermissionUser.create(user: @depo_provider, sector: @depo_provider.active_sector,
                                     permission: @accept_external_order_provider)
               visit current_path
               expect(page.has_button?('Aceptar')).to be true
@@ -131,9 +131,9 @@ RSpec.feature 'Orders::External::Providers', type: :feature do
               expect(page.has_button?('Retornar')).to be false
               expect(page.has_button?('Enviar provisión')).to be false
               # Add return permission
-              PermissionUser.create(user: @depo_provider, sector: @depo_provider.sector,
+              PermissionUser.create(user: @depo_provider, sector: @depo_provider.active_sector,
                                     permission: @send_external_order_provider)
-              PermissionUser.create(user: @depo_provider, sector: @depo_provider.sector,
+              PermissionUser.create(user: @depo_provider, sector: @depo_provider.active_sector,
                                     permission: @return_external_order_provider)
               visit current_path
               expect(page.has_button?('Enviar provisión')).to be true
@@ -150,7 +150,7 @@ RSpec.feature 'Orders::External::Providers', type: :feature do
                 expect(page).to have_selector('.btn-detail')
               end
               # Add destroy permission
-              PermissionUser.create(user: @depo_provider, sector: @depo_provider.sector,
+              PermissionUser.create(user: @depo_provider, sector: @depo_provider.active_sector,
                                     permission: @destroy_external_order_provider)
               visit current_path
               within '#external_orders' do
@@ -183,7 +183,7 @@ RSpec.feature 'Orders::External::Providers', type: :feature do
                 template_name: 'Template Test',
                 establishment_input: 'provider-establishment',
                 sector_input: 'provider-sector',
-                sector: @farm_applicant.sector,
+                sector: @farm_applicant.active_sector,
                 products_size: 3
               )
 
