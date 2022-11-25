@@ -20,12 +20,12 @@ class ExternalOrderTemplateApplicantPolicy < ExternalOrderTemplatePolicy
   end
 
   def edit?(resource)
-    if resource.owner_sector == user.sector && resource.solicitud?
+    if resource.owner_sector == user.active_sector && resource.solicitud?
       user.has_permission?(:update_external_order_applicant)
     end
   end
 
   def use_template?(resource)
-    create? if resource.solicitud? && resource.owner_sector == user.sector
+    create? if resource.solicitud? && resource.owner_sector == user.active_sector
   end
 end

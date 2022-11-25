@@ -6,8 +6,8 @@ class Establishments::ExternalOrders::Templates::TemplatesController < Applicati
   # GET /external_order_templates.json
   def index
     authorize ExternalOrderTemplate
-    @applicant_templates = ExternalOrderTemplate.where(owner_sector: current_user.sector).solicitud
-    @provider_templates = ExternalOrderTemplate.where(owner_sector: current_user.sector).provision
+    @applicant_templates = ExternalOrderTemplate.where(owner_sector: @current_user.active_sector).solicitud
+    @provider_templates = ExternalOrderTemplate.where(owner_sector: @current_user.active_sector).provision
   end
 
   # GET /external_order_templates/1
@@ -17,7 +17,7 @@ class Establishments::ExternalOrders::Templates::TemplatesController < Applicati
     respond_to do |format|
       format.html
       format.pdf do
-        pdf = ReportServices::ExternalOrderTemplateReportService.new(current_user, @external_order_template).call
+        pdf = ReportServices::ExternalOrderTemplateReportService.new(@current_user, @external_order_template).call
         send_data pdf, filename: "Plantilla_#{@external_order_template.order_type}.pdf", type: 'application/pdf', disposition: 'inline'
       end
     end

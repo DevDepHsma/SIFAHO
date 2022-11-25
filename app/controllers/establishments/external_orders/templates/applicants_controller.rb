@@ -18,8 +18,8 @@ class Establishments::ExternalOrders::Templates::ApplicantsController < Establis
   def create
     policy(:external_order_template_applicant).create?
     @external_order_template = ExternalOrderTemplate.new(external_order_template_params)
-    @external_order_template.owner_sector = current_user.sector
-    @external_order_template.created_by = current_user
+    @external_order_template.owner_sector = @current_user.active_sector
+    @external_order_template.created_by = @current_user
 
     respond_to do |format|
       @external_order_template.save!
@@ -59,7 +59,7 @@ class Establishments::ExternalOrders::Templates::ApplicantsController < Establis
   def build_from_template
     respond_to do |format|
       @external_order = ExternalOrder.create(provider_sector_id: @external_order_template.destination_sector_id,
-                                             applicant_sector: current_user.sector,
+                                             applicant_sector: @current_user.active_sector,
                                              requested_date: DateTime.now,
                                              status: 'solicitud_auditoria',
                                              applicant_observation: @external_order_template.applicant_observation,
