@@ -277,11 +277,14 @@ RSpec.feature 'Users', type: :feature, js: true do
 
       it 'continue without saving' do
         visit "/usuarios/#{@user_permission_requested.id}/permisos"
-        sectors = Sector.all.sample(2)
+        used_sectors = @user_permission_requested.sectors.pluck(:id)
+        sectors = Sector.where.not(id: used_sectors).sample(2)
         click_button 'Agregar sector'
         sleep 1
-        find('select#remote_form_sector_selector + button').click
-        find('a', text: "#{sectors[0].name} - #{sectors[0].establishment.name}").click
+        within '#sector-selection' do
+          find('select#remote_form_sector_selector + button').click
+          find('a', text: "#{sectors[0].name} - #{sectors[0].establishment.name}").click
+        end
         sleep 1
         click_button 'Agregar sector'
         sleep 1
@@ -289,8 +292,10 @@ RSpec.feature 'Users', type: :feature, js: true do
         expect(page).to have_content('Desea salir igualmente?')
         click_button 'Continuar de todos modos'
         sleep 1
-        find('select#remote_form_sector_selector + button').click
-        find('a', text: "#{sectors[1].name} - #{sectors[1].establishment.name}").click
+        within '#sector-selection' do
+          find('select#remote_form_sector_selector + button').click
+          find('a', text: "#{sectors[1].name} - #{sectors[1].establishment.name}").click
+        end
       end
 
       it 'finish permission request without apply' do
