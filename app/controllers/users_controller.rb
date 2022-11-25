@@ -1,12 +1,11 @@
 class UsersController < ApplicationController
-  before_action :set_user, only: %I[show update change_sector edit_permissions update_permissions adds_sector removes_sector ]
+  before_action :set_user,
+                only: %I[show update change_sector edit_permissions update_permissions adds_sector removes_sector]
 
   def index
     authorize User
     @users = User.filter_by_params(params[:filter])
-                       .paginate(page: params[:page], per_page: params[:per_page] || 15)
-  
-    
+                 .paginate(page: params[:page], per_page: params[:per_page] || 15)
   end
 
   def show
@@ -15,32 +14,32 @@ class UsersController < ApplicationController
 
   def change_sector
     authorize @user
-    @sectors = @user.sectors.joins(:establishment).pluck(:id, :name, "establishments.name")
+    @sectors = @user.sectors.joins(:establishment).pluck(:id, :name, 'establishments.name')
 
-    respond_to do |format|  
+    respond_to do |format|
       format.js
     end
   end
 
   def edit_permissions
     authorize @user
-    @sectors = Sector.joins(:establishment).pluck(:id, :name, "establishments.name")
-    @enabled_sectors = @user.sectors.joins(:establishment).pluck(:id, :name, "establishments.name")
+    @sectors = Sector.joins(:establishment).pluck(:id, :name, 'establishments.name')
+    @enabled_sectors = @user.sectors.joins(:establishment).pluck(:id, :name, 'establishments.name')
     @professional = Professional.new
-    if @user.has_role? :admin
-      @roles = Role.all.order(:name).pluck(:id, :name)
-    else
-      @roles = Role.where.not(name: "admin").order(:name).pluck(:id, :name)
-    end
+    @roles = if @user.has_role? :admin
+               Role.all.order(:name).pluck(:id, :name)
+             else
+               Role.where.not(name: 'admin').order(:name).pluck(:id, :name)
+             end
   end
 
   def update_permissions
     authorize @user
 
     respond_to do |format|
-      if @user.update(user_params.except :id)
+      if @user.update(user_params.except(:id))
         flash[:success] = "#{@user.full_name} se ha modificado correctamente."
-        format.html { redirect_to action: "show", id: @user.id }
+        format.html { redirect_to action: 'show', id: @user.id }
       else
         flash[:error] = "#{@user.full_name} no se ha podido modificar."
         format.html { render :edit_permissions }
@@ -54,10 +53,10 @@ class UsersController < ApplicationController
     respond_to do |format|
       if @user.update(user_params)
         flash[:success] = "Ahora estás en #{@user.sector_name} #{@user.sector_establishment_short_name}"
-        format.js {render inline: "location.reload();" }
+        format.js { render inline: 'location.reload();' }
       else
-        flash[:error] = "No se ha podido modificar el sector."
-        format.js {render inline: "location.reload();" }
+        flash[:error] = 'No se ha podido modificar el sector.'
+        format.js { render inline: 'location.reload();' }
       end
     end
   end
@@ -71,8 +70,6 @@ class UsersController < ApplicationController
     @sectors = Sector.includes(:establishment)
                      .order('establishments.name ASC', 'sectors.name ASC')
                      .where.not(id: @user.user_sectors.pluck(:sector_id))
-    #                  @roles = Role.all.order(name: :asc)
-
   end
 
   def removes_sector
@@ -88,6 +85,7 @@ class UsersController < ApplicationController
   end
 
   private
+
   def set_user
     @user = User.find(params[:id])
   end

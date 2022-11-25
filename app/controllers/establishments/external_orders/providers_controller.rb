@@ -18,7 +18,7 @@ class Establishments::ExternalOrders::ProvidersController < Establishments::Exte
         with_status: ExternalOrder.options_for_status,
         sorted_by: ExternalOrder.options_for_sorted_by
       },
-      persistence_id: false,
+      persistence_id: false
     ) or return
     @provider_orders = @filterrific.find.paginate(page: params[:page], per_page: 15)
   end
@@ -29,7 +29,7 @@ class Establishments::ExternalOrders::ProvidersController < Establishments::Exte
 
     begin
       new_from_template(params[:template], 'provision')
-    rescue
+    rescue StandardError
       flash[:error] = 'No se ha encontrado la plantilla' if params[:template].present?
       @external_order = ExternalOrder.new
       @external_order.order_type = 'provision'
@@ -56,20 +56,18 @@ class Establishments::ExternalOrders::ProvidersController < Establishments::Exte
     @external_order.order_type = 'provision'
 
     respond_to do |format|
-      begin
-        @external_order.proveedor_auditoria!
-        @external_order.create_notification(@current_user, 'creó')
-        message = 'La provisión se ha creado y se encuentra en auditoria.'
+      @external_order.proveedor_auditoria!
+      @external_order.create_notification(@current_user, 'creó')
+      message = 'La provisión se ha creado y se encuentra en auditoria.'
 
-        format.html { redirect_to edit_products_external_orders_provider_url(@external_order), notice: message }
-      rescue ArgumentError => e
-        flash[:alert] = e.message
-      rescue ActiveRecord::RecordInvalid
-      ensure
-        @external_order.order_products || @external_order.order_products.build
-        @sectors = @external_order.applicant_sector.present? ? @external_order.applicant_establishment.sectors : []
-        format.html { render :new }
-      end
+      format.html { redirect_to edit_products_external_orders_provider_url(@external_order), notice: message }
+    rescue ArgumentError => e
+      flash[:alert] = e.message
+    rescue ActiveRecord::RecordInvalid
+    ensure
+      @external_order.order_products || @external_order.order_products.build
+      @sectors = @external_order.applicant_sector.present? ? @external_order.applicant_establishment.sectors : []
+      format.html { render :new }
     end
   end
 
@@ -77,21 +75,19 @@ class Establishments::ExternalOrders::ProvidersController < Establishments::Exte
   def update
     policy(:external_order_provider).update?(@external_order)
     respond_to do |format|
-      begin
-        @external_order.status = 'proveedor_auditoria'
-        @external_order.update!(external_order_params)
-        message = 'La provisión se ha auditado y se encuentra en auditoria.'
-        @external_order.create_notification(@current_user, 'auditó')
+      @external_order.status = 'proveedor_auditoria'
+      @external_order.update!(external_order_params)
+      message = 'La provisión se ha auditado y se encuentra en auditoria.'
+      @external_order.create_notification(@current_user, 'auditó')
 
-        format.html { redirect_to edit_products_external_orders_provider_url(@external_order), notice: message }
-      rescue ArgumentError => e
-        flash[:alert] = e.message
-      rescue ActiveRecord::RecordInvalid
-      ensure
-        @external_order.order_products || @external_order.order_products.build
-        @sectors = @external_order.applicant_sector.present? ? @external_order.applicant_establishment.sectors : []
-        format.html { render :edit }
-      end
+      format.html { redirect_to edit_products_external_orders_provider_url(@external_order), notice: message }
+    rescue ArgumentError => e
+      flash[:alert] = e.message
+    rescue ActiveRecord::RecordInvalid
+    ensure
+      @external_order.order_products || @external_order.order_products.build
+      @sectors = @external_order.applicant_sector.present? ? @external_order.applicant_establishment.sectors : []
+      format.html { render :edit }
     end
   end
 
@@ -100,18 +96,17 @@ class Establishments::ExternalOrders::ProvidersController < Establishments::Exte
     policy(:external_order_provider).can_send?(@external_order)
 
     respond_to do |format|
-      begin
-        @external_order.send_order_by(@current_user)
+      @external_order.send_order_by(@current_user)
 
-        format.html { redirect_to external_orders_provider_url(@external_order), notice: 'La provision se ha enviado correctamente.' }
-      rescue ArgumentError => e
-
-        flash[:alert] = e.message
-        @external_order_product = @external_order.order_products.build
-        @form_id = DateTime.now.to_s(:number)
-        @error = e.message
-        format.html { render :edit_products }
+      format.html do
+        redirect_to external_orders_provider_url(@external_order), notice: 'La provision se ha enviado correctamente.'
       end
+    rescue ArgumentError => e
+      flash[:alert] = e.message
+      @external_order_product = @external_order.order_products.build
+      @form_id = DateTime.now.to_s(:number)
+      @error = e.message
+      format.html { render :edit_products }
     end
   end
 
@@ -119,16 +114,16 @@ class Establishments::ExternalOrders::ProvidersController < Establishments::Exte
   def accept_order
     policy(:external_order_provider).accept_order?(@external_order)
     respond_to do |format|
-      begin
-        @external_order.accept_order_by(@current_user)
-        format.html { redirect_to external_orders_provider_url(@external_order), notice: 'La provision se ha aceptado correctamente.' }
-      rescue ArgumentError => e
-        flash[:alert] = e.message
-        @external_order_product = @external_order.order_products.build
-        @form_id = DateTime.now.to_s(:number)
-        @error = e.message
-        format.html { render :edit_products }
+      @external_order.accept_order_by(@current_user)
+      format.html do
+        redirect_to external_orders_provider_url(@external_order), notice: 'La provision se ha aceptado correctamente.'
       end
+    rescue ArgumentError => e
+      flash[:alert] = e.message
+      @external_order_product = @external_order.order_products.build
+      @form_id = DateTime.now.to_s(:number)
+      @error = e.message
+      format.html { render :edit_products }
     end
   end
 
