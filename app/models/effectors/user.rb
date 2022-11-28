@@ -143,8 +143,6 @@ class User < ApplicationRecord
                   using: { tsearch: { prefix: true } }, # Buscar coincidencia desde las primeras letras.
                   ignoring: :accents # Ignorar tildes.
 
-  
-
   scope :with_sector_id, lambda { |an_id|
     where(sector_id: [*an_id])
   }
@@ -196,7 +194,8 @@ class User < ApplicationRecord
   end
 
   def has_permissions_any?(*permissions_target)
-    permissions.joins(:permission_users).where(name: permissions_target, 'permission_users.sector_id': active_sector.id).any?
+    permissions.joins(:permission_users).where(name: permissions_target,
+                                               'permission_users.sector_id': active_sector.id).any?
   end
 
   def role_exists?(attributes)
@@ -218,6 +217,12 @@ class User < ApplicationRecord
 
   def active_sector
     user_sectors.active.first.sector if user_sectors.active.first.present?
+  end
+
+  def update_active_sector(sector_id)
+    sector_to_active = user_sectors.where(sector_id: sector_id).first
+    user_sectors.where(status: 'active').map(&:inactive!)
+    sector_to_active.active!
   end
 
   private

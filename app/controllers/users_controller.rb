@@ -51,8 +51,9 @@ class UsersController < ApplicationController
     authorize @user
 
     respond_to do |format|
-      if @user.update(user_params)
-        flash[:success] = "Ahora estás en #{@user.sector_name} #{@user.sector_establishment_short_name}"
+      if @user.update(user_params.except(:sector_id))
+        @user.update_active_sector(user_params[:sector_id]) if user_params[:sector_id].present?
+        flash[:success] = "Ahora estás en #{@user.active_sector.name} #{@user.active_sector.establishment_short_name}"
         format.js { render inline: 'location.reload();' }
       else
         flash[:error] = 'No se ha podido modificar el sector.'
