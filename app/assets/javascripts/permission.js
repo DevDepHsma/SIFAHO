@@ -41,6 +41,19 @@ $(document).on('turbolinks:load', function () {
   })
 });
 
+$(document).on('turbolinks:before-visit', function(event) {
+  event.preventDefault();
+  if ($("#permission_users").hasClass('editing')) {
+    modalConfirm(function(confirm){
+      if(confirm){
+        window.location = event.originalEvent.data.url;
+      }
+    });
+  }else{
+    window.location = event.originalEvent.data.url;
+  }
+});
+
 function searchModule(e) {
   const regexp = new RegExp(e.target.value, 'i');
   $("#permission_users button.btn-block").each((index, ele) => {
