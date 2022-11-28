@@ -1,6 +1,9 @@
 $(document).on('turbolinks:load', function () {
   if (!(_PAGE.controller === 'permissions' && (['new', 'edit', 'create', 'update'].includes(_PAGE.action)))) return false;
   $(".perm-mod-toggle-button").on('change', function (e) {
+    if (!$(e.target).hasClass('editing')) {
+      $(e.target).closest('form#permission_users').addClass('editing')
+    }
     const parent = $(e.target).closest('.card');
     const permissions = parent.find('.perm-toggle-button');
     permissions.each((index, permission) => {
@@ -9,6 +12,9 @@ $(document).on('turbolinks:load', function () {
     });
   });
   $(".perm-toggle-button").on('change', function (e) {
+    if (!$(e.target).hasClass('editing')) {
+      $(e.target).closest('form#permission_users').addClass('editing')
+    }
     $(e.target).siblings("input[type='hidden']").val(!$(e.target).is(':checked'));
     // mark "todos" checkbox as checked if all children are checked
     const parentCheckbox = $(e.target).closest('.card').find('input[type=checkbox].perm-mod-toggle-button').first();
@@ -47,11 +53,12 @@ $(document).on('turbolinks:before-visit', function(event) {
     modalConfirm(function(confirm){
       if(confirm){
         window.location = event.originalEvent.data.url;
-      }
+      }else return;
     });
   }else{
     window.location = event.originalEvent.data.url;
   }
+  return;
 });
 
 function searchModule(e) {
@@ -67,6 +74,9 @@ function searchModule(e) {
 
 function toggleRole(e) {
   toggleLoading();
+  if (!$(e.target).hasClass('editing')) {
+    $(e.target).closest('form#permission_users').addClass('editing')
+  }
   const url_to_build_permissions = $(e.target).attr('data-url');
   const target = $(e.target).attr('data-target');
   $('input[name="' + target + '"]').val($(e.target).is(':checked') ? 0 : 1)
