@@ -10,8 +10,8 @@ wb.add_worksheet(name: "Movimientos de stock") do |sheet|
       index + 1,
       stock.product_code, 
       stock.product_name,
-      stock.product_unity_name,
-      stock.product_area_name,
+      stock.product.unity.name,
+      stock.product.area.name,
       stock.quantity,
       stock.reserved_quantity,
       stock.total_quantity
