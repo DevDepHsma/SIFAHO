@@ -3,7 +3,7 @@
     as: :select,
     label: '¿A cuál sector pertenece?',
     include_blank: false,
-    collection: @sectors.map {|sector|  [sector.name, sector.id]} + [["Otro...", 0]],
+    collection: @sectors.map {|sector|  [sector.name, sector.id]} + [["Otro...", -1]],
     :input_html => {
       placeholder: 'Seleccionar sector',
       required: true,
@@ -20,7 +20,7 @@
 
 
 <div id="sector-input">
-  <% if @permission_request.sector_id.present? && @permission_request.sector_id.zero?  %>
+  <% if @permission_request.sector_id.present? && @permission_request.sector_id.negative?  %>
     <%= render(partial: 'permission_requests/partials/sector_inputs') %>
   <% end %>
 </div>

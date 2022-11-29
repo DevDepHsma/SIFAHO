@@ -1,53 +1,36 @@
-<%= render 'header' %>
+<% content_for :title, "Usuarios" %>
 
-<% if @users.present? %>
-  <div class="card fixed-custom-card">
-    <div class="card-header position-relative">
-      <%= form_for_filterrific @filterrific do |f| %>
-        <div class="justify-content-between">
-          <div class="row">
-            <div class="col-4">
-              <label>Dni</label>
-              <%# give the search field the 'filterrific-periodically-observed' class for live updates %>
-              <%= f.text_field(
-                :search_username,
-                class: 'filterrific-periodically-observed form-control',
-                placeholder: 'DNI',
-                autocomplete: 'off',
-              ) %>
-            </div>
-            <div class="col-4">
-              <label>Nombre</label>
-              <%# give the search field the 'filterrific-periodically-observed' class for live updates %>
-              <%= f.text_field(
-                :search_by_fullname,
-                class: 'filterrific-periodically-observed form-control',
-                placeholder: 'Nombre o apellido',
-                autocomplete: 'off',
-              ) %>
-            </div>
-          </div>
-          
-          <%= render_filterrific_spinner %>
-        </div>
-      <% end %>
-
-      <%= link_to reset_filterrific_url, class: "btn btn-sm reset-filterrific",
-        :title => 'Reiniciar', :'data-placement'=>'top', :'data-toggle'=>'tooltip'  do %>
-        <%= fa_icon "redo" %>
-      <% end %>
-    </div>
-    <div class="card-body fixed-panel-index">
-      <%= render(
-        partial: 'users/list',
-        locals: { users: @users }
-      ) %>
-    </div>
-  </div>
-<% else %>
-  <%= render(
-    partial: 'shared/not_found',
-    locals: { object_name: 'usuarios' }
-  ) %>
+<% content_for :page_header do %>
+  <%= render 'users/partials/header' %>
 <% end %>
+
+<div class="card fixed-custom-card">
+  <div class="card-header">
+    <%= render(
+          partial: 'users/partials/filter',
+          locals: { users: @users }
+        ) %>
+  </div>
+  <div class="card-body fixed-panel-index">
+    <% if @users.present? %>
+      <div id="table_results">
+        <%= render(
+          partial: 'users/partials/list',
+          locals: { users: @users }
+        ) %>
+      </div>
+    <% else %>
+      <%= render(
+        partial: 'shared/not_found_filter',
+        locals: { object_name: 'users' }
+      ) %>
+    <% end %>
+  </div>
+  <div class="card-footer" id="paginate_footer">
+    <%= render(
+          partial: 'shared/paginate_index',
+          locals: { model: @users, form_id: 'users-filter' }
+        ) %>
+  </div>
+</div>
 

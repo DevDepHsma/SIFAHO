@@ -128,10 +128,10 @@ class ChronicPrescription < ApplicationRecord
 
   def create_notification(of_user, action_type)
     ChronicPrescriptionMovement.create(user: of_user, chronic_prescription: self, action: action_type,
-                                       sector: of_user.sector)
-    (of_user.sector.users.uniq - [of_user]).each do |user|
+                                       sector: of_user.active_sector)
+    (of_user.active_sector.users.uniq - [of_user]).each do |user|
       @not = Notification.where(actor: of_user, user: user, target: self, notify_type: 'cronica',
-                                action_type: action_type, actor_sector: of_user.sector).first_or_create
+                                action_type: action_type, actor_sector: of_user.active_sector).first_or_create
       @not.updated_at = DateTime.now
       @not.read_at = nil
       @not.save

@@ -1,4 +1,9 @@
-<%= render 'header' %>
+<% content_for :title, "Usuarios" %>
+
+<% content_for :page_header do %>
+  <%= render 'users/partials/header' %>
+<% end %>
+
 <div class="card fixed-custom-card">
 
   <div class="card-header d-flex align-items-center justify-content-between">
@@ -19,7 +24,11 @@
           <h5>Perfil médico</h5>
           <p><%= @user.professional_full_info || 'Sin perfil' %></p>
           <h5>Sector actual</h5>
-          <p><%= "#{@user.sector_name || 'Sin sector'} #{@user.establishment_name}" %></p>
+          <% if @user.active_sector.present? %>
+            <p><%= "#{@user.active_sector.name} #{@user.active_sector.establishment.name}" %></p>
+          <% else %>
+            Sin sector
+          <% end %>
           <%= render 'shared/sectors_table', sectors: @user.sectors, title: "Sectores habilitados" %>
         </div>
         <div class="col-6 text-center">
@@ -36,7 +45,7 @@
             <h5>Sin perfil</h5>
           <% end %>
           
-          <strong>Roles activados:</strong> <%= @user.roles.map(&:name).join(", ").humanize %>.
+          <strong>Roles activados:</strong> <%#= @user.roles.map(&:name).join(", ").humanize %>.
         </div>
       </div>
     </div><!-- End panel body -->

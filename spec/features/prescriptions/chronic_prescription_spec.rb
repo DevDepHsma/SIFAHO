@@ -8,20 +8,20 @@ RSpec.feature 'Prescriptions::ChronicPrescriptions', type: :feature do
     @update_chronic_recipe_permission = permission_module.permissions.find_by(name: 'update_chronic_prescriptions')
     @complete_treatment_chronic_recipe_permission = permission_module.permissions.find_by(name: 'complete_treatment_chronic_prescriptions')
 
-    PermissionUser.create(user: @farm_provider, sector: @farm_provider.sector,
+    PermissionUser.create(user: @farm_provider, sector: @farm_provider.active_sector,
                           permission: @read_chronic_recipe_permission)
-    PermissionUser.create(user: @farm_provider, sector: @farm_provider.sector,
+    PermissionUser.create(user: @farm_provider, sector: @farm_provider.active_sector,
                           permission: @create_chronic_recipe_permission)
-    PermissionUser.create(user: @farm_provider, sector: @farm_provider.sector,
+    PermissionUser.create(user: @farm_provider, sector: @farm_provider.active_sector,
                           permission: @update_chronic_recipe_permission)
 
     professionals_permission_module = PermissionModule.includes(:permissions).find_by(name: 'Profesionales')
     @create_professional_permission = professionals_permission_module.permissions.find_by(name: 'create_professionals')
     @read_professional_permission = professionals_permission_module.permissions.find_by(name: 'read_professionals')
 
-    PermissionUser.create(user: @farm_provider, sector: @farm_provider.sector,
+    PermissionUser.create(user: @farm_provider, sector: @farm_provider.active_sector,
                           permission: @create_professional_permission)
-    PermissionUser.create(user: @farm_provider, sector: @farm_provider.sector,
+    PermissionUser.create(user: @farm_provider, sector: @farm_provider.active_sector,
                           permission: @read_professional_permission)
   end
 
@@ -190,23 +190,22 @@ RSpec.feature 'Prescriptions::ChronicPrescriptions', type: :feature do
         end
       end
 
-      # Require update products scope search
-      # it 'create successfully' do
-      #   10.times do
-      #     qualification = @qualifications.sample
-      #     find_and_fill_professional_attribute(qualification) # Add professional
-      #     add_original_product_to_recipe(rand(2..4), rand(5..15)) # Add product
-      #     click_button 'Guardar'
-      #     expect(page).to have_content('Viendo receta crónica Pendiente')
-      #     expect(page).to have_content("La receta crónica de #{@patient.fullname} se ha creado correctamente.")
-      #     visit '/recetas'
-      #     @patient = @patients.sample
-      #     find_and_fill_patient_attributes(@patient.dni)
-      #     within '#new-receipt-buttons' do
-      #       click_link 'Crónica'
-      #     end
-      #   end
-      # end
+      it 'create successfully' do
+        10.times do
+          qualification = @qualifications.sample
+          find_and_fill_professional_attribute(qualification) # Add professional
+          add_original_product_to_recipe(rand(2..4), rand(5..15)) # Add product
+          click_button 'Guardar'
+          expect(page).to have_content('Viendo receta crónica Pendiente')
+          expect(page).to have_content("La receta crónica de #{@patient.fullname} se ha creado correctamente.")
+          visit '/recetas'
+          @patient = @patients.sample
+          find_and_fill_patient_attributes(@patient.dni)
+          within '#new-receipt-buttons' do
+            click_link 'Crónica'
+          end
+        end
+      end
 
       it 'create fail' do
         click_button 'Guardar'

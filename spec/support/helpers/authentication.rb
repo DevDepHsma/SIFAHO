@@ -10,8 +10,8 @@ module Helpers
     end
 
     def sign_out_as(user)
-      expect(page.has_button?("#{user.sector_name} #{user.sector_establishment_short_name}")).to be true
-      click_button "#{user.sector_name} #{user.sector_establishment_short_name}"
+      expect(page.has_button?("#{user.active_sector.name} #{user.active_sector.establishment.short_name}")).to be true
+      click_button "#{user.active_sector.name} #{user.active_sector.establishment.short_name}"
       click_link 'Cerrar sesión'
     end
   end

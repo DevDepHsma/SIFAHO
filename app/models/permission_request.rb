@@ -1,23 +1,37 @@
+# == Schema Information
+
+# Table name: permission_requests
+
+# user_id                         :bigint
+# status                          :integer, default: 0, options: { in_progress: 0, done: 1, rejected: 2 }
+# other_establishment             :string
+# other_sector                    :string
+# observation                     :text
+# aproved_by_id                   :bigint
+# establishment_id                :bigint
+# sector_id                       :bigint
+
 class PermissionRequest < ApplicationRecord
   include PgSearch::Model
 
-  enum status: { in_progress: 0, done: 1 }
+  enum status: { in_progress: 0, done: 1, rejected: 2 }
   # Relationships
   belongs_to :user
+  belongs_to :aproved_by, class_name: 'User', optional: true
   has_one :profile, through: :user
   belongs_to :establishment, optional: true
   belongs_to :sector, optional: true
   has_many :permission_request_roles, dependent: :delete_all
   has_many :roles, through: :permission_request_roles
 
-  before_create :clean_establishment
+  before_create :reset_establishment_and_sector_negative
   after_create :set_permission_req_to_user
 
   # Validations
   validates_presence_of :user
   validates_presence_of :roles
   validates_presence_of :establishment_id, on: :create
-  validates_presence_of :sector_id, if: :positive_establishment?
+  validates_presence_of :sector_id, on: :create, if: :positive_establishment?
   validates_presence_of :other_establishment, if: :none_establishment?
   validates_presence_of :other_sector, if: :none_sector?
 
@@ -84,18 +98,28 @@ class PermissionRequest < ApplicationRecord
   end
 
   def none_establishment?
-    establishment_id.present? && establishment_id.zero?
+    establishment_id.present? && establishment_id.negative?
   end
 
   def none_sector?
-    none_establishment? || sector_id.present? && sector_id.zero?
+    none_establishment? || sector_id.present? && sector_id.negative?
   end
 
-  def clean_establishment
-    self.establishment_id = nil if establishment_id.zero?
+  def reset_establishment_and_sector_negative
+    self.establishment_id = nil if establishment_id.negative?
+    self.sector_id = nil if sector_id.present? && sector_id.negative?
   end
 
   def set_permission_req_to_user
     user.permission_req! if user.active?
+  end
+
+  def build_user_permissions
+    if sector_id.present?
+      user.user_sectors.build(sector_id: sector.id)
+      user.sector_id = sector.id unless user.active_sector.present?
+    end
+    roles.each { |role| user.user_roles.build(role_id: role.id, sector_id: sector.id) } if roles.present?
+    user
   end
 end

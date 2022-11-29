@@ -1,19 +1,55 @@
- <%= simple_form_for 'remote_form', remote: true, url: permissions_users_admin_path(@user), method: 'GET', html: { novalidate: true} do |f| %>
-  <div class="form-inputs">
-      <%= f.select( :sector, 
-        @user.sectors.all.map { 
-          |sector| ["#{sector.name} - #{sector.establishment.name}", sector.id] 
-        },
-        { include_blank: false, include_hidden: false, selected: (@sector.id if @sector.present?) },
-        { 
-          class: "selectpicker-md show-tick custom-select-pick",
-          allow_blank: false,
-          title: 'Seleccionar sector',
-          id: "remote_form_sector",
-          "data-width"=>"100%",
-          "data-live-search"=>"true",
-          "data-live-search-normalize"=>"true"
-        }
-      ) %>
+<div>
+  <button type="button" class="btn btn-primary w-100" data-target="#sector-selection" id="open-sectors-select-modal">
+    Agregar sector <%= fa_icon 'plus' %>
+  </button>
+  <ul class="mt-3" id ="sectors-list">
+    <% @user.user_sectors.each do |us| %>
+      <li class="position-relative">
+        <input type="hidden" name="permission[user_sectors_attributes][<%= us.sector_id %>][_destroy]" value="0">
+        <input type="hidden" name="permission[user_sectors_attributes][<%= us.sector_id %>][sector_id]" value="<%= us.sector_id %>">
+        <input type="hidden" name="permission[user_sectors_attributes][<%= us.sector_id %>][id]" value="<%= us.id %>">
+        <a href="<%= permission_change_sector_users_admin_path(active_sector_id: us.sector_id) %>" 
+           class="btn btn-sector <%= 'active' if @active_sector.id == us.sector_id %>" 
+           data-remote="true" onclick="toggleLoading();">
+          <%= us.sector.name %> - <%= us.sector.establishment.name%>
+        </a>
+        <% if @applied_permission_request.present? && @applied_permission_request.sector_id == us.sector_id %>
+          <span class="badge badge-warning">solicitud en progreso</span>
+        <% end %>
+        <% if @user.active_sector.present? && @user.active_sector.id == us.sector_id %>
+          <span class="badge badge-success">activo</span>
+        <% end %>
+      </li>
+    <% end %>
+  </ul>
+  <% if @active_sector.present? %>
+    <input type="hidden" name="active_sector_id" value="<%= @active_sector.id%>">
+  <% end %>
+</div>
+<% if @user.user_sectors.present? && @active_sector.present? %>
+  <%# permission_request %>
+  <% if @applied_permission_request.present? %>
+    <input type="hidden" name="permission[permission_request_id]" value="<%= @applied_permission_request.id %>">
+  <% end %>
+  <%# roles %>
+  <div class="mt-2">
+    <p class="mb-1">Modulos</p>
+    <% @roles.each do |role| %>
+      <div class="custom-control custom-checkbox mb-1">
+        <input type="checkbox" 
+               class="custom-control-input role-checkbox" 
+               onchange="toggleRole(event)"
+               id="role-<%=role.id%>" 
+               required 
+               data-url="<%= build_permission_from_role_users_admin_path %>"
+               data-target="permission[user_roles_attributes][<%= role.id %>][_destroy]"
+               <%= 'checked' if @user.user_roles.any?{|us| us.role_id == role.id && us.sector_id == @active_sector.id }%>>
+        <label class="custom-control-label" for="role-<%=role.id%>"><%= role.name %></label>
+      </div>
+      <input type="hidden" name="permission[user_roles_attributes][<%= role.id %>][id]" value="<%= @user.get_active_user_role_id(role.id) %>">
+      <input type="hidden" name="permission[user_roles_attributes][<%= role.id %>][sector_id]" value="<%= @active_sector.id %>">
+      <input type="hidden" name="permission[user_roles_attributes][<%= role.id %>][role_id]" value="<%= role.id %>">
+      <input type="hidden" name="permission[user_roles_attributes][<%= role.id %>][_destroy]" value="<%= @user.user_roles.map(&:role_id).include?(role.id) ? 0 : 1 %>">
+    <% end %>
   </div>
 <% end %>

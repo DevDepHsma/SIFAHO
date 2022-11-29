@@ -110,7 +110,7 @@
               type="number"
               disabled
               name="order_product[stock_fake]"
-              value="<%= form.object.product.present? ? current_user.sector.stock_to(form.object.product) : 0 %>">
+              value="<%= form.object.product.present? ? @current_user.active_sector.stock_to(form.object.product) : 0 %>">
       </div>
     </div>
       

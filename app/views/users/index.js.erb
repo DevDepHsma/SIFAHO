@@ -1,5 +1,15 @@
-<% js = escape_javascript(
-  render(partial: 'users/list', locals: { users: @users })
+<% list = escape_javascript(
+  render(partial: 'users/partials/list', locals: { users: @users })
 ) %>
-
-$("#filterrific_results").html("<%= js %>");
+<% paginate = escape_javascript( 
+  render( partial: 'shared/paginate_index',
+          locals: { model: @users, form_id: 'users-filter' }
+        )
+) %>
+$("#table_results").html("<%= list %>");
+$("#paginate_footer").html("<%= paginate %>");
+setEventDestroyItem();
+$("a.page-link").on('click', (e) => {
+$("#loader-container").css({'display': 'flex'});
+})
+$("#loader-container").css({'display': 'none'});

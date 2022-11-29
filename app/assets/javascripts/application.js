@@ -50,7 +50,7 @@ window.onresize = function(event) {
 
 // Se oculta el flash message
 window.setTimeout(function() {
-  $(".alert").fadeTo(500, 0).slideUp(500, function(){
+  $(".alert.auto-close").fadeTo(500, 0).slideUp(500, function(){
       $(this).remove();
   });
 }, 10000);
@@ -128,7 +128,7 @@ $(document).on('turbolinks:load', function() {
 
   // Se oculta el flash message
   window.setTimeout(function() {
-    $(".alert").fadeTo(500, 0).slideUp(500, function(){
+    $(".alert.auto-close").fadeTo(500, 0).slideUp(500, function(){
       $(this).remove();
     });
   }, 10000);
@@ -185,4 +185,11 @@ function loadImage(e, img_path){
   e.onerror = null;
 }
 
+function toggleLoading(){
+  if($("#loader-container").hasClass('d-flex')){
+    $("#loader-container").removeClass('d-flex');
+  }else{
+    $("#loader-container").addClass('d-flex');
+  }
+}
 // delete confirm

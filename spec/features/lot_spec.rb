@@ -21,7 +21,7 @@ RSpec.feature "Lots", type: :feature do
 
     describe "Add permission:" do
       before(:each) do
-        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @read_lots)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @read_lots)
         visit '/'
       end
 
@@ -42,7 +42,7 @@ RSpec.feature "Lots", type: :feature do
         expect(page.has_link?('Volver')).to be true
         click_link 'Volver'
         # Create
-        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @create_lots)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @create_lots)
         visit current_path
         within '#dropdown-menu-header' do
           expect(page.has_link?('Agregar')).to be true
@@ -70,7 +70,7 @@ RSpec.feature "Lots", type: :feature do
         within '#lots' do
           expect(page).to have_selector('.btn-detail')
         end
-        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @update_lots)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @update_lots)
         visit current_path
         within '#lots' do
           expect(page).to have_selector('.btn-edit')
@@ -80,7 +80,7 @@ RSpec.feature "Lots", type: :feature do
         expect(page.has_link?('Volver')).to be true
         expect(page.has_button?('Guardar')).to be true
         click_link 'Volver'
-        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @destroy_lots)
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @destroy_lots)
         visit current_path
         sleep 1
         page.execute_script %Q{$('#filterrific_search_lot_code').val('BC456').keydown()}

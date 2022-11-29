@@ -28,8 +28,13 @@ RSpec.feature 'Patients', type: :feature do
   describe '', js: true do
     subject { page }
 
-    describe 'Permission:' do
-      it 'List' do
+    it 'Nav Menu link' do
+      expect(page.has_css?('#sidebar-wrapper')).to be false
+    end
+
+    describe 'Add permission:' do
+      before(:each) do
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @read_patients)
         visit '/'
         expect(page).to have_css('#sidebar-wrapper', visible: false)
         within '#sidebar-wrapper' do
@@ -68,6 +73,9 @@ RSpec.feature 'Patients', type: :feature do
 
       it 'Create: form and fields' do
         visit '/pacientes'
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector,
+                              permission: @create_patients)
+        visit current_path
         within '#dropdown-menu-header' do
           expect(page).to have_link('Agregar')
           click_link 'Agregar'
@@ -88,6 +96,25 @@ RSpec.feature 'Patients', type: :feature do
         end
         expect(page).to have_link('Volver')
         expect(page).to have_button('Guardar')
+        click_button 'Guardar'
+        click_link 'Volver'
+        within '#patients' do
+          expect(page).to have_selector('.btn-detail')
+        end
+        PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector,
+                              permission: @update_patients)
+        visit current_path
+        within '#patients' do
+          expect(page).to have_selector('.btn-edit')
+          page.execute_script %{$('a.btn-edit')[0].click()}
+        end
+        expect(page).to have_content('Editando paciente')
+        expect(page.has_link?('Volver')).to be true
+        expect(page.has_button?('Guardar')).to be true
+        fill_in 'patient_first_name', with: 'Gadiel Rafael Pedro'
+        click_button 'Guardar'
+        expect(page).to have_content('gadiel rafael pedro')
+        click_link 'Volver'
       end
 
       it 'Edit: form and fields' do

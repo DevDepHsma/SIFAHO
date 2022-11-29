@@ -15,13 +15,13 @@ class Prescriptions::ChronicDispensationsController < ApplicationController
 
   def create
     @chronic_dispensation = ChronicDispensation.new(chronic_prescription_dispensation_params)
-    @chronic_dispensation.provider_sector = current_user.sector
+    @chronic_dispensation.provider_sector = @current_user.active_sector
     authorize @chronic_dispensation
 
     respond_to do |format|
       begin
         @chronic_dispensation.save!
-        @chronic_dispensation.chronic_prescription.create_notification(current_user, 'dispensó')
+        @chronic_dispensation.chronic_prescription.create_notification(@current_user, 'dispensó')
         flash.now[:success] = "La receta de #{@chronic_dispensation.chronic_prescription.professional.fullname} se ha
                                dispensado correctamente."
         format.html { redirect_to @chronic_prescription }
@@ -49,7 +49,7 @@ class Prescriptions::ChronicDispensationsController < ApplicationController
       begin
         @chronic_dispensation.return_dispensation
         @chronic_dispensation.destroy
-        @chronic_prescription.return_dispense_by(current_user)
+        @chronic_prescription.return_dispense_by(@current_user)
         @chronic_prescription.pendiente! unless @chronic_prescription.chronic_dispensations.any?
         flash[:success] = "La receta de #{@chronic_dispensation.chronic_prescription.professional.fullname} se ha
                            retornado una dispensa correctamente."

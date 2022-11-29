@@ -5,9 +5,9 @@ RSpec.feature 'Reports::IndexAndFilters', type: :feature do
     permission_module = PermissionModule.includes(:permissions).find_by(name: 'Reportes')
     @read_reports = permission_module.permissions.find_by(name: 'read_reports')
     @destroy_reports = permission_module.permissions.find_by(name: 'destroy_reports')
-    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector,
+    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector,
                           permission: @read_reports)
-    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector,
+    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector,
                           permission: @destroy_reports)
   end
 

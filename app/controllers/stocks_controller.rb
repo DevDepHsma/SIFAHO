@@ -10,7 +10,7 @@ class StocksController < ApplicationController
     end
 
     @filterrific = initialize_filterrific(
-      Stock.to_sector(current_user.sector),
+      Stock.to_sector(@current_user.active_sector),
       params[:filterrific],
       select_options: {
         sorted_by: Stock.options_for_sorted_by
@@ -18,7 +18,7 @@ class StocksController < ApplicationController
       persistence_id: false,
     ) or return
 
-    @areas = Area.where(id: current_user.sector.stocks.joins(product: :area).pluck("areas.id").uniq)
+    @areas = Area.where(id: @current_user.active_sector.stocks.joins(product: :area).pluck("areas.id").uniq)
     @stocks = (request.format.xlsx? || request.format.pdf?) ? @filterrific.find : @filterrific.find.page(params[:page]).per(15)
     respond_to do |format|
       if policy(:stock).index?
@@ -57,7 +57,7 @@ class StocksController < ApplicationController
     # Buscamos los lot_stocks que pertenezcan al sector del usuario y ademas tengan stock
     @lot_stocks = LotStock.joins(:stock)
       .joins(:product)
-      .where("stocks.sector_id = ?", current_user.sector.id)
+      .where("stocks.sector_id = ?", @current_user.active_sector.id)
       .where("products.code like ?", params[:product_code])
       .where("lot_stocks.quantity > ?", 0)
 
@@ -85,12 +85,12 @@ class StocksController < ApplicationController
     # Agregamos el encabezado
     report.page[:title] = 'Reporte de stock de un producto'
     report.page[:requested_date] = DateTime.now.strftime('%d/%m/%YY')
-    report.page[:efector] = current_user.sector_name+" "+current_user.establishment_name
+    report.page[:efector] = @current_user.active_sector.name+" "+@current_user.active_sector.establishment.name
     report.page[:product_code].value(@stock.product_code)
     report.page[:product_name].value(@stock.product_name)
-    report.page[:product_area].value(@stock.product_area_name)
+    report.page[:product_area].value(@stock.product.area.name)
     report.page[:stock_quantity].value(@stock.total_quantity)
-    report.page[:username].value("DNI: "+current_user.dni.to_s+", "+current_user.full_name)
+    report.page[:username].value("DNI: "+@current_user.dni.to_s+", "+@current_user.full_name)
 
     @movements = @stock.movements.sort_by{|e| e[:created_at]}.last(10).reverse
     @lot_stocks = @stock.lot_stocks.greater_than_zero
@@ -151,7 +151,7 @@ class StocksController < ApplicationController
     # Agregamos el encabezado
     report.page[:title] = 'Reporte de stock'
     report.page[:requested_date] = DateTime.now.strftime('%d/%m/%YY')
-    report.page[:efector] = current_user.sector_name+" "+current_user.establishment_name
+    report.page[:efector] = @current_user.active_sector.name+" "+@current_user.active_sector.establishment.name
     report.page[:products_count].value(@stocks.count)
 
     # Se van agregando los productos
@@ -164,8 +164,8 @@ class StocksController < ApplicationController
         list.add_row do |row|
           row.values  product_code: stock.product_code,
             product_name: stock.product_name,
-            unity: stock.product_unity_name,
-            area: stock.product_area_name,
+            unity: stock.unity.name,
+            area: stock.product.area.name,
             lot_count: stock.lot_stocks.count,
             available_quantity: stock.quantity,
             reserved_quantity: stock.reserved_quantity,
@@ -177,8 +177,8 @@ class StocksController < ApplicationController
     # A cada pagina le agregamos el pie de pagina
     report.pages.each do |page|
       page[:page_count] = report.page_count
-      page[:sector] = current_user.sector_name
-      page[:establishment] = current_user.establishment_name
+      page[:sector] = @current_user.active_sector.name
+      page[:establishment] = @current_user.active_sector.establishment.name
     end
 
     report.generate

@@ -1,0 +1,7 @@
+<% if @permission_request.present? &&  @permission_request.in_progress? %>
+  Solicitud de permisos <span class="badge badge-primary"> <%=
+      t("permission_request_status.#{@permission_request.status}").downcase
+    %> </span>
+<% else %>
+  Editando permisos
+<% end %>

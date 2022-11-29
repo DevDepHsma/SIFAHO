@@ -141,7 +141,7 @@
             <tbody>
               <% @chronic_prescription.original_chronic_prescription_products.each do |org_chron_pres_prod| %>
                 <tr id="original_product_<%= org_chron_pres_prod.id %>">
-                  <% @stock = Stock.where(sector: current_user.sector, product: org_chron_pres_prod.product).first %>
+                  <% @stock = Stock.where(sector: @current_user.active_sector, product: org_chron_pres_prod.product).first %>
                   <td>
                     <% if @stock.present? %>
                       <%= link_to stock_path(@stock), class: 'btn btn-link text-left p-0', target: :_blank do %>

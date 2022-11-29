@@ -2,14 +2,14 @@ class Establishments::ExternalOrders::ExternalOrdersController < ApplicationCont
 
   def statistics
     @external_orders = ExternalOrder.all
-    @requests_sent = ExternalOrder.applicant(current_user.sector).solicitud_abastecimiento.group(:status).count.transform_keys { |key| key.split('_').map(&:capitalize).join(' ') }
+    @requests_sent = ExternalOrder.applicant(@current_user.active_sector).solicitud_abastecimiento.group(:status).count.transform_keys { |key| key.split('_').map(&:capitalize).join(' ') }
     status_colors = { "Recibo Realizado" => "#40c95e", "Provision Entregada" => "#40c95e", "Solicitud Auditoria" => "#f1ae45", "Proveedor Aceptado" => "#336bb6", 
       "Recibo Auditoria" => "#f1ae45", "Provision En Camino" => "#336bb6", "Proveedor Auditoria" => "#f1ae45", "Vencido" => "#d36262", "Solicitud Enviada" => "#5bbae1" }
     @r_s_colors = []
     @requests_sent.each do |status, _|
       @r_s_colors << status_colors[status]
     end
-    @requests_received = ExternalOrder.provider(current_user.sector).solicitud_abastecimiento.group(:status).count.transform_keys { |key| key.split('_').map(&:capitalize).join(' ') }
+    @requests_received = ExternalOrder.provider(@current_user.active_sector).solicitud_abastecimiento.group(:status).count.transform_keys { |key| key.split('_').map(&:capitalize).join(' ') }
     @r_r_colors = []
     @requests_received.each do |status, _|
       @r_r_colors << status_colors[status]
@@ -24,7 +24,7 @@ class Establishments::ExternalOrders::ExternalOrdersController < ApplicationCont
       format.html
       format.js
       format.pdf do
-        pdf = ReportServices::ExternalOrderReportService.new(current_user, @external_order).generate_pdf
+        pdf = ReportServices::ExternalOrderReportService.new(@current_user, @external_order).generate_pdf
         send_data pdf, filename: "Pedido_#{@external_order.remit_code}.pdf", type: 'application/pdf', disposition: 'inline'
       end
     end
@@ -35,7 +35,7 @@ class Establishments::ExternalOrders::ExternalOrdersController < ApplicationCont
     @order_type = @external_order.order_type
     Notification.destroy_with_target_id(@external_order.id)
     @external_order.destroy
-    @external_order.create_notification(current_user, 'envió a la papelera')
+    @external_order.create_notification(@current_user, 'envió a la papelera')
     respond_to do |format|
       flash.now[:success] = "#{@order_type.humanize} de #{@sector_name} se ha enviado a la papelera."
       format.js

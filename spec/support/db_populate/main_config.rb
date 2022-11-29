@@ -17,14 +17,15 @@ RSpec.configure do |config|
   config.include DataMock::Patients, type: :feature
   config.include DataMock::Professionals, type: :feature
   config.include DataMock::Reports, type: :feature
+  config.include DataMock::Users, type: :feature
 
   config.before(:all, type: :feature) do
     permissions_populate
     effectors_populate
     products_populate
     stocks_populate
-    users_populate
     roles_populate
+    users_populate
     patients_populate
     professionals_populate
     outpatient_prescriptions_populate

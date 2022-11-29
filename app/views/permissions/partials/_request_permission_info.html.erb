@@ -1,0 +1,49 @@
+<div class="alert alert-warning fade show" role="alert" id="permission-request-summary">
+  <p><strong>Nueva solicitud de permisos:</strong></p>
+  <p>
+    <strong>Establecimiento indicado:</strong> <%= @permission_request.establishment.present? ? @permission_request.establishment.name : @permission_request.other_establishment %>. <strong>Sector indicado:</strong> <%= @permission_request.sector.present? ? @permission_request.sector.name : @permission_request.other_sector %>.
+  </p>
+  <p class="mb-0">
+    <strong>Funciones seleccionadas:</strong>
+  </p>
+  <ul>
+    <% @permission_request.roles.each do |role| %>
+      <li><%= role.name %></li>
+    <% end %>
+  </ul>
+  <p><strong>Observaciones:</strong> <%= @permission_request.observation %>.</p>
+  <% unless @permission_request.sector.present? %>
+    <p>
+      El sector o el establecimiento indicados en la solicitud no existen en nuestra base de datos o hubo un error en la selección.<br>
+      Deberá:<br>
+      <ul>
+        <li>Verificar que el establecimiento o sector solicitado existan, de lo contrario deben ser creados.</li>
+        <li>La creación de establecimientos y sectores debe ser aprobada por las autoridades que correspondan.</li>
+        <li>Seleccionar manualmente el sector del establecimiento solicitado.</li>
+        <li>Para dar por terminada la solicitud, deberá hacer click sobre el botón "Terminar".</li>
+      </ul>
+    </p>
+  <% end %>
+  <hr>
+  <div class="text-right">
+    <button type="button" 
+      class="btn btn-danger btn-sm mr-1 ml-1"
+      data-target="#reject-permission-request"
+      data-toggle="modal">
+      Anular
+    </button>
+    <% if @permission_request.sector.present? %>
+      <a href="<%= build_from_request_users_admin_path %>" data-remote="true" class="btn btn-sm btn-success" onclick="toggleLoading();">
+        Aplicar
+      </a>
+    <% else %>
+      <a href="<%= finish_permission_request_users_admin_path(@user.id, @permission_request.id) %>" 
+         data-method='put' 
+         data-remote="true"
+         class="btn btn-sm btn-primary"
+         onclick="toggleLoading();">
+        Terminar
+      </a>
+    <% end %>
+  </div>
+</div>

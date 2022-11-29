@@ -9,17 +9,17 @@ RSpec.feature 'Orders::Internal::Providers', type: :feature do
     @send_internal_order_provider = perimssion_module.permissions.find_by(name: 'send_internal_order_provider')
     @return_internal_order_provider = perimssion_module.permissions.find_by(name: 'return_internal_order_provider')
     @nullify_internal_order_provider = perimssion_module.permissions.find_by(name: 'nullify_internal_order_provider')
-    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector,
+    PermissionUser.create(user: @depo_provider, sector: @farm_applicant.active_sector,
                           permission: @create_internal_order_provider)
-    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector,
+    PermissionUser.create(user: @depo_provider, sector: @farm_applicant.active_sector,
                           permission: @read_internal_order_provider)
-    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector,
+    PermissionUser.create(user: @depo_provider, sector: @farm_applicant.active_sector,
                           permission: @update_internal_order_provider)
-    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector,
+    PermissionUser.create(user: @depo_provider, sector: @farm_applicant.active_sector,
                           permission: @send_internal_order_provider)
-    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector,
+    PermissionUser.create(user: @depo_provider, sector: @farm_applicant.active_sector,
                           permission: @return_internal_order_provider)
-    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector,
+    PermissionUser.create(user: @depo_provider, sector: @farm_applicant.active_sector,
                           permission: @nullify_internal_order_provider)
   end
 
@@ -41,7 +41,7 @@ RSpec.feature 'Orders::Internal::Providers', type: :feature do
       it 'show' do
         click_link 'Entregas'
         order = InternalOrder.where(status: 'proveedor_auditoria', order_type: 'solicitud',
-                                    provider_sector_id: @farm_applicant.sector_id).first
+                                    provider_sector_id: @farm_applicant.active_sector_id).first
         visit "/sectores/pedidos/despachos/#{order.id}"
         expect(page).to have_content('Solicitante')
         expect(page).to have_content('Proveedor')
@@ -74,16 +74,16 @@ RSpec.feature 'Orders::Internal::Providers', type: :feature do
           click_link 'Entregar'
         end
         within '#order-form' do
-          select_sector(@depo_provider.sector.name, 'select#applicant-sector')
+          select_sector(@depo_provider.active_sector.name, 'select#applicant-sector')
         end
-        expect(page).to have_content(@depo_provider.sector.name)
+        expect(page).to have_content(@depo_provider.active_sector.name)
         click_button 'Guardar y agregar productos'
         expect(page).to have_content('La provisión interna de Depósito se ha auditado correctamente.')
         expect(page).to have_content('Editando productos de provision de sector código')
         expect(page).to have_content('Solicitante')
-        expect(page).to have_content(@farm_applicant.sector.name)
+        expect(page).to have_content(@farm_applicant.active_sector.name)
         expect(page).to have_content('Proveedor')
-        expect(page).to have_content(@depo_provider.sector.name)
+        expect(page).to have_content(@depo_provider.active_sector.name)
         expect(page).to have_content('Código')
         expect(page).to have_content('Producto')
         expect(page).to have_content('Unidad')

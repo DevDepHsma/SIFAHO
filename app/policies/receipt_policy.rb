@@ -16,7 +16,7 @@ class ReceiptPolicy < ApplicationPolicy
   end
 
   def update?
-    if record.auditoria? && record.applicant_sector == user.sector
+    if record.auditoria? && record.applicant_sector == user.active_sector
       user.has_permission?(:update_receipts)
     end
   end

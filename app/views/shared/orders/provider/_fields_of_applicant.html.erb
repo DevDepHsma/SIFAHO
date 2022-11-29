@@ -38,7 +38,7 @@
             type="number"
             disabled
             name="stock-no-editable"
-            value="<%= current_user.sector.stock_to(object.product) %>">
+            value="<%= @current_user.active_sector.stock_to(object.product) %>">
   </div>
 </div>
   

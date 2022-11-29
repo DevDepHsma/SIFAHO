@@ -18,11 +18,11 @@ class ApplicationController < ActionController::Base
   end
 
   def set_current_user
-    @current_user = User.includes(:profile, :sector).find(current_user.id)
+    @current_user = User.includes(:profile, :sectors).find(current_user.id)
   end
 
   def pundit_user
-    User.includes(:permission_users, :permissions, :sector).find(@current_user.id)
+    User.includes(:permission_users, :permissions, :sectors).find(@current_user.id)
   end
 
   # Exclede Init sessions path, because on login form and create a session current_user

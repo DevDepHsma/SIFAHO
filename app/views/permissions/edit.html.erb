@@ -1,25 +1,20 @@
-<%= render 'users/header' %>
+<% content_for :title, "Usuarios" %>
 
-  <div class="card fixed-custom-card">
-    <div class="card-header d-flex align-items-center justify-content-between">
-      <div class="d-flex align-items-center">
-        <%= fa_icon "lock" %>
-        <h5 class="card-title mb-0 ml-2">
-          <% if @user.permission_requests.any? && @user.permission_requests.first.in_progress? %>
-            Solicitud de permisos <span class="badge badge-primary"> <%=
-              t("permission_request_status.#{@user.permission_requests.first.status}").downcase
-            %> </span>
-          <% else %>
-            Editando permisos
-          <% end %>
-        </h5>
-      </div>
-      <%= link_to users_admin_index_path, class: 'btn btn-light' do %>
-        <%= fa_icon 'times' %>
-      <% end %>
+<% content_for :page_header do %>
+  <%= render 'users/partials/header' %>  
+<% end %>
+
+<div class="card fixed-custom-card">
+  <div class="card-header d-flex align-items-center justify-content-between">
+    <div class="d-flex align-items-center">
+      <%= fa_icon "lock" %>
+      <h5 class="card-title mb-0 ml-2" id="edit-title">
+        <%= render 'permissions/partials/edit_title' %>
+      </h5>
     </div>
-      
-    <div class="card-body">
+  </div>
+  <div class="card-body">
+    <%= simple_form_for 'permission_users', url: update_permissions_users_admin_path(@user), remote: true, html: { method: 'PUT', name: 'permission_users',id: 'permission_users', novalidate: true} do |f| %>
       <div class="row">
         <div class="col-3 border-right">
           <div class="d-flex align-items-center justify-content-between">
@@ -30,86 +25,69 @@
                 <p class="mb-0"><%= @user.profile.dni %></p>
               </div>
             </div>
-            <% if @user.permission_requests.any? && policy(@user.permission_requests.last).update? %>
-              <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#permission_req_in_progress">
-                <%= fa_icon 'info' %>
-              </button>
-            <% end %>
           </div>
-          <div class="mt-2 d-flex w-100">
-            <div id="location_select_container">
-              <%= render "permissions/partials/location_select" %>
-            </div>
-
-            <div>
-              <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#sector-selection" id="open-sectors-select-modal">
-                <%= fa_icon 'plus' %>
-              </button>
-            </div>
-
-          </div>
-          <%# roles %>
-          <div class="mt-2">
-            <p class="mb-1">Modulos</p>
-              <% @roles.each do |role| %>
-                <div class="custom-control custom-checkbox mb-1">
-                  <input type="checkbox" class="custom-control-input" id="role-<%=role.id%>" required>
-                  <label class="custom-control-label" for="role-<%=role.id%>"><%= role.name %></label>
-                </div>
-              <% end %>
-            </ul>
+          <div class="mt-2" id="location_select_container">
+            <%= render "permissions/partials/location_select"%>
           </div>
         </div>
         <div class="col-9">
-          <%= simple_form_for 'remote_form', remote: true, url: permissions_users_admin_path(@user), method: 'GET', html: { novalidate: true} do |f| %>
-            <div class="input-group mb-2">
-              <input class="form-control" type="hidden" name="remote_form[sector]" id="remote_form_input_sector" value="<%= @sector.present? ? @sector.id : '' %>">
-              <input class="form-control" placeholder="Módulo" type="text" name="remote_form[search_name]" id="remote_form_search_name" autocomplete="off">
-              <div class="input-group-append">
-                <div class="input-group-text" id="btnGroupAddon">
-                  <%= fa_icon 'search' %>
-                </div>
-              </div>                  
-            </div>
+          <% if @permission_request.present? %>
+            <%= render( partial: 'permissions/partials/request_permission_info' ) %>
           <% end %>
-
-          <div id="permissions_list"> 
-            <%= render(
-              partial: 'permissions/partials/list',
-              locals: { permission_modules: @permission_modules }
-            ) %>
+          <div id="permissions_list">
+            <%= render( partial: 'permissions/partials/list' ) %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+  <div class="card-footer d-flex justify-content-end">
+    <%= link_to 'Volver', :back, class: 'btn btn-light mr-2' %>
+    <button type='submit' name='commit' class='btn btn-secondary btn-success' form='permission_users'>
+      <%= fa_icon 'save' %> Guardar
+    </button>
+  </div>
+</div>
+<% content_for :available_sectors_count do %>
+  <%= @user.sectors.count %>
+<% end %>
+<% content_for :available_sectors do %>
+  <%= render "permissions/partials/available_sectors" %>
+<% end %>
+<% content_for :select_sector do %>
+  <%= render "permissions/partials/select_sector" %>
+<% end %>
+<% content_for :modal do %>
+  <%= render "shared/modals/sector_selection" %>
+  <%= render(partial: 'shared/modals/delete_confirmation') %>
+  <% if @permission_request.present? && @permission_request.in_progress? %>
+    <div class="modal fade" tabindex="-1" role="dialog" id="reject-permission-request">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header bg-danger text-white">
+            <h5 class="modal-title">
+              Anular solicitud
+            </h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            Al anular la solicitud su información no se volverá a mostrar. ¿Desea anular la solicitud?
+          </div>
+          <div class="modal-footer text-right">
+            <button type='button' class='btn btn-secondary' data-dismiss='modal'>Volver</button>
+            <a data-remote='true' 
+              data-method='put' 
+              href='<%= reject_permission_request_users_admin_path(@user.id, @permission_request.id) %>' 
+              data-dismiss='modal' 
+              data-disable-with="<i class='fa fa-spinner'></i>" 
+              class='btn commit btn-danger pull-right' 
+              rel='nofollow'
+              onclick="toggleLoading();">Confirmar</a>
           </div>
         </div>
       </div>
     </div>
-    
-    <div class="card-footer d-flex justify-content-end">
-      <%= link_to 'Volver', :back, class: 'btn btn-light mr-2' %>
-      <button type='submit' name='commit' class='btn btn-secondary btn-success' form='permission_users'>
-        <%= fa_icon 'save' %> Guardar
-      </button>
-    </div> 
-
-  </div>
-
-
-<% content_for :available_sectors_count do %>
-  <%= @user.sectors.count %>
-<% end %>
-
-<% content_for :available_sectors do %>
-  <%= render "permissions/partials/available_sectors" %>
-<% end %>
-
-<% content_for :select_sector do %>
-  <%= render "permissions/partials/select_sector" %>
-<% end %>
-
-<% content_for :modal do %>
-  <%= render "shared/modals/sector_selection" %>
-  <% if @user.permission_requests.any? && policy(@user.permission_requests.last).update? %>
-    <%= render "permissions/partials/show_modal" %>  
   <% end %>
-
-  <%= render(partial: 'shared/modals/delete_confirmation') %>
 <% end %>

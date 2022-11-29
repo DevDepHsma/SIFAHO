@@ -20,10 +20,10 @@ class InternalOrderTemplateProviderPolicy < InternalOrderTemplatePolicy
   end
 
   def edit?(resource)
-    user.has_permission?(:update_internal_order_provider) if resource.owner_sector == user.sector && resource.provision?
+    user.has_permission?(:update_internal_order_provider) if resource.owner_sector == user.active_sector && resource.provision?
   end
 
   def use_template?(resource)
-    user.has_permission?(:create_internal_order_provider) if resource.provision? && resource.owner_sector == user.sector
+    user.has_permission?(:create_internal_order_provider) if resource.provision? && resource.owner_sector == user.active_sector
   end
 end

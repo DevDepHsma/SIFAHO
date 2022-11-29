@@ -4,7 +4,7 @@
     as: :select,
     label: '¿A cuál establecimiento pertenece?',
     include_blank: false,
-    collection: @establishments.map {|establishment|  [establishment.name, establishment.id]} + [["Otro...", 0]],
+    collection: @establishments.map {|establishment|  [establishment.name, establishment.id]} + [["Otro...", -1]],
     :input_html => {
       placeholder: 'Seleccionar establecimiento',
       required: true,

@@ -25,18 +25,18 @@ RSpec.feature 'OutpatientPrescriptions', type: :feature do
     @create_professional_permission = professionals_permission_module.permissions.find_by(name: 'create_professionals')
     @read_professional_permission = professionals_permission_module.permissions.find_by(name: 'read_professionals')
 
-    PermissionUser.create(user: @farm_provider, sector: @farm_provider.sector,
+    PermissionUser.create(user: @farm_provider, sector: @farm_provider.active_sector,
                           permission: @read_outpatient_permission)
-    PermissionUser.create(user: @farm_provider, sector: @farm_provider.sector,
+    PermissionUser.create(user: @farm_provider, sector: @farm_provider.active_sector,
                           permission: @dispense_recipe_permission)
-    PermissionUser.create(user: @farm_provider, sector: @farm_provider.sector,
+    PermissionUser.create(user: @farm_provider, sector: @farm_provider.active_sector,
                           permission: @update_recipe_permission)
 
-    PermissionUser.create(user: @farm_provider, sector: @farm_provider.sector,
+    PermissionUser.create(user: @farm_provider, sector: @farm_provider.active_sector,
                           permission: @create_professional_permission)
-    PermissionUser.create(user: @farm_provider, sector: @farm_provider.sector,
+    PermissionUser.create(user: @farm_provider, sector: @farm_provider.active_sector,
                           permission: @read_professional_permission)
-    PermissionUser.create(user: @farm_provider, sector: @farm_provider.sector, permission: @create_patient_permission)
+    PermissionUser.create(user: @farm_provider, sector: @farm_provider.active_sector, permission: @create_patient_permission)
   end
 
   background do
@@ -165,7 +165,7 @@ RSpec.feature 'OutpatientPrescriptions', type: :feature do
                 "outpatient_prescription[outpatient_prescription_products_attributes][#{index}][supply_unity_fake]", type: 'text', disabled: true, with: op.product.unity.name
               )
               expect(page).to have_field(
-                "outpatient_prescription[outpatient_prescription_products_attributes][#{index}][stock_fake]", type: 'text', disabled: true, with: @farm_provider.sector.stock_to(op.product)
+                "outpatient_prescription[outpatient_prescription_products_attributes][#{index}][stock_fake]", type: 'text', disabled: true, with: @farm_provider.active_sector.stock_to(op.product)
               )
               expect(page).to have_field(
                 "outpatient_prescription[outpatient_prescription_products_attributes][#{index}][request_quantity]", type: 'number', with: op.request_quantity
@@ -195,22 +195,21 @@ RSpec.feature 'OutpatientPrescriptions', type: :feature do
         end
       end
 
-      # Require update products scope search
-      # it 'dispense successfully' do
-      #   10.times do |_prescription|
-      #     visit '/recetas'
-      #     patient = @patients.sample
-      #     qualification = @qualifications.sample
-      #     find_and_fill_patient_attributes(patient.dni) # Fill first patient form
-      #     within '#new-receipt-buttons' do
-      #       click_link 'Ambulatoria'
-      #     end
-      #     find_and_fill_professional_attribute(qualification) # Add professional
-      #     add_products_to_recipe(rand(3..9), rand(5..20), rand(5..20)) # Add product
-      #     click_button 'Dispensar'
-      #     expect(page).to have_content('Viendo receta ambulatoria')
-      #   end
-      # end
+      it 'dispense successfully' do
+        10.times do |_prescription|
+          visit '/recetas'
+          patient = @patients.sample
+          qualification = @qualifications.sample
+          find_and_fill_patient_attributes(patient.dni) # Fill first patient form
+          within '#new-receipt-buttons' do
+            click_link 'Ambulatoria'
+          end
+          find_and_fill_professional_attribute(qualification) # Add professional
+          add_products_to_recipe(rand(3..9), rand(5..20), rand(5..20)) # Add product
+          click_button 'Dispensar'
+          expect(page).to have_content('Viendo receta ambulatoria')
+        end
+      end
 
       it 'dispense fail' do
         click_button 'Dispensar'

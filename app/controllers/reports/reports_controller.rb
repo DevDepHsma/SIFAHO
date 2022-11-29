@@ -17,8 +17,8 @@ class ReportsController < ApplicationController
   def new
     policy(:report).new?
     @report = Report.new
-    @products = Product.filter_by_stock({ sector_id: @current_user.sector_id }).limit(@result_size)
-    @patients = Patient.filter_by_sector_dispensation({ sector_id: @current_user.sector_id }).limit(@result_size)
+    @products = Product.filter_by_stock({ sector_id: @current_user.active_sector.id }).limit(@result_size)
+    @patients = Patient.filter_by_sector_dispensation({ sector_id: @current_user.active_sector.id }).limit(@result_size)
   end
 
   def create
@@ -29,11 +29,11 @@ class ReportsController < ApplicationController
     rescue ActiveRecord::RecordInvalid => e
       @report = e.record
       @selected_products = Product.select(:id, :code, :name).where(id: report_params[:products_ids].split('_'))
-      @products = Product.filter_by_stock({ sector_id: @current_user.sector_id, product: params[:term],
+      @products = Product.filter_by_stock({ sector_id: @current_user.active_sector.id, product: params[:term],
                                             products_ids: report_params[:products_ids].split('_') }).limit(@result_size)
       @selected_patients = Patient.select(:id, :dni, :last_name,
                                           :first_name).where(id: report_params[:patients_ids].split('_'))
-      @patients = Patient.filter_by_sector_dispensation({ sector_id: @current_user.sector_id, patient: params[:term],
+      @patients = Patient.filter_by_sector_dispensation({ sector_id: @current_user.active_sector.id, patient: params[:term],
                                                           patients_ids: report_params[:patients_ids].split('_') })
                          .limit(@result_size)
 
@@ -46,7 +46,7 @@ class ReportsController < ApplicationController
   # params[:products_ids]   string with selected products
   # params[:product_term]   string for search by name or code (Product)
   def get_stock_products
-    @products = Product.filter_by_stock({ sector_id: @current_user.sector_id, product: params[:term],
+    @products = Product.filter_by_stock({ sector_id: @current_user.active_sector.id, product: params[:term],
                                           products_ids: params[:products_ids].split('_') })
                        .limit(@result_size)
   end
@@ -59,7 +59,7 @@ class ReportsController < ApplicationController
     @product = Product.find(params[:product_id])
     @products_ids = params[:products_ids].present? ? params[:products_ids].split('_') : []
     @products_ids << @product.id
-    @products = Product.filter_by_stock({ sector_id: @current_user.sector_id, product: params[:term],
+    @products = Product.filter_by_stock({ sector_id: @current_user.active_sector.id, product: params[:term],
                                           products_ids: @products_ids })
                        .limit(@result_size)
     @products_ids = @products_ids.join('_')
@@ -74,14 +74,14 @@ class ReportsController < ApplicationController
     @product_id = params[:product_id]
     @products_ids = params[:products_ids].present? ? params[:products_ids].split('_') : []
     @products_ids.delete(@product_id)
-    @products = Product.filter_by_stock({ sector_id: @current_user.sector_id, product: params[:term],
+    @products = Product.filter_by_stock({ sector_id: @current_user.active_sector.id, product: params[:term],
                                           products_ids: @products_ids })
                        .limit(@result_size)
     @products_ids = @products_ids.join('_')
   end
 
   def get_patients_by_sector
-    @patients = Patient.filter_by_sector_dispensation({ sector_id: @current_user.sector_id,
+    @patients = Patient.filter_by_sector_dispensation({ sector_id: @current_user.active_sector.id,
                                                         patient: params[:term],
                                                         patients_ids: params[:patients_ids].split('_') }).limit(@result_size)
   end
@@ -94,7 +94,7 @@ class ReportsController < ApplicationController
     @patient = Patient.find(params[:patient_id])
     @patients_ids = params[:patients_ids].present? ? params[:patients_ids].split('_') : []
     @patients_ids << @patient.id
-    @patients = Patient.filter_by_sector_dispensation({ sector_id: @current_user.sector_id, patient: params[:term],
+    @patients = Patient.filter_by_sector_dispensation({ sector_id: @current_user.active_sector.id, patient: params[:term],
                                                         patients_ids: @patients_ids })
                        .limit(@result_size)
     @patients_ids = @patients_ids.join('_')
@@ -109,7 +109,7 @@ class ReportsController < ApplicationController
     @patient_id = params[:patient_id]
     @patients_ids = params[:patients_ids].present? ? params[:patients_ids].split('_') : []
     @patients_ids.delete(@patient_id)
-    @patients = Patient.filter_by_sector_dispensation({ sector_id: @current_user.sector_id, patient: params[:term],
+    @patients = Patient.filter_by_sector_dispensation({ sector_id: @current_user.active_sector.id, patient: params[:term],
                                                         patients_ids: @patients_ids })
                        .limit(@result_size)
     @patients_ids = @patients_ids.join('_')

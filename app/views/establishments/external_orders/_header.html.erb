@@ -26,7 +26,7 @@
         Recibos
       <% end %>
       <!-- Badge notification -->
-      <% request_count = ExternalOrder.applicant(current_user.sector).provision_en_camino.count %>
+      <% request_count = ExternalOrder.applicant(@current_user.active_sector).provision_en_camino.count %>
       <% if request_count > 0%>
         <%= link_to external_orders_applicants_path(filterrific: {:with_status => 4}), class: 'badge badge-info',
         title: "En camino", data: { toggle: 'tooltip', placement: 'bottom' } do %>
@@ -43,7 +43,7 @@
         Despachos
       <% end %>
       <!-- Badge notification -->
-      <% request_count = ExternalOrder.provider(current_user.sector).solicitud_enviada.count %>
+      <% request_count = ExternalOrder.provider(@current_user.active_sector).solicitud_enviada.count %>
       <% if request_count > 0%>
         <%= link_to external_orders_providers_path(filterrific: {:with_status => 1}), class: 'badge badge-info',
         title: "Solicitud", data: { toggle: 'tooltip', placement: 'bottom' } do %>

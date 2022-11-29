@@ -14,8 +14,8 @@ RSpec.feature 'ProductsFilters', type: :feature do
     permission_module = PermissionModule.includes(:permissions).find_by(name: 'Productos')
     @read_products = permission_module.permissions.find_by(name: 'read_products')
     @destroy_products = permission_module.permissions.find_by(name: 'destroy_products')
-    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @read_products)
-    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @destroy_products)
+    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @read_products)
+    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @destroy_products)
   end
 
   background do

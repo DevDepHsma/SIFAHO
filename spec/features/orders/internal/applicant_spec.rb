@@ -8,15 +8,15 @@ RSpec.feature 'Orders::Internal::Applicants', type: :feature do
     @update_internal_order_applicant = perimssion_module.permissions.find_by(name: 'update_internal_order_applicant')
     @send_internal_order_applicant = perimssion_module.permissions.find_by(name: 'send_internal_order_applicant')
     @return_internal_order_applicant = perimssion_module.permissions.find_by(name: 'return_internal_order_applicant')
-    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector,
+    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector,
                           permission: @create_internal_order_applicant)
-    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector,
+    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector,
                           permission: @read_internal_order_applicant)
-    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector,
+    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector,
                           permission: @update_internal_order_applicant)
-    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector,
+    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector,
                           permission: @send_internal_order_applicant)
-    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector,
+    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector,
                           permission: @return_internal_order_applicant)
   end
 
@@ -37,7 +37,7 @@ RSpec.feature 'Orders::Internal::Applicants', type: :feature do
 
       it 'show' do
         click_link 'Recibos'
-        order = InternalOrder.where(status: 'solicitud_auditoria', applicant_sector_id: @farm_applicant.sector_id).first
+        order = InternalOrder.where(status: 'solicitud_auditoria', applicant_sector_id: @farm_applicant.active_sector_id).first
         visit "/sectores/pedidos/recibos/#{order.id}"
         expect(page).to have_content('Solicitante')
         expect(page).to have_content('Proveedor')
@@ -69,15 +69,15 @@ RSpec.feature 'Orders::Internal::Applicants', type: :feature do
           click_link 'Solicitar'
         end
         within '#order-form' do
-          select_sector(@depo_applicant.sector.name, 'select#provider-sector')
+          select_sector(@depo_applicant.active_sector.name, 'select#provider-sector')
         end
-        expect(page).to have_content(@depo_applicant.sector.name)
+        expect(page).to have_content(@depo_applicant.active_sector.name)
         click_button 'Guardar y agregar productos'
         expect(page).to have_content('Editando productos de solicitud de sector código')
         expect(page).to have_content('Solicitante')
-        expect(page).to have_content(@farm_applicant.sector.name)
+        expect(page).to have_content(@farm_applicant.active_sector.name)
         expect(page).to have_content('Proveedor')
-        expect(page).to have_content(@depo_applicant.sector.name)
+        expect(page).to have_content(@depo_applicant.active_sector.name)
         expect(page).to have_content('Código')
         expect(page).to have_content('Producto')
         expect(page).to have_content('Unidad')

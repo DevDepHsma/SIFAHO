@@ -124,7 +124,7 @@
             <tbody>
               <% @outpatient_prescription.outpatient_prescription_products.each do |outpatient_prescription_product| %>
                 <tr class="<%= highlight_row(outpatient_prescription_product .product_id) %>">
-                  <% @stock = Stock.where(sector: current_user.sector, product: outpatient_prescription_product.product ).first %>
+                  <% @stock = Stock.where(sector: @current_user.active_sector, product: outpatient_prescription_product.product ).first %>
                   <td>
                     <% if @stock.present? %>
                       <%= link_to stock_path(@stock), class: 'btn btn-link text-left p-0', target: :_blank do %>

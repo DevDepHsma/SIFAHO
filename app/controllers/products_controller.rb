@@ -24,7 +24,7 @@ class ProductsController < ApplicationController
   def show
     authorize @product
 
-    @stock_quantity = current_user.sector.stock_to(@product.id)
+    @stock_quantity = @current_user.active_sector.stock_to(@product.id)
     respond_to do |format|
       format.html
       format.js
@@ -130,7 +130,7 @@ class ProductsController < ApplicationController
         id: product.id,
         code: product.code,
         unity: product.unity.name,
-        stock: current_user.sector.stock_to(product.id)
+        stock: @current_user.active_sector.stock_to(product.id)
       }
     }
   end
@@ -144,7 +144,7 @@ class ProductsController < ApplicationController
         id: product.id,
         name: product.name,
         unity: product.unity.name,
-        stock: current_user.sector.stock_to(product.id)
+        stock: @current_user.active_sector.stock_to(product.id)
       }
     }
   end
@@ -159,7 +159,7 @@ class ProductsController < ApplicationController
   #       id: product.id,
   #       code: product.code,
   #       unity: product.unity.name,
-  #       stock: current_user.sector.stock_to(product.id)
+  #       stock: @current_user.active_sector.stock_to(product.id)
   #     }
   #   }
   # end
@@ -174,7 +174,7 @@ class ProductsController < ApplicationController
   #                    id: product.id,
   #                    name: product.name,
   #                    unity: product.unity.name,
-  #                    stock: current_user.sector.stock_to(product.id)
+  #                    stock: @current_user.active_sector.stock_to(product.id)
   #                  }
   #                }
   # end

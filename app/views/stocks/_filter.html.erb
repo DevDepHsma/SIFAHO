@@ -32,7 +32,7 @@
           @areas.map {
             |area| [area.name, area.id, 
               data: {
-                'content': area.name+" <span class='badge badge-secondary'>"+Stock.to_sector(current_user.sector).with_area_ids(area.id).count.to_s+"</span>"
+                'content': area.name+" <span class='badge badge-secondary'>"+Stock.to_sector(@current_user.active_sector).with_area_ids(area.id).count.to_s+"</span>"
               }
           ]},
           selected: params[:filterrific].present? ? params[:filterrific][:by_establishment] : "",

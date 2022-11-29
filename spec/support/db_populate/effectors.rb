@@ -7,4 +7,8 @@ def effectors_populate
 
   @farm_est_2 = create(:sector_1, establishment: establishment_2)
   @depo_est_2 = create(:sector_2, establishment: establishment_2)
+
+  get_sectors.each do |sec_name|
+    create(:sector, name: sec_name, establishment: establishment_1)
+  end
 end

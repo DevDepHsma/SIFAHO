@@ -175,17 +175,18 @@ class InternalOrder < ApplicationRecord
   end
 
   def create_notification(of_user, action_type)
-    InternalOrderMovement.create(user: of_user, internal_order: self, action: action_type, sector: of_user.sector)
+    InternalOrderMovement.create(user: of_user, internal_order: self, action: action_type,
+                                 sector: of_user.active_sector)
     (applicant_sector.users.uniq - [of_user]).each do |user|
       @not = Notification.where(actor: of_user, user: user, target: self, notify_type: order_type,
-                                action_type: action_type, actor_sector: of_user.sector).first_or_create
+                                action_type: action_type, actor_sector: of_user.active_sector).first_or_create
       @not.updated_at = DateTime.now
       @not.read_at = nil
       @not.save
     end
     (provider_sector.users.uniq - [of_user]).each do |user|
       @not = Notification.where(actor: of_user, user: user, target: self, notify_type: order_type,
-                                action_type: action_type, actor_sector: of_user.sector).first_or_create
+                                action_type: action_type, actor_sector: of_user.active_sector).first_or_create
       @not.updated_at = DateTime.now
       @not.read_at = nil
       @not.save

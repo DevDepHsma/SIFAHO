@@ -1,4 +1,8 @@
-<%= render 'users/header' %>
+<% content_for :title, "Usuarios" %>
+
+<% content_for :page_header do %>
+  <%= render 'users/partials/header' %>
+<% end %>
 
 <div class="card fixed-custom-card">
   <div class="card-header">

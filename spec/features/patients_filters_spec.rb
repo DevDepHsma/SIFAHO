@@ -7,8 +7,10 @@ RSpec.feature 'PatientsFilters', type: :feature do
     @create_patients = patient_module.permissions.find_by(name: 'create_patients')
     @update_patients = patient_module.permissions.find_by(name: 'update_patients')
     @destroy_patients = patient_module.permissions.find_by(name: 'destroy_patients')
-    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @read_patients)
-    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @destroy_patients)
+    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @destroy_patients)
+    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @read_patients)
+    @patients = Patient.all
+    
   end
 
   background do

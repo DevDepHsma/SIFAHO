@@ -20,13 +20,13 @@ class InternalOrderTemplateApplicantPolicy < InternalOrderTemplatePolicy
   end
 
   def edit?(resource)
-    if resource.owner_sector == user.sector && resource.solicitud?
+    if resource.owner_sector == user.active_sector && resource.solicitud?
       user.has_permission?(:update_internal_order_applicant)
     end
   end
 
   def use_template?(resource)
-    if resource.solicitud? && resource.owner_sector == user.sector
+    if resource.solicitud? && resource.owner_sector == user.active_sector
       user.has_permission?(:create_internal_order_applicant)
     end
   end
