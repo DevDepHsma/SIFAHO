@@ -1,28 +1,7 @@
 $(document).on('turbolinks:load', function () {
   if (!(_PAGE.controller === 'permissions' && (['new', 'edit', 'create', 'update'].includes(_PAGE.action)))) return false;
-  $(".perm-mod-toggle-button").on('change', function (e) {
-    if (!$(e.target).hasClass('editing')) {
-      $(e.target).closest('form#permission_users').addClass('editing')
-    }
-    const parent = $(e.target).closest('.card');
-    const permissions = parent.find('.perm-toggle-button');
-    permissions.each((index, permission) => {
-      $(permission).prop('checked', $(e.target).is(':checked'));
-      $(permission).siblings("input[type='hidden']").val(!$(e.target).is(':checked'));
-    });
-  });
-  $(".perm-toggle-button").on('change', function (e) {
-    if (!$(e.target).hasClass('editing')) {
-      $(e.target).closest('form#permission_users').addClass('editing')
-    }
-    $(e.target).siblings("input[type='hidden']").val(!$(e.target).is(':checked'));
-    // mark "todos" checkbox as checked if all children are checked
-    const parentCheckbox = $(e.target).closest('.card').find('input[type=checkbox].perm-mod-toggle-button').first();
-    const checkboxes = $(e.target).closest('.collapse').find('input[type=checkbox].perm-toggle-button');
-    const checkBoxValueArr = checkboxes.toArray().map(element => $(element).is(':checked'));
-    const anyUnchecked = checkBoxValueArr.some(element => element == false);
-    parentCheckbox.prop('checked', !anyUnchecked);
-  });
+  
+
 
   $('#remote_form_sector_selector').on('changed.bs.select', function (e) {
     toggleLoading();
@@ -60,6 +39,31 @@ $(document).on('turbolinks:before-visit', function (event) {
   }
   return;
 });
+
+function permissionModChange(e){
+  if (!$(e.target).hasClass('editing')) {
+    $(e.target).closest('form#permission_users').addClass('editing')
+  }
+  const parent = $(e.target).closest('.card');
+  const permissions = parent.find('.perm-toggle-button');
+  permissions.each((index, permission) => {
+    $(permission).prop('checked', $(e.target).is(':checked'));
+    $(permission).siblings("input[type='hidden']").val(!$(e.target).is(':checked'));
+  });
+}
+
+function permissionChange(e){
+  if (!$(e.target).hasClass('editing')) {
+    $(e.target).closest('form#permission_users').addClass('editing')
+  }
+  $(e.target).siblings("input[type='hidden']").val(!$(e.target).is(':checked'));
+  // mark "todos" checkbox as checked if all children are checked
+  const parentCheckbox = $(e.target).closest('.card').find('input[type=checkbox].perm-mod-toggle-button').first();
+  const checkboxes = $(e.target).closest('.collapse').find('input[type=checkbox].perm-toggle-button');
+  const checkBoxValueArr = checkboxes.toArray().map(element => $(element).is(':checked'));
+  const anyUnchecked = checkBoxValueArr.some(element => element == false);
+  parentCheckbox.prop('checked', !anyUnchecked);
+}
 
 function searchModule(e) {
   const regexp = new RegExp(e.target.value, 'i');
