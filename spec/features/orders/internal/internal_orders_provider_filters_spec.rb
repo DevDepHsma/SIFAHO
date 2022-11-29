@@ -6,11 +6,11 @@ RSpec.feature 'InternalOrdersProviderFiltersSpec.rbs', type: :feature do
     @read_internal_order_provider = permission_module.permissions.find_by(name: 'read_internal_order_provider')
     @update_internal_order_provider = permission_module.permissions.find_by(name: 'update_internal_order_provider')
     @destroy_internal_order_provider = permission_module.permissions.find_by(name: 'destroy_internal_order_provider')
-    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector,
+    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector,
                           permission: @read_internal_order_provider)
-    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector,
+    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector,
                           permission: @destroy_internal_order_provider)
-    # PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @destroy_internal_order_applicant)
+    # PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @destroy_internal_order_applicant)
   end
 
   background do
@@ -35,7 +35,7 @@ RSpec.feature 'InternalOrdersProviderFiltersSpec.rbs', type: :feature do
       end
 
       it 'by code' do
-        internal_orders = InternalOrder.by_provider(@farm_applicant.sector_id).where(provider_sector_id: @farm_applicant).sample(5)
+        internal_orders = InternalOrder.by_provider(@farm_applicant.active_sector.id).where(provider_sector_id: @farm_applicant).sample(5)
         internal_orders.each do |internal_order|
           within '#internal-filter' do
             fill_in 'filter[code]', with: internal_order.remit_code
@@ -54,7 +54,7 @@ RSpec.feature 'InternalOrdersProviderFiltersSpec.rbs', type: :feature do
       end
 
       it 'by applicant' do
-        internal_orders = InternalOrder.by_provider(@farm_applicant.sector_id).where(provider_sector_id: @farm_applicant).sample(5)
+        internal_orders = InternalOrder.by_provider(@farm_applicant.active_sector.id).where(provider_sector_id: @farm_applicant).sample(5)
         internal_orders.each do |internal_order|
           within '#internal-filter' do
             fill_in 'filter[search_applicant]', with: internal_order.applicant_sector.name
@@ -72,7 +72,7 @@ RSpec.feature 'InternalOrdersProviderFiltersSpec.rbs', type: :feature do
         end
       end
       it 'by order_type ' do
-        internal_orders = InternalOrder.by_provider(@farm_applicant.sector_id).where(provider_sector_id: @farm_applicant).sample(5)
+        internal_orders = InternalOrder.by_provider(@farm_applicant.active_sector.id).where(provider_sector_id: @farm_applicant).sample(5)
         internal_orders.each do |internal_order|
           within '#internal-filter' do
             page.select internal_order.order_type.capitalize, from: 'filter[with_order_type]'
@@ -90,7 +90,7 @@ RSpec.feature 'InternalOrdersProviderFiltersSpec.rbs', type: :feature do
       end
 
       it 'by status' do
-        internal_orders = InternalOrder.by_provider(@farm_applicant.sector_id).where(provider_sector_id: @farm_applicant).sample(5)
+        internal_orders = InternalOrder.by_provider(@farm_applicant.active_sector.id).where(provider_sector_id: @farm_applicant).sample(5)
         internal_orders.each do |internal_order|
           within '#internal-filter' do
             page.select internal_order.status.capitalize.gsub('_', ' '), from: 'filter[with_status]'
@@ -111,7 +111,7 @@ RSpec.feature 'InternalOrdersProviderFiltersSpec.rbs', type: :feature do
 
     describe 'pagination' do
       before(:each) do
-        internal_orders = InternalOrder.by_provider(@farm_applicant.sector_id).where(provider_sector_id: @farm_applicant)
+        internal_orders = InternalOrder.by_provider(@farm_applicant.active_sector.id).where(provider_sector_id: @farm_applicant)
         @last_page = (internal_orders.all.count / 15.to_f).ceil
       end
 
@@ -162,7 +162,7 @@ RSpec.feature 'InternalOrdersProviderFiltersSpec.rbs', type: :feature do
       end
 
       it 'by code' do
-        internal_orders = InternalOrder.by_provider(@farm_applicant.sector_id).where(provider_sector_id: @farm_applicant)
+        internal_orders = InternalOrder.by_provider(@farm_applicant.active_sector.id).where(provider_sector_id: @farm_applicant)
         sorted_by_code_asc = internal_orders.order(remit_code: :asc).first
         sorted_by_code_desc = internal_orders.order(remit_code: :desc).first
 
@@ -186,9 +186,9 @@ RSpec.feature 'InternalOrdersProviderFiltersSpec.rbs', type: :feature do
       end
 
       it 'by applicant' do
-        sorted_by_applicant_asc = InternalOrder.select('sectors.name as name').by_provider(@farm_applicant.sector_id).where(provider_sector_id: @farm_applicant).order('sectors.name asc').first
+        sorted_by_applicant_asc = InternalOrder.select('sectors.name as name').by_provider(@farm_applicant.active_sector.id).where(provider_sector_id: @farm_applicant).order('sectors.name asc').first
 
-        sorted_by_applicant_desc = InternalOrder.select('sectors.name as name').by_provider(@farm_applicant.sector_id).where(provider_sector_id: @farm_applicant).order('sectors.name desc').first
+        sorted_by_applicant_desc = InternalOrder.select('sectors.name as name').by_provider(@farm_applicant.active_sector.id).where(provider_sector_id: @farm_applicant).order('sectors.name desc').first
 
         within '#table_results' do
           click_button 'Solicitante'
@@ -212,7 +212,7 @@ RSpec.feature 'InternalOrdersProviderFiltersSpec.rbs', type: :feature do
 
     describe 'Destroy permission' do
       before(:each) do
-        internal_order = InternalOrder.by_provider(@farm_applicant.sector_id).where(provider_sector_id: @farm_applicant,
+        internal_order = InternalOrder.by_provider(@farm_applicant.active_sector.id).where(provider_sector_id: @farm_applicant,
                                                                                     status: 'proveedor_auditoria', order_type: 'provision').sample
         within '#internal-filter' do
           fill_in 'filter[code]', with: internal_order.remit_code

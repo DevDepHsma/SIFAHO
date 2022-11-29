@@ -9,17 +9,17 @@ RSpec.feature 'Orders::Internal::Providers', type: :feature do
     @send_internal_order_provider = perimssion_module.permissions.find_by(name: 'send_internal_order_provider')
     @return_internal_order_provider = perimssion_module.permissions.find_by(name: 'return_internal_order_provider')
     @nullify_internal_order_provider = perimssion_module.permissions.find_by(name: 'nullify_internal_order_provider')
-    PermissionUser.create(user: @depo_provider, sector: @farm_applicant.active_sector,
+    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector,
                           permission: @create_internal_order_provider)
-    PermissionUser.create(user: @depo_provider, sector: @farm_applicant.active_sector,
+    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector,
                           permission: @read_internal_order_provider)
-    PermissionUser.create(user: @depo_provider, sector: @farm_applicant.active_sector,
+    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector,
                           permission: @update_internal_order_provider)
-    PermissionUser.create(user: @depo_provider, sector: @farm_applicant.active_sector,
+    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector,
                           permission: @send_internal_order_provider)
-    PermissionUser.create(user: @depo_provider, sector: @farm_applicant.active_sector,
+    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector,
                           permission: @return_internal_order_provider)
-    PermissionUser.create(user: @depo_provider, sector: @farm_applicant.active_sector,
+    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector,
                           permission: @nullify_internal_order_provider)
   end
 
@@ -41,7 +41,7 @@ RSpec.feature 'Orders::Internal::Providers', type: :feature do
       it 'show' do
         click_link 'Entregas'
         order = InternalOrder.where(status: 'proveedor_auditoria', order_type: 'solicitud',
-                                    provider_sector_id: @farm_applicant.active_sector_id).first
+                                    provider_sector_id: @farm_applicant.active_sector.id).first
         visit "/sectores/pedidos/despachos/#{order.id}"
         expect(page).to have_content('Solicitante')
         expect(page).to have_content('Proveedor')

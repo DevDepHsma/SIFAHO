@@ -6,6 +6,7 @@ module ReportServices
     end
 
     def generate_pdf
+      requested_date=@internal_order.requested_date.present? ? @internal_order.requested_date.strftime('%d/%m/%Y') : ''
       report = Thinreports::Report.new
 
       report.use_layout File.join(Rails.root, 'app', 'reports', 'internal_order', 'other_page.tlf'), default: true
@@ -17,7 +18,7 @@ module ReportServices
       # Agregamos el encabezado
       report.page[:title] = "Reporte de #{@internal_order.order_type.humanize.underscore}"
       report.page[:remit_code] = @internal_order.remit_code
-      report.page[:requested_date] = @internal_order.requested_date.strftime('%d/%m/%YY')
+      report.page[:requested_date] = requested_date
       report.page[:applicant_sector] = @internal_order.applicant_sector.name
       report.page[:provider_sector] = @internal_order.provider_sector.name
       report.page[:observations] = @internal_order.observation
@@ -27,11 +28,9 @@ module ReportServices
       # Se van agregando los productos
       @internal_order.order_products.joins(:product).order("name").each do |eop|
         # Luego de que la primer pagina ya halla sido rellenada, agregamos la pagina defualt (no tiene header)
-
         if report.page_count == 1 && report.list.overflow?
           report.start_new_page
         end
-
         report.list do |list|
           if eop.order_prod_lot_stocks.present?
             eop.order_prod_lot_stocks.each_with_index do |opls, index|
@@ -74,8 +73,8 @@ module ReportServices
       # A cada pagina le agregamos el pie de pagina
       report.pages.each do |page|
         page[:page_count] = report.page_count
-        page[:sector] = @user.sector_name
-        page[:establishment] = @user.establishment_name
+        page[:sector] = @user.active_sector.name
+        page[:establishment] = @user.active_sector.establishment.name
       end
 
       report.generate

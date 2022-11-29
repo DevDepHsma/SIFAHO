@@ -13,7 +13,7 @@ class Sectors::InternalOrders::InternalOrderController < ApplicationController
       format.html
       format.js
       format.pdf do
-        pdf = ReportServices::InternalOrderReportService.new(current_user, @internal_order).generate_pdf
+        pdf = ReportServices::InternalOrderReportService.new(@current_user, @internal_order).generate_pdf
         send_data pdf, filename: "Pedido_#{@internal_order.remit_code}.pdf", type: 'application/pdf', disposition: 'inline'
       end
     end

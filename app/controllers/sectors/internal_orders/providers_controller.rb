@@ -10,7 +10,7 @@ class Sectors::InternalOrders::ProvidersController < Sectors::InternalOrders::In
   def index
     policy(:internal_order_provider).index?
     params[:invocator] = 'providers'
-    @internal_orders = InternalOrder.by_provider(@current_user.sector).filter_by_params(params[:filter])
+    @internal_orders = InternalOrder.by_provider(@current_user.active_sector).filter_by_params(params[:filter])
                                     .paginate(page: params[:page], per_page: params[:per_page] || 15)
   end
 

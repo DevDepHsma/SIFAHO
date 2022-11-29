@@ -14,7 +14,8 @@ class SectorsController < ApplicationController
       persistence_id: false,
       available_filters: [
         :search_name
-      ]) or return
+      ]
+    ) or return
     @sectors = @filterrific.find.page(params[:page]).per_page(15)
     respond_to do |format|
       if policy(:sector).index?
@@ -110,7 +111,7 @@ class SectorsController < ApplicationController
 
   def with_establishment_id
     @sectors = Sector.order(:name).with_establishment_id(params[:term])
-    render json: @sectors.map{ |sector| { label: sector.name, id: sector.id } }
+    render json: @sectors.map { |sector| { label: sector.name, id: sector.id } }
   end
 
   private

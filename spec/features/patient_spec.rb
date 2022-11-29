@@ -17,9 +17,9 @@ RSpec.feature 'Patients', type: :feature do
     @read_patients = patient_module.permissions.find_by(name: 'read_patients')
     @create_patients = patient_module.permissions.find_by(name: 'create_patients')
     @update_patients = patient_module.permissions.find_by(name: 'update_patients')
-    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @read_patients)
-    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @create_patients)
-    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.sector, permission: @update_patients)
+    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @read_patients)
+    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @create_patients)
+    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @update_patients)
   end
 
   background do

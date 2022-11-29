@@ -37,7 +37,7 @@ RSpec.feature 'Orders::Internal::Applicants', type: :feature do
 
       it 'show' do
         click_link 'Recibos'
-        order = InternalOrder.where(status: 'solicitud_auditoria', applicant_sector_id: @farm_applicant.active_sector_id).first
+        order = InternalOrder.where(status: 'solicitud_auditoria', applicant_sector_id: @farm_applicant.active_sector.id).first
         visit "/sectores/pedidos/recibos/#{order.id}"
         expect(page).to have_content('Solicitante')
         expect(page).to have_content('Proveedor')

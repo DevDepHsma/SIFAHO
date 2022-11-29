@@ -1,15 +1,15 @@
 require 'rails_helper'
 
-RSpec.feature "Orders::Internal::Receives", type: :feature do
+RSpec.feature 'Orders::Internal::Receives', type: :feature do
   before(:all) do
     permission_module_applicant = PermissionModule.includes(:permissions).find_by(name: 'Ordenes Internas Solicitud')
-    permission_module_applicant.permissions.map { |permission|
+    permission_module_applicant.permissions.map do |permission|
       PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: permission)
-    }
+    end
     permission_module_provider = PermissionModule.includes(:permissions).find_by(name: 'Ordenes Internas Proveedor')
-    permission_module_provider.permissions.map { |permission|
+    permission_module_provider.permissions.map do |permission|
       PermissionUser.create(user: @depo_applicant, sector: @depo_applicant.active_sector, permission: permission)
-    }
+    end
   end
 
   background do
@@ -46,7 +46,7 @@ RSpec.feature "Orders::Internal::Receives", type: :feature do
         expect(page).to have_selector('tr')
         expect(page).to have_selector('.btn-edit-product')
         expect(page).to have_selector('.btn-nullify')
-        page.execute_script %Q{$('button.btn-nullify')[0].click()}
+        page.execute_script %{$('button.btn-nullify')[0].click()}
         sleep 1
       end
       expect(page).to have_content('Confirmar anulación de orden')
@@ -55,7 +55,7 @@ RSpec.feature "Orders::Internal::Receives", type: :feature do
       click_link 'Cancelar'
       sleep 1
       within '#internal_orders' do
-        page.execute_script %Q{$('a.btn-edit-product')[0].click()}
+        page.execute_script %{$('a.btn-edit-product')[0].click()}
       end
       sleep 1
       fill_products_deliver_quantity
@@ -78,10 +78,12 @@ RSpec.feature "Orders::Internal::Receives", type: :feature do
         click_link 'Sectores'
       end
       visit '/sectores/pedidos/recibos'
+      order_receive = InternalOrder.where(status: 'provision_en_camino',
+                                          applicant_sector_id: @farm_applicant.active_sector.id.to_s).first
       within '#internal_orders' do
         expect(page).to have_selector('tr')
         expect(page).to have_selector('.btn-detail')
-        page.execute_script %Q{$('a.btn-detail')[0].click()}
+        visit "/sectores/pedidos/recibos/#{order_receive.id}"
       end
       sleep 1
       expect(page.has_button?('Recibir')).to be true
