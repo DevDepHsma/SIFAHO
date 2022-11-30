@@ -8,15 +8,19 @@ class SectorsController < ApplicationController
       flash[:error] = 'Usted no está autorizado para realizar esta acción.'
       redirect_back(fallback_location: root_path)
     end
-    @filterrific = initialize_filterrific(
-      @current_user.has_permission?(:read_other_establishments) ? Sector : Sector.where(establishment_id: @current_user.active_sector.establishment.id),
-      params[:filterrific],
-      persistence_id: false,
-      available_filters: [
-        :search_name
-      ]
-    ) or return
-    @sectors = @filterrific.find.page(params[:page]).per_page(15)
+    # @filterrific = initialize_filterrific(
+    #   @current_user.has_permission?(:read_other_establishments) ? Sector : Sector.where(establishment_id: @current_user.active_sector.establishment.id),
+    #   params[:filterrific],
+    #   persistence_id: false,
+    #   available_filters: [
+    #     :search_name
+    #   ]
+    # ) or return
+    # @sectors = @filterrific.find.page(params[:page]).per_page(15)
+
+    @sectors = Sector.filter_by_params(params[:filter], @current_user).paginate(page: params[:page],
+                                                                                per_page: params[:per_page] || 15)
+
     respond_to do |format|
       if policy(:sector).index?
         format.html

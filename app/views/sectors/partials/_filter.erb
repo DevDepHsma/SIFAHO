@@ -1,0 +1,40 @@
+<%= simple_form_for sectors_path, remote: true, html: { method: 'GET', class: 'custom-filters-v1', id: "sectors-filter" } do |f| %>
+  <div class="filter-form-row">
+    <div class="filter-form-col">
+      <div class="form-group">
+        <input class="form-control" 
+               autocomplete="off" 
+               type="text" 
+               name="filter[name]" 
+               id="filter_name" 
+               placeholder="Nombre"
+               value="<%= get_value_from_filter(:name) %>">
+        <label>Nombre</label>
+      </div>
+    </div>
+     <% if @current_user.has_permission?(:read_other_establishments)%>
+     <div class="filter-form-col">
+      <div class="form-group">
+        <input class="form-control" 
+               autocomplete="off" 
+               type="text" 
+               name="filter[establishment_name]" 
+               id="filter_establishment_name" 
+               placeholder="Establecimiento"
+               value="<%= get_value_from_filter(:establishment_name) %>">
+        <label>Establecimiento</label>
+      </div>
+    </div>
+    <% end %>
+    <input type="hidden" name="filter[sort]" value="<%= get_value_from_filter(:sort) %>">
+    <input type="hidden" name="per_page" value="<%= params[:per_page] || 15 %>">
+    <div class="filter-form-btn-group">
+      <button class="btn btn-primary" type="submit" form="<%= "sectors-filter" %>">
+        Buscar
+      </button>
+      <button class="btn btn-danger btn-clean-filters" type="button" form="<%= "sectors-filter" %>">
+        <%= fa_icon 'times' %>
+      </button>
+    </div>
+  </div>
+<% end %>

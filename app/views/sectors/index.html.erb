@@ -1,25 +1,17 @@
 <%= render 'sectors/internal_orders/header' %>
 <div class="card fixed-custom-card">
   <div class="card-header">
-    <%= form_for_filterrific @filterrific do |f| %>
-      <div class="d-flex align-items-center">
-        <%= fa_icon "filter" %>
-        <%= f.text_field(
-                :search_name,
-                class: 'filterrific-periodically-observed form-control input-sm ml-2 w-25',
-                placeholder: 'Nombre'
-                  ) %>
-        <%= %>
-        <%= render_filterrific_spinner %>
-      </div>
-    <% end %>
+     <%= render(
+          partial: 'sectors/partials/filter',
+          locals: { sectors: @sectors }
+        ) %>
   </div>
   <div class="card-body fixed-panel-index">
-    <% if @sectors.present? %>
-      <div id="filterrific_results">
+   <% if @sectors.present? %>
+      <div id="table_results">
         <%= render(
-          partial: 'list',
-          locals: { sectors: @sectors }
+          partial: 'sectors/partials/list',
+          locals: { products: @sectors }
         ) %>
       </div>
     <% else %>
@@ -29,9 +21,11 @@
       ) %>
     <% end %>
   </div>
-</div>
-<% content_for :modal do %>
-  <div id="modals">
-    <%= render(partial: 'shared/modals/delete_confirmation') %>
+  <div class="card-footer" id="paginate_footer">
+    <%= render(
+          partial: 'shared/paginate_index',
+          locals: { model: @products, form_id: 'sectors-filter' }
+        ) %>
   </div>
-<% end %>
+</div>
+

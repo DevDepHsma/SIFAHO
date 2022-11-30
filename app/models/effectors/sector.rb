@@ -1,6 +1,6 @@
 class Sector < ApplicationRecord
   include PgSearch::Model
-
+  include QuerySort
   # Relaciones
   belongs_to :establishment, counter_cache: true
   belongs_to :establishment, counter_cache: :sectors_count
@@ -28,39 +28,44 @@ class Sector < ApplicationRecord
 
   # SCOPES #--------------------------------------------------------------------
   pg_search_scope :search_name,
-  against: :name,
-  :using => {
-    :tsearch => {:prefix => true} # Buscar coincidencia desde las primeras letras.
-  },
-  :ignoring => :accents # Ignorar tildes.
+                  against: :name,
+                  using: {
+                    tsearch: { prefix: true } # Buscar coincidencia desde las primeras letras.
+                  },
+                  ignoring: :accents # Ignorar tildes.
 
-  filterrific(
-    default_filter_params: { sorted_by: 'name_asc' },
-    available_filters: [
-      :search_name,
-      :sorted_by,
-    ]
-  )
+  scope :filter_by_params, lambda { |filter_params, user|
+    query = self.select(:id, :name, :establishment_id, 'establishments.name as establishment_name').joins(:establishment)
+    query = query.like_name(filter_params[:name]) if filter_params.present? && filter_params[:name].present?
+
+    if filter_params.present? && filter_params[:establishment_name].present? && user.has_permission?(:read_other_establishments)
+      query = query.like_establishment_name(filter_params[:establishment_name])
+    end
+
+    unless user.has_permission?(:read_other_establishments)
+      query = query.where(establishment_id: user.active_sector.establishment.id)
+    end
+
+    query = if filter_params.present? && filter_params['sort'].present?
+              query.sorted_by(filter_params['sort'])
+            else
+              query.reorder(name: :desc)
+            end
+
+    return query
+  }
+
+  scope :like_name, lambda { |sector_name|
+                      where('unaccent(lower(sectors.name))  like ?', "%#{sector_name.downcase.removeaccents}%")
+                    }
+
+  scope :like_establishment_name, lambda { |establishment_name|
+    where('unaccent(lower(establishments.name))  like ?', "%#{establishment_name.downcase.removeaccents}%")
+  }
 
   def self.options_for_select
     order('LOWER(name)').map { |e| [e.name, e.id] }
   end
-
-  scope :sorted_by, lambda { |sort_option|
-    # extract the sort direction from the param value.
-    direction = (sort_option =~ /desc$/) ? 'desc' : 'asc'
-    case sort_option.to_s
-    when /^created_at_/s
-      # Ordenamiento por fecha de creación en la BD
-      order("sectors.created_at #{ direction }")
-    when /^name_/s
-      # Ordenamiento por fecha de creación en la BD
-      order("sectors.name #{ direction }")
-    else
-      # Si no existe la opcion de ordenamiento se levanta la excepcion
-      raise(ArgumentError, "Invalid sort option: #{ sort_option.inspect }")
-    end
-  }
 
   scope :with_establishment_id, lambda { |an_id|
     where(establishment_id: [*an_id])
@@ -69,48 +74,48 @@ class Sector < ApplicationRecord
   scope :provide_hospitalization, -> { where(provide_hospitalization: true) }
 
   def establishment_name
-    self.establishment.name
+    establishment.name
   end
 
   def sector_and_establishment
-    self.name+' de '+self.establishment.name
+    name + ' de ' + establishment.name
   end
 
   def sum_delivered_external_order_quantities_to(a_supply, since_date, to_date)
-    self.provider_ordering_quantity_supplies.where(supply: a_supply).entregado
-      .dispensed_since(since_date)
-      .dispensed_to(to_date)
-      .sum(:delivered_quantity)
+    provider_ordering_quantity_supplies.where(supply: a_supply).entregado
+                                       .dispensed_since(since_date)
+                                       .dispensed_to(to_date)
+                                       .sum(:delivered_quantity)
   end
 
   def sum_delivered_prescription_quantities_to(a_supply, since_date, to_date)
-    self.provider_prescription_quantity_supplies.where(supply: a_supply).entregado
-      .dispensed_since(since_date)
-      .dispensed_to(to_date)
-      .sum(:delivered_quantity)
+    provider_prescription_quantity_supplies.where(supply: a_supply).entregado
+                                           .dispensed_since(since_date)
+                                           .dispensed_to(to_date)
+                                           .sum(:delivered_quantity)
   end
 
   def sum_delivered_internal_quantities_to(a_supply, since_date, to_date)
-      self.provider_internal_quantity_supplies.where(supply: a_supply).entregado
-        .dispensed_since(since_date)
-        .dispensed_to(to_date)
-        .sum(:delivered_quantity)
+    provider_internal_quantity_supplies.where(supply: a_supply).entregado
+                                       .dispensed_since(since_date)
+                                       .dispensed_to(to_date)
+                                       .sum(:delivered_quantity)
   end
 
   def delivered_external_order_quantities_by_establishment_to(a_supply)
-    self.provider_ordering_quantity_supplies
+    provider_ordering_quantity_supplies
       .where(supply: a_supply)
       .entregado
-      .group(:quantifiable_id, :quantifiable_type).order("sum_amount DESC")
-      .select(:quantifiable_id, :quantifiable_type, "SUM(delivered_quantity) as sum_amount")
+      .group(:quantifiable_id, :quantifiable_type).order('sum_amount DESC')
+      .select(:quantifiable_id, :quantifiable_type, 'SUM(delivered_quantity) as sum_amount')
   end
 
   def stock_to(product_id)
-    stock = self.stocks
-    .where(product_id: product_id)
-    .select(:quantity)
-    .first
+    stock = stocks
+            .where(product_id: product_id)
+            .select(:quantity)
+            .first
 
-    return stock.present? ? stock.quantity : 0    
+    stock.present? ? stock.quantity : 0
   end
 end

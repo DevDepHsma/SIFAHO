@@ -1,7 +1,15 @@
-<% js = escape_javascript(
-  render(partial: 'sectors/list', locals: { sectors: @sectors })
+<% list = escape_javascript(
+  render(partial: 'sectors/partials/list', locals: { sectors: @sectors })
 ) %>
-
-$("#filterrific_results").html("<%= js %>");
-
-destroyItem();
+<% paginate = escape_javascript( 
+  render( partial: 'shared/paginate_index',
+          locals: { model: @sectors, form_id: 'sectors-filter' }
+        )
+) %>
+$("#table_results").html("<%= list %>");
+$("#paginate_footer").html("<%= paginate %>");
+setEventDestroyItem();
+$("a.page-link").on('click', (e) => {
+$("#loader-container").css({'display': 'flex'});
+})
+$("#loader-container").css({'display': 'none'});

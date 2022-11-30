@@ -1,7 +1,17 @@
 <tr id="sectors_<%= sector.id %>">
   <div class="js-fade fade-in is-paused">
-    <td><%= sector.name %></td>
-    <td><%= sector.establishment.name %></td>
+    <td>
+      <%= highlight(sector.name, 
+                  get_value_from_filter(:name), 
+                  highlighter: '<mark class="highlight-1">\1</mark>'
+                  ) %>
+    </td>
+    <td>
+      <%= highlight(sector.establishment.name, 
+                  get_value_from_filter(:establishment_name), 
+                  highlighter: '<mark class="highlight-1">\1</mark>'
+                  ) %>
+    </td>
     <td class="text-left actions-col">
       <%= render(
         partial: 'shared/action_buttons',
