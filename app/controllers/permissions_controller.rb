@@ -16,14 +16,10 @@ class PermissionsController < ApplicationController
   # Buid from role: build none persisted object.
   # Should consider the active sector
   def build_permission_from_role
-    user_roles_ids_from_active_sector = @user.build_role(permission_params[:user_roles_attributes]).map do |us|
-      us['role_id']
+    @enable_permissions = PermissionRole.where(role_id: params[:role_id]).pluck(:permission_id)
+    respond_to do |format|
+      format.json { render json: @enable_permissions}
     end
-    @active_sector = Sector.find(params[:active_sector_id])
-    @user.build_permissions_from_sector(@active_sector)
-    @roles = Role.all.order(name: :asc)
-    @permission_modules = PermissionModule.eager_load(:permissions).all
-    @enable_permissions = PermissionRole.where(role_id: user_roles_ids_from_active_sector).pluck(:permission_id)
   end
 
   def permission_change_sector
@@ -62,7 +58,9 @@ class PermissionsController < ApplicationController
     rescue StandardError => e
       flash.now[:error] = e.message
     ensure
+      @permission_modules = PermissionModule.eager_load(:permissions).all
       @active_sector = @user.active_sector
+      @enable_permissions = @user.permission_users.where(sector: @active_sector).pluck(:permission_id)
       @roles = Role.all.order(name: :asc)
       format.js
     end

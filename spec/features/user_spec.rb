@@ -85,13 +85,13 @@ RSpec.feature 'Users', type: :feature, js: true do
         expect(page).to have_button('Guardar')
       end
 
-      it 'Edit permissions apply permission request' do
+      it 'Edit applies permission request' do
         visit "/usuarios/#{@user_permission_requested.id}/permisos"
 
         click_link 'Aplicar'
         sleep 1
         within '#location_select_container' do
-          expect(page).to have_link("#{@permission_request.sector.name} - #{@permission_request.establishment.name}")
+          expect(page).to have_button("#{@permission_request.sector.name} - #{@permission_request.establishment.name}")
           expect(page).to have_content('Modulos')
           Role.all.each do |role|
             expect(page).to have_field("role-#{role.id}", type: 'checkbox', visible: false)
@@ -182,7 +182,7 @@ RSpec.feature 'Users', type: :feature, js: true do
         find('a', text: "#{@depo_est_1.name} - #{@depo_est_1.establishment.name}").click
         sleep 1
         within '#location_select_container' do
-          expect(page).to have_selector('a', text: "#{@depo_est_1.name} - #{@depo_est_1.establishment.name}")
+          expect(page).to have_button("#{@depo_est_1.name} - #{@depo_est_1.establishment.name}")
         end
       end
 
@@ -201,13 +201,12 @@ RSpec.feature 'Users', type: :feature, js: true do
         expect(page).to have_content('La cantidad de sectores seleccionados supera el máximo de 3')
       end
 
-      it 'has active an sector' do
+      it 'has an active sector' do
         user = @user_build_from_pr.sample
         active_sector = user.user_sectors.active.first.sector
         visit "/usuarios/#{user.id}/permisos"
         within '#location_select_container' do
-          expect(page).to have_selector('a', class: 'active',
-                                             text: "#{active_sector.name} - #{active_sector.establishment.name}")
+          expect(page).to have_button("#{active_sector.name} - #{active_sector.establishment.name}", class: 'active')
         end
       end
 

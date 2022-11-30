@@ -40,7 +40,7 @@
                id="role-<%=role.id%>" 
                required 
                data-url="<%= build_permission_from_role_users_admin_path %>"
-               data-target="permission[user_roles_attributes][<%= role.id %>][_destroy]"
+               data-target="permission[user_roles_attributes][<%= role.id %>]"
                <%= 'checked' if @user.user_roles.any?{|us| us.role_id == role.id && us.sector_id == @active_sector.id }%>>
         <label class="custom-control-label" for="role-<%=role.id%>"><%= role.name %></label>
       </div>

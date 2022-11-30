@@ -78,16 +78,28 @@ function searchModule(e) {
 
 function toggleRole(e) {
   toggleLoading();
-  if (!$(e.target).hasClass('editing')) {
-    $(e.target).closest('form#permission_users').addClass('editing')
-  }
   const url_to_build_permissions = $(e.target).attr('data-url');
   const target = $(e.target).attr('data-target');
-  $('input[name="' + target + '"]').val($(e.target).is(':checked') ? 0 : 1)
+  const role_id = $('input[name="' + target + '[role_id]"]').val()
+  $('input[name="' + target + '[_destroy]"]').val($(e.target).is(':checked') ? 0 : 1)
   $.ajax({
     url: url_to_build_permissions,
-    method: 'POST',
-    data: $(e.target).closest('form').serialize()
+    method: 'GET',
+    dataType: 'JSON',
+    data: {role_id}
+  }).done( function(response){
+    elements = response.map(function(e){ return $("input#perm-check-"+e); });
+    
+    elements.forEach(function (element) {
+      $(element).prop('checked', $(e.target).is(':checked'));
+      $(element).siblings("input[type='hidden']").val(!$(e.target).is(':checked'));
+      const parentCheckbox = $(element).closest('.card').find('input[type=checkbox].perm-mod-toggle-button').first();
+      const checkboxes = $(element).closest('.collapse').find('input[type=checkbox].perm-toggle-button');
+      const checkBoxValueArr = checkboxes.toArray().map(children => $(children).is(':checked'));
+      const anyUnchecked = checkBoxValueArr.some(element => element == false);
+      parentCheckbox.prop('checked', !anyUnchecked);
+    });
+    toggleLoading();
   });
 }
 

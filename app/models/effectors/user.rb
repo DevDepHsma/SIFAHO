@@ -228,7 +228,7 @@ class User < ApplicationRecord
   private
 
   def validate_max_sectors
-    max_sectors = 15
+    max_sectors = Rails.env.test? ? 3 : 15
     errors.add(:max_sectors, "supera el máximo de #{max_sectors}.") if user_sectors.size > max_sectors
   end
 end

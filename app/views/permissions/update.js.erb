@@ -14,10 +14,15 @@
   render(partial: 'permissions/partials/location_select')
 ) %>
 
+<% permissions_list = escape_javascript(
+  render(partial: 'permissions/partials/list')
+) %>
+
 $("#sidebar-wrapper").replaceWith("<%= sidebar %>");
 $("#modules-links").html("<%= header %>");
 $("#edit-title").html("<%= edit_title %>");
 $("#location_select_container").html("<%= lotcation_select %>");
+$("#permissions_list").html("<%= permissions_list %>");
 
 
   $("#open-sectors-select-modal").on('click', (e) => {
