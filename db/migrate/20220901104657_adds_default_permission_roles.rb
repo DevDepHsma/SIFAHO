@@ -35,8 +35,7 @@ class AddsDefaultPermissionRoles < ActiveRecord::Migration[5.2]
     end
 
     # Stock | Sector | Establishment | Internal Orders
-    Permission.where(name: %w[create_patients
-                              read_stocks
+    Permission.where(name: %w[read_stocks
                               create_archive_stocks
                               read_archive_stocks
                               return_archive_stocks
@@ -62,8 +61,7 @@ class AddsDefaultPermissionRoles < ActiveRecord::Migration[5.2]
     end
 
     # Stock | Sector | Establishment | External Orders
-    Permission.where(name: %w[create_patients
-                              read_stocks
+    Permission.where(name: %w[read_stocks
                               create_archive_stocks
                               read_archive_stocks
                               return_archive_stocks
@@ -76,6 +74,9 @@ class AddsDefaultPermissionRoles < ActiveRecord::Migration[5.2]
                               send_external_order_applicant
                               receive_external_order_applicant
                               return_external_order_applicant
+                              read_external_order_provider
+                              create_external_order_provider
+                              update_external_order_provider
                               destroy_external_order_provider
                               send_external_order_provider
                               nullify_external_order_provider
