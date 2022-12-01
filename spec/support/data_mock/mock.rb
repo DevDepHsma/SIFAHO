@@ -303,8 +303,11 @@ module DataMock
     end
 
     def get_sectors
-      ['Quirófano', 'Informática', 'Consultorios Ginecología', 'Lavadero', 'Cocina', 'Informes', 'Nutrición',
-       'Mantenimiento', 'Prácticas Residencia Medicina General', 'Sala de partos']
+      ['Neonatología', 'Informes', 'Ambulatorio', 'Guardia', 'Hotelería', 'Laguna Miranda', 'Botiquines', 'Lavadero',
+       'ILE-IVE', 'Posta respiratoria', 'El Chenque', 'Depósito Biomédico', 'Guardia de Emergencia',
+       'Corral de Moye y las Toscas', 'Cocina', 'Posta Lanín', 'Depósito', 'Odontologia', 'Cajón del Área',
+       'OSAM', 'Maternidad e infancia', 'UCI Covid', 'Gestión de pacientes', 'Cerro Colorado',
+       'El Overo', 'Prácticas Residencia Medicina General', 'Veterinaria', 'OSDE', 'Remediar', 'UTI']
     end
   end
 end
