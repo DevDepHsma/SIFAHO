@@ -37,7 +37,6 @@ class Sector < ApplicationRecord
   scope :filter_by_params, lambda { |filter_params, user|
     query = self.select(:id, :name, :establishment_id, 'establishments.name as establishment_name').joins(:establishment)
     query = query.like_name(filter_params[:name]) if filter_params.present? && filter_params[:name].present?
-
     if filter_params.present? && filter_params[:establishment_name].present? && user.has_permission?(:read_other_establishments)
       query = query.like_establishment_name(filter_params[:establishment_name])
     end
