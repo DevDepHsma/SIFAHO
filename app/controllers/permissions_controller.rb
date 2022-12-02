@@ -85,7 +85,7 @@ class PermissionsController < ApplicationController
   end
 
   def set_permission_request
-    @permission_request = @user.permission_requests.in_progress.last
+    @permission_request = @user.active_permission_request
   end
 
   def permission_params
