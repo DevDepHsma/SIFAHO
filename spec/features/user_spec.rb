@@ -112,7 +112,7 @@ RSpec.feature 'Users', type: :feature, js: true do
           end
         end
       end
-    end
+    end # describe permission
 
     describe 'Form' do
       it 'Search by module input' do
@@ -166,7 +166,6 @@ RSpec.feature 'Users', type: :feature, js: true do
       it 'shows add sector modal' do
         visit "/usuarios/#{@user_permission_requested.id}/permisos"
         click_button 'Agregar sector'
-        sleep 1
         expect(page).to have_selector('#sector-selection', visible: true)
         expect(page).to have_content('Selección de sectores')
         expect(page).to have_select('remote_form[sector]', visible: false)
@@ -274,28 +273,6 @@ RSpec.feature 'Users', type: :feature, js: true do
         expect(page).to have_content('Permisos asignados correctamente.')
       end
 
-      it 'continue without saving' do
-        visit "/usuarios/#{@user_permission_requested.id}/permisos"
-        used_sectors = @user_permission_requested.sectors.pluck(:id)
-        sectors = Sector.where.not(id: used_sectors).sample(2)
-        click_button 'Agregar sector'
-        sleep 1
-        within '#sector-selection' do
-          find('select#remote_form_sector_selector + button').click
-          find('a', text: "#{sectors[0].name} - #{sectors[0].establishment.name}").click
-        end
-        sleep 1
-        click_button 'Agregar sector'
-        expect(page).to have_content('Cambios sin guardar')
-        expect(page).to have_content('Desea salir igualmente?')
-        click_button 'Continuar de todos modos'
-        sleep 1
-        within '#sector-selection' do
-          find('select#remote_form_sector_selector + button').click
-          find('a', text: "#{sectors[1].name} - #{sectors[1].establishment.name}").click
-        end
-      end
-
       it 'finish permission request without apply' do
         user = User.where(username: get_users_for_permission_request).sample
         visit "/usuarios/#{user.id}/permisos"
@@ -310,6 +287,98 @@ RSpec.feature 'Users', type: :feature, js: true do
         sleep 1
         expect(page).to have_content('Solicitud terminada correctamente.')
       end
-    end
+    end #desribe form
+
+    describe 'on form change' do
+      it 'show unsaved changes modal on try add 2 sectors' do
+        visit "/usuarios/#{@user_permission_requested.id}/permisos"
+        used_sectors = @user_permission_requested.sectors.pluck(:id)
+        sectors = Sector.where.not(id: used_sectors).sample(2)
+        click_button 'Agregar sector'
+        sleep 1
+        within '#sector-selection' do
+          find('select#remote_form_sector_selector + button').click
+          find('a', text: "#{sectors[0].name} - #{sectors[0].establishment.name}").click
+        end
+        sleep 1
+        click_button 'Agregar sector'
+        expect(page).to have_content('Cambios sin guardar')
+        expect(page).to have_content('Desea salir igualmente?')
+        expect(page).to have_button('Continuar edición')
+        expect(page).to have_button('Continuar de todos modos')
+      end
+
+      it 'show unsaved changes modal on set any role' do
+        user = User.active.first
+        visit "/usuarios/#{user.id}/permisos"
+        role = Role.all.sample
+        within '#location_select_container' do
+          page.first('label', text: role.name).click
+        end
+        within '#modules-links' do
+          click_link 'Usuarios'
+        end
+        expect(page).to have_content('Cambios sin guardar')
+        expect(page).to have_content('Desea salir igualmente?')
+        expect(page).to have_button('Continuar edición')
+        expect(page).to have_button('Continuar de todos modos')
+      end
+
+      it 'show unsaved changes modal on set any permission' do
+        user = User.active.first
+        visit "/usuarios/#{user.id}/permisos"
+        permission = Permission.all.sample
+        within "#per_mod_#{permission.permission_module_id}" do
+          page.find('label', exact_text: I18n.t("permissions.name.#{permission.name}")).click
+        end
+        within '#modules-links' do
+          click_link 'Usuarios'
+        end
+        expect(page).to have_content('Cambios sin guardar')
+        expect(page).to have_content('Desea salir igualmente?')
+        expect(page).to have_button('Continuar edición')
+        expect(page).to have_button('Continuar de todos modos')
+      end
+
+      it 'show unsaved changes modal on add sector and try to changes sector' do
+        user = User.active.first
+        visit "/usuarios/#{user.id}/permisos"
+        used_sectors = user.sectors.pluck(:id)
+        sector = Sector.where.not(id: used_sectors).sample
+        click_button 'Agregar sector'
+        sleep 1
+        within '#sector-selection' do
+          find('select#remote_form_sector_selector + button').click
+          find('a', text: "#{sector.name} - #{sector.establishment.name}").click
+        end
+        within '#location_select_container' do
+          click_button user.sectors.first.name.to_s
+        end
+        expect(page).to have_content('Cambios sin guardar')
+        expect(page).to have_content('Desea salir igualmente?')
+        expect(page).to have_button('Continuar edición')
+        expect(page).to have_button('Continuar de todos modos')
+      end
+      
+      it 'continue without save' do
+        visit "/usuarios/#{@user_permission_requested.id}/permisos"
+        used_sectors = @user_permission_requested.sectors.pluck(:id)
+        sectors = Sector.where.not(id: used_sectors).sample(2)
+        click_button 'Agregar sector'
+        sleep 1
+        within '#sector-selection' do
+          find('select#remote_form_sector_selector + button').click
+          find('a', text: "#{sectors[0].name} - #{sectors[0].establishment.name}").click
+        end
+        sleep 1
+        click_button 'Agregar sector'
+        click_button 'Continuar de todos modos'
+        sleep 1
+        within '#sector-selection' do
+          find('select#remote_form_sector_selector + button').click
+          find('a', text: "#{sectors[1].name} - #{sectors[1].establishment.name}").click
+        end
+      end
+    end # describe  on form change
   end
 end

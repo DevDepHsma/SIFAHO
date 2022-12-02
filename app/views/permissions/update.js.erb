@@ -23,19 +23,5 @@ $("#modules-links").html("<%= header %>");
 $("#edit-title").html("<%= edit_title %>");
 $("#location_select_container").html("<%= lotcation_select %>");
 $("#permissions_list").html("<%= permissions_list %>");
-
-
-  $("#open-sectors-select-modal").on('click', (e) => {
-    const modalId = $(e.target).attr('data-target')
-    if ($("#permission_users").hasClass('editing')) {
-      modalConfirm(function(confirm){
-        if(confirm){
-          $(modalId).modal('show');
-        }
-      });
-    }else{      
-      $(modalId).modal('show');
-    }
-  })
-$("#permission_users").removeClass('editing')
-  toggleLoading();
+$_UNSAVED = false;
+toggleLoading();

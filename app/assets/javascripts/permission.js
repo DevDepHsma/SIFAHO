@@ -1,7 +1,5 @@
 $(document).on('turbolinks:load', function () {
   if (!(_PAGE.controller === 'permissions' && (['new', 'edit', 'create', 'update'].includes(_PAGE.action)))) return false;
-  
-
 
   $('#remote_form_sector_selector').on('changed.bs.select', function (e) {
     toggleLoading();
@@ -11,39 +9,17 @@ $(document).on('turbolinks:load', function () {
   $("#permission_users").on('submit', () => {
     toggleLoading();
   });
-
-  $("#open-sectors-select-modal").on('click', (e) => {
-    const modalId = $(e.target).attr('data-target')
-    if ($("#permission_users").hasClass('editing')) {
-      modalConfirm(function (confirm) {
-        if (confirm) {
-          $(modalId).modal('show');
-        }
-      });
-    } else {
-      $(modalId).modal('show');
-    }
-  })
 });
 
-$(document).on('turbolinks:before-visit', function (event) {
-  event.preventDefault();
-  if ($("#permission_users").hasClass('editing')) {
-    modalConfirm(function (confirm) {
-      if (confirm) {
-        window.location = event.originalEvent.data.url;
-      }else return;
-    });
+function addSectorClick(e){
+  if ($_UNSAVED) {
+    modalConfirm($(e.target).attr('data-target'), true);
   } else {
-    window.location = event.originalEvent.data.url;
+    $($(e.target).attr('data-target')).modal('show');
   }
-  return;
-});
+}
 
 function permissionModChange(e){
-  if (!$(e.target).hasClass('editing')) {
-    $(e.target).closest('form#permission_users').addClass('editing')
-  }
   const parent = $(e.target).closest('.card');
   const permissions = parent.find('.perm-toggle-button');
   permissions.each((index, permission) => {
@@ -53,9 +29,6 @@ function permissionModChange(e){
 }
 
 function permissionChange(e){
-  if (!$(e.target).hasClass('editing')) {
-    $(e.target).closest('form#permission_users').addClass('editing')
-  }
   $(e.target).siblings("input[type='hidden']").val(!$(e.target).is(':checked'));
   // mark "todos" checkbox as checked if all children are checked
   const parentCheckbox = $(e.target).closest('.card').find('input[type=checkbox].perm-mod-toggle-button').first();
@@ -104,16 +77,13 @@ function toggleRole(e) {
 }
 
 function changeSector(change_sector_url) {
-  if ($("#permission_users").hasClass('editing')) {
-    modalConfirm(function (confirm) {
-      if (confirm) {
-        toggleLoading();
-        $.ajax({
-          url: change_sector_url,
-          dataType: 'script',
-          method: 'GET',
-        })
-      }
+  if ($_UNSAVED) {
+    modalConfirm(null, false,function () {
+      $.ajax({
+        url: change_sector_url,
+        dataType: 'script',
+        method: 'GET',
+      });
     });
   } else {
     toggleLoading();
@@ -123,7 +93,6 @@ function changeSector(change_sector_url) {
       method: 'GET',
     })
   }
-
 }
 
 
