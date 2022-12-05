@@ -1,9 +1,13 @@
 def patients_populate
-  get_patients.each do |patient|
+  @patients = get_patients.map do |patient|
     create(:patient, dni: patient[0], sex: patient[1], last_name: patient[2], first_name: patient[3],
-                     marital_status: patient[4])
+                     marital_status: patient[4], birthdate: patient[5])
   end
-  @patients = Patient.all
+
+  @patients_without_prescriptions = get_patients_without_prescriptions.map do |patient|
+    create(:patient, dni: patient[0], sex: patient[1], last_name: patient[2], first_name: patient[3],
+                     marital_status: patient[4], birthdate: patient[5])
+  end
 end
 
 def outpatient_prescriptions_populate

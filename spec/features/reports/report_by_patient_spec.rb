@@ -75,7 +75,7 @@ RSpec.feature 'Reports::CreateAndShow', type: :feature do
           PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector,
                                 permission: @report_by_patients)
           visit '/reportes/nuevo'
-          @patients = Patient.all.sample(5)
+          @reports_patients = @patients.sample(5)
           @patient = Patient.first
           @from_date = (DateTime.now - 1.year).strftime('%d/%m/%Y')
           @to_date = DateTime.now.strftime('%d/%m/%Y')
@@ -122,7 +122,7 @@ RSpec.feature 'Reports::CreateAndShow', type: :feature do
                                 permission: @report_by_patients)
           visit '/reportes/nuevo'
           @sample_products = @products.sample(5)
-          @patients = Patient.all.sample(5)
+          @reports_patients = @patients.sample(5)
           @patient = Patient.first
           @from_date = (DateTime.now - 1.year).strftime('%d/%m/%Y')
           @to_date = DateTime.now.strftime('%d/%m/%Y')
@@ -143,7 +143,7 @@ RSpec.feature 'Reports::CreateAndShow', type: :feature do
             end
 
             # Patient
-            @patients.each do |patient|
+            @reports_patients.each do |patient|
               page.find('input#patients-search').click.set(patient.dni)
               within '#patients-collapse' do
                 click_button "#{patient.dni} | #{patient.last_name.upcase} #{patient.first_name.upcase}"
@@ -230,7 +230,7 @@ RSpec.feature 'Reports::CreateAndShow', type: :feature do
 
           it 'keep patients attribute' do
             within '#new_report' do
-              @patients.each do |patient|
+              @reports_patients.each do |patient|
                 page.find('input#patients-search').click.set(patient.dni)
                 within '#patients-collapse' do
                   click_button "#{patient.dni} | #{patient.last_name.upcase} #{patient.first_name.upcase}"
@@ -240,10 +240,10 @@ RSpec.feature 'Reports::CreateAndShow', type: :feature do
             click_button 'Guardar'
             within '#new_report' do
               expect(page).to have_field('report[patients_ids]', type: 'hidden',
-                                                                 with: @patients.pluck(:id).join('_'))
+                                                                 with: @reports_patients.pluck(:id).join('_'))
             end
             within '#selected-patients' do
-              @patients.each do |patient|
+              @reports_patients.each do |patient|
                 expect(page).to have_button("#{patient.dni} | #{patient.last_name.upcase} #{patient.first_name.upcase}")
               end
             end
@@ -266,9 +266,9 @@ RSpec.feature 'Reports::CreateAndShow', type: :feature do
           end
 
           it 'max patients fails' do
-            @patients = Patient.all.sample(12)
+            @reports_patients = @patients.sample(12)
             within '#new_report' do
-              @patients.each do |patient|
+              @reports_patients.each do |patient|
                 page.find('input#patients-search').click.set(patient.dni)
                 within '#patients-collapse' do
                   click_button "#{patient.dni} | #{patient.last_name.upcase} #{patient.first_name.upcase}"
