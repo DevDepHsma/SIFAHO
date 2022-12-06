@@ -1,33 +1,41 @@
-<%= render 'establishments/external_orders/header' %>
-<% if @establishments.present? %>
-  <div class="card fixed-custom-card">
-    <div class="card-header">
-      <%= render 'filter' %>
-    </div>
-    <div class="card-body fixed-panel-index">
-      <% if @establishments.present? %>
-        <div id="filterrific_results">
-          <%= render(
-            partial: 'list',
-            locals: { establishments: @establishments }
-          ) %>
-        </div>
-      <% else %>
-        <%= render(
-          partial: 'shared/not_found_filter',
-          locals: { object_name: 'establecimientos' }
-        ) %>
-      <% end %>
-    </div>
-  </div>
-<% else %>
-  <%= render(
-    partial: 'shared/not_found',
-    locals: { object_name: 'establecimientos' }
-  ) %>
-<% end %>
 <% content_for :modal do %>
-  <div id="modals">
-    <%= render(partial: 'shared/modals/delete_confirmation') %>
-  </div>
+  <%= render(partial: 'shared/modals/delete_confirmation') %>
 <% end %>
+<% content_for :footer_extra_info do %>
+  <%= link_to establishments_path(format: 'xlsx'),
+          class: "btn btn-success", target: :_blank,
+          title: 'Descargar a excel', data: { toggle: 'tooltip', placement: 'top' } do %>
+    <%= fa_icon "file-excel" %>
+    Excel
+  <% end %>
+<% end %>
+<%= render 'establishments/external_orders/header' %>
+<div class="card fixed-custom-card">
+  <div class="card-header">
+    <%= render(
+          partial: 'establishments/partials/filter',
+          locals: { establishments: @establishments }
+        ) %>
+  </div>
+  <div class="card-body fixed-panel-index">
+    <% if @establishments.present? %>
+      <div id="table_results">
+        <%= render(
+          partial: 'establishments/partials/list',
+          locals: { establishments: @establishments }
+        ) %>
+      </div>
+    <% else %>
+      <%= render(
+        partial: 'shared/not_found_filter',
+        locals: { object_name: 'establecimientos' }
+      ) %>
+    <% end %>
+  </div>
+  <div class="card-footer" id="paginate_footer">
+    <%= render(
+          partial: 'shared/paginate_index',
+          locals: { model: @establishments, form_id: 'establishments-filter' }
+        ) %>
+  </div>
+</div>
