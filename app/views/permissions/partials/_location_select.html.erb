@@ -1,5 +1,5 @@
 <div>
-  <button type="button" class="btn btn-primary w-100" data-target="#sector-selection" id="open-sectors-select-modal">
+  <button type="button" class="btn btn-primary w-100" data-target="#sector-selection" onclick="addSectorClick(event);">
     Agregar sector <%= fa_icon 'plus' %>
   </button>
   <ul class="mt-3" id ="sectors-list">
@@ -8,11 +8,9 @@
         <input type="hidden" name="permission[user_sectors_attributes][<%= us.sector_id %>][_destroy]" value="0">
         <input type="hidden" name="permission[user_sectors_attributes][<%= us.sector_id %>][sector_id]" value="<%= us.sector_id %>">
         <input type="hidden" name="permission[user_sectors_attributes][<%= us.sector_id %>][id]" value="<%= us.id %>">
-        <a href="<%= permission_change_sector_users_admin_path(active_sector_id: us.sector_id) %>" 
-           class="btn btn-sector <%= 'active' if @active_sector.id == us.sector_id %>" 
-           data-remote="true" onclick="toggleLoading();">
+        <button type="button"  onclick="changeSector('<%= permission_change_sector_users_admin_path(active_sector_id: us.sector_id) %>');" class="btn btn-sector <%= 'active' if @active_sector.id == us.sector_id %>">
           <%= us.sector.name %> - <%= us.sector.establishment.name%>
-        </a>
+        </button>
         <% if @applied_permission_request.present? && @applied_permission_request.sector_id == us.sector_id %>
           <span class="badge badge-warning">solicitud en progreso</span>
         <% end %>
@@ -42,7 +40,7 @@
                id="role-<%=role.id%>" 
                required 
                data-url="<%= build_permission_from_role_users_admin_path %>"
-               data-target="permission[user_roles_attributes][<%= role.id %>][_destroy]"
+               data-target="permission[user_roles_attributes][<%= role.id %>]"
                <%= 'checked' if @user.user_roles.any?{|us| us.role_id == role.id && us.sector_id == @active_sector.id }%>>
         <label class="custom-control-label" for="role-<%=role.id%>"><%= role.name %></label>
       </div>

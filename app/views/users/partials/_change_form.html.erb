@@ -4,6 +4,7 @@
       @sectors.map {
         |sector| [sector.second, sector.first, data: {'subtext': ""+sector.third+"" }]
       },
+    selected: @current_user.active_sector.id,
     :input_html => {
       required: true,
       include_blank: false,

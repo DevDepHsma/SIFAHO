@@ -23,7 +23,8 @@
               <input type="checkbox" 
                      class="custom-control-input perm-mod-toggle-button" 
                      id="perm-mod-check-<%= permission_mod.id %>"
-                     <%= (permission_mod.permissions.pluck(:id) - @enable_permissions).empty? ? 'checked': '' %>>
+                     <%= (permission_mod.permissions.pluck(:id) - @enable_permissions).empty? ? 'checked': '' %>
+                     onchange="permissionModChange(event)">
               <label class="custom-control-label" for="perm-mod-check-<%= permission_mod.id %>"></label>
             </div>
           </div>
@@ -40,7 +41,8 @@
                        id="perm-check-<%= perm.permission_id %>" 
                        value="<%=perm.permission_id%>"
                        name="permission[permission_users_attributes][<%= perm.permission_id %>][permission_id]"
-                       <%= @enable_permissions.include?(perm.permission.id) ? 'checked': '' %>>
+                       <%= @enable_permissions.include?(perm.permission.id) ? 'checked': '' %>
+                       onchange="permissionChange(event)">
                 <input type="hidden" name="permission[permission_users_attributes][<%= perm.permission_id %>][_destroy]" value="<%= !@enable_permissions.include?(perm.permission.id) %>">
                 <label class="custom-control-label" for="perm-check-<%= perm.permission.id %>">
                 </label>
