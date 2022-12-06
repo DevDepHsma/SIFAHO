@@ -38,30 +38,6 @@
     </div>
     <div class="filter-form-col">
       <div class="form-group">
-        <input class="form-control datepicker" 
-               autocomplete="off" 
-               type="text" 
-               name="filter[date_prescribed_since]" 
-               id="filter_date_prescribed_since" 
-               placeholder="Prescripta desde: dd/mm/aaaa"
-               value="<%= get_value_from_filter(:date_prescribed_since) %>">
-        <label>Prescripta desde: dd/mm/aaaa</label>
-      </div>
-    </div>
-    <div class="filter-form-col">
-      <div class="form-group">
-        <input class="form-control datepicker" 
-               autocomplete="off" 
-               type="text" 
-               name="filter[date_prescribed_to]" 
-               id="filter_date_prescribed_to" 
-               placeholder="Prescripta hasta: dd/mm/aaaa"
-               value="<%= get_value_from_filter(:date_prescribed_to) %>">
-        <label>Prescripta hasta: dd/mm/aaaa</label>
-      </div>
-    </div>
-    <div class="filter-form-col">
-      <div class="form-group">
         <select class="form-control custom-select <%= 'filled' if get_value_from_filter(:status) != '' %>" name="filter[status]" onChange="mark_selected(event)">
           <option value="" ></option>
           <% statuses.each do |option| %>
@@ -70,6 +46,23 @@
           </select>
           <label>Estado</label>
         </div>
+      </div>
+      <div class="filter-form-col">
+        <div class="form-group">
+          <input class="form-control" 
+               autocomplete="off" 
+               type="text" 
+               name="filter[establishment_name]" 
+               id="filter_establishment_name" 
+               placeholder="Establecimiento"
+               value="<%= get_value_from_filter(:establishment_name) %>">
+          <label>Establecimiento</label>
+        </div>
+      </div>
+      <div class="filter-form-btn-group">
+        <a class="btn btn-primary" data-toggle="collapse" href="#advanced-filters" role="button" aria-expanded="false" aria-controls="advanced-filters">
+          Opciones avanzadas
+        </a>
       </div>
       <input type="hidden" name="filter[sort]" value="<%= get_value_from_filter(:sort) %>">
       <input type="hidden" name="per_page" value="<%= params[:per_page] || 15 %>">
@@ -80,6 +73,34 @@
         <button class="btn btn-danger btn-clean-filters" type="button" form="<%= form_id %>">
           <%= fa_icon 'times' %>
         </button>
+      </div>
+    </div>
+    <div class="collapse" id="advanced-filters">
+      <div class="filter-form-row">
+        <div class="filter-form-col">
+          <div class="form-group">
+            <input class="form-control datepicker" 
+               autocomplete="off" 
+               type="text" 
+               name="filter[date_prescribed_since]" 
+               id="filter_date_prescribed_since" 
+               placeholder="Prescripta desde: dd/mm/aaaa"
+               value="<%= get_value_from_filter(:date_prescribed_since) %>">
+            <label>Prescripta desde: dd/mm/aaaa</label>
+          </div>
+        </div>
+        <div class="filter-form-col">
+          <div class="form-group">
+            <input class="form-control datepicker" 
+               autocomplete="off" 
+               type="text" 
+               name="filter[date_prescribed_to]" 
+               id="filter_date_prescribed_to" 
+               placeholder="Prescripta hasta: dd/mm/aaaa"
+               value="<%= get_value_from_filter(:date_prescribed_to) %>">
+            <label>Prescripta hasta: dd/mm/aaaa</label>
+          </div>
+        </div>
       </div>
     </div>
   <% end %>

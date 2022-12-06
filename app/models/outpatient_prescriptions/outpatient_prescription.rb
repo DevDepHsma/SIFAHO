@@ -47,7 +47,7 @@ class OutpatientPrescription < ApplicationRecord
   delegate :qualifications, :fullname, to: :professional, prefix: :professional
 
   scope :filter_by_params, lambda { |filter_params|
-    query = self.select(:id, :remit_code, :status, :date_prescribed, 'professionals.fullname AS pr_fullname', 'patients.first_name AS pa_first_name', 'patients.last_name AS pa_last_name', 'patients.dni AS pa_dni').joins(:establishment, :professional, :patient)
+    query = self.select(:id, :remit_code, :status, :date_prescribed, 'professionals.fullname AS pr_fullname', 'patients.first_name AS pa_first_name', 'patients.last_name AS pa_last_name', 'patients.dni AS pa_dni', 'establishments.name as establishment_name').joins(:establishment, :professional, :patient)
     if filter_params.present?
       # Remit_code
       query = query.like_remit_code(filter_params['code']) if filter_params['code'].present?
@@ -69,6 +69,10 @@ class OutpatientPrescription < ApplicationRecord
       end
       # Status
       query = query.like_status(filter_params['status']) if filter_params['status'].present?
+      # Establishment name
+      if filter_params['establishment_name'].present?
+        query = query.like_establishment_name(filter_params['establishment_name'])
+      end
     end
 
     query = if filter_params.present? && filter_params['sort'].present?
@@ -79,6 +83,9 @@ class OutpatientPrescription < ApplicationRecord
     return query
   }
 
+  scope :like_establishment_name, lambda { |word|
+                                    where('unaccent(lower(establishments.name)) LIKE ?', "%#{word.downcase.removeaccents}%")
+                                  }
   # Where string match with %...% (unsupport accents)
   scope :like_remit_code, lambda { |word|
     where('lower(remit_code) LIKE ?', "%#{word.downcase}%")
