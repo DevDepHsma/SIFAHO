@@ -119,21 +119,6 @@ RSpec.feature 'Sectors', type: :feature do
         sleep 1
         expect(page).to have_content('Viendo sector Cocina')
       end
-
-      it 'delete' do
-        within '#sectors' do
-          expect(page).to have_selector('.delete-item')
-          page.all('tr', text: 'Cocina').first.find('button.delete-item').click
-        end
-        sleep 1
-        expect(page).to have_content('Eliminar sector')
-        expect(page).to have_button('Volver')
-        expect(page).to have_link('Confirmar')
-        expect(page).to have_content('Esta seguro que desea eliminar el sector Cocina?')
-        click_link 'Confirmar'
-        sleep 1
-        expect(page).to have_content('El sector Cocina se ha eliminado correctamente.')
-      end
     end
   end
 end

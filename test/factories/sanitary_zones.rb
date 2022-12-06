@@ -6,8 +6,13 @@ FactoryBot.define do
     trait :state_neuquen do
       association :state, factory: :state
     end
+    trait :sanitary_zone_iii_name do
+      name { 'Zona Sanitaria III' }
+      association :state, factory: :state
+    end
 
     factory :iv_sanitary_zone, traits: [:state_neuquen]
+    factory :iii_sanitary_zone, traits: [:sanitary_zone_iii_name]
   end
 
   factory :state do
@@ -38,10 +43,9 @@ FactoryBot.define do
       name { 'Centro de salud' }
     end
 
-    trait :health_center do
-      name { 'Centro de salud' }
-    end
 
     factory :hospital_establishment_type, traits: [:hospital]
+    factory :health_center_establishment_type, traits: [:health_center]
+    factory :depo_establishment_type, traits: [:depo]
   end
 end

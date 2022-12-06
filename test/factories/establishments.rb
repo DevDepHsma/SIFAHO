@@ -8,9 +8,18 @@ FactoryBot.define do
     trait :hospital_type do
       association :establishment_type, factory: :hospital_establishment_type
     end
+    trait :health_center_type do
+      association :establishment_type, factory: :health_center_establishment_type
+    end
+    trait :depo_type do
+      association :establishment_type, factory: :depo_establishment_type
+    end
 
     trait :iv_zone do
       association :sanitary_zone, factory: :iv_sanitary_zone
+    end
+    trait :iii_zone do
+      association :sanitary_zone, factory: :iii_sanitary_zone
     end
 
     trait :est_1 do
@@ -23,7 +32,13 @@ FactoryBot.define do
       short_name { 'HJA' }
     end
 
+    trait :est_3 do
+      name { 'Centro de Salud Tiro Federal' }
+      short_name { 'CSTF' }
+    end
+
     factory :establishment_1, traits: %i[hospital_type iv_zone est_1]
-    factory :establishment_2, traits: %i[hospital_type iv_zone est_2]
+    factory :establishment_2, traits: %i[health_center_type iii_zone est_2]
+    factory :establishment_3, traits: %i[depo_type iii_zone est_3]
   end
 end
