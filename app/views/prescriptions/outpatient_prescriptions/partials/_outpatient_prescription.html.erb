@@ -21,7 +21,10 @@
     </span>
   </td>
   <td>
-    <%= outpatient_prescription.establishment_name %>
+   <%= highlight(outpatient_prescription.establishment_name, 
+                    get_value_from_filter(:establishment_name),
+                    highlighter: '<mark class="highlight-2">\1</mark>',
+                    ignore_special_chars: true) %>
   </td>
   <td>
     <% if outpatient_prescription.date_prescribed.present? %>
