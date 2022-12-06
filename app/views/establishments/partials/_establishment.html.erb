@@ -1,0 +1,28 @@
+<tr id="establishment_<%= establishment.id %>">
+  <div class="js-fade fade-in is-paused">
+    <td>   <%= highlight(establishment.name, 
+                  get_value_from_filter(:name), 
+                  highlighter: '<mark class="highlight-1">\1</mark>'
+                  ) %></td>
+    <td><%= establishment.establishment_type.present? ? establishment.establishment_type.name : '---' %></td>
+    <td><%= establishment.sectors.count %></td>
+    <td><%= establishment.total_users.present? ? establishment.total_users : 0 %></td>
+    <td class="text-left actions-col">
+      <%= render(
+        partial: 'shared/action_buttons',
+        locals:{ 
+            object: establishment, 
+            show: {visible: true, target: (show_target if defined?(show_target) )},
+            edit: {visible: true, target: (edit_target if defined?(edit_target) )},
+            destroy: {
+              visible: true, 
+              title: "Eliminar establecimiento",
+              body: "Esta seguro que desea eliminar el establecimiento #{ establishment.name }?",
+              path: establishment_url(establishment.id)
+            }
+        }
+      ) 
+      %>
+    </td>
+  </div>
+</tr>

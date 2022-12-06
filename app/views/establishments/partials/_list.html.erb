@@ -1,0 +1,16 @@
+<div class="card fixed-panel-list">
+  <table class="table table-hover table-striped table-sm">
+    <thead >
+      <tr>
+        <%= th_label name: 'Nombre', form: 'establishments-filter', sort_field: 'establishments.name', icon_type: 'alpha' %>
+        <%= th_label name: 'Tipo',form: 'establishments-filter', sort_field: 'establishment_types.name', icon_type: 'alpha' %>
+        <%= th_label name: 'Sectores',form: 'establishments-filter', sort_field: 'sectors_count', icon_type: 'numeric' %>
+        <%= th_label name: 'Usuarios',form: 'establishments-filter', sort_field: 'total_users', icon_type: 'numeric' %>
+        <%= th_label name: 'Acciones' %>
+      </tr>
+    </thead>
+    <tbody id="establishments">
+      <%= render(partial: 'establishments/partials/establishment', collection: @establishments, as: :establishment) %>
+    </tbody>
+  </table>
+</div>
