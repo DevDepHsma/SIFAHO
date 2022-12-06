@@ -43,8 +43,8 @@ RSpec.feature 'OutpatientsPrescriptionsFilters', type: :feature do
           expect(page).to have_field('filter[code]', type: 'text')
           expect(page).to have_field('filter[professional_full_name]', type: 'text')
           expect(page).to have_field('filter[patient_full_name]', type: 'text')
-          expect(page).to have_field('filter[date_prescribed_since]', type: 'text')
-          expect(page).to have_field('filter[date_prescribed_to]', type: 'text')
+          expect(page).to have_field('filter[date_prescribed_since]', type: 'text', visible: false)
+          expect(page).to have_field('filter[date_prescribed_to]', type: 'text', visible: false)
           expect(page).to have_select('filter[status]', with_options: %w[pendiente dispensada vencida])
           expect(page).to have_button('Buscar')
           expect(page).to have_selector('button.btn-clean-filters')
@@ -147,24 +147,6 @@ RSpec.feature 'OutpatientsPrescriptionsFilters', type: :feature do
         end
       end
 
-      it 'by date_prescribed_since and date_prescribed_to' do
-        @op_prescriptions.each do |opp|
-          within '#outpatient-prescriptions-filter' do
-            fill_in 'filter[date_prescribed_since]', with: opp.date_prescribed.strftime('%d/%m/%Y')
-            fill_in 'filter[date_prescribed_to]', with: opp.date_prescribed.strftime('%d/%m/%Y')
-            click_button 'Buscar'
-            sleep 1
-          end
-          within '#outpatient_prescriptions' do
-            expect(page.first('tr').find('td:nth-child(6)')).to have_content(opp.date_prescribed.strftime('%d/%m/%Y'))
-          end
-          within '#outpatient-prescriptions-filter' do
-            page.first('button.btn-clean-filters').click
-            sleep 1
-          end
-        end
-      end
-
       it 'by status' do
         @op_prescriptions.each do |opp|
           within '#outpatient-prescriptions-filter' do
@@ -174,6 +156,48 @@ RSpec.feature 'OutpatientsPrescriptionsFilters', type: :feature do
           end
           within '#outpatient_prescriptions' do
             expect(page.first('tr').find('td:nth-child(4)')).to have_content(opp.status.underscore.humanize)
+          end
+          within '#outpatient-prescriptions-filter' do
+            page.first('button.btn-clean-filters').click
+            sleep 1
+          end
+        end
+      end
+
+      it 'by establishment' do
+        @op_prescriptions.each do |opp|
+          within '#outpatient-prescriptions-filter' do
+            fill_in 'filter[establishment_name]', with: opp.establishment.name
+            click_button 'Buscar'
+            sleep 1
+          end
+          within '#outpatient_prescriptions' do
+            expect(page.first('tr').find('td:nth-child(5)')).to have_content(opp.establishment.name)
+          end
+          within '#outpatient-prescriptions-filter' do
+            page.first('button.btn-clean-filters').click
+            sleep 1
+          end
+        end
+      end
+
+      it 'by date_prescribed_since and date_prescribed_to' do
+        within '#outpatient-prescriptions-filter' do
+          click_link 'Opciones avanzadas'
+          sleep 1
+        end
+        @op_prescriptions.each do |opp|
+          within '#advanced-filters' do
+            fill_in 'filter[date_prescribed_to]', with: opp.date_prescribed.strftime('%d/%m/%Y')
+            fill_in 'filter[date_prescribed_since]', with: opp.date_prescribed.strftime('%d/%m/%Y')
+          end
+          within '#outpatient-prescriptions-filter' do
+            sleep 1
+            click_button 'Buscar'
+            sleep 1
+          end
+          within '#outpatient_prescriptions' do
+            expect(page.first('tr').find('td:nth-child(6)')).to have_content(opp.date_prescribed.strftime('%d/%m/%Y'))
           end
           within '#outpatient-prescriptions-filter' do
             page.first('button.btn-clean-filters').click
@@ -283,6 +307,28 @@ RSpec.feature 'OutpatientsPrescriptionsFilters', type: :feature do
         end
       end
 
+      it 'by establishment' do
+        sorted_by_establishment_asc = OutpatientPrescription.select('establishments.name').joins(:establishment).order('establishments.name asc').first
+        sorted_by_establishment_desc = OutpatientPrescription.select('establishments.name').joins(:establishment).order('establishments.name desc').first
+
+        within '#table_results' do
+          click_button 'Establecimiento'
+          sleep 1
+        end
+
+        within '#outpatient_prescriptions' do
+          expect(page.first('tr').find('td:nth-child(5)')).to have_text(sorted_by_establishment_asc.name)
+        end
+
+        within '#table_results' do
+          click_button 'Establecimiento'
+          sleep 1
+        end
+
+        within '#outpatient_prescriptions' do
+          expect(page.first('tr').find('td:nth-child(5)')).to have_text(sorted_by_establishment_desc.name)
+        end
+      end
       it 'by date prescribed' do
         sorted_by_date_prescribed_asc = OutpatientPrescription.select(:date_prescribed).order('date_prescribed asc').first
         sorted_by_date_prescribed_desc = OutpatientPrescription.select(:date_prescribed).order('date_prescribed desc').first
