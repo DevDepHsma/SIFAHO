@@ -29,7 +29,7 @@ class PermissionRequest < ApplicationRecord
 
   # Validations
   validates_presence_of :user
-  validates_presence_of :roles
+  validates_presence_of :roles, on: :create
   validates_presence_of :establishment_id, on: :create
   validates_presence_of :sector_id, on: :create, if: :positive_establishment?
   validates_presence_of :other_establishment, if: :none_establishment?
