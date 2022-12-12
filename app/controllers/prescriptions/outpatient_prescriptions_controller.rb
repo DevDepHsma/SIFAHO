@@ -48,15 +48,15 @@ class Prescriptions::OutpatientPrescriptionsController < ApplicationController
     authorize @outpatient_prescription
     @outpatient_prescription.provider_sector = @current_user.active_sector
     @outpatient_prescription.establishment = @current_user.active_sector.establishment
-    @outpatient_prescription.remit_code = "AM#{DateTime.now.to_s(:number)}"
-    @outpatient_prescription.status = 'dispensada'
-    @outpatient_prescription.date_dispensed = DateTime.now
+    # @outpatient_prescription.remit_code = "AM#{DateTime.now.to_s(:number)}"
+    # @outpatient_prescription.status = 'dispensada'
+    # @outpatient_prescription.date_dispensed = DateTime.now
 
     respond_to do |format|
       # Si se entrega la receta
 
-      @outpatient_prescription.save!
-      @outpatient_prescription.dispense_by(@current_user)
+      # @outpatient_prescription.save!
+      @outpatient_prescription.dispense!(outpatient_prescription_params, @current_user)
 
       message = "La receta ambulatoria de #{@outpatient_prescription.patient.fullname} se ha creado y dispensado correctamente."
       notification_type = 'creó y dispensó'
@@ -78,12 +78,13 @@ class Prescriptions::OutpatientPrescriptionsController < ApplicationController
   def update
     authorize @outpatient_prescription
 
-    @outpatient_prescription.status = 'dispensada'
-    @outpatient_prescription.date_dispensed = DateTime.now
+    # @outpatient_prescription.status = 'dispensada'
+    # @outpatient_prescription.date_dispensed = DateTime.now
 
     respond_to do |format|
-      @outpatient_prescription.update!(outpatient_prescription_params)
-      @outpatient_prescription.dispense_by(@current_user)
+      # @outpatient_prescription.update!(outpatient_prescription_params)
+      @outpatient_prescription.dispense!(outpatient_prescription_params, @current_user)
+      # @outpatient_prescription.dispense_by(@current_user)
       message = "La receta ambulatoria de #{@outpatient_prescription.patient.fullname} se ha auditado y dispensado correctamente."
       notification_type = 'auditó y dispensó'
 
@@ -151,7 +152,7 @@ class Prescriptions::OutpatientPrescriptionsController < ApplicationController
 
   # Set prescription and patient to prescription
   def set_patient_to_outpatient_prescription
-    @outpatient_prescription = params[:outpatient_prescription].present? ? OutpatientPrescription.create(outpatient_prescription_params) : OutpatientPrescription.new
+    @outpatient_prescription = OutpatientPrescription.new
     @patient = Patient.find(params[:patient_id])
     @outpatient_prescription.patient_id = @patient.id
   end

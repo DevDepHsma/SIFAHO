@@ -1,3 +1,13 @@
+# == Schema Information
+
+# Table name: out_pres_prod_lot_stocks
+
+# outpatient_prescription_product_id     :bigint      not null
+# lot_stock_id                           :bigint      not null
+# quantity                               :integer     not null
+# created_at                             :datetime    auto
+# updated_at                             :datetime    auto
+
 class OutPresProdLotStock < ApplicationRecord
 
   # Relationships

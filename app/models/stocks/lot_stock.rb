@@ -1,3 +1,16 @@
+# == Schema Information
+
+# Table name: lot_stocks
+
+# lot_id                      :bigint     not null
+# stock_id                    :bigint     not null
+# quantity                    :integer    default: 0
+# archived_quantity           :integer    default: 0
+# presentation                :integer
+# reserved_quantity           :integer    default: 0
+# created_at                  :datetime   auto
+# updated_at                  :datetime   auto
+
 class LotStock < ApplicationRecord
   # Relationships
   belongs_to :lot
@@ -21,6 +34,7 @@ class LotStock < ApplicationRecord
   validates :quantity, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
   validates :reserved_quantity, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
   validates_presence_of :stock_id
+  validates_with CustomValidators::LotStockValidator
 
   # Delegations
   delegate :refresh_quantity, to: :stock, prefix: true
@@ -75,11 +89,11 @@ class LotStock < ApplicationRecord
   scope :by_stock, ->(stock_id) { where(stock_id: stock_id) }
 
   scope :greater_than_zero, -> { where('lot_stocks.quantity > 0 OR lot_stocks.reserved_quantity > 0') }
-  
+
   scope :search_by_status, ->(status) { joins(:lot).where('lots.status = ?', status) }
-  
+
   scope :search_by_quantity, lambda { |quantity|
-    if quantity == 0 || quantity == 1
+    if [0, 1].include?(quantity)
       quantity == 0 ? where('lot_stocks.quantity = 0') : where('lot_stocks.quantity > 0')
     end
   }
@@ -132,6 +146,15 @@ class LotStock < ApplicationRecord
       save!
       stock.create_stock_movement(order, self, a_quantity, false, order.status)
     end
+  end
+
+  # Disminuye la cantidad del stock
+  def decrement!(a_quantity, order)
+    puts "<======================".colorize(background: :blue)
+      self.quantity -= a_quantity
+      save!
+      stock.create_stock_movement(order, self, a_quantity, false, order.status)
+    
   end
 
   # Incrementa la cantidad archivada y resta la cantidad en stock
@@ -188,7 +211,7 @@ class LotStock < ApplicationRecord
   def reserve(a_quantity, order)
     if a_quantity.negative?
       raise ArgumentError, 'La cantidad a reservar debe ser mayor a 0.'
-    else  
+    else
       decrement(a_quantity, order)
       self.reserved_quantity += a_quantity
       save!
