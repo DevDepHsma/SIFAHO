@@ -112,9 +112,16 @@ class User < ApplicationRecord
   end
 
   scope :filter_by_params, lambda { |filter_params|
-    query = self.select(:id, :username, :status, :last_sign_in_at, 'profiles.dni', 'profiles.email', 'profiles.first_name', 'profiles.last_name').joins(:profile)
+    query = self.select(:id, :username, :status, :last_sign_in_at, 'profiles.dni', 'profiles.email',
+                        'profiles.first_name', 'profiles.last_name')
+                .joins(:profile, :establishments, :user_sectors)
     query = query.like_username(filter_params[:username]) if filter_params.present? && filter_params[:username].present?
     query = query.like_fullname(filter_params[:fullname]) if filter_params.present? && filter_params[:fullname].present?
+    if filter_params.present? && filter_params[:establishment].present? && filter_params[:sector].present?
+      query = query.by_establishment(filter_params[:establishment], filter_params[:sector])
+    end
+    query = query.distinct(:user)
+
     query = if filter_params.present? && filter_params['sort'].present?
               query.sorted_by(filter_params['sort'])
             else
@@ -132,7 +139,9 @@ class User < ApplicationRecord
   OR CONCAT(unaccent(lower(profiles.last_name)),\' \',unaccent(lower(profiles.first_name))) like ?
   OR CONCAT(unaccent(lower(profiles.first_name)),\' \',unaccent(lower(profiles.last_name))) like ? ', "%#{fullname.downcase.removeaccents}%", "%#{fullname.downcase.removeaccents}%", "%#{fullname.downcase.removeaccents}%", "%#{fullname.downcase.removeaccents}%")
                         }
-               
+  scope :by_establishment, lambda { |establishment_id, sector_id|
+                             where("establishments.id=#{establishment_id}").where("user_sectors.sector_id=#{sector_id}")
+                           }
 
   pg_search_scope :search_username,
                   against: :username,
