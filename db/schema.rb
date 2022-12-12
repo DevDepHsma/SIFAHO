@@ -959,7 +959,7 @@ ActiveRecord::Schema.define(version: 2022_11_12_205119) do
     t.datetime "updated_at", null: false
     t.bigint "establishment_id"
     t.bigint "sector_id"
-    t.bigint "aproved_by_id", default: 1
+    t.bigint "aproved_by_id"
     t.index ["aproved_by_id"], name: "index_permission_requests_on_aproved_by_id"
     t.index ["establishment_id"], name: "index_permission_requests_on_establishment_id"
     t.index ["sector_id"], name: "index_permission_requests_on_sector_id"

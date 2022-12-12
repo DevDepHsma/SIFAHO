@@ -76,8 +76,8 @@ module ReportServices
       # A cada pagina le agregamos el pie de pagina
       report.pages.each do |page|
         page[:page_count] = report.page_count
-        page[:sector] = @user.sector_name
-        page[:establishment] = @user.establishment_name
+        page[:sector] = @user.active_sector.name
+        page[:establishment] = @user.active_sector.establishment.name
       end
 
       report.generate
