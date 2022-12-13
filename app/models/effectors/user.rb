@@ -132,6 +132,7 @@ class User < ApplicationRecord
   OR CONCAT(unaccent(lower(profiles.last_name)),\' \',unaccent(lower(profiles.first_name))) like ?
   OR CONCAT(unaccent(lower(profiles.first_name)),\' \',unaccent(lower(profiles.last_name))) like ? ', "%#{fullname.downcase.removeaccents}%", "%#{fullname.downcase.removeaccents}%", "%#{fullname.downcase.removeaccents}%", "%#{fullname.downcase.removeaccents}%")
                         }
+               
 
   pg_search_scope :search_username,
                   against: :username,
@@ -219,6 +220,10 @@ class User < ApplicationRecord
     user_sectors.active.first.sector if user_sectors.active.first.present?
   end
 
+  def active_permission_request
+    permission_requests.in_progress.where.not(sector_id: user_sectors.pluck(:sector_id)).last if permission_requests.in_progress.any?
+  end
+
   def update_active_sector(sector_id)
     sector_to_active = user_sectors.where(sector_id: sector_id).first
     user_sectors.where(status: 'active').map(&:inactive!)
@@ -228,7 +233,7 @@ class User < ApplicationRecord
   private
 
   def validate_max_sectors
-    max_sectors = 15
+    max_sectors = Rails.env.test? ? 3 : 20
     errors.add(:max_sectors, "supera el máximo de #{max_sectors}.") if user_sectors.size > max_sectors
   end
 end

@@ -25,9 +25,9 @@ Rails.application.routes.draw do
         get :permissions_build_from_request, to: 'permissions#build_from_request', as: :build_from_request
         get :permissions_change_sector, to: 'permissions#permission_change_sector', as: :permission_change_sector
         get '/permisos', to: 'permissions#edit', as: :edit_permissions
-        put '/permisos', to: 'permissions#update', as: :update_permissions
-        put :permissions_build_permission_from_role, to: 'permissions#build_permission_from_role',
+        get :permissions_build_permission_from_role, to: 'permissions#build_permission_from_role',
                                                      as: :build_permission_from_role
+        put '/permisos', to: 'permissions#update', as: :update_permissions
         put 'reject_permission_request/:pr_id', to: 'permissions#reject_permission_request',
                                                 as: :reject_permission_request
         put 'finish_permission_request/:pr_id', to: 'permissions#finish_permission_request',

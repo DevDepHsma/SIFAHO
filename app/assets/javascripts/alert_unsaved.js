@@ -1,47 +1,61 @@
 
-let unsaved = false;
+let $_UNSAVED = false;
  
 $(document).on('change', 'form[role="check-modified"]:not([data-remote]) :input', function() {
-  return unsaved = true;
+  return $_UNSAVED = true;
 });
 
 $(document).on('turbolinks:load', function() {
-  return unsaved = false;
+  return $_UNSAVED = false;
 });
  
 $(document).on('submit', 'form[role="check-modified"]', function() {
-  unsaved = false;
+  $_UNSAVED = false;
 });
+
+$(document).on('change', 'form[role="check-modified"].editing', function() {
+  return $_UNSAVED = true;
+}); 
  
- 
+
 $(document).on('turbolinks:before-visit', function(event) {
   /* check if exists a product unsaved on order products form */
   if($(document).find('.unsaved-row').length){
-    unsaved = true;
+    $_UNSAVED = true;
   };
 
-  if(unsaved){
+  if($_UNSAVED){
     event.preventDefault();
-    modalConfirm(function(confirm){
-      if(confirm){
-        window.location = event.originalEvent.data.url;
-      }
-    });
+    modalConfirm(event.originalEvent.data.url);
   }
 });
 
-// esta funcion abre el modal de confirmacion, al tratar de abandonar una pagina sin haber guardado
-function modalConfirm(callback){
-
+function modalConfirm(target, isModal = false, callback = null){
   $("#confirm-unsaved").modal('show');
-
   $("#confirm-unsaved-btn").on("click", function(){
-    callback(true);
+    toggleLoading();
+    if(isModal){
+      $(target).modal('show');
+      toggleLoading();
+    }else if(callback !== null){
+      callback();
+    }else if(target !== undefined && target !== null){
+      continueTo(target);
+    }
     $("#confirm-unsaved").modal('hide');
+    $_UNSAVED = false;
+    $(this).unbind();
+    $("#no-confirm-unsaved-btn").unbind();
   });
   
   $("#no-confirm-unsaved-btn").on("click", function(){
-    callback(false);
     $("#confirm-unsaved").modal('hide');
+    $(this).unbind();
+    $("#confirm-unsaved-btn").unbind();
   });
+  return;
 };
+
+function continueTo(target){
+  window.location = target;
+}

@@ -22,22 +22,23 @@ module ReportServices
       report.page[:applicant_sector] = @internal_order.applicant_sector.name
       report.page[:provider_sector] = @internal_order.provider_sector.name
       report.page[:observations] = @internal_order.observation
-      report.page[:total_products] = "#{@internal_order.order_products.count} #{'producto'.pluralize(@internal_order.order_products.size)}"
+      report.page[:total_products] =
+        "#{@internal_order.order_products.count} #{'producto'.pluralize(@internal_order.order_products.size)}"
       report.page[:username].value("DNI: #{@user.dni}, #{@user.full_name}")
 
       # Se van agregando los productos
-      @internal_order.order_products.joins(:product).order("name").each do |eop|
+      @internal_order.order_products.joins(:product).order('name').each do |eop|
         # Luego de que la primer pagina ya halla sido rellenada, agregamos la pagina defualt (no tiene header)
-        if report.page_count == 1 && report.list.overflow?
-          report.start_new_page
-        end
+
+        report.start_new_page if report.page_count == 1 && report.list.overflow?
+
         report.list do |list|
           if eop.order_prod_lot_stocks.present?
             eop.order_prod_lot_stocks.each_with_index do |opls, index|
               if index == 0
                 list.add_row do |row|
                   row.values  lot_code: opls.lot_stock.lot.code,
-                              expiry_date: opls.lot_stock.lot.expiry_date.present? ? opls.lot_stock.lot.expiry_date.strftime("%m/%y") : '----',
+                              expiry_date: opls.lot_stock.lot.expiry_date.present? ? opls.lot_stock.lot.expiry_date.strftime('%m/%y') : '----',
                               lot_q: "#{opls.quantity} #{eop.product.unity.name.pluralize(opls.quantity)}"
                   row.values  product_code: eop.product.code,
                               product_name: eop.product.name,
@@ -50,7 +51,7 @@ module ReportServices
               else
                 list.add_row do |row|
                   row.values lot_code: opls.lot_stock.lot.code,
-                             expiry_date: opls.lot_stock.lot.expiry_date.present? ? opls.lot_stock.lot.expiry_date.strftime("%m/%y") : '----',
+                             expiry_date: opls.lot_stock.lot.expiry_date.present? ? opls.lot_stock.lot.expiry_date.strftime('%m/%y') : '----',
                              lot_q: "#{opls.quantity} #{eop.product.unity.name.pluralize(opls.quantity)}"
 
                   row.item(:border).show if eop.order_prod_lot_stocks.last == opls

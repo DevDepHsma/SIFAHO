@@ -1,35 +1,14 @@
-<% js_available_sectors = escape_javascript(
-  render(partial: 'permissions/partials/available_sectors')
-) %>
-
-<% js_sector_select = escape_javascript(
-  render(partial: 'permissions/partials/select_sector')
-) %>
-
 <% lotcation_select = escape_javascript(
   render(partial: 'permissions/partials/location_select')
 ) %>
 
-
-$("#location_select_container").html("<%= lotcation_select %>");
-$("#open-sectors-select-modal").on('click', (e) => {
-    const modalId = $(e.target).attr('data-target')
-    if ($("#permission_users").hasClass('editing')) {
-      modalConfirm(function(confirm){
-        if(confirm){
-          $(modalId).modal('show');
-        }
-      });
-    }else{      
-      $(modalId).modal('show');
-    }
-  })
-
 <% permissions_list = escape_javascript(
   render(partial: 'permissions/partials/list')
 ) %>
+
+$("#location_select_container").html("<%= lotcation_select %>");
 $("#permissions_list").html("<%= permissions_list %>");
-$("#permission_users").addClass('editing')
 
 $("#sector-selection").modal('hide');
+$_UNSAVED = true;
 toggleLoading();
