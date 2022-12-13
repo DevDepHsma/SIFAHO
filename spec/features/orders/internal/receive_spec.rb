@@ -41,16 +41,19 @@ RSpec.feature 'Orders::Internal::Receives', type: :feature do
         visit '/sectores'
         click_link 'Entregas'
         within '#internal_orders' do
+          sleep 1
           expect(page).to have_selector('tr')
           expect(page).to have_selector('.btn-edit-product')
           expect(page).to have_selector('.btn-nullify')
-          page.execute_script %{$('button.btn-nullify')[0].click()}
+          page.all('.btn-nullify').first.click
           sleep 1
         end
-        expect(page).to have_content('Confirmar anulación de orden')
-        expect(page).to have_link('Cancelar')
-        expect(page).to have_link('Anular')
-        click_link 'Cancelar'
+       
+          expect(page).to have_content('Confirmar anulación de orden')
+          expect(page).to have_link('Cancelar')
+          expect(page).to have_link('Anular')
+          click_link 'Cancelar'
+      
       end
 
       it 'edit' do

@@ -60,6 +60,7 @@ RSpec.feature 'Orders::External::Providers', type: :feature do
             end
 
             it ':: visit create form' do
+              visit current_path
               expect(page.has_link?('Despachar')).to be true
               click_link 'Despachar'
               expect(page).to have_content('Nueva provision de establecimiento')
@@ -70,7 +71,8 @@ RSpec.feature 'Orders::External::Providers', type: :feature do
               expect(page.has_link?('Volver')).to be true
               expect(page.has_button?('Guardar y agregar productos')).to be true
 
-              select_sector(@farm_applicant.active_sector.name, 'select#effector-sector', @farm_applicant.active_sector.establishment)
+              select_sector(@farm_applicant.active_sector.name, 'select#effector-sector',
+                            @farm_applicant.active_sector.establishment)
               click_button 'Guardar y agregar productos'
               expect(page).to have_content('La provisión se ha creado y se encuentra en auditoria.')
               expect(page).to have_content('Editando provision de establecimiento código')
@@ -93,7 +95,8 @@ RSpec.feature 'Orders::External::Providers', type: :feature do
                                     permission: @update_external_order_provider)
               3.times do |_rp|
                 click_link 'Despachar'
-                select_sector(@farm_applicant.active_sector.name, 'select#effector-sector', @farm_applicant.active_sector.establishment)
+                select_sector(@farm_applicant.active_sector.name, 'select#effector-sector',
+                              @farm_applicant.active_sector.establishment)
                 click_button 'Guardar y agregar productos'
                 visit current_path
                 add_products(rand(1..3), request_quantity: true, observations: true, select_lot_stock: true)

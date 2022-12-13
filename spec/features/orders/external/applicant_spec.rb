@@ -59,7 +59,7 @@ RSpec.feature 'Orders::External::Applicants', type: :feature do
             end
 
             it ':: visit create form' do
-              sleep 1
+              visit current_path
               expect(page.has_link?('Solicitar')).to be true
               click_link 'Solicitar'
               expect(page).to have_content('Nueva solicitud de establecimiento')
@@ -70,7 +70,8 @@ RSpec.feature 'Orders::External::Applicants', type: :feature do
               expect(page.has_link?('Volver')).to be true
               expect(page.has_button?('Guardar y agregar productos')).to be true
 
-              select_sector(@depo_provider.active_sector.name, 'select#effector-sector', @depo_provider.active_sector.establishment)
+              select_sector(@depo_provider.active_sector.name, 'select#effector-sector',
+                            @depo_provider.active_sector.establishment)
               expect(page).to have_content(@depo_provider.active_sector.name)
               click_button 'Guardar y agregar productos'
               expect(page).to have_content('La solicitud de abastecimiento se ha creado y se encuentra en auditoría.')
@@ -107,7 +108,7 @@ RSpec.feature 'Orders::External::Applicants', type: :feature do
               expect(page.has_link?('Editar productos')).to be true
               expect(page.has_button?('Guardar y agregar productos')).to be true
               click_button 'Guardar y agregar productos'
-            
+
               expect(page.has_link?('Volver')).to be true
               expect(page.has_button?('Enviar')).to be false
 
@@ -117,7 +118,7 @@ RSpec.feature 'Orders::External::Applicants', type: :feature do
               visit current_path
               expect(page.has_button?('Enviar')).to be true
               click_button 'Enviar'
-         
+
               expect(page).to have_content('La solicitud se ha enviado correctamente.')
               expect(page).to have_content('Solicitud enviada')
               expect(page).to have_content('Productos')
