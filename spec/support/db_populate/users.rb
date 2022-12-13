@@ -23,6 +23,15 @@ def users_populate
     )
   end
 
+  # #Generate quantity needs for  users  pagination test
+  get_users_for_other_establishment.each do |user|
+    @farm_3 = create(:user, username: user)
+    UserSector.create(user_id: @farm_3.id, sector_id: @farm_est_3.id, status: 'active')
+    @depo_3 = create(:user, username: user + '1')
+    UserSector.create(user_id: @depo_3.id, sector_id: @depo_est_3.id, status: 'active')
+  end
+  #########################
+
   get_users_for_permission_request.each do |user|
     a_user = create(:user_1, username: user)
     role_sample = Role.all.sample
