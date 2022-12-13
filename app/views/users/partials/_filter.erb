@@ -27,7 +27,7 @@
     <div class="filter-form-col">
       <div class="form-group">
         <select  data-live-search="true" class="form-control selectpicker-md
-         custom-select-pick "  name="filter[establishment]" id="filter_establishment" onclick="getSectors(estalbishment_id);">
+         custom-select-pick "  name="filter[establishment]" id="filter_establishment">
           <option value="">Seleccionar establecimiento</option>
           <% Establishment.all.each do |establishment| %>
             <option value='<%= establishment.id %>' ><%= establishment.name %></option>
@@ -35,11 +35,10 @@
         </select>
       </div>
     </div>
-       <div class="filter-form-col">
+    <div class="filter-form-col">
       <div class="form-group">
         <select  data-live-search="true" class="form-control selectpicker-md
          custom-select-pick "  name="filter[sector]" id="filter_sector">
-        
         </select>
       </div>
     </div>

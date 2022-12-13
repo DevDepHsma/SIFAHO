@@ -113,7 +113,7 @@ class User < ApplicationRecord
 
   scope :filter_by_params, lambda { |filter_params|
     query = self.select(:id, :username, :status, :last_sign_in_at, 'profiles.dni', 'profiles.email',
-                        'profiles.first_name', 'profiles.last_name','establishments.name as establishment_name')
+                        'profiles.first_name', 'profiles.last_name')
                 .joins(:profile, :establishments, :user_sectors)
     query = query.like_username(filter_params[:username]) if filter_params.present? && filter_params[:username].present?
     query = query.like_fullname(filter_params[:fullname]) if filter_params.present? && filter_params[:fullname].present?
@@ -121,7 +121,6 @@ class User < ApplicationRecord
       query = query.by_establishment(filter_params[:establishment], filter_params[:sector])
     end
     query = query.distinct(:user)
-
     query = if filter_params.present? && filter_params['sort'].present?
               query.sorted_by(filter_params['sort'])
             else
