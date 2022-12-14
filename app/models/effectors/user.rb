@@ -120,6 +120,7 @@ class User < ApplicationRecord
     if filter_params.present? && filter_params[:establishment].present? && filter_params[:sector].present?
       query = query.by_establishment(filter_params[:establishment], filter_params[:sector])
     end
+    query = query.by_status(filter_params[:status]) if filter_params.present? && filter_params[:status].present?
     query = query.distinct(:user)
     query = if filter_params.present? && filter_params['sort'].present?
               query.sorted_by(filter_params['sort'])
@@ -141,7 +142,7 @@ class User < ApplicationRecord
   scope :by_establishment, lambda { |establishment_id, sector_id|
                              where("establishments.id=#{establishment_id}").where("user_sectors.sector_id=#{sector_id}")
                            }
-
+  scope :by_status, ->(status) { where("users.status=#{status}") }
   pg_search_scope :search_username,
                   against: :username,
                   using: { tsearch: { prefix: true } }, # Buscar coincidencia desde las primeras letras.
@@ -229,7 +230,9 @@ class User < ApplicationRecord
   end
 
   def active_permission_request
-    permission_requests.in_progress.where.not(sector_id: user_sectors.pluck(:sector_id)).last if permission_requests.in_progress.any?
+    if permission_requests.in_progress.any?
+      permission_requests.in_progress.where.not(sector_id: user_sectors.pluck(:sector_id)).last
+    end
   end
 
   def update_active_sector(sector_id)
