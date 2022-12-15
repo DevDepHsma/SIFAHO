@@ -1,5 +1,5 @@
 class Establishments::ExternalOrders::ApplicantsController < Establishments::ExternalOrders::ExternalOrdersController
-  before_action :set_external_order, only: %i[show edit update dispatch_order rollback_order accept_provider 
+  before_action :set_external_order, only: %i[show edit update dispatch_order rollback_order accept_provider
                                               receive_order destroy edit_products save_product]
   before_action :set_last_requests, only: %i[new edit create update]
 
@@ -10,16 +10,9 @@ class Establishments::ExternalOrders::ApplicantsController < Establishments::Ext
       flash[:error] = 'Usted no está autorizado para realizar esta acción.'
       redirect_back(fallback_location: root_path)
     end
-    @filterrific = initialize_filterrific(
-      ExternalOrder.applicant(@current_user.active_sector),
-      params[:filterrific],
-      select_options: {
-        sorted_by: ExternalOrder.options_for_sorted_by,
-        with_status: ExternalOrder.options_for_status
-      },
-      persistence_id: false
-    ) or return
-    @applicant_orders = @filterrific.find.paginate(page: params[:page], per_page: 15)
+    @applicants_orders = ExternalOrder.by_applicant(@current_user.active_sector).filter_by_params(params[:filter])
+                                     .paginate(page: params[:page], per_page: params[:per_page] || 15)
+                                     
   end
 
   # GET /external_orders/applicant
@@ -51,27 +44,24 @@ class Establishments::ExternalOrders::ApplicantsController < Establishments::Ext
     @external_order.status = 'solicitud_auditoria'
 
     respond_to do |format|
-      begin
-        @external_order.save!
-        message = 'La solicitud de abastecimiento se ha creado y se encuentra en auditoría.'
-        notification_type = 'creó y auditó'
+      @external_order.save!
+      message = 'La solicitud de abastecimiento se ha creado y se encuentra en auditoría.'
+      notification_type = 'creó y auditó'
 
-        @external_order.create_notification(@current_user, notification_type)
+      @external_order.create_notification(@current_user, notification_type)
 
-        format.html { redirect_to edit_products_external_orders_applicant_url(@external_order), notice: message }
-      rescue ArgumentError => e
-        flash[:alert] = e.message
-      rescue ActiveRecord::RecordInvalid
-      ensure
-        @order_products = @external_order.order_products.present? ? @external_order.order_products : @external_order.order_products.build
-        @sectors = @external_order.provider_sector.present? ? @external_order.provider_establishment.sectors : []
-        format.html { render :new }
-      end
+      format.html { redirect_to edit_products_external_orders_applicant_url(@external_order), notice: message }
+    rescue ArgumentError => e
+      flash[:alert] = e.message
+    rescue ActiveRecord::RecordInvalid
+    ensure
+      @order_products = @external_order.order_products.present? ? @external_order.order_products : @external_order.order_products.build
+      @sectors = @external_order.provider_sector.present? ? @external_order.provider_establishment.sectors : []
+      format.html { render :new }
     end
   end
 
   def edit_products
-
     authorized = policy(:external_order_applicant).edit_products?(@external_order)
 
     unless authorized
@@ -92,24 +82,22 @@ class Establishments::ExternalOrders::ApplicantsController < Establishments::Ext
     @external_order.status = 'solicitud_auditoria'
 
     respond_to do |format|
-      begin
-        @external_order.update(external_order_params)
-        @external_order.save!
+      @external_order.update(external_order_params)
+      @external_order.save!
 
-        message = 'La solicitud se ha auditado y se encuentra en auditoria.'
-        notification_type = 'auditó'
+      message = 'La solicitud se ha auditado y se encuentra en auditoria.'
+      notification_type = 'auditó'
 
-        @external_order.create_notification(@current_user, notification_type)
+      @external_order.create_notification(@current_user, notification_type)
 
-        format.html { redirect_to edit_products_external_orders_applicant_url(@external_order), notice: message }
-      rescue ArgumentError => e
-        flash[:alert] = e.message
-      rescue ActiveRecord::RecordInvalid
-      ensure
-        @order_products = @external_order.order_products.present? ? @external_order.order_products : @external_order.order_products.build
-        @sectors = @external_order.provider_sector.present? ? @external_order.provider_establishment.sectors : []
-        format.html { render :edit }
-      end
+      format.html { redirect_to edit_products_external_orders_applicant_url(@external_order), notice: message }
+    rescue ArgumentError => e
+      flash[:alert] = e.message
+    rescue ActiveRecord::RecordInvalid
+    ensure
+      @order_products = @external_order.order_products.present? ? @external_order.order_products : @external_order.order_products.build
+      @sectors = @external_order.provider_sector.present? ? @external_order.provider_establishment.sectors : []
+      format.html { render :edit }
     end
   end
 
@@ -117,15 +105,15 @@ class Establishments::ExternalOrders::ApplicantsController < Establishments::Ext
   def dispatch_order
     policy(:external_order_applicant).can_send?(@external_order)
     respond_to do |format|
-      begin
-        @external_order.send_request_by(@current_user)
-        format.html { redirect_to external_orders_applicant_url(@external_order), notice: 'La solicitud se ha enviado correctamente.' }
-      rescue ArgumentError => e
-        flash[:alert] = e.message
-        @external_order_product = @external_order.order_products.build
-        @error = e.message
-        format.html { render :edit_products }
+      @external_order.send_request_by(@current_user)
+      format.html do
+        redirect_to external_orders_applicant_url(@external_order), notice: 'La solicitud se ha enviado correctamente.'
       end
+    rescue ArgumentError => e
+      flash[:alert] = e.message
+      @external_order_product = @external_order.order_products.build
+      @error = e.message
+      format.html { render :edit_products }
     end
   end
 

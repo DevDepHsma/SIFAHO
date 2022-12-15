@@ -1,13 +1,27 @@
 <%= render 'establishments/external_orders/header' %>
-
 <div class="card fixed-custom-card">
   <div class="card-header">
     <%= render "establishments/external_orders/applicants/partials/filter" %>
   </div>
   <div class="card-body fixed-panel-index">
+    <% if @applicants_orders.present? %>
+      <div id="table_results">
+        <%= render(
+          partial: 'establishments/external_orders/applicants/partials/list',
+          locals: { applicant_orders: @applicants_orders }
+        ) %>
+      </div>
+    <% else %>
+      <%= render(
+        partial: 'shared/not_found_filter',
+        locals: { object_name: 'Solicitudes' }
+      ) %>
+    <% end %>
+  </div>
+  <div class="card-footer" id="paginate_footer">
     <%= render(
-      partial: 'establishments/external_orders/applicants/partials/list',
-      locals: { applicant_orders: @applicant_orders }
-    ) %>
+          partial: 'shared/paginate_index',
+          locals: { model: @applicants_orders, form_id: 'external-orders-filter' }
+        ) %>
   </div>
 </div>
