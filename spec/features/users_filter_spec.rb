@@ -7,7 +7,8 @@ RSpec.feature 'UsersFilters', type: :feature do
     @answer_permission_request = permission_module.permissions.find_by(name: 'answer_permission_request')
     @update_permissions = permission_module.permissions.find_by(name: 'update_permissions')
     PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @read_users)
-    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @answer_permission_request)
+    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector,
+                          permission: @answer_permission_request)
     PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @update_permissions)
 
     @user_permission_requested = @users_permission_requested.sample
@@ -36,7 +37,7 @@ RSpec.feature 'UsersFilters', type: :feature do
       end
 
       it 'by dni' do
-        users = User.where(status:'active').sample(5)
+        users = User.active.sample(5)
         users.each do |user|
           within '#users-filter' do
             fill_in 'filter[username]', with: user.username
@@ -55,7 +56,7 @@ RSpec.feature 'UsersFilters', type: :feature do
       end
 
       it 'by name' do
-        users = User.where(status:'active').sample(5)
+        users = User.active.sample(5)
         users.each do |user|
           within '#users-filter' do
             fill_in 'filter[fullname]', with: user.profile.first_name
@@ -129,9 +130,9 @@ RSpec.feature 'UsersFilters', type: :feature do
         end
       end
 
-      it 'by code' do
-        sorted_by_username_asc = User.select(:username).where(status:'active').order(username: :asc).first
-        sorted_by_username_desc = User.select(:username).where(status:'active').order(username: :desc).first
+      it 'by username' do
+        sorted_by_username_asc = User.select(:username).order(username: :asc).first
+        sorted_by_username_desc = User.select(:username).order(username: :desc).first
 
         within '#table_results' do
           click_button 'Usuario'
