@@ -1,6 +1,7 @@
 class ExternalOrder < ApplicationRecord
   include PgSearch::Model
   include Order
+  include QuerySort
 
   enum order_type: { provision: 0, solicitud: 1 }
   enum status: { solicitud_auditoria: 0, solicitud_enviada: 1, proveedor_auditoria: 2, proveedor_aceptado: 3,
@@ -30,7 +31,8 @@ class ExternalOrder < ApplicationRecord
   delegate :short_name, to: :applicant_establishment, prefix: :applicant
 
   scope :filter_by_params, lambda { |filter_params|
-    query = self.select(:id, :requested_date, :date_received, :remit_code, :status, :provider_sector_id, :order_type, :applicant_sector_id, 'sectors.name')
+    query = self.select(:id, :requested_date, :date_received, :remit_code, :status, :provider_sector_id, :order_type,
+                        :applicant_sector_id, 'sectors.name as sector_name')
     if filter_params.present? && filter_params[:provider].present?
       query = query.like_sector_name(filter_params[:provider])
     end
@@ -56,14 +58,14 @@ class ExternalOrder < ApplicationRecord
   }
 
   scope :by_applicant, lambda { |sector_id|
-    joins(:provider_sector).where(applicant_sector_id: sector_id)
+    joins(:provider_sector).joins(:provider_establishment).where(applicant_sector_id: sector_id)
   }
 
   scope :by_provider, lambda { |sector_id|
-    joins(:applicant_sector).where(provider_sector_id: sector_id)
+    joins(:applicant_sector).joins(:applicant_establishment).where(provider_sector_id: sector_id)
   }
   scope :like_sector_name, lambda { |sector_name|
-    where('unaccent(lower(sectors.name))  like ?', "%#{sector_name.downcase.removeaccents}%")
+    where('unaccent(lower(sectors.name))  like ? OR unaccent(lower(establishments.short_name)) like ? OR unaccent(lower(establishments.name)) like ?', "%#{sector_name.downcase.removeaccents}%", "%#{sector_name.downcase.removeaccents}%", "%#{sector_name.downcase.removeaccents}%")
   }
 
   scope :like_remit_code, lambda { |remit_code|

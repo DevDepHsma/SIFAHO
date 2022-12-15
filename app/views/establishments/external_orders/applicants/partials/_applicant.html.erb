@@ -1,10 +1,18 @@
-
 <tr id="external_order_<%= external_order.id %>" class="<%= ordering_td(external_order) %> <%= highlight_applicant_row_bg(external_order)%>">
-  <td><%= external_order.remit_code %></td>
-    <td class="sol-col-aba">
-      <%= external_order.provider_sector.name %>
-      <%= external_order.provider_sector.establishment_short_name %>
-    </td>
+  <td><%= highlight(external_order.remit_code, 
+                  get_value_from_filter(:code), 
+                  highlighter: '<mark class="highlight-1">\1</mark>',
+                  ) %></td>
+  <td class="sol-col-aba">
+    <%= highlight(external_order.provider_sector.name, 
+                  get_value_from_filter(:provider), 
+                  highlighter: '<mark class="highlight-1">\1</mark>',
+                  ) %>
+    <%= highlight(external_order.provider_sector.establishment_short_name, 
+                  get_value_from_filter(:provider), 
+                  highlighter: '<mark class="highlight-1">\1</mark>'
+                  ) %>
+  </td>
   <td>
     <span class="badge badge-secondary">
       <%= external_order.order_type.underscore.humanize %>
@@ -38,21 +46,18 @@
         <%= fa_icon "file-signature" %>
       <% end %>
     <% end %>
-    
     <% if policy(:external_order_applicant).can_send?(external_order) %>
       <%= link_to dispatch_order_external_orders_applicant_path(external_order),
         class: 'btn btn-primary btn-sm', title: 'Enviar', data: { toggle: 'tooltip', placement: 'top', method: :post } do %>
         <%= fa_icon "paper-plane" %>
       <% end %>
     <% end %>
-
     <% if policy(:external_order_applicant).show? %>
       <%= link_to external_orders_applicant_path(external_order, format: 'pdf'), class: 'btn btn-info btn-sm',  
         :title => 'Imprimir pdf', :'data-placement'=>'top', :'data-toggle'=>'tooltip', target: :_blank do %>
         <%= fa_icon "print" %>
       <% end %>
     <% end %>
-
     <% if policy(:external_order_applicant).show? %>
       <%= link_to external_orders_applicant_path(external_order),
         class: 'btn btn-secondary btn-sm btn-detail', title: 'Ver detalles', data: { toggle: 'tooltip', placement: 'top' }, 'data-disable-with' => "<i class='fa fa-spinner fa-spin'></i>".html_safe do %>
@@ -65,7 +70,6 @@
         <%= fa_icon "pen" %>
       <% end %>
     <% end %>
-
     <% if policy(:external_order_applicant).destroy?(external_order) %>
       <button type="button" 
         class="btn btn-danger btn-sm mr-1 ml-1 delete-item"
@@ -76,15 +80,13 @@
         data-title="Eliminar solicitud"
         data-body="Esta seguro que desea eliminar la solicitud <%= external_order.remit_code %>?"
         data-href="<%= external_orders_applicant_url(external_order.id) %>">
-          <%= fa_icon "trash" %>
+        <%= fa_icon "trash" %>
       </button>
     <% end %>
   </td>
-</tr>    
-
+</tr>
 <% content_for :modal do %>
   <% if policy(:external_order_applicant).destroy?(external_order) %>
     <%= render(partial: 'shared/modals/delete_confirmation') %>
   <% end %>
 <% end %>
-
