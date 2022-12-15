@@ -10,7 +10,6 @@ RSpec.feature 'InternalOrdersProviderFiltersSpec.rbs', type: :feature do
                           permission: @read_internal_order_provider)
     PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector,
                           permission: @destroy_internal_order_provider)
-    # PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @destroy_internal_order_applicant)
   end
 
   background do
@@ -75,7 +74,7 @@ RSpec.feature 'InternalOrdersProviderFiltersSpec.rbs', type: :feature do
         internal_orders = InternalOrder.by_provider(@farm_applicant.active_sector.id).where(provider_sector_id: @farm_applicant).sample(5)
         internal_orders.each do |internal_order|
           within '#internal-filter' do
-            page.select internal_order.order_type.capitalize, from: 'filter[with_order_type]'
+            page.select internal_order.order_type, from: 'filter[with_order_type]'
             click_button 'Buscar'
             sleep 1
           end
@@ -93,7 +92,7 @@ RSpec.feature 'InternalOrdersProviderFiltersSpec.rbs', type: :feature do
         internal_orders = InternalOrder.by_provider(@farm_applicant.active_sector.id).where(provider_sector_id: @farm_applicant).sample(5)
         internal_orders.each do |internal_order|
           within '#internal-filter' do
-            page.select internal_order.status.capitalize.gsub('_', ' '), from: 'filter[with_status]'
+            page.select internal_order.status, from: 'filter[with_status]'
             click_button 'Buscar'
             sleep 1
           end
@@ -208,12 +207,11 @@ RSpec.feature 'InternalOrdersProviderFiltersSpec.rbs', type: :feature do
         end
       end
     end
-    # #######################Falta terminar con los permisos para borrar archivos###########################
 
     describe 'Destroy permission' do
       before(:each) do
         internal_order = InternalOrder.by_provider(@farm_applicant.active_sector.id).where(provider_sector_id: @farm_applicant,
-                                                                                    status: 'proveedor_auditoria', order_type: 'provision').sample
+                                                                                           status: 'proveedor_auditoria', order_type: 'provision').sample
         within '#internal-filter' do
           fill_in 'filter[code]', with: internal_order.remit_code
           click_button 'Buscar'

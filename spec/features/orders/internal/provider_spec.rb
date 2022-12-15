@@ -30,16 +30,13 @@ RSpec.feature 'Orders::Internal::Providers', type: :feature do
     subject { page }
 
     describe 'Permission:' do
-      before(:each) do
-        visit '/sectores'
-      end
       it 'list' do
+        visit '/sectores'
         click_link 'Entregas'
         expect(page).to have_css('#table_results')
       end
 
       it 'show' do
-        click_link 'Entregas'
         order = InternalOrder.where(status: 'proveedor_auditoria', order_type: 'solicitud',
                                     provider_sector_id: @farm_applicant.active_sector.id).first
         visit "/sectores/pedidos/despachos/#{order.id}"
@@ -55,32 +52,60 @@ RSpec.feature 'Orders::Internal::Providers', type: :feature do
         expect(page).to have_button(class: 'btn btn-danger btn-sm')
       end
 
-      it 'create' do
+      it 'create:form and fields' do
+        visit '/sectores'
         within '#dropdown-menu-header' do
           expect(page).to have_link('Entregar')
           click_link 'Entregar'
         end
+        expect(page).to have_select('internal_order[applicant_sector_id]', visible: false)
+        expect(page).to have_field('internal_order[observation]', type: 'textarea')
         expect(page).to have_content('Nueva provision de sector')
         expect(page).to have_content('Últimas entregas de sectores')
-        expect(page).to have_select('internal_order[applicant_sector_id]', visible: false)
-        expect(page).to have_field('internal_order[observation]', type: 'textarea', visible: false)
         expect(page).to have_link('Volver')
         expect(page).to have_button('Guardar y agregar productos')
-      end
-
-      it 'edit' do
-        within '#dropdown-menu-header' do
-          expect(page).to have_link('Entregar')
-          click_link 'Entregar'
-        end
         within '#order-form' do
-          select_sector(@depo_provider.active_sector.name, 'select#applicant-sector')
+          select_sector(@depo_est_1.name, 'select#applicant-sector')
         end
-        expect(page).to have_content(@depo_provider.active_sector.name)
+        fill_in 'internal_order[observation]', with: 'Lorem ipsum'
         click_button 'Guardar y agregar productos'
         expect(page).to have_content('La provisión interna de Depósito se ha auditado correctamente.')
-        expect(page).to have_content('Editando productos de provision de sector código')
-        expect(page).to have_content('Solicitante')
+        add_products(rand(1..3), request_quantity: true, observations: true, select_lot_stock: true)
+        click_button 'Enviar'
+        expect(page).to have_content('Enviando provisión de sector')
+        expect(page).to have_content('Una vez enviada la orden, no se podrán retornar los productos a stock.')
+        expect(page).to have_content('Desea enviar la provisión?')
+        expect(page).to have_button('Cancelar')
+        expect(page).to have_link('Enviar')
+        sleep 1
+        within '.modal-content' do
+          page.find('a', text: 'Enviar').click
+        end
+        expect(page).to have_content('La provision se ha enviado correctamente.')
+      end
+
+      it 'edit:form and fields' do
+        order = InternalOrder.where(status: 'proveedor_auditoria', order_type: 'provision',
+                                    provider_sector_id: @farm_applicant.active_sector.id).sample
+        visit "/sectores/pedidos/despachos/#{order.id}/editar/"
+        sleep 1
+        expect(page).to have_content("Editando provision de sector código #{order.remit_code}")
+        expect(page).to have_content(@depo_provider.active_sector.name)
+        within '#order-form' do
+          select_sector(@depo_provider.active_sector.name, 'select#applicant-sector')
+          fill_in 'internal_order_observation', with: 'observación editada'
+        end
+        click_button 'Guardar y agregar productos'
+        sleep 1
+        expect(page).to have_content('La solicitud se ha editado y se encuentra en auditoria.')
+        sleep 1
+        expect(page).to have_content("Editando productos de provision de sector código #{order.remit_code}")
+        within '#order-products-container' do
+          expect(page).to have_field('Código')
+          expect(page).to have_field('Nombre')
+          expect(page).to have_field('Cant')
+          expect(page).to have_field('order_product[provider_observation]')
+        end
         expect(page).to have_content(@farm_applicant.active_sector.name)
         expect(page).to have_content('Proveedor')
         expect(page).to have_content(@depo_provider.active_sector.name)
@@ -93,53 +118,6 @@ RSpec.feature 'Orders::Internal::Providers', type: :feature do
         expect(page).to have_content('Tu observación')
         expect(page).to have_link('Volver')
         expect(page).to have_button('Enviar')
-      end
-    end
-
-    describe 'Form' do
-      before(:each) do
-        visit 'sectores/pedidos/despachos'
-      end
-      it 'create' do
-        click_link 'Entregar'
-        within '#order-form' do
-          select_sector(@depo_est_1.name, 'select#applicant-sector')
-        end
-        fill_in 'internal_order[observation]', with: 'Lorem ipsum'
-        click_button 'Guardar y agregar productos'
-        expect(page).to have_content('La provisión interna de Depósito se ha auditado correctamente.')
-      end
-      it 'charge products' do
-        click_link 'Entregar'
-        within '#order-form' do
-          select_sector(@depo_est_1.name, 'select#applicant-sector')
-        end
-        fill_in 'internal_order[observation]', with: 'Lorem ipsum'
-        click_button 'Guardar y agregar productos'
-        add_products(rand(1..3), request_quantity: true, observations: true, select_lot_stock: true)
-        click_button 'Enviar'
-        expect(page).to have_content('Enviando provisión de sector')
-        expect(page).to have_content('Una vez enviada la orden, no se podrán retornar los productos a stock.')
-        expect(page).to have_content('Desea enviar la provisión?')
-        expect(page).to have_button('Cancelar')
-        expect(page).to have_link('Enviar')
-        sleep 1
-        within '.modal-content' do
-          page.find('a', text: 'Enviar').click
-        end
-
-        expect(page).to have_content('La provision se ha enviado correctamente.')
-      end
-
-      it 'edit' do
-        within '#internal_orders' do
-          expect(page).to have_selector('tr')
-          expect(page).to have_selector('.btn-edit')
-          page.find('.btn-edit', match: :first).click
-        end
-        fill_in 'internal_order_observation', with: 'observación editada'
-        click_button 'Guardar y agregar productos'
-        expect(page).to have_content('La solicitud se ha editado y se encuentra en auditoria.')
         add_products(rand(1..3), request_quantity: true, observations: true, select_lot_stock: true)
         click_button 'Enviar'
         expect(page).to have_content('Enviando provisión de sector')

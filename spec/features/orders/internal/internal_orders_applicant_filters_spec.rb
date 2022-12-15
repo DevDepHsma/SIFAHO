@@ -10,7 +10,6 @@ RSpec.feature 'InternalOrdersApplicantFilters', type: :feature do
                           permission: @read_internal_order_applicant)
     PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector,
                           permission: @destroy_internal_order_applicant)
-    # PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @destroy_internal_order_applicant)
   end
 
   background do
@@ -75,7 +74,7 @@ RSpec.feature 'InternalOrdersApplicantFilters', type: :feature do
         internal_orders = InternalOrder.by_applicant(@farm_applicant.active_sector.id).where(applicant_sector_id: @farm_applicant).sample(5)
         internal_orders.each do |internal_order|
           within '#internal-filter' do
-            page.select internal_order.order_type.capitalize, from: 'filter[with_order_type]'
+            page.select internal_order.order_type, from: 'filter[with_order_type]'
             click_button 'Buscar'
             sleep 1
           end
@@ -93,7 +92,7 @@ RSpec.feature 'InternalOrdersApplicantFilters', type: :feature do
         internal_orders = InternalOrder.by_applicant(@farm_applicant.active_sector.id).where(applicant_sector_id: @farm_applicant).sample(5)
         internal_orders.each do |internal_order|
           within '#internal-filter' do
-            page.select internal_order.status.capitalize.gsub('_', ' '), from: 'filter[with_status]'
+            page.select internal_order.status, from: 'filter[with_status]'
             click_button 'Buscar'
             sleep 1
           end

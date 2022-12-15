@@ -36,7 +36,7 @@ RSpec.feature 'UsersFilters', type: :feature do
       end
 
       it 'by dni' do
-        users = User.all.sample(5)
+        users = User.where(status:'active').sample(5)
         users.each do |user|
           within '#users-filter' do
             fill_in 'filter[username]', with: user.username
@@ -55,7 +55,7 @@ RSpec.feature 'UsersFilters', type: :feature do
       end
 
       it 'by name' do
-        users = User.all.sample(5)
+        users = User.where(status:'active').sample(5)
         users.each do |user|
           within '#users-filter' do
             fill_in 'filter[fullname]', with: user.profile.first_name
@@ -130,8 +130,8 @@ RSpec.feature 'UsersFilters', type: :feature do
       end
 
       it 'by code' do
-        sorted_by_username_asc = User.select(:username).order(username: :asc).first
-        sorted_by_username_desc = User.select(:username).order(username: :desc).first
+        sorted_by_username_asc = User.select(:username).where(status:'active').order(username: :asc).first
+        sorted_by_username_desc = User.select(:username).where(status:'active').order(username: :desc).first
 
         within '#table_results' do
           click_button 'Usuario'
