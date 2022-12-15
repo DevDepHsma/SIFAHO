@@ -29,11 +29,52 @@ class ExternalOrder < ApplicationRecord
   delegate :short_name, to: :provider_establishment, prefix: :provider
   delegate :short_name, to: :applicant_establishment, prefix: :applicant
 
-  filterrific(
-    default_filter_params: { sorted_by: 'created_at_desc' },
-    available_filters: %i[search_code search_applicant search_provider with_order_type with_status requested_date_since
-                          requested_date_to date_received_since date_received_to sorted_by]
-  )
+  scope :filter_by_params, lambda { |filter_params|
+    query = self.select(:id, :requested_date, :date_received, :remit_code, :status, :provider_sector_id, :order_type, :applicant_sector_id, 'sectors.name')
+    if filter_params.present? && filter_params[:provider].present?
+      query = query.like_sector_name(filter_params[:provider])
+    end
+
+    if filter_params.present? && filter_params[:search_applicant].present?
+      query = query.like_sector_name(filter_params[:search_applicant])
+    end
+
+    query = query.like_remit_code(filter_params[:code]) if filter_params.present? && filter_params[:code].present?
+    if filter_params.present? && filter_params[:with_order_type].present?
+      query = query.with_order_type(filter_params[:with_order_type])
+    end
+    if filter_params.present? && filter_params[:with_status].present?
+      query = query.with_status(filter_params[:with_status])
+    end
+
+    query = if filter_params.present? && filter_params['sort'].present?
+              query.sorted_by(filter_params['sort'])
+            else
+              query.reorder(remit_code: :desc)
+            end
+    return query
+  }
+
+  scope :by_applicant, lambda { |sector_id|
+    joins(:provider_sector).where(applicant_sector_id: sector_id)
+  }
+
+  scope :by_provider, lambda { |sector_id|
+    joins(:applicant_sector).where(provider_sector_id: sector_id)
+  }
+  scope :like_sector_name, lambda { |sector_name|
+    where('unaccent(lower(sectors.name))  like ?', "%#{sector_name.downcase.removeaccents}%")
+  }
+
+  scope :like_remit_code, lambda { |remit_code|
+                            where('unaccent(lower(remit_code)) like ?', "%#{remit_code.downcase.removeaccents}%")
+                          }
+  scope :with_order_type, lambda { |order_type|
+                            where(order_type: order_type)
+                          }
+  scope :with_status, lambda { |status|
+                        where(status: status)
+                      }
 
   pg_search_scope :search_code,
                   against: :remit_code,
@@ -49,34 +90,6 @@ class ExternalOrder < ApplicationRecord
                   associated_against: { provider_sector: :name, provider_establishment: :name },
                   using: { tsearch: { prefix: true } }, # Buscar coincidencia desde las primeras letras.
                   ignoring: :accents # Ignorar tildes.
-
-  scope :sorted_by, lambda { |sort_option|
-    # extract the sort direction from the param value.
-    direction = sort_option =~ /desc$/ ? 'desc' : 'asc'
-    case sort_option.to_s
-    when /^created_at_/s
-      # Ordenamiento por fecha de creacion en la BD
-      order("external_orders.created_at #{direction}")
-    when /^sector_/
-      # Ordenamiento por nombre de sector
-      reorder("sectors.name #{direction}").joins(:sector)
-    when /^estado_/
-      # Ordenamiento por nombre de estado
-      reorder("external_orders.status #{direction}")
-    when /^tipo_/
-      # Ordenamiento por nombre de estado
-      reorder("external_orders.order_type #{direction}")
-    when /^solicitado_/
-      # Ordenamiento por la fecha de recepcion
-      reorder("external_orders.requested_date #{direction}")
-    when /^recibido_/
-      # Ordenamiento por la fecha de recepcion
-      reorder("external_orders.date_received #{direction}")
-    else
-      # Si no existe la opcion de ordenamiento se levanta la excepcion
-      raise(ArgumentError, "Invalid sort option: #{sort_option.inspect}")
-    end
-  }
 
   scope :date_received_since, lambda { |a_date|
     where('external_orders.date_received >= ?', a_date)
@@ -107,11 +120,11 @@ class ExternalOrder < ApplicationRecord
   }
 
   scope :without_status, lambda { |a_status|
-    where.not('external_orders.status = ?', a_status )
+    where.not('external_orders.status = ?', a_status)
   }
 
   scope :without_order_type, lambda { |an_order_type|
-    where.not('external_orders.order_type = ?', an_order_type )
+    where.not('external_orders.order_type = ?', an_order_type)
   }
 
   scope :with_order_type, lambda { |a_order_type|
@@ -129,7 +142,7 @@ class ExternalOrder < ApplicationRecord
       ['Recibido (nueva primero)', 'recibido_at_desc'],
       ['Recibido (antigua primero)', 'recibido_at_asc'],
       ['Estado (a-z)', 'estado_desc'],
-      ['Estado (z-a)', 'estado_asc'],
+      ['Estado (z-a)', 'estado_asc']
     ]
   end
 
@@ -144,13 +157,13 @@ class ExternalOrder < ApplicationRecord
       ['Provisión entregada', 5, 'success'],
       ['Recibo auditoria', 6, 'warning'],
       ['Recibo realizado', 7, 'success'],
-      ['Anulado', 8, 'danger'],
+      ['Anulado', 8, 'danger']
     ]
   end
 
   def self.provided_establishments_by(a_sector)
     @sector_ids = ExternalOrder.provider(a_sector).pluck(:applicant_sector_id).to_set
-    return Establishment.joins(:sectors).where(sectors: { id: @sector_ids }).pluck(:id, :name).to_set
+    Establishment.joins(:sectors).where(sectors: { id: @sector_ids }).pluck(:id, :name).to_set
   end
 
   def self.applicant_establishment(a_establishment)
@@ -180,37 +193,36 @@ class ExternalOrder < ApplicationRecord
   end
 
   def sum_to?(a_sector)
-    return self.applicant_sector == a_sector
+    applicant_sector == a_sector
   end
 
   # Return orders generated by the own sector
   def self.my_orders(a_sector)
-    @my_delivery = self.provision.where(provider_sector: a_sector)
-    @my_request = self.solicitud.where(applicant_sector: a_sector)
+    @my_delivery = provision.where(provider_sector: a_sector)
+    @my_request = solicitud.where(applicant_sector: a_sector)
 
-    return @my_delivery.or(@my_request)
+    @my_delivery.or(@my_request)
   end
 
   # Return orders generated by other sectors
   def self.other_orders(a_sector)
-    @other_delivery = self.provision.where(applicant_sector: a_sector)
-    @other_request = self.solicitud.where(provider_sector: a_sector)
-    return @other_delivery.or(@other_request)
+    @other_delivery = provision.where(applicant_sector: a_sector)
+    @other_request = solicitud.where(provider_sector: a_sector)
+    @other_delivery.or(@other_request)
   end
 
   def return_to_proveedor_auditoria_by(a_user)
-    self.proveedor_auditoria!
+    proveedor_auditoria!
     # self.order_products.each do |eop|
     #   eop.enable_reserved_stock
     # end
-    self.create_notification(a_user, "retornó a auditoría")
+    create_notification(a_user, 'retornó a auditoría')
   end
 
   # Accept order with products
   def accept_order_by(a_user)
-    if order_products.count.zero?
-      raise ArgumentError, 'Debe asignar almenos 1 producto.'
-    end
+    raise ArgumentError, 'Debe asignar almenos 1 producto.' if order_products.count.zero?
+
     proveedor_aceptado!
     create_notification(a_user, 'aceptó')
   end
@@ -218,23 +230,26 @@ class ExternalOrder < ApplicationRecord
   # Método para retornar pedido a estado anterior
   def return_applicant_status_by(a_user)
     if solicitud_enviada?
-      self.create_notification(a_user, "retornó a un estado anterior")
-      self.solicitud_auditoria!
+      create_notification(a_user, 'retornó a un estado anterior')
+      solicitud_auditoria!
     else
-      raise ArgumentError, "No es posible retornar a un estado anterior"
+      raise ArgumentError, 'No es posible retornar a un estado anterior'
     end
   end
 
   def create_notification(of_user, action_type)
-    ExternalOrderMovement.create(user: of_user, external_order: self, action: action_type, sector: of_user.active_sector)
-    (self.applicant_sector.users.uniq - [of_user]).each do |user|
-      @not = Notification.where( actor: of_user, user: user, target: self, notify_type: self.order_type, action_type: action_type, actor_sector: of_user.active_sector ).first_or_create
+    ExternalOrderMovement.create(user: of_user, external_order: self, action: action_type,
+                                 sector: of_user.active_sector)
+    (applicant_sector.users.uniq - [of_user]).each do |user|
+      @not = Notification.where(actor: of_user, user: user, target: self, notify_type: order_type,
+                                action_type: action_type, actor_sector: of_user.active_sector).first_or_create
       @not.updated_at = DateTime.now
       @not.read_at = nil
       @not.save
     end
-    (self.provider_sector.users.uniq - [of_user]).each do |user|
-      @not = Notification.where( actor: of_user, user: user, target: self, notify_type: self.order_type, action_type: action_type, actor_sector: of_user.active_sector ).first_or_create
+    (provider_sector.users.uniq - [of_user]).each do |user|
+      @not = Notification.where(actor: of_user, user: user, target: self, notify_type: order_type,
+                                action_type: action_type, actor_sector: of_user.active_sector).first_or_create
       @not.updated_at = DateTime.now
       @not.read_at = nil
       @not.save
@@ -244,26 +259,25 @@ class ExternalOrder < ApplicationRecord
   def get_statuses
     @statuses = self.class.statuses
 
-    if self.solicitud?
+    if solicitud?
       # si es anulado, devolvemos solo los 2 primeros estados y "anulado"
-      if self.anulado?
-        values = @statuses.except('proveedor_auditoria', 'proveedor_aceptado', 'provision_en_camino', 'provision_entregada')
+      if anulado?
+        @statuses.except('proveedor_auditoria', 'proveedor_aceptado', 'provision_en_camino',
+                         'provision_entregada')
       else
-        values = @statuses.except('anulado')
+        @statuses.except('anulado')
       end
     else
-      values = @statuses.except('solicitud_auditoria', 'solicitud_enviada', 'anulado')
+      @statuses.except('solicitud_auditoria', 'solicitud_enviada', 'anulado')
     end
-
-    return values
   end
 
   # status: ["key_name", 0], trae dos valores, el nombre del estado y su valor entero del enum definido
   def set_status_class(status)
-    status_class = self.anulado? ? "anulado" : "active";
-    # obetenemos el valor del status del objeto. 
+    status_class = anulado? ? 'anulado' : 'active'
+    # obetenemos el valor del status del objeto.
     self_status_int = ExternalOrder.statuses[self.status]
-    return status[1] <= self_status_int ? status_class : ""
+    status[1] <= self_status_int ? status_class : ''
   end
 
   # Returns the name of the efetor who deliver the products
@@ -277,10 +291,10 @@ class ExternalOrder < ApplicationRecord
   end
 
   def sent_request_by_user_fullname
-    if self.solicitud? 
+    if solicitud?
       movements.search_action('envio').first.user.full_name if movements.search_action('envio').first.present?
     else
-      return ''
+      ''
     end
   end
 
@@ -291,12 +305,10 @@ class ExternalOrder < ApplicationRecord
   private
 
   def record_remit_code
-    self.remit_code = "ES"+DateTime.now.to_s(:number)
+    self.remit_code = 'ES' + DateTime.now.to_s(:number)
   end
 
   def presence_of_products_into_the_order
-    if self.order_products.size == 0
-      errors.add(:presence_of_products_into_the_order, "Debe agregar almenos 1 producto")      
-    end
+    errors.add(:presence_of_products_into_the_order, 'Debe agregar almenos 1 producto') if order_products.size == 0
   end
 end
