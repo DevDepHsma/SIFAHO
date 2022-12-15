@@ -1,24 +1,18 @@
-<% content_for :reset_filters do %>
-  <%= render_filterrific_spinner %>
-  <%= link_to external_orders_providers_path(reset: true), class: 'btn btn-secondary ml-2',
-    title: 'Reiniciar', data: { toggle: 'tooltip', placement: 'top' }, 
-    'data-disable-with' => "<i class='fa fa-redo fa-spin'></i>".html_safe do %>
-    <%= fa_icon 'redo' %>
-  <% end %>
-<% end %>
-
 <% content_for :field_filters do %>
-  <label>Solicitante</label>
-  <input class="filterrific-periodically-observed form-control input-sm" 
-         placeholder="Sector/Establecimiento"
-         autocomplete="off"
-         type="text"
-         name="filterrific[search_applicant]"
-         id="filterrific_search_applicant"
-         type="text">
+  <div class="filter-form-col">
+    <div class="form-group">
+      <input class="form-control" 
+               autocomplete="off" 
+               type="text" 
+               name="filter[search_applicant]" 
+               id="filter_search_applicant" 
+               placeholder="Sector/Establecimiento"
+               value="<%= get_value_from_filter(:search_applicant) %>">
+      <label>Solicitante</label>
+    </div>
+  </div>
 <% end %>
-
 <% content_for :date_filter_label do %>
-  <label>Entregado</label>
+  <label> Recibido </label>
 <% end %>
-<%= render "establishments/external_orders/filters_main" %>
+<%= render(partial:"establishments/external_orders/filters_main",locals:{external_orders_xpath:external_orders_providers_path}) %>

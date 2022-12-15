@@ -11,16 +11,8 @@ class Establishments::ExternalOrders::ProvidersController < Establishments::Exte
       flash[:error] = 'Usted no está autorizado para realizar esta acción.'
       redirect_back(fallback_location: root_path)
     end
-    @filterrific = initialize_filterrific(
-      ExternalOrder.provider(@current_user.active_sector).without_status(0),
-      params[:filterrific],
-      select_options: {
-        with_status: ExternalOrder.options_for_status,
-        sorted_by: ExternalOrder.options_for_sorted_by
-      },
-      persistence_id: false
-    ) or return
-    @provider_orders = @filterrific.find.paginate(page: params[:page], per_page: 15)
+    @provider_orders = ExternalOrder.by_provider(@current_user.active_sector).filter_by_params(params[:filter])
+                                     .paginate(page: params[:page], per_page: params[:per_page] || 15)
   end
 
   # GET /external_orders/providers

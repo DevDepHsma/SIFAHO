@@ -1,5 +1,16 @@
-<% js = escape_javascript(
-  render(partial: 'establishments/external_orders/providers/partials/list', locals: { external_orders: @external_orders })
+<% list = escape_javascript(
+  render(partial: 'establishments/external_orders/providers/partials/list', locals: { provider_orders: @provider_orders })
+) %>
+<% paginate = escape_javascript( 
+  render( partial: 'shared/paginate_index',
+          locals: { model: @provider_orders, form_id: 'external-orders-filter' }
+        )
 ) %>
 
-$("#filterrific_results").html("<%= js %>");
+$("#table_results").html("<%= list %>");
+$("#paginate_footer").html("<%= paginate %>");
+setEventDestroyItem();
+$("a.page-link").on('click', (e) => {
+$("#loader-container").css({'display': 'flex'});
+})
+$("#loader-container").css({'display': 'none'});
