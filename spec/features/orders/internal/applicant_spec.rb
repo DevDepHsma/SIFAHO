@@ -34,8 +34,7 @@ RSpec.feature 'Orders::Internal::Applicants', type: :feature do
       end
 
       it 'show' do
-        order = InternalOrder.where(status: 'solicitud_auditoria',
-                                    applicant_sector_id: @farm_applicant.active_sector.id).first
+        order = InternalOrder.solicitud_auditoria.where(applicant_sector_id: @farm_applicant.active_sector.id).first
         visit "/sectores/pedidos/recibos/#{order.id}"
         expect(page).to have_content('Solicitante')
         expect(page).to have_content('Proveedor')
@@ -71,7 +70,7 @@ RSpec.feature 'Orders::Internal::Applicants', type: :feature do
       end
 
       it 'Edit and charge products: form and fields' do
-        order = InternalOrder.where(order_type: 'solicitud', status: 'solicitud_auditoria').sample
+        order = InternalOrder.solicitud.solicitud_auditoria.sample
         visit "sectores/pedidos/recibos/#{order.id}/editar"
         expect(page).to have_content("Editando solicitud de sector código #{order.remit_code}")
         expect(page).to have_select('internal_order[provider_sector_id]', visible: false)

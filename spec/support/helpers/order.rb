@@ -51,7 +51,6 @@ module Helpers
           sleep 1
           expect(find('ul.ui-autocomplete')).to have_content('ABBOTT LABORATORIES ARGENTINA S.A.')
           page.execute_script("$('.ui-menu-item:contains(ABBOTT LABORATORIES ARGENTINA S.A.)').last().click()")
-
         end
 
         if fields_args.include?(:observations)

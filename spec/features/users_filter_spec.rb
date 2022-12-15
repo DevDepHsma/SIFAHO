@@ -10,9 +10,7 @@ RSpec.feature 'UsersFilters', type: :feature do
     PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector,
                           permission: @answer_permission_request)
     PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @update_permissions)
-
     @user_permission_requested = @users_permission_requested.sample
-    @permission_request = PermissionRequest.where(user_id: @user_permission_requested.id).first
   end
 
   background do
@@ -182,7 +180,6 @@ RSpec.feature 'UsersFilters', type: :feature do
 
       it 'by name' do
         sorted_by_name_asc = User.joins(:profile).where(status: 1).order(first_name: :asc).first
-
         sorted_by_name_desc = User.joins(:profile).where(status: 1).order(first_name: :desc).first
 
         within '#table_results' do
@@ -204,46 +201,5 @@ RSpec.feature 'UsersFilters', type: :feature do
         end
       end
     end
-
-    # describe 'Destroy permission' do
-    #   before(:each) do
-    #     @user_to_del = users_without_stock.sample
-    #     within 'users-filter' do
-    #       fill_in 'filter[name]', with: @user_to_del.name
-    #       click_button 'Buscar'
-    #       sleep 1
-    #     end
-    #   end
-
-    #   it 'has button destroy' do
-    #     within 'users' do
-    #       expect(page).to have_selector('button.delete-item')
-    #     end
-    #   end
-
-    #   it 'shown modal on button destroy click' do
-    #     within 'users' do
-    #       page.first('button.delete-item').click
-    #       sleep 1
-    #     end
-    #     within '#delete-item' do
-    #       expect(page).to have_content('Eliminar usero')
-    #       expect(page).to have_button('Volver')
-    #       expect(page).to have_link('Confirmar')
-    #     end
-    #   end
-
-    #   it 'destroy items' do
-    #     within 'users' do
-    #       page.first('button.delete-item').click
-    #       sleep 1
-    #     end
-    #     within '#delete-item' do
-    #       click_link 'Confirmar'
-    #       sleep 1
-    #     end
-    #     expect(page).to have_text("El suministro #{@user_to_del.name} se ha eliminado correctamente.")
-    #   end
-    # end
   end
 end

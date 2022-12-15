@@ -29,9 +29,8 @@ $(document).on('turbolinks:load', function (e) {
     if(typeof e.target.value === 'undefined' || typeof e.target.value === null || e.target.value.length < 2){
       $('#filter_sector').find('option').remove();
       $('#filter_sector').selectpicker('refresh', {style: 'btn-sm btn-default'});
-     
     }
-    getSectors($(this).val())
+    getSectors($(this).val());
   });
 
   // ajax, brings sector according with the establishment ID
