@@ -20,6 +20,12 @@
                   highlighter: '<mark class="highlight-1">\1</mark>',
                   ignore_special_chars: true): '----' %>
     </td>
+    <td><%= if user.active_sector.establishment.short_name.present? 
+   user.active_sector.establishment.short_name + ' - '+user.active_sector.name
+     else
+     user.active_sector.establishment.name + ' - '+user.active_sector.name
+     end %>
+    </td>
     <td><%= user.profile.email.present? ? user.profile.email : '----' %></td>
   <% else %>
     <td>Sin perfil</td>
