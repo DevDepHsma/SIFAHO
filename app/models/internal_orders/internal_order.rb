@@ -85,32 +85,9 @@ class InternalOrder < ApplicationRecord
                   using: { tsearch: { prefix: true } }, # Buscar coincidencia desde las primeras letras.
                   ignoring: :accents # Ignorar tildes.
 
-  scope :date_received_since, lambda { |a_date|
-    where('internal_orders.date_received >= ?', a_date)
-  }
-
-  scope :date_received_to, lambda { |a_date|
-    where('internal_orders.date_received <= ?', a_date)
-  }
-
-  scope :requested_date_since, lambda { |a_date|
-    where('internal_orders.requested_date >= ?', a_date)
-  }
-
-  scope :requested_date_to, lambda { |a_date|
-    where('internal_orders.requested_date <= ?', a_date)
-  }
 
   scope :with_order_type, lambda { |a_type|
     where('internal_orders.order_type = ?', a_type)
-  }
-
-  scope :with_status, lambda { |a_status|
-    where('internal_orders.status = ?', a_status)
-  }
-
-  scope :without_status, lambda { |a_status|
-    where.not('internal_orders.status = ?', a_status)
   }
 
   def self.applicant(a_sector)
@@ -121,48 +98,6 @@ class InternalOrder < ApplicationRecord
     where(provider_sector: a_sector)
   end
 
-  # Método para establecer las opciones del select input del filtro
-  # Es llamado por el controlador como parte de `initialize_filterrific`.
-  def self.options_for_sorted_by
-    [
-      ['Creación (desc)', 'created_at_desc'],
-      ['Sector (a-z)', 'sector_asc'],
-      ['Responsable (a-z)', 'responsable_asc'],
-      ['Estado (a-z)', 'estado_asc'],
-      ['Insumos solicitados (a-z)', 'insumos_solicitados_asc'],
-      ['Fecha recibido (asc)', 'recibido_desc'],
-      ['Fecha entregado (asc)', 'entregado_asc'],
-      ['Cantidad (asc)', 'cantidad_asc']
-    ]
-  end
-
-  def self.options_for_status
-    [
-      ['Todos', '', 'default'],
-      ['Solicitud auditoria', 0, 'warning'],
-      ['Solicitud enviada', 1, 'info'],
-      ['Proveedor auditoria', 2, 'warning'],
-      ['Provision en camino', 3, 'primary'],
-      ['Provision entregada', 4, 'success'],
-      ['Anulado', 5, 'danger']
-    ]
-  end
-
-  def is_provider?(a_user)
-    provider_sector == a_user.sector
-  end
-
-  def is_applicant?(a_user)
-    applicant_sector == a_user.sector
-  end
-
-  def sum_to?(a_sector)
-    applicant_sector == a_sector
-  end
-
-  def delivered_with_sector?(a_sector)
-    provider_sector == a_sector || applicant_sector == a_sector if provision_en_camino? || provision_entregada?
-  end
 
   # Método para retornar perdido a estado anterior
   def return_applicant_status_by(a_user)

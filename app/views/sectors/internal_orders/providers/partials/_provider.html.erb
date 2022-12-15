@@ -6,9 +6,10 @@
 </td>
   <td class="sol-col-aba">
 
-    <%= highlight(internal_order.applicant_sector.name.to_s, 
+    <%= highlight(internal_order.applicant_sector.name, 
                   get_value_from_filter(:search_applicant), 
-                  highlighter: '<mark class="highlight-1">\1</mark>'
+                  highlighter: '<mark class="highlight-1">\1</mark>',
+                  ignore_special_chars: true
                   ) %>
   </td>
   <td>
@@ -31,7 +32,7 @@
     <%= internal_order.comments.count %>
   </td>
   <td>
-    <%#internal_order.requested_date.strftime("%d/%m/%Y") %>
+    <%= internal_order.requested_date.strftime("%d/%m/%Y") %>
   </td>
     <% if internal_order.provision_entregada? %>
       <td>

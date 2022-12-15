@@ -4,13 +4,13 @@
                   get_value_from_filter(:code), 
                   highlighter: '<mark class="highlight-1">\1</mark>'
                   ) %>
-    <%# internal_order.remit_code %></td>
+  </td>
   <td class="sol-col-aba">
-    <%= highlight(internal_order.provider_sector.name.to_s, 
+    <%= highlight(internal_order.provider_sector.name, 
                   get_value_from_filter(:provider), 
-                  highlighter: '<mark class="highlight-1">\1</mark>'
+                  highlighter: '<mark class="highlight-1">\1</mark>',
+                  ignore_special_chars: true
                   ) %>
-    <%# internal_order.provider_sector.name %>
   </td>
   <td>
     <span class="badge badge-secondary">
