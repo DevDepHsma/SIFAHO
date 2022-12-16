@@ -185,7 +185,6 @@ RSpec.feature 'ExternalOrdersProviderFilters', type: :feature do
       end
 
       it 'by provider' do
-        sleep 60
         sorted_by_provider_asc = ExternalOrder.by_provider(@farm_provider.active_sector.id).order('sectors.name asc').first
 
         sorted_by_provider_desc = ExternalOrder.by_provider(@farm_provider.active_sector.id).order('sectors.name desc').first
