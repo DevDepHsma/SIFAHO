@@ -34,8 +34,8 @@ RSpec.feature 'ExternalOrdersApplicantFilters', type: :feature do
       end
 
       it 'by code' do
-        internal_orders = ExternalOrder.by_applicant(@farm_applicant.active_sector.id).where(applicant_sector_id: @farm_applicant).sample(5)
-        internal_orders.each do |internal_order|
+        external_orders = ExternalOrder.by_applicant(@farm_applicant.active_sector.id).where(applicant_sector_id: @farm_applicant).sample(5)
+        external_orders.each do |internal_order|
           within '#external-orders-filter' do
             fill_in 'filter[code]', with: internal_order.remit_code
             click_button 'Buscar'
@@ -53,8 +53,8 @@ RSpec.feature 'ExternalOrdersApplicantFilters', type: :feature do
       end
 
       it 'by provider' do
-        internal_orders = ExternalOrder.by_applicant(@farm_applicant.active_sector.id).where(applicant_sector_id: @farm_applicant).sample(5)
-        internal_orders.each do |internal_order|
+        external_orders = ExternalOrder.by_applicant(@farm_applicant.active_sector.id).where(applicant_sector_id: @farm_applicant).sample(5)
+        external_orders.each do |internal_order|
           within '#external-orders-filter' do
             fill_in 'filter[provider]', with: internal_order.provider_sector.name
             click_button 'Buscar'
@@ -71,8 +71,8 @@ RSpec.feature 'ExternalOrdersApplicantFilters', type: :feature do
         end
       end
       it 'by order_type ' do
-        internal_orders = ExternalOrder.by_applicant(@farm_applicant.active_sector.id).where(applicant_sector_id: @farm_applicant).sample(5)
-        internal_orders.each do |internal_order|
+        external_orders = ExternalOrder.by_applicant(@farm_applicant.active_sector.id).where(applicant_sector_id: @farm_applicant).sample(5)
+        external_orders.each do |internal_order|
           within '#external-orders-filter' do
             page.select internal_order.order_type, from: 'filter[with_order_type]'
             click_button 'Buscar'
@@ -89,8 +89,8 @@ RSpec.feature 'ExternalOrdersApplicantFilters', type: :feature do
       end
 
       it 'by status' do
-        internal_orders = ExternalOrder.by_applicant(@farm_applicant.active_sector.id).where(applicant_sector_id: @farm_applicant).sample(5)
-        internal_orders.each do |internal_order|
+        external_orders = ExternalOrder.by_applicant(@farm_applicant.active_sector.id).where(applicant_sector_id: @farm_applicant).sample(5)
+        external_orders.each do |internal_order|
           within '#external-orders-filter' do
             page.select internal_order.status, from: 'filter[with_status]'
             click_button 'Buscar'
@@ -110,8 +110,8 @@ RSpec.feature 'ExternalOrdersApplicantFilters', type: :feature do
 
     describe 'pagination' do
       before(:each) do
-        internal_orders = ExternalOrder.by_applicant(@farm_applicant.active_sector.id).where(applicant_sector_id: @farm_applicant)
-        @last_page = (internal_orders.all.count / 15.to_f).ceil
+        external_orders = ExternalOrder.by_applicant(@farm_applicant.active_sector.id).where(applicant_sector_id: @farm_applicant)
+        @last_page = (external_orders.all.count / 15.to_f).ceil
       end
 
       it 'has pagination' do
