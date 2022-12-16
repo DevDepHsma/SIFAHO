@@ -180,6 +180,18 @@ function setEventDestroyItem(){
   });
 }
 
+function setEventNullifyItem(e){
+  const modal = $(e.target).attr('data-target');
+  const title = $(e.target).attr('data-title');
+  const body = $(e.target).attr('data-body');
+  const href = $(e.target).attr('data-href');
+
+  $(modal).find('.modal-title').text(title);
+  $(modal).find('.modal-body').text(body);
+  $(modal).find('a.btn[href="#"]').attr('href', href);
+  $(modal).modal('toggle');
+}
+
 function loadImage(e, img_path){
   e.target.src = img_path;
   e.onerror = null;

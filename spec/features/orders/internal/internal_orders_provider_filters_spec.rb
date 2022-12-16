@@ -1,15 +1,28 @@
+#  Test information
+
+#  Testing modules:
+#  Access permissions: List
+#  Filter by: Remit code / Provider / Origin / Status
+#  Sort by: Remit code / Provider
+#  Pagination
+#  Delete action
+#  Nullify action
+#
+
 require 'rails_helper'
 
 RSpec.feature 'InternalOrdersProviderFiltersSpec.rbs', type: :feature do
   before(:all) do
     permission_module = PermissionModule.includes(:permissions).find_by(name: 'Ordenes Internas Proveedor')
     @read_internal_order_provider = permission_module.permissions.find_by(name: 'read_internal_order_provider')
-    @update_internal_order_provider = permission_module.permissions.find_by(name: 'update_internal_order_provider')
     @destroy_internal_order_provider = permission_module.permissions.find_by(name: 'destroy_internal_order_provider')
+    @nullify_internal_order_provider = permission_module.permissions.find_by(name: 'nullify_internal_order_provider')
     PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector,
                           permission: @read_internal_order_provider)
     PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector,
                           permission: @destroy_internal_order_provider)
+    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector,
+                          permission: @nullify_internal_order_provider)
   end
 
   background do
@@ -237,7 +250,7 @@ RSpec.feature 'InternalOrdersProviderFiltersSpec.rbs', type: :feature do
         end
       end
 
-      it 'destroy items' do
+      it 'destroy order' do
         within '#internal_orders' do
           page.first('button.delete-item').click
           sleep 1
@@ -247,6 +260,50 @@ RSpec.feature 'InternalOrdersProviderFiltersSpec.rbs', type: :feature do
           sleep 1
         end
         expect(page).to have_text('El pedido interno de se ha eliminado correctamente.')
+      end
+    end
+
+    describe 'Nullify permission' do
+      before(:each) do
+        @order = InternalOrder.by_provider(@farm_applicant.active_sector.id).solicitud.solicitud_enviada.where(provider_sector_id: @farm_applicant).sample
+        within '#internal-filter' do
+          fill_in 'filter[code]', with: @order.remit_code
+          click_button 'Buscar'
+          sleep 1
+        end
+      end
+
+      it 'has nullify button' do
+        within '#internal_orders' do
+          expect(page).to have_selector 'button.btn-nullify'
+        end
+      end
+
+      it 'shown modal on button nullify click' do
+        within '#internal_orders' do
+          page.first('button.btn-nullify').click
+          sleep 1
+        end
+        within "#anular-confirm" do
+          expect(page).to have_text 'Confirmar anulación de orden'
+          expect(page).to have_text "Esta seguro de anular el pedido #{@order.remit_code} de #{@order.applicant_sector.name}?"
+          expect(page).to have_link 'Cancelar'
+          expect(page).to have_link 'Anular'
+        end
+      end
+
+      it 'nullify order' do
+        within '#internal_orders' do
+          page.first('button.btn-nullify').click
+          sleep 1
+        end
+        within "#anular-confirm" do
+          click_link 'Anular'
+        end
+        sleep 1
+        expect(page).to have_text 'Solicitud se ha anulado correctamente.'
+        expect(page).to have_text "Viendo solicitud #{@order.remit_code}"
+        expect(page).to have_text 'Anulado'
       end
     end
   end
