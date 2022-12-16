@@ -30,5 +30,6 @@ RSpec.configure do |config|
     chronic_prescriptions_populate
     reports_populate
     external_orders_applicant_populate
+    external_orders_provider_populate
   end
 end
