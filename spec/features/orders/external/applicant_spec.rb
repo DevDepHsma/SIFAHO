@@ -142,7 +142,6 @@ RSpec.feature 'Orders::External::Applicants', type: :feature do
         expect(page).to have_content('Editando solicitud de establecimiento código')
         expect(page).to have_link('Volver')
         expect(page).to have_link('Editar productos')
-        expect(page).to have_link('Editar productos')
         expect(page).to have_button('Guardar y agregar productos')
         within "#edit_external_order_#{external_order.id}" do
           expect(page).to have_field('external_order[applicant_observation]')
