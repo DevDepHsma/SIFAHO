@@ -1,3 +1,15 @@
+# == Schema Information
+
+# Table name: outpatient_prescription_products
+
+# outpatient_prescription_id             :bigint      not null
+# product_id                             :bigint      not null
+# request_quantity                       :integer     not null
+# delivery_quantity                      :integer     default: 0
+# observation                            :text        optional
+# created_at                             :datetime    auto
+# updated_at                             :datetime    auto
+
 class OutpatientPrescriptionProduct < ApplicationRecord
   # Relationships
   belongs_to :outpatient_prescription, inverse_of: 'outpatient_prescription_products'
@@ -17,7 +29,6 @@ class OutpatientPrescriptionProduct < ApplicationRecord
   validates :order_prod_lot_stocks, presence: { message: 'Debe seleccionar almenos 1 lote' },
                                     if: :is_dispensed_and_quantity_greater_than_0?
   validates_associated :order_prod_lot_stocks, if: :is_provision_dispensed?
-  validate :uniqueness_product_in_the_order
   validate :order_prod_lot_stocks_any_without_stock
 
   # Nested attributes
@@ -83,7 +94,7 @@ class OutpatientPrescriptionProduct < ApplicationRecord
   # Decrementamos la cantidad de cada lot stock (proveedor)
   def decrement_stock
     order_prod_lot_stocks.each do |oppls|
-      oppls.lot_stock.decrement(oppls.quantity, outpatient_prescription)
+      oppls.lot_stock.decrement!(oppls.quantity, outpatient_prescription)
     end
   end
 
@@ -110,15 +121,6 @@ class OutpatientPrescriptionProduct < ApplicationRecord
     if delivery_quantity.present? && delivery_quantity > total_quantity
       errors.add(:quantity_lot_stock_sum,
                  "El total de productos seleccionados debe ser igual a #{delivery_quantity}")
-    end
-  end
-
-  # Validacion: evitar duplicidad de productos en una misma orden
-  def uniqueness_product_in_the_order
-    (outpatient_prescription.outpatient_prescription_products.uniq - [self]).each do |opp|
-      if opp.product_id == product_id
-        errors.add(:uniqueness_product_in_the_order, 'Este producto ya se encuentra en la orden')
-      end
     end
   end
 
