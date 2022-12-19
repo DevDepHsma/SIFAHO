@@ -29,7 +29,9 @@ module Helpers
         }
         sleep 1
         expect(find('ul.ui-autocomplete')).to have_content(product.code)
-        page.execute_script("$('.ui-menu-item:contains(#{product.code})').first().click()")
+        page.execute_script("
+          $('.ui-menu-item').filter(function(){ return $(this).text()==='#{product.code}';}).mouseover().click()
+           ")
         if fields_args.include?(:request_quantity)
           page.execute_script %{
             $('input.request-quantity').last().val(#{rand(100..250)}).keydown()
