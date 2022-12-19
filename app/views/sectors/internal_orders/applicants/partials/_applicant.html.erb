@@ -75,7 +75,8 @@
         data-target="#delete-item" 
         data-title="Eliminar solicitud"
         data-body="Esta seguro que desea eliminar la solicitud <%= internal_order.remit_code %>?"
-        data-href="<%= internal_orders_applicant_url(internal_order.id) %>">
+        data-href="<%= internal_orders_applicant_url(internal_order.id) %>"
+        onclick="setModalConfirm(event)">
             <%= fa_icon "trash" %>
           </button>
         <% end %>

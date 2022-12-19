@@ -20,7 +20,8 @@
           data-target="#delete-item" 
           data-title="Eliminar procedencia"
           data-body="¿Desea eliminar la procedencia <%= lot_provenance.name %>?"
-          data-href="<%= lot_provenance_path(lot_provenance) %>">
+          data-href="<%= lot_provenance_path(lot_provenance) %>"
+          onclick="setModalConfirm(event)">
           <%= fa_icon "trash" %>
         </button>
       <% end %>    

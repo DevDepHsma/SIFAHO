@@ -26,7 +26,7 @@
         Recibos
       <% end %>
       <!-- Badge notification -->
-      <% request_count = InternalOrder.applicant(@current_user.active_sector).provision_en_camino.count %>
+      <% request_count = InternalOrder.by_applicant(@current_user.active_sector).provision_en_camino.count %>
       <% if request_count > 0%>
         <%= link_to internal_orders_applicants_path(filterrific: {:with_status => 3}), class: 'badge badge-info mr-2',
         title: "Provision en camino", data: { toggle: 'tooltip', placement: 'bottom' } do %>
@@ -42,7 +42,7 @@
         Entregas
       <% end %>
       <!-- Badge notification -->
-      <% request_count = InternalOrder.provider(@current_user.active_sector).solicitud_enviada.count %>
+      <% request_count = InternalOrder.by_provider(@current_user.active_sector).solicitud_enviada.count %>
       <% if request_count > 0%>
         <%= link_to internal_orders_providers_path(filterrific: {:with_status => 1}), class: 'badge badge-info mr-2',
         title: "Solicitudes sin responder", data: { toggle: 'tooltip', placement: 'bottom' } do %>

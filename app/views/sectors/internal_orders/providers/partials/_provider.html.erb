@@ -75,7 +75,8 @@
         data-target="#delete-item" 
         data-title="Eliminar provisión"
         data-body="Esta seguro que desea eliminar la provisión <%= internal_order.remit_code %>?"
-        data-href="<%= internal_orders_provider_url(internal_order.id) %>">
+        data-href="<%= internal_orders_provider_url(internal_order.id) %>"
+        onclick="setModalConfirm(event)">
           <%= fa_icon "trash" %>
       </button>
     <% end %>
@@ -89,7 +90,7 @@
               data-body="Esta seguro de anular el pedido <%= internal_order.remit_code %> de <%= internal_order.applicant_sector.name %>?" 
               title="Anular" 
               data-target="#anular-confirm"
-              onclick="setEventNullifyItem(event);">
+              onclick="setModalConfirm(event);">
         <%= fa_icon "ban" %>
       </button>
     <% end %>

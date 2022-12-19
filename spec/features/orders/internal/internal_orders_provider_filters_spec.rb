@@ -2,8 +2,8 @@
 
 #  Testing modules:
 #  Access permissions: List
-#  Filter by: Remit code / Provider / Origin / Status
-#  Sort by: Remit code / Provider
+#  Filter by: Remit code / Applicant / Origin / Status
+#  Sort by: Remit code / Applicant
 #  Pagination
 #  Delete action
 #  Nullify action

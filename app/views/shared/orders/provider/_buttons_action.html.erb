@@ -40,7 +40,8 @@
       data-target="#delete-item" 
       data-title="Eliminar producto"
       data-body="Esta seguro que desea eliminar el producto <%= order_product.product.name %>?"
-      data-href="<%= polymorphic_path([order_product.order.class.name.underscore.pluralize.to_sym, :provider_product], provider_id: order_product.order_id, id: order_product.id) %>">
+      data-href="<%= polymorphic_path([order_product.order.class.name.underscore.pluralize.to_sym, :provider_product], provider_id: order_product.order_id, id: order_product.id) %>"
+      onclick="setModalConfirm(event)">
         <%= fa_icon 'trash-alt', class: 'fa-fw' %>
     </button>
   <% end %>

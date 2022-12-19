@@ -156,9 +156,6 @@ $(document).on('turbolinks:load', function() {
   resize();
   /* new version */
   $('[data-toggle="popover"]').popover();
-  
-  setEventDestroyItem();
-
   // Inicializamos todos los switch buttons
   $('input[type=checkbox][data-toggle="switchbutton"]').each(function( index, element ) {
     element.switchButton();
@@ -166,21 +163,8 @@ $(document).on('turbolinks:load', function() {
 
 });
 
-function setEventDestroyItem(){
-  $('.delete-item, .btn-delete-confirm').on('click', function(e) {
-    const modal = $(e.target).attr('data-target');
-    const title = $(e.target).attr('data-title');
-    const body = $(e.target).attr('data-body');
-    const href = $(e.target).attr('data-href');
-
-    $(modal).find('.modal-title').text(title);
-    $(modal).find('.modal-body').text(body);
-    $(modal).find('.btn[data-method="delete"]').attr('href', href);
-    $(modal).modal('toggle');
-  });
-}
-
-function setEventNullifyItem(e){
+// Modal confirm: Nullify / Delete
+function setModalConfirm(e){
   const modal = $(e.target).attr('data-target');
   const title = $(e.target).attr('data-title');
   const body = $(e.target).attr('data-body');
@@ -204,4 +188,3 @@ function toggleLoading(){
     $("#loader-container").addClass('d-flex');
   }
 }
-// delete confirm

@@ -1,3 +1,13 @@
+#  Test information
+
+#  Testing modules:
+#  Access permissions: List
+#  Filter by: Remit code / Provider / Origin / Status
+#  Sort by: Remit code / Provider
+#  Pagination
+#  Delete action
+#
+
 require 'rails_helper'
 
 RSpec.feature 'InternalOrdersApplicantFilters', type: :feature do

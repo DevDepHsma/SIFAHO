@@ -1,3 +1,20 @@
+# == Schema Information
+
+# Table name: internal_orders
+
+# date_delivered              :datetime   required if it dispached
+# date_received               :datetime   required if it receieved
+# observation                 :text       optional
+# provider_status             :integer    not null, default: 0
+# requested_date              :datetime   required if it requested
+# provider_sector_id          :bigint     not null
+# applicant_sector_id         :bigint     not null
+# applicant_status            :integer    not null, default: 0
+# remit_code                  :string     not null, auto
+# order_type                  :integer    not null, default: 0
+# status                      :integer    not null, default: 0
+#
+
 class InternalOrder < ApplicationRecord
   include PgSearch::Model
   include Order
@@ -64,40 +81,11 @@ class InternalOrder < ApplicationRecord
                             where('unaccent(lower(remit_code)) like ?', "%#{remit_code.downcase.removeaccents}%")
                           }
   scope :with_order_type, lambda { |order_type|
-                            where(order_type: order_type)
+                            where('order_type = ?', order_type)
                           }
   scope :with_status, lambda { |status|
-                        where(status: status)
+                        where('status = ?', status)
                       }
-
-  pg_search_scope :search_code,
-                  against: :remit_code,
-                  using: { tsearch: { prefix: true }, trigram: {} }, # Buscar coincidencia en cualquier parte del string
-                  ignoring: :accents # Ignorar tildes.
-
-  pg_search_scope :search_applicant,
-                  associated_against: { applicant_sector: :name },
-                  using: { tsearch: { prefix: true } }, # Buscar coincidencia desde las primeras letras.
-                  ignoring: :accents # Ignorar tildes.
-
-  pg_search_scope :search_provider,
-                  associated_against: { provider_sector: :name },
-                  using: { tsearch: { prefix: true } }, # Buscar coincidencia desde las primeras letras.
-                  ignoring: :accents # Ignorar tildes.
-
-
-  scope :with_order_type, lambda { |a_type|
-    where('internal_orders.order_type = ?', a_type)
-  }
-
-  def self.applicant(a_sector)
-    where(applicant_sector: a_sector)
-  end
-
-  def self.provider(a_sector)
-    where(provider_sector: a_sector)
-  end
-
 
   # Método para retornar perdido a estado anterior
   def return_applicant_status_by(a_user)

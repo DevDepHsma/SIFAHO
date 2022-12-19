@@ -40,7 +40,8 @@
         data-target="#delete-item" 
         data-title="<%= destroy[:title] %>"
         data-body="<%= destroy[:body] %>"
-        data-href="<%= destroy[:path] %>">
+        data-href="<%= destroy[:path] %>"
+        onclick="setModalConfirm(event)">
           <%= fa_icon "trash" %>
         </button>
       <% end %>
