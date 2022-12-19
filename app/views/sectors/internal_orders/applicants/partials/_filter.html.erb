@@ -1,25 +1,20 @@
 
-<% content_for :reset_filters do %>
-  <%= link_to internal_orders_applicants_path(reset: true), 
-              class: 'btn btn-secondary ml-2',
-              title: 'Reiniciar', data: { toggle: 'tooltip', placement: 'top' }, 
-              'data-disable-with' => "<i class='fa fa-redo fa-spin'></i>".html_safe do %>
-    <%= fa_icon 'redo' %>
-  <% end %>
-<% end %>
-
 <% content_for :field_filters do %>
-  <label>Proveedor</label>
-  <input class="filterrific-periodically-observed form-control input-sm" 
-         placeholder="Sector" 
-         autocomplete="off" 
-         type="text" 
-         name="filterrific[search_provider]" 
-         id="filterrific_search_provider">
+  <div class="filter-form-col">
+    <div class="form-group">
+      
+      <input class="form-control" 
+               autocomplete="off" 
+               type="text" 
+               name="filter[provider]" 
+               id="filter_provider" 
+               placeholder="Sector"
+               value="<%= get_value_from_filter(:provider) %>">
+               <label>Proveedor</label>
+    </div>
+  </div>
 <% end %>
-
 <% content_for :date_filter_label do %>
   <label> Recibido </label>
 <% end %>
-
-<%= render "sectors/internal_orders/filters_main" %>
+<%= render(partial:"sectors/internal_orders/filters_main",locals:{internal_orders_xpath:internal_orders_applicants_path}) %>

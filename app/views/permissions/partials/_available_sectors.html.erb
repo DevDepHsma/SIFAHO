@@ -10,7 +10,8 @@
       data-target="#delete-item" 
       data-title="Quitar sector <%= sector.name %>"
       data-body="Esta seguro que desea remover el sector <%= sector.name %> a <%=@user.full_name%>?"
-      data-href="<%= removes_sector_users_admin_path(@user, sector.id) %>">
+      data-href="<%= removes_sector_users_admin_path(@user, sector.id) %>"
+      onclick="setModalConfirm(event)">
         <%= fa_icon "times" %>
     </button>
   </li>

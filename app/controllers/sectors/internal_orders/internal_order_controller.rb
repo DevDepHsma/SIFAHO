@@ -1,8 +1,8 @@
 class Sectors::InternalOrders::InternalOrderController < ApplicationController
 
   # def statistics
-  #   @internal_providers = InternalOrder.provider(current_user.sector)
-  #   @internal_applicants = InternalOrder.applicant(current_user.sector)
+  #   @internal_providers = InternalOrder.by_provider(current_user.sector)
+  #   @internal_applicants = InternalOrder.by_applicant(current_user.sector)
   # end
 
   # GET /internal_orders/1
@@ -13,7 +13,7 @@ class Sectors::InternalOrders::InternalOrderController < ApplicationController
       format.html
       format.js
       format.pdf do
-        pdf = ReportServices::InternalOrderReportService.new(current_user, @internal_order).generate_pdf
+        pdf = ReportServices::InternalOrderReportService.new(@current_user, @internal_order).generate_pdf
         send_data pdf, filename: "Pedido_#{@internal_order.remit_code}.pdf", type: 'application/pdf', disposition: 'inline'
       end
     end

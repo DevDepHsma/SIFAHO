@@ -24,6 +24,34 @@
         <label>Nombre</label>
       </div>
     </div>
+    <div class="filter-form-col">
+      <div class="form-group">
+        <select  data-live-search="true" class="form-control selectpicker-md
+         custom-select-pick "  name="filter[establishment]" id="filter_establishment">
+          <option value="">Seleccionar establecimiento</option>
+          <% Establishment.all.each do |establishment| %>
+            <option value='<%= establishment.id %>' ><%= establishment.name %></option>
+          <%  end %>
+        </select>
+      </div>
+    </div>
+    <div class="filter-form-col">
+      <div class="form-group">
+        <select  data-live-search="true" class="form-control selectpicker-md
+         custom-select-pick "  name="filter[sector]" id="filter_sector">
+        </select>
+      </div>
+    </div>
+    <div class="filter-form-col">
+      <div class="form-group">
+        <select class="form-control custom-select <%= 'filled' if get_value_from_filter(:status) != '' %>" name="filter[status]" onChange="mark_selected(event)">
+          <option value="" ></option>
+          <option value='1' <%= 'selected' if get_value_from_filter(:status) == '1' %>>Activo</option>
+          <option value='2' <%= 'selected' if get_value_from_filter(:status) == '2' %>>Inactivo</option>
+        </select>
+        <label>Estado</label>
+      </div>
+    </div>
     <input type="hidden" name="filter[sort]" value="<%= get_value_from_filter(:sort) %>">
     <input type="hidden" name="per_page" value="<%= params[:per_page] || 15 %>">
     <div class="filter-form-btn-group">

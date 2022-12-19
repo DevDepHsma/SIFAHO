@@ -7,15 +7,8 @@ class Sectors::InternalOrders::ApplicantsController < Sectors::InternalOrders::I
   # GET /internal_orders/applicants.json
   def index
     policy(:internal_order_applicant).index?
-    @filterrific = initialize_filterrific(
-      InternalOrder.applicant(@current_user.active_sector),
-      params[:filterrific],
-      select_options: {
-        with_status: InternalOrder.options_for_status
-      },
-      persistence_id: false,
-    ) or return
-    @applicant_orders = @filterrific.find.page(params[:page]).per_page(15)
+    @internal_orders = InternalOrder.by_applicant(@current_user.active_sector).filter_by_params(params[:filter])
+                                    .paginate(page: params[:page], per_page: params[:per_page] || 15)
   end
 
   # GET /internal_orders/applicants/new_applicant

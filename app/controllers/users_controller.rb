@@ -6,6 +6,7 @@ class UsersController < ApplicationController
     authorize User
     @users = User.filter_by_params(params[:filter])
                  .paginate(page: params[:page], per_page: params[:per_page] || 15)
+    @sectors =  Sector.all
   end
 
   def show

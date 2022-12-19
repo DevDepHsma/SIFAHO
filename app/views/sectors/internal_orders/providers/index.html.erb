@@ -1,13 +1,32 @@
-<%= render 'sectors/internal_orders/header' %>
+<% content_for :modal do %>
+  <%= render(partial: 'shared/modals/delete_confirmation') %>
+  <%= render(partial: 'shared/modals/nullify_confirmation') %>
+<% end %>
 
+<%= render 'sectors/internal_orders/header' %>
 <div class="card fixed-custom-card">
   <div class="card-header">
     <%= render "sectors/internal_orders/providers/partials/filter" %>
   </div>
   <div class="card-body fixed-panel-index">
-    <%= render(
+    <% if @internal_orders.present? %>
+      <div id="table_results">
+        <%= render(
       partial: 'sectors/internal_orders/providers/partials/list',
       locals: { internal_orders: @internal_orders }
     ) %>
+      </div>
+    <% else %>
+      <%= render(
+        partial: 'shared/not_found_filter',
+        locals: { object_name: 'Entregas' }
+      ) %>
+    <% end %>
+  </div>
+  <div class="card-footer" id="paginate_footer">
+    <%= render(
+          partial: 'shared/paginate_index',
+          locals: { model: @internal_orders, form_id: 'internal-filter' }
+        ) %>
   </div>
 </div>

@@ -6,6 +6,7 @@ module ReportServices
     end
 
     def generate_pdf
+      requested_date=@internal_order.requested_date.present? ? @internal_order.requested_date.strftime('%d/%m/%Y') : ''
       report = Thinreports::Report.new
 
       report.use_layout File.join(Rails.root, 'app', 'reports', 'internal_order', 'other_page.tlf'), default: true
@@ -17,7 +18,7 @@ module ReportServices
       # Agregamos el encabezado
       report.page[:title] = "Reporte de #{@internal_order.order_type.humanize.underscore}"
       report.page[:remit_code] = @internal_order.remit_code
-      report.page[:requested_date] = @internal_order.requested_date.strftime('%d/%m/%YY')
+      report.page[:requested_date] = requested_date
       report.page[:applicant_sector] = @internal_order.applicant_sector.name
       report.page[:provider_sector] = @internal_order.provider_sector.name
       report.page[:observations] = @internal_order.observation

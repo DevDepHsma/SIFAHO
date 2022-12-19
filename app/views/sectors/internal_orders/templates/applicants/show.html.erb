@@ -15,7 +15,8 @@
         data-target="#delete-item" 
         data-title="Eliminar plantilla"
         data-body="Esta seguro que desea eliminar la plantilla <%= @internal_order_template.name %>?"
-        data-href="<%= internal_orders_templates_applicant_url(@internal_order_template) %>">
+        data-href="<%= internal_orders_templates_applicant_url(@internal_order_template) %>"
+        onclick="setModalConfirm(event)">
           <%= fa_icon "trash" %>
       </button>
     <% end %>

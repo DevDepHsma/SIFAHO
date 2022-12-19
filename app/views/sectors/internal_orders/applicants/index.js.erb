@@ -1,5 +1,15 @@
-<% js = escape_javascript(
-  render(partial: 'sectors/internal_orders/applicants/partials/list', locals: { applicant_orders: @applicant_orders })
+<% list = escape_javascript(
+  render(partial: 'sectors/internal_orders/applicants/partials/list', locals: { internal_orders: @internal_orders })
+) %>
+<% paginate = escape_javascript( 
+  render( partial: 'shared/paginate_index',
+          locals: { model: @internal_orders, form_id: 'internal-filter' }
+        )
 ) %>
 
-$("#filterrific_results").html("<%= js %>");
+$("#table_results").html("<%= list %>");
+$("#paginate_footer").html("<%= paginate %>");
+$("a.page-link").on('click', (e) => {
+$("#loader-container").css({'display': 'flex'});
+})
+$("#loader-container").css({'display': 'none'});
