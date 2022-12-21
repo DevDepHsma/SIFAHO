@@ -1,6 +1,5 @@
 class EstablishmentsController < ApplicationController
   before_action :set_establishment, only: %i[show edit update destroy delete]
-
   # GET /establishments
   # GET /establishments.json
   def index
@@ -8,17 +7,9 @@ class EstablishmentsController < ApplicationController
       flash[:error] = 'Usted no está autorizado para realizar esta acción.'
       redirect_back(fallback_location: root_path)
     end
-    @filterrific = initialize_filterrific(
-      Establishment.select(:id, :cuie, :name, :establishment_type_id, 'SUM(sectors.user_sectors_count) AS total_users')
-      .left_outer_joins(:sectors)
-      .group(:id, :cuie, :name, :establishment_type_id),
-      params[:filterrific],
-      select_options: {
-        sorted_by: Establishment.options_for_sorted_by
-      },
-      persistence_id: false
-    ) or return
-    @establishments = (request.format.xlsx? || request.format.pdf?) ? @filterrific.find : @filterrific.find.page(params[:page]).per(15)
+    @establishments = Establishment.filter_by_params(params[:filter])
+    .paginate(page: params[:page], per_page: params[:per_page] || 15)
+    #@establishments = (request.format.xlsx? || request.format.pdf?) ? @filterrific.find : @filterrific.find.page(params[:page]).per(15)
     respond_to do |format|
       if policy(:establishment).index?
         format.html

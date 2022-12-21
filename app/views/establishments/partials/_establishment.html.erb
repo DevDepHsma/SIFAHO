@@ -1,12 +1,19 @@
 <tr id="establishment_<%= establishment.id %>">
   <div class="js-fade fade-in is-paused">
-    <td><%= establishment.cuie.present? ? establishment.cuie.upcase : '---' %></td>
-    <td><%= establishment.name %></td>
+    <td>
+      <%=highlight(establishment.cuie.present? ? establishment.cuie.upcase : '---', 
+                  get_value_from_filter(:cuie), 
+                  highlighter: '<mark class="highlight-1">\1</mark>'
+                  )%>
+    </td>
+    <td><%= highlight(establishment.name, 
+                  get_value_from_filter(:name), 
+                  highlighter: '<mark class="highlight-1">\1</mark>'
+                  )%> </td>
     <td><%= establishment.establishment_type.present? ? establishment.establishment_type.name : '---' %></td>
     <td><%= establishment.sectors.count %></td>
-    <td><%= establishment.total_users.present? ? establishment.total_users : 0 %></td>
+    <td><%= establishment.total_users %></td>
     <td class="text-left actions-col">
-
       <%= render(
         partial: 'shared/action_buttons',
         locals:{ 
