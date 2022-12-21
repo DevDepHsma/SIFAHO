@@ -9,6 +9,7 @@ require 'support/db_populate/patients'
 require 'support/db_populate/reports'
 require 'support/db_populate/internal_orders_applicant'
 require 'support/db_populate/internal_orders_provider'
+require 'support/db_populate/establishments'
 
 RSpec.configure do |config|
   config.include DataMock::Products, type: :feature
@@ -18,6 +19,7 @@ RSpec.configure do |config|
   config.include DataMock::Professionals, type: :feature
   config.include DataMock::Reports, type: :feature
   config.include DataMock::Users, type: :feature
+  config.include DataMock::Establishments, type: :feature
 
   config.before(:all, type: :feature) do
     permissions_populate
@@ -33,5 +35,6 @@ RSpec.configure do |config|
     reports_populate
     internal_orders_applicant_populate
     internal_orders_provider_populate
+    establishments_populate
   end
 end
