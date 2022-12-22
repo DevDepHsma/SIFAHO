@@ -41,7 +41,7 @@ RSpec.feature 'PermissionRequests', type: :feature, js: true do
       end
 
       it 'show sector select on establishment selected' do
-        establishment = Establishment.all.sample
+        establishment = Sector.all.sample.establishment
         within '#new_permission_request' do
           element = page.find('select#permission_request_establishment_id', visible: false)
           element.sibling('button', class: 'dropdown-toggle').click
@@ -53,13 +53,12 @@ RSpec.feature 'PermissionRequests', type: :feature, js: true do
       end
 
       it 'successfully save with establishment and sector' do
-        establishment = Establishment.all.sample
+        establishment = Sector.all.sample.establishment
         role = Role.all.sample
         within '#new_permission_request' do
           element = page.find('select#permission_request_establishment_id', visible: false)
           element.sibling('button', class: 'dropdown-toggle').click
           page.find('li', text: establishment.name).click
-
           element = page.find('select#permission_request_sector_id', visible: false)
           element.sibling('button', class: 'dropdown-toggle').click
           page.find('li', text: establishment.sectors.sample.name).click
@@ -75,7 +74,7 @@ RSpec.feature 'PermissionRequests', type: :feature, js: true do
       end
 
       it 'show other sector input on sector select "otro.." option' do
-        establishment = Establishment.all.sample
+        establishment = Sector.all.sample.establishment
         within '#new_permission_request' do
           element = page.find('select#permission_request_establishment_id', visible: false)
           element.sibling('button', class: 'dropdown-toggle').click
@@ -90,7 +89,7 @@ RSpec.feature 'PermissionRequests', type: :feature, js: true do
       end
 
       it 'successfully save with establishment and other sector' do
-        establishment = Establishment.all.sample
+        establishment = Sector.all.sample.establishment
         role = Role.all.sample
         within '#new_permission_request' do
           element = page.find('select#permission_request_establishment_id', visible: false)
@@ -155,7 +154,7 @@ RSpec.feature 'PermissionRequests', type: :feature, js: true do
       end
 
       it 'Sector is required' do
-        establishment = Establishment.all.sample
+        establishment = Sector.all.sample.establishment
         role = Role.all.sample
         within '#new_permission_request' do
           element = page.find('select#permission_request_establishment_id', visible: false)
@@ -185,7 +184,7 @@ RSpec.feature 'PermissionRequests', type: :feature, js: true do
       end
 
       it 'Other sector are required on sector select "Otro.." option' do
-        establishment = Establishment.all.sample
+        establishment = Sector.all.sample.establishment
         role = Role.all.sample
         within '#new_permission_request' do
           element = page.find('select#permission_request_establishment_id', visible: false)
