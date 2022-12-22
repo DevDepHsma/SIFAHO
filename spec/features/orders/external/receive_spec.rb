@@ -21,19 +21,20 @@ RSpec.feature 'Orders::External::Receives', type: :feature do
 
     it ':: READ :: success' do
       visit '/'
-      expect(page.has_link?('Establecimientos')).to be true
+      expect(page).to have_link('Establecimientos')
       within '#sidebar-wrapper' do
         click_link 'Establecimientos'
       end
       click_link 'Solicitar'
       sleep 1
-      select_sector(@depo_provider.active_sector.name, 'select#effector-sector', @depo_provider.active_sector.establishment)
+      select_sector(@depo_provider.active_sector.name, 'select#effector-sector',
+                    @depo_provider.active_sector.establishment)
       expect(page).to have_content(@depo_provider.active_sector.name)
       click_button 'Guardar y agregar productos'
 
       add_products(rand(1..3), request_quantity: true, observations: true)
       expect(page).to have_selector('input.product-code')
-      expect(page.has_button?('Enviar')).to be true
+      expect(page).to have_button('Enviar')
       click_button 'Enviar'
       expect(page).to have_content('La solicitud se ha enviado correctamente.')
       expect(page).to have_content('Solicitud enviada')
@@ -53,8 +54,8 @@ RSpec.feature 'Orders::External::Receives', type: :feature do
         sleep 1
       end
       expect(page).to have_content('Confirmar anulación de orden')
-      expect(page.has_link?('Cancelar')).to be true
-      expect(page.has_link?('Anular')).to be true
+      expect(page).to have_link('Cancelar')
+      expect(page).to have_link('Anular')
       click_link 'Cancelar'
       sleep 1
       within '#external_orders' do
@@ -62,11 +63,11 @@ RSpec.feature 'Orders::External::Receives', type: :feature do
       end
       sleep 1
       fill_products_deliver_quantity
-      expect(page.has_link?('Agregar producto')).to be true
+      expect(page).to have_link('Agregar producto')
       click_link 'Agregar producto'
       sleep 1
       add_products(rand(1..3), request_quantity: true, observations: true, select_lot_stock: true)
-      expect(page.has_button?('Aceptar')).to be true
+      expect(page).to have_button('Aceptar')
       click_button 'Aceptar'
       expect(page).to have_content('La provision se ha aceptado correctamente.')
       expect(page).to have_content('Proveedor aceptado')
@@ -85,19 +86,21 @@ RSpec.feature 'Orders::External::Receives', type: :feature do
         click_link 'Establecimientos'
       end
       click_link 'Recibos'
-      within '#applicant_orders' do
+      within '#external_orders' do
         expect(page).to have_selector('tr')
         expect(page).to have_selector('.btn-detail')
-        page.execute_script %{$('a.btn-detail')[0].click()}
       end
-      expect(page.has_button?('Recibir')).to be true
+
+      order = ExternalOrder.where(order_type: 'solicitud', status: 'provision_en_camino',
+                                  applicant_sector_id: @farm_applicant.active_sector.id).first
+      visit "/establecimientos/pedidos/recibos/#{order.id}"
+      expect(page).to have_button('Recibir')
       click_button 'Recibir'
       sleep 1
       expect(page).to have_content('Confirmar recibo de pedido de establecimiento')
-      expect(page.has_link?('Cancelar')).to be true
-      expect(page.has_link?('Confirmar')).to be true
+      expect(page).to have_link('Cancelar')
+      expect(page).to have_link('Confirmar')
       click_link 'Confirmar'
-      sleep 1
       expect(page).to have_content('La solicitud se ha recibido correctamente')
       expect(page).to have_content('Provision entregada')
     end

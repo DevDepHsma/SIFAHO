@@ -6,14 +6,14 @@ RSpec.feature 'ExternalOrdersProviderFilters', type: :feature do
     @read_external_order_provider = permission_module.permissions.find_by(name: 'read_external_order_provider')
     @update_external_order_provider = permission_module.permissions.find_by(name: 'update_external_order_provider')
     @destroy_external_order_provider = permission_module.permissions.find_by(name: 'destroy_external_order_provider')
-    PermissionUser.create(user: @farm_provider, sector: @farm_provider.active_sector,
+    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector,
                           permission: @read_external_order_provider)
-    PermissionUser.create(user: @farm_provider, sector: @farm_provider.active_sector,
+    PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector,
                           permission: @destroy_external_order_provider)
   end
 
   background do
-    sign_in @farm_provider
+    sign_in @farm_applicant
   end
 
   describe '', js: true do
@@ -34,16 +34,16 @@ RSpec.feature 'ExternalOrdersProviderFilters', type: :feature do
       end
 
       it 'by code' do
-        external_orders = ExternalOrder.by_provider(@farm_provider.active_sector.id).where(provider_sector_id: @farm_provider).sample(5)
-        external_orders.each do |internal_order|
+        external_orders = ExternalOrder.by_provider(@farm_applicant.active_sector.id).where(provider_sector_id: @farm_applicant).sample(5)
+        external_orders.each do |external_order|
           within '#external-orders-filter' do
-            fill_in 'filter[code]', with: internal_order.remit_code
+            fill_in 'filter[code]', with: external_order.remit_code
             click_button 'Buscar'
             sleep 1
           end
           within '#external_orders' do
             expect(page.first('tr').first('td')).to have_selector('mark.highlight-1',
-                                                                  text: internal_order.remit_code)
+                                                                  text: external_order.remit_code)
           end
           within '#external-orders-filter' do
             page.first('button.btn-clean-filters').click
@@ -53,16 +53,16 @@ RSpec.feature 'ExternalOrdersProviderFilters', type: :feature do
       end
 
       it 'by applicant' do
-        external_orders = ExternalOrder.by_provider(@farm_provider.active_sector.id).where(provider_sector_id: @farm_provider).sample(5)
-        external_orders.each do |internal_order|
+        external_orders = ExternalOrder.by_provider(@farm_applicant.active_sector.id).where(provider_sector_id: @farm_applicant).sample(5)
+        external_orders.each do |external_order|
           within '#external-orders-filter' do
-            fill_in 'filter[search_applicant]', with: internal_order.provider_sector.name
+            fill_in 'filter[search_applicant]', with: external_order.applicant_sector.name
             click_button 'Buscar'
             sleep 1
           end
           within '#external_orders' do
             expect(page.first('tr').find('td:nth-child(2)')).to have_selector('mark.highlight-1',
-                                                                              text: internal_order.provider_sector.name)
+                                                                              text: external_order.applicant_sector.name)
           end
           within '#external-orders-filter' do
             page.first('button.btn-clean-filters').click
@@ -71,15 +71,15 @@ RSpec.feature 'ExternalOrdersProviderFilters', type: :feature do
         end
       end
       it 'by order_type ' do
-        external_orders = ExternalOrder.by_provider(@farm_provider.active_sector.id).where(provider_sector_id: @farm_provider).sample(5)
-        external_orders.each do |internal_order|
+        external_orders = ExternalOrder.by_provider(@farm_applicant.active_sector.id).where(provider_sector_id: @farm_applicant).sample(5)
+        external_orders.each do |external_order|
           within '#external-orders-filter' do
-            page.select internal_order.order_type, from: 'filter[with_order_type]'
+            page.select external_order.order_type, from: 'filter[with_order_type]'
             click_button 'Buscar'
             sleep 1
           end
           within '#external_orders' do
-            expect(page.first('tr').find('td:nth-child(3)')).to have_content(internal_order.order_type.capitalize)
+            expect(page.first('tr').find('td:nth-child(3)')).to have_content(external_order.order_type.capitalize)
           end
           within '#external-orders-filter' do
             page.first('button.btn-clean-filters').click
@@ -89,15 +89,15 @@ RSpec.feature 'ExternalOrdersProviderFilters', type: :feature do
       end
 
       it 'by status' do
-        external_orders = ExternalOrder.by_provider(@farm_provider.active_sector.id).where(provider_sector_id: @farm_provider).sample(5)
-        external_orders.each do |internal_order|
+        external_orders = ExternalOrder.by_provider(@farm_applicant.active_sector.id).where(provider_sector_id: @farm_applicant).sample(5)
+        external_orders.each do |external_order|
           within '#external-orders-filter' do
-            page.select internal_order.status, from: 'filter[with_status]'
+            page.select external_order.status, from: 'filter[with_status]'
             click_button 'Buscar'
             sleep 1
           end
           within '#external_orders' do
-            expect(page.first('tr').find('td:nth-child(4)')).to have_content(internal_order.status.capitalize.gsub('_',
+            expect(page.first('tr').find('td:nth-child(4)')).to have_content(external_order.status.capitalize.gsub('_',
                                                                                                                    ' '))
           end
           within '#external-orders-filter' do
@@ -110,7 +110,7 @@ RSpec.feature 'ExternalOrdersProviderFilters', type: :feature do
 
     describe 'pagination' do
       before(:each) do
-        external_orders = ExternalOrder.by_provider(@farm_provider.active_sector.id).where(provider_sector_id: @farm_provider)
+        external_orders = ExternalOrder.by_provider(@farm_applicant.active_sector.id).where(provider_sector_id: @farm_applicant)
         @last_page = (external_orders.all.count / 15.to_f).ceil
       end
 
@@ -161,7 +161,7 @@ RSpec.feature 'ExternalOrdersProviderFilters', type: :feature do
       end
 
       it 'by remit_code' do
-        external_orders = ExternalOrder.by_provider(@farm_provider.active_sector.id).where(provider_sector_id: @farm_provider)
+        external_orders = ExternalOrder.by_provider(@farm_applicant.active_sector.id).where(provider_sector_id: @farm_applicant)
         sorted_by_code_asc = external_orders.order(remit_code: :asc).first
         sorted_by_code_desc = external_orders.order(remit_code: :desc).first
 
@@ -185,9 +185,9 @@ RSpec.feature 'ExternalOrdersProviderFilters', type: :feature do
       end
 
       it 'by provider' do
-        sorted_by_provider_asc = ExternalOrder.by_provider(@farm_provider.active_sector.id).order('sectors.name asc').first
+        sorted_by_provider_asc = ExternalOrder.by_provider(@farm_applicant.active_sector.id).order('sectors.name asc').first
 
-        sorted_by_provider_desc = ExternalOrder.by_provider(@farm_provider.active_sector.id).order('sectors.name desc').first
+        sorted_by_provider_desc = ExternalOrder.by_provider(@farm_applicant.active_sector.id).order('sectors.name desc').first
 
         within '#table_results' do
           click_button 'Solicitante'
@@ -211,8 +211,8 @@ RSpec.feature 'ExternalOrdersProviderFilters', type: :feature do
 
     describe 'Destroy permission' do
       it 'has button destroy' do
-        external_order = ExternalOrder.by_provider(@farm_provider.active_sector.id).where(
-          provider_sector_id: @farm_provider, order_type: 'provision', status: 'proveedor_auditoria'
+        external_order = ExternalOrder.by_provider(@farm_applicant.active_sector.id).where(
+          provider_sector_id: @farm_applicant, order_type: 'provision', status: 'proveedor_auditoria'
         ).sample
         within '#external-orders-filter' do
           fill_in 'filter[code]', with: external_order.remit_code

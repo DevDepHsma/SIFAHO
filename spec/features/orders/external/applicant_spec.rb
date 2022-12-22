@@ -122,7 +122,11 @@ RSpec.feature 'Orders::External::Applicants', type: :feature do
         expect(page).to have_content('Solicitar')
         expect(page).to have_content('Tu observación')
         click_button 'Enviar'
-        expect(page).to have_content('Debe asignar almenos 1 producto.')  
+        within '#send-unsaved-confirmation' do
+          click_link 'Continuar de todos modos'
+        end
+        sleep 1
+        expect(page).to have_content('Debe asignar almenos 1 producto.')
         add_products(rand(1..3), request_quantity: true, observations: true)
         click_button 'Enviar'
         expect(page).to have_content('La solicitud se ha enviado correctamente')
