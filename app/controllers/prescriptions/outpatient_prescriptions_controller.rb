@@ -45,21 +45,18 @@ class Prescriptions::OutpatientPrescriptionsController < ApplicationController
   # POST /outpatient_prescriptions
   # POST /outpatient_prescriptions.json
   def create
-    authorize @outpatient_prescription
-    @outpatient_prescription.provider_sector = @current_user.active_sector
-    @outpatient_prescription.establishment = @current_user.active_sector.establishment
+    authorize OutpatientPrescription #@
     respond_to do |format|
-      # Si se entrega la receta
-
       @outpatient_prescription.dispense!(outpatient_prescription_params, @current_user)
       message = "La receta ambulatoria de #{@outpatient_prescription.patient.fullname} se ha creado y dispensado correctamente."
       format.html { redirect_to @outpatient_prescription, notice: message }
     rescue ArgumentError => e
       # si fallo la validacion de stock debemos modificar el estado a proveedor_auditoria
       flash[:error] = e.message
-    rescue ActiveRecord::RecordInvalid
+    rescue ActiveRecord::RecordInvalid => e
+      puts e
+      puts "<===========".colorize(background: :red)
     ensure
-      @outpatient_prescription_products = @outpatient_prescription.outpatient_prescription_products.present? ? @outpatient_prescription.outpatient_prescription_products : @outpatient_prescription.outpatient_prescription_products.build
       format.html { render :new }
     end
   end
@@ -69,6 +66,7 @@ class Prescriptions::OutpatientPrescriptionsController < ApplicationController
   def update
     authorize @outpatient_prescription
     respond_to do |format|
+      @outpatient_prescription = OutpatientPrescription.find(params[:id])
       @outpatient_prescription.dispense!(outpatient_prescription_params, @current_user)
       message = "La receta ambulatoria de #{@outpatient_prescription.patient.fullname} se ha auditado y dispensado correctamente."
       format.html { redirect_to @outpatient_prescription, notice: message }
@@ -76,7 +74,8 @@ class Prescriptions::OutpatientPrescriptionsController < ApplicationController
       flash[:error] = e.message
     rescue ActiveRecord::RecordInvalid => e
     ensure
-      @outpatient_prescription_products = @outpatient_prescription.outpatient_prescription_products.present? ? @outpatient_prescription.outpatient_prescription_products : @outpatient_prescription.outpatient_prescription_products.build
+      puts @outpatient_prescription.errors.full_messages
+      puts "<========================== Errors".colorize(background: :blue)
       format.html { render :edit }
     end
   end
@@ -147,7 +146,6 @@ class Prescriptions::OutpatientPrescriptionsController < ApplicationController
   def outpatient_prescription_params
     params.require(:outpatient_prescription).permit(
       :professional_id,
-      :patient_id,
       :observation,
       :date_prescribed,
       :expiry_date,

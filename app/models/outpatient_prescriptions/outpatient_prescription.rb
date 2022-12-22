@@ -122,17 +122,31 @@ class OutpatientPrescription < ApplicationRecord
   # Cambia estado a "dispensada" y descuenta la cantidad a los lotes de insumos
   def dispense_by(a_user)
     raise ArgumentError, 'No es posible dispensar recetas vencidas.' if expiry_date < Date.today
+
     outpatient_prescription_products.each do |opp|
       opp.decrement_stock
     end
     create_notification(a_user, 'dispensó')
   end
-  
+
   def dispense!(permited_params, a_user)
     ActiveRecord::Base.transaction do
-      self.assign_attributes(permited_params) if permited_params.present?
+      self.assign_attributes(permited_params)
+      self.provider_sector = a_user.active_sector
+      self.establishment = a_user.active_sector.establishment
+      # self.professional_id = permited_params[:professional_id]
+      # self.observation = permited_params[:observation]
+      # self.date_prescribed = permited_params[:date_prescribed]
+      # self.expiry_date = permited_params[:expiry_date]
+      # permited_params[:outpatient_prescription_products_attributes]&.each do |oppa|
+      #   self.outpatient_prescription_products.build(oppa)
+      # end
       self.date_dispensed = DateTime.now
-      dispensada!
+      self.status = 'dispensada'
+      save!
+      puts outpatient_prescription_products.count
+      puts "<================ transaction".colorize(background: :red)
+
       outpatient_prescription_products.each do |opp|
         opp.decrement_stock
       end
