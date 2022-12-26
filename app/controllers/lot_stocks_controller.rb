@@ -7,7 +7,7 @@ class LotStocksController < ApplicationController
   def index
     authorize LotStock
     @filterrific = initialize_filterrific(
-      LotStock.joins(:stock).where("stocks.sector_id = #{current_user.sector.id}"),
+      LotStock.joins(:stock).where("stocks.sector_id = #{@current_user.active_sector.id}"),
       params[:filterrific],
       select_options: {
         sorted_by: LotStock.options_for_sort,
@@ -70,7 +70,7 @@ class LotStocksController < ApplicationController
     # Buscamos los lot_stocks que pertenezcan al sector del usuario y ademas tengan stock
     @lot_stocks = LotStock.joins(:stock)
       .joins(:product)
-      .where("stocks.sector_id = ?", current_user.sector.id)
+      .where("stocks.sector_id = ?", @current_user.active_sector.id)
       .where("products.code like ?", params[:product_code])
       .where("lot_stocks.quantity > ?", 0)
 
@@ -96,7 +96,7 @@ class LotStocksController < ApplicationController
 
   def return_archive
     authorize @lot_archive
-    @lot_archive.return_by(current_user)
+    @lot_archive.return_by(@current_user)
     respond_to do |format|
       format.html { redirect_to stock_show_lot_stocks_url(@lot_archive.lot_stock.stock, @lot_archive.lot_stock), notice: 'El archivo se retorno correctamente.' }
     end
