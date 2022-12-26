@@ -59,7 +59,6 @@ class Prescriptions::OutpatientPrescriptionsController < ApplicationController
   # PATCH/PUT /outpatient_prescriptions/1.json
   def update
     authorize @outpatient_prescription
-    @outpatient_prescription = OutpatientPrescription.find(params[:id])
     begin
       @outpatient_prescription.dispense!(outpatient_prescription_params, @current_user)
       message = "La receta ambulatoria de #{@outpatient_prescription.patient.fullname} se ha auditado y dispensado correctamente."
@@ -87,19 +86,12 @@ class Prescriptions::OutpatientPrescriptionsController < ApplicationController
   # GET /outpatient_prescriptions/1/dispense
   def dispense
     authorize @outpatient_prescription
-    respond_to do |format|
-      @outpatient_prescription.date_dispensed = DateTime.now
-      @outpatient_prescription.dispensada!
-      @outpatient_prescription.dispense_by(@current_user)
-      flash.now[:success] =
-        'La receta de ' + @outpatient_prescription.professional.fullname + ' se ha dispensado correctamente.'
-      format.html { redirect_to @outpatient_prescription }
-    rescue ArgumentError => e
-      flash[:error] = e.message
-    rescue ActiveRecord::RecordInvalid
-    ensure
-      @outpatient_prescription_products = @outpatient_prescription.outpatient_prescription_products.present? ? @outpatient_prescription.outpatient_prescription_products : @outpatient_prescription.outpatient_prescription_products.build
-      format.html { render :edit }
+    begin
+      @outpatient_prescription.dispense!(nil, @current_user)
+      message = "La receta ambulatoria de #{@outpatient_prescription.patient.fullname} se ha auditado y dispensado correctamente."
+      redirect_to @outpatient_prescription, notice: message
+    rescue StandardError
+      render :edit
     end
   end
 

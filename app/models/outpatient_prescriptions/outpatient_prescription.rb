@@ -129,9 +129,9 @@ class OutpatientPrescription < ApplicationRecord
     create_notification(a_user, 'dispensó')
   end
 
-  def dispense!(permited_params, a_user)
+  def dispense!(permited_params = nil, a_user)
     ActiveRecord::Base.transaction do
-      self.assign_attributes(permited_params)
+      self.assign_attributes(permited_params) if permited_params.present?
       self.provider_sector = a_user.active_sector
       self.establishment = a_user.active_sector.establishment
       self.date_dispensed = DateTime.now
