@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_11_12_205119) do
+ActiveRecord::Schema.define(version: 2022_12_27_121332) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "fuzzystrmatch"
@@ -859,8 +859,7 @@ ActiveRecord::Schema.define(version: 2022_11_12_205119) do
     t.text "observation"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["outpatient_prescription_id"], name: "unique_out_pres_prod_on_outpatient_prescriptions"
-    t.index ["product_id"], name: "index_outpatient_prescription_products_on_product_id"
+    t.index ["outpatient_prescription_id", "product_id"], name: "unique_product_on_op_products", unique: true
   end
 
   create_table "outpatient_prescriptions", force: :cascade do |t|
@@ -959,7 +958,7 @@ ActiveRecord::Schema.define(version: 2022_11_12_205119) do
     t.datetime "updated_at", null: false
     t.bigint "establishment_id"
     t.bigint "sector_id"
-    t.bigint "aproved_by_id"
+    t.bigint "aproved_by_id", default: 1
     t.index ["aproved_by_id"], name: "index_permission_requests_on_aproved_by_id"
     t.index ["establishment_id"], name: "index_permission_requests_on_establishment_id"
     t.index ["sector_id"], name: "index_permission_requests_on_sector_id"
