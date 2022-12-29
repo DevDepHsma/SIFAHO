@@ -212,6 +212,7 @@ es:
         report_type: 
           one: 'Por paciente'
           by_patient: 'Por paciente'
+          by_sector: 'Por sector'
       user:
         max_sectors: 'La cantidad de sectores seleccionados'
   user_status:

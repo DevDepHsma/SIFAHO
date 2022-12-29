@@ -15,6 +15,7 @@
       <%= f.error_notification %>
       <input type="hidden" name="report[products_ids]" value="<%= @report.products_ids if @report.products_ids.present? %>">
       <input type="hidden" name="report[patients_ids]" value="<%= @report.patients_ids if @report.patients_ids.present? %>">
+      <input type="hidden" name="report[sectors_ids]" value="<%= @report.sectors_ids if @report.sectors_ids.present? %>">
       <div class="form-group">
         <label for="name">Nombre</label>
         <input class="form-control <%= 'is-invalid' if @errors.present? && @errors[:name].present? %>" 
@@ -125,8 +126,8 @@
         </div>
       </div>
       <hr>
-      <%# Petients %>
-      <div id="patients-module">
+      <%# Patients %>
+      <div id="patients-module" <%= select_report_type(@report.report_type,'by_patient')%>>
         <label for="patients-search" class="mb-0">Pacientes</label>
         <div id="patients-selection-container">
           <div id="selected-patients">
@@ -159,6 +160,45 @@
             <div class="card card-body">
               <ul id="patients-list" class="mb-0">
                 <%= render(partial: 'reports/partials/sector_patients') %>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <%# Sectors %>
+      <div id="sectors-module" <%= select_report_type(@report.report_type,'by_sector')%>>
+        <label for="sectors-search" class="mb-0">Sectores</label>
+        <div id="sectors-selection-container">
+          <div id="selected-sectors">
+            <% if @selected_sectors.present? %>
+              <% @selected_sectors.each do |sector|%>
+                <%= render(partial: 'reports/partials/selected_sector', locals: { sector: sector })%>
+              <%end %>
+            <%end %>
+          </div>
+          <div class="input-group mb-0">
+            <input type="text" 
+                   class="form-control <%= 'is-invalid' if @errors.present? && @errors[:sectors_ids].present? %>" 
+                   id="sectors-search" 
+                   autocomplete="off" 
+                   data-url="<%= get_sectors_reports_path %>" 
+                   data-target="#sectors-collapse"
+                   placeholder="Sector:Nombre">
+            <div class="input-group-append">
+              <button class="btn btn-outline-secondary" type="button" data-toggle="collapse" data-target="#sectors-collapse">
+                <%= fa_icon 'caret-down' %>
+              </button>
+            </div>
+            <% if @errors.present? && @errors[:sectors_ids].present? %>
+              <div class="invalid-feedback d-block">
+                <%= @errors[:sectors_ids].first %>
+              </div>
+            <% end %>
+          </div>
+          <div class="collapse" id="sectors-collapse">
+            <div class="card card-body">
+              <ul id="sectors-list" class="mb-0">
+                <%= render(partial: 'reports/partials/sectors') %>
               </ul>
             </div>
           </div>

@@ -1,0 +1,9 @@
+<% sectors = escape_javascript(
+  render(partial: 'reports/partials/sectors')
+) %>
+$("#sectors-list").html("<%= sectors %>");
+
+$("#sectors-search").removeAttr('disabled');
+$("#sectors-search").focus();
+$("#loader-container").css({'display': 'none'});
+

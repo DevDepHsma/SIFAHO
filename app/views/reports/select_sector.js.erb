@@ -1,0 +1,14 @@
+<% select_sector_partial = escape_javascript(
+  render(partial: 'reports/partials/selected_sector', locals: { sector: @sector })
+) %>
+
+$("input[name='report[sectors_ids]']").val("<%= @sectors_ids %>");
+$("#selected-sectors").append("<%= select_sector_partial %>");
+
+<% sectors = escape_javascript(
+  render(partial: 'reports/partials/sectors')
+) %>
+
+$("#sectors-list").html("<%= sectors %>");
+
+$("#loader-container").css({'display': 'none'});

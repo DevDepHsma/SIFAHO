@@ -1,0 +1,10 @@
+<% @sectors.each do |sector| %>
+  <li>
+    <button type="button" 
+            onclick="toggleSelectItem(event, 'sector');"
+            data-url="<%= select_sector_reports_path(sector.id) %>"
+            id="sp-<%=sector.id%>">
+      <%= highlight("#{sector.name}", params[:term], ignore_special_chars: true) %>
+    </button>
+  </li>
+<%end%>

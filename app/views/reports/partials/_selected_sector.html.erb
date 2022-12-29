@@ -1,0 +1,11 @@
+<button type="button" class="btn-unselect-item" 
+        onclick="toggleSelectItem(event, 'sector');"
+        data-url="<%= unselect_sector_reports_path(sector.id) %>"
+        id="sp-<%=sector.id%>">
+  <span class="mr-2">
+    <%= "#{sector.name}" %>
+  </span>
+  <span class="times-icon">
+    <%= fa_icon 'times', class: 'text-danger' %>
+  </span>
+</button>

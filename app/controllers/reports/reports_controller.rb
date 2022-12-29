@@ -19,6 +19,7 @@ class ReportsController < ApplicationController
     @report = Report.new
     @products = Product.filter_by_stock({ sector_id: @current_user.active_sector.id }).limit(@result_size)
     @patients = Patient.filter_by_sector_dispensation({ sector_id: @current_user.active_sector.id }).limit(@result_size)
+    @sectors = Sector.filter_by_internal_order({ sector_id: @current_user.active_sector.id }).limit(@result_size)
   end
 
   def create
@@ -36,7 +37,10 @@ class ReportsController < ApplicationController
       @patients = Patient.filter_by_sector_dispensation({ sector_id: @current_user.active_sector.id, patient: params[:term],
                                                           patients_ids: report_params[:patients_ids].split('_') })
                          .limit(@result_size)
-
+      @selected_sectors = Sector.select(:id, :name).where({ id: report_params[:sectors_ids].split('_') })
+      @sectors = Sector.filter_by_internal_order({ sector_id: @current_user.active_sector.id,
+                                                   sector: params[:term], sectors_ids: report_params[:sectors_ids].split('_') })
+                       .limit(@result_size)
       @errors = e.record.errors
       format.html { render :new }
     end
@@ -86,6 +90,12 @@ class ReportsController < ApplicationController
                                                         patients_ids: params[:patients_ids].split('_') }).limit(@result_size)
   end
 
+  def get_sectors
+    @sectors = Sector.filter_by_internal_order({ sector_id: @current_user.active_sector.id, sector: params[:term],
+                                                 sectors_ids: params[:sectors_ids].split('_') }).limit(@result_size)
+                                          
+  end
+
   # Set selected patient and reset avaible patients list
   # params[:patients_ids]   string with selected patients
   # params[:patient_term]   string for search by name or code (Patient)
@@ -113,6 +123,24 @@ class ReportsController < ApplicationController
                                                         patients_ids: @patients_ids })
                        .limit(@result_size)
     @patients_ids = @patients_ids.join('_')
+  end
+
+  def select_sector
+    @sector = Sector.find(params[:sector_id])
+    @sectors_ids = params[:sectors_ids].present? ? params[:sectors_ids].split('_') : []
+    @sectors_ids << @sector.id
+    @sectors = Sector.filter_by_internal_order({ sector_id: @current_user.active_sector.id, sector: params[:term],
+                                                 sectors_ids: @sectors_ids }).limit(@result_size)
+    @sectors_ids = @sectors_ids.join('_')
+  end
+
+  def unselect_sector
+    @sector_id = params[:sector_id]
+    @sectors_ids = params[:sectors_ids].present? ? params[:sectors_ids].split('_') : []
+    @sectors_ids.delete(@sector_id)
+    @sectors = Sector.filter_by_internal_order({ sector_id: @current_user.active_sector.id, sector: params[:term],
+                                                 sectors_ids: @sectors_ids }).limit(@result_size)
+    @sectors_ids = @sectors_ids.join('_')
   end
 
   def show
@@ -151,6 +179,7 @@ class ReportsController < ApplicationController
                                    :report_type,
                                    :products_ids,
                                    :patients_ids,
+                                   :sectors_ids,
                                    :from_date,
                                    :to_date)
   end

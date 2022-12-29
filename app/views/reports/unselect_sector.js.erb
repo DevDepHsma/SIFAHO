@@ -1,0 +1,9 @@
+$("input[name='report[sectors_ids]']").val("<%= @sectors_ids %>");
+$("button#sp-<%= @sector_id %>").remove();
+<% sectors = escape_javascript(
+  render(partial: 'reports/partials/sectors')
+) %>
+
+$("#sectors-list").html("<%= sectors %>");
+
+$("#loader-container").css({'display': 'none'});

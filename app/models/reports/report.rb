@@ -23,7 +23,7 @@ class Report < ApplicationRecord
   belongs_to :generated_by_user, class_name: 'User'
   has_many :report_patients, dependent: :delete_all
 
-  enum report_type: [:by_patient]
+  enum report_type: %i[by_patient by_sector]
 
   validates_presence_of :report_type, :from_date, :to_date, :name
   validates_with CustomValidators::ReportValidator
@@ -72,16 +72,17 @@ class Report < ApplicationRecord
   def generate!(user, report_params)
     ActiveRecord::Base.transaction do
       @report = Report.create!(sector_id: user.active_sector.id,
-                              name: report_params[:name],
-                              sector_name: user.active_sector.name,
-                              establishment_name: user.active_sector.establishment.name,
-                              generated_date: Time.now,
-                              generated_by_user_id: user.id,
-                              report_type: report_params[:report_type],
-                              products_ids: report_params[:products_ids].to_s,
-                              patients_ids: report_params[:patients_ids].to_s,
-                              from_date: report_params[:from_date],
-                              to_date: report_params[:to_date])
+                               name: report_params[:name],
+                               sector_name: user.active_sector.name,
+                               establishment_name: user.active_sector.establishment.name,
+                               generated_date: Time.now,
+                               generated_by_user_id: user.id,
+                               report_type: report_params[:report_type],
+                               products_ids: report_params[:products_ids].to_s,
+                               patients_ids: report_params[:patients_ids].to_s,
+                               sectors_ids: report_params[:sectors_ids].to_s,
+                               from_date: report_params[:from_date],
+                               to_date: report_params[:to_date])
       @report.build_report_values(report_params)
       @report
     end
