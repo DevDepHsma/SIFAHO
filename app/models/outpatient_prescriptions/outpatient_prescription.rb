@@ -1,6 +1,6 @@
 # == Schema Information
 
-# Table name: reports
+# Table name: outpatient_prescriptions
 
 # remit_code                :string   not null, auto
 # observation               :text     optional
@@ -26,17 +26,17 @@ class OutpatientPrescription < ApplicationRecord
   belongs_to :provider_sector, class_name: 'Sector', optional: true
   belongs_to :establishment
 
-  has_many :outpatient_prescription_products, dependent: :destroy
+  has_many :outpatient_prescription_products, dependent: :destroy, index_errors: true
   has_many :products, through: :outpatient_prescription_products
   has_many :movements, class_name: 'OutpatientPrescriptionMovement'
   has_many :stock_movements, as: :order, dependent: :destroy, inverse_of: :order
 
+  before_create :set_remit_code
   # Validations
-  validates_presence_of :patient_id, :professional_id, :date_prescribed, :remit_code
+  validates_presence_of :patient_id, :professional_id, :date_prescribed
   validates_associated :outpatient_prescription_products
-  validates_uniqueness_of :remit_code
-  validate :presence_of_products_into_the_order
-  validate :date_prescribed_in_range
+  validates_uniqueness_of :remit_code, on: :create
+  validates_with CustomValidators::OutpatientPrescriptionValidator
 
   # Nested attributes
   accepts_nested_attributes_for :outpatient_prescription_products,
@@ -129,17 +129,31 @@ class OutpatientPrescription < ApplicationRecord
     create_notification(a_user, 'dispensó')
   end
 
-  # Método para retornar pedido a estado anterior
-  def return_dispensation(a_user)
-    if dispensada?
-      self.status = 'pendiente'
+  def dispense!(permited_params = nil, a_user)
+    ActiveRecord::Base.transaction do
+      self.assign_attributes(permited_params) if permited_params.present?
+      self.provider_sector = a_user.active_sector
+      self.establishment = a_user.active_sector.establishment
+      self.date_dispensed = DateTime.now
+      self.status = 'dispensada'
+      save!
+
+      outpatient_prescription_products.each do |opp|
+        opp.decrement_stock
+      end
+      create_notification(a_user, 'dispensó')
+    end
+  end
+
+  def return_dispensation!(a_user)
+    ActiveRecord::Base.transaction do
+      raise ArgumentError, 'No es posible retornar a un estado anterior' unless dispensada?
+      pendiente!
       outpatient_prescription_products.each do |opp|
         opp.increment_stock
       end
-      save!(validate: false)
+      # save!(validate: false)
       create_notification(a_user, 'retornó a un estado anterior')
-    else
-      raise ArgumentError, 'No es posible retornar a un estado anterior'
     end
   end
 
@@ -212,17 +226,7 @@ class OutpatientPrescription < ApplicationRecord
 
   private
 
-  def presence_of_products_into_the_order
-    if outpatient_prescription_products.size == 0
-      errors.add(:presence_of_products_into_the_order, 'Debe agregar almenos 1 producto')
-    end
-  end
-
-  def date_prescribed_in_range
-    # validamos que la fecha de la prescripcion se encuentre en un rango de menor igual a HOY
-    # y HOY - 1 MES atras.
-    unless date_prescribed >= (Date.today.months_ago(1)) && date_prescribed <= Date.today
-      errors.add(:date_prescribed_in_range, 'Debe seleccionar una fecha válida ')
-    end
+  def set_remit_code
+    self.remit_code = "AM#{DateTime.now.to_s(:number)}" unless remit_code.present?
   end
 end
