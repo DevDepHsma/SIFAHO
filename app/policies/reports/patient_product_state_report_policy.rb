@@ -1,6 +1,6 @@
 class PatientProductStateReportPolicy < ApplicationPolicy
   def index?
-    true
+    user.has_permission?(:report_by_patient_and_province)
   end
 
   def show?
@@ -8,7 +8,7 @@ class PatientProductStateReportPolicy < ApplicationPolicy
   end
 
   def create?
-    true
+    user.has_permission?(:report_by_patient_and_province)
   end
 
   def new?
