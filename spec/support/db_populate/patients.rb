@@ -23,7 +23,7 @@ def outpatient_prescriptions_populate
           patient_id: patient.id,
           provider_sector_id: user.active_sector.id,
           establishment_id: user.active_sector.establishment_id,
-          remit_code: "AM#{date_prescribed.to_datetime.to_s(:number)}-#{index}",
+          remit_code: "AM#{rand(1000..100000)}-#{rand(1000..100000)}-#{rand(1000..100000)}",
           date_prescribed: date_prescribed.to_datetime,
           expiry_date: (date_prescribed + 1.month).to_datetime,
           observation: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.'

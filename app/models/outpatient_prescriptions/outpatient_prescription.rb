@@ -26,7 +26,7 @@ class OutpatientPrescription < ApplicationRecord
   belongs_to :provider_sector, class_name: 'Sector', optional: true
   belongs_to :establishment
 
-  has_many :outpatient_prescription_products, dependent: :destroy
+  has_many :outpatient_prescription_products, dependent: :destroy, index_errors: true
   has_many :products, through: :outpatient_prescription_products
   has_many :movements, class_name: 'OutpatientPrescriptionMovement'
   has_many :stock_movements, as: :order, dependent: :destroy, inverse_of: :order
@@ -35,7 +35,7 @@ class OutpatientPrescription < ApplicationRecord
   # Validations
   validates_presence_of :patient_id, :professional_id, :date_prescribed
   validates_associated :outpatient_prescription_products
-  validates_uniqueness_of :remit_code
+  validates_uniqueness_of :remit_code, on: :create
   validates_with CustomValidators::OutpatientPrescriptionValidator
 
   # Nested attributes
@@ -145,17 +145,15 @@ class OutpatientPrescription < ApplicationRecord
     end
   end
 
-  # Método para retornar pedido a estado anterior
-  def return_dispensation(a_user)
-    if dispensada?
-      self.status = 'pendiente'
+  def return_dispensation!(a_user)
+    ActiveRecord::Base.transaction do
+      raise ArgumentError, 'No es posible retornar a un estado anterior' unless dispensada?
+      pendiente!
       outpatient_prescription_products.each do |opp|
         opp.increment_stock
       end
-      save!(validate: false)
+      # save!(validate: false)
       create_notification(a_user, 'retornó a un estado anterior')
-    else
-      raise ArgumentError, 'No es posible retornar a un estado anterior'
     end
   end
 
@@ -229,6 +227,6 @@ class OutpatientPrescription < ApplicationRecord
   private
 
   def set_remit_code
-    self.remit_code = "AM#{DateTime.now.to_s(:number)}"
+    self.remit_code = "AM#{DateTime.now.to_s(:number)}" unless remit_code.present?
   end
 end

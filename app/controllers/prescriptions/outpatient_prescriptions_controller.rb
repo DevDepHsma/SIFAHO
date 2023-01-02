@@ -99,7 +99,7 @@ class Prescriptions::OutpatientPrescriptionsController < ApplicationController
     authorize @outpatient_prescription
     respond_to do |format|
       begin
-        @outpatient_prescription.return_dispensation(@current_user)
+        @outpatient_prescription.return_dispensation!(@current_user)
       rescue ArgumentError => e
         flash[:error] = e.message
       else

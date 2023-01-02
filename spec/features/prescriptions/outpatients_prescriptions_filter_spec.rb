@@ -336,15 +336,16 @@ RSpec.feature 'OutpatientsPrescriptionsFilters', type: :feature do
       end
 
       it 'destroy items' do
+        sleep 10
         within '#outpatient_prescriptions' do
           page.first('button.delete-item').click
           sleep 1
         end
         within '#delete-item' do
           click_link 'Confirmar'
-          sleep 1
         end
-        expect(page).to have_text("La receta de #{@outpatient_prescription_to_del.professional.fullname} se ha eliminado correctamente.")
+        sleep 2
+        expect(page).to have_content("La receta de #{@outpatient_prescription_to_del.professional.fullname} se ha eliminado correctamente.")
       end
     end
 
@@ -364,7 +365,7 @@ RSpec.feature 'OutpatientsPrescriptionsFilters', type: :feature do
         end
       end
 
-      it 'redirect to shown view' do
+      it 'confirm modal' do
         within '#outpatient_prescriptions' do
           page.first('a.btn-detail').click
         end

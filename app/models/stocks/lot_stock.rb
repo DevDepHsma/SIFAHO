@@ -36,7 +36,6 @@ class LotStock < ApplicationRecord
   validates :quantity, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
   validates :reserved_quantity, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
   validates_presence_of :stock_id
-  validates_with CustomValidators::LotStockValidator, on: :dispensed_order?
 
   # Delegations
   delegate :refresh_quantity, to: :stock, prefix: true
@@ -130,14 +129,22 @@ class LotStock < ApplicationRecord
   end
 
   # Metodo para incrementar la cantidad del lote.
-  # Si se encuentra archivado, vuelve a vigente con 0 de cantidad.
+  # Si se encuentra archivado, vuelve a vigente con 0 de cantidad. #### DEPRECATED #####
   def increment(a_quantity, order)
     self.quantity += a_quantity
     save!
     stock.create_stock_movement(order, self, a_quantity, true, order.status)
   end
+  
+  # Metodo para incrementar la cantidad del lote.
+  # Si se encuentra archivado, vuelve a vigente con 0 de cantidad.
+  def increment!(a_quantity, order)
+    self.quantity += a_quantity
+    save!
+    stock.create_stock_movement(order, self, a_quantity, true, order.status)
+  end
 
-  # Disminuye la cantidad del stock
+  # Disminuye la cantidad del stock ### DEPRECATED ######
   def decrement(a_quantity, order)
     if a_quantity.negative?
       raise ArgumentError, 'La cantidad a decrementar debe ser mayor a 0.'
@@ -152,11 +159,9 @@ class LotStock < ApplicationRecord
 
   # Disminuye la cantidad del stock
   def decrement!(a_quantity, order)
-    puts "<======================".colorize(background: :green)
-      self.quantity -= a_quantity
-      save!
-      stock.create_stock_movement(order, self, a_quantity, false, order.status)
-    
+    self.quantity -= a_quantity
+    save!
+    stock.create_stock_movement(order, self, a_quantity, false, order.status)
   end
 
   # Incrementa la cantidad archivada y resta la cantidad en stock
