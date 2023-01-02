@@ -1,0 +1,22 @@
+
+s = wb.styles
+justify_center = s.add_style alignment: { horizontal: :center }
+justify_left = s.add_style alignment: { horizontal: :left }
+justify_right = s.add_style bg_color: 'fddddd', alignment: { horizontal: :right }
+
+wb.add_worksheet(name: @report.name.present? ? @report.name : "Reporte por sector") do |sheet|
+  sheet.add_row ["#", "Cód producto", "Producto", "Sector","Cantidad" ]
+
+  sheet.add_style 'A1:E1', bg_color: '00407A', fg_color: 'FFFFFF', b: true, alignment: { horizontal: :center }
+  
+  @report.report_sectors.each_with_index do |rp, index|
+    sheet.add_row [
+      index + 1,
+      rp.product_code, 
+      rp.product_name,
+      rp.sector_name,
+      rp.quantity,
+    ], style: [justify_center, justify_center, justify_left, justify_left, justify_center, justify_center, justify_center, justify_right]
+  end
+  sheet.column_widths 10,15,50,50,15,7,20,20
+end

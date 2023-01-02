@@ -22,6 +22,7 @@ class Report < ApplicationRecord
   belongs_to :sector
   belongs_to :generated_by_user, class_name: 'User'
   has_many :report_patients, dependent: :delete_all
+  has_many :report_sectors, dependent: :delete_all
 
   enum report_type: %i[by_patient by_sector]
 
@@ -90,6 +91,7 @@ class Report < ApplicationRecord
 
   def build_report_values(args)
     set_by_patients(args) if by_patient?
+    set_by_sectors(args) if by_sector?
   end
 
   def set_by_patients(args)
@@ -162,6 +164,26 @@ class Report < ApplicationRecord
         patient_full_name: dp['patient_full_name'],
         patient_age: patient_age,
         patient_birthdate: dp['patient_birthdate']
+      )
+    end
+  end
+
+  def set_by_sectors(args)
+    ioproducts = InternalOrderProduct.get_delivery_products_by_sectors({ sector_id: sector_id,
+                                                                         sectors_ids: args[:sectors_ids].split('_'),
+                                                                         products_ids: args[:products_ids].split('_'),
+                                                                         from_date: args[:from_date],
+                                                                         to_date: args[:to_date] })
+
+    ioproducts.each do |dp|
+      ReportSector.create!(
+        report_id: id,
+        product_id: dp['product_id'],
+        sector_id: dp['sector_id'],
+        sector_name: dp['sector_name'],
+        product_code: dp['product_code'],
+        product_name: dp['product_name'],
+        quantity: dp['quantity']
       )
     end
   end

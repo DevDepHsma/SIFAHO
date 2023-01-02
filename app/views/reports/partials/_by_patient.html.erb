@@ -1,0 +1,24 @@
+<thead>
+  <tr>
+    <th>Cód producto</th>
+    <th>Producto</th>
+    <th>Paciente</th>
+    <th class="text-center">Dni</th>
+    <th class="text-center">Edad</th>
+    <th class="text-center">Fecha nacimiento</th>
+    <th>Cantidad</th>
+  </tr>
+</thead>
+<tbody id=reports>
+  <% @report.report_patients.each do |rp| %>
+    <tr>
+      <td><%= rp.product_code %></td>
+      <td><%= rp.product_name %></td>
+      <td><%= rp.patient_full_name %></td>
+      <td class="text-center"><%= rp.patient_dni %></td>
+      <td class="text-center"><%= rp.patient_age %></td>
+      <td class="text-center"><%= rp.patient_birthdate.present? ? rp.patient_birthdate.strftime("%d/%m/%Y") : '-' %></td>
+      <td class="text-center table-danger"><%= rp.product_quantity %></td>
+    </tr>
+  <% end %>
+</tbody>

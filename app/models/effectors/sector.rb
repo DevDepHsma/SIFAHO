@@ -67,8 +67,7 @@ class Sector < ApplicationRecord
   }
 
   scope :filter_by_internal_order, lambda { |filter_params|
-    orders = by_stock(filter_params[:sector_id])
-    query = where(id: orders.pluck(:applicant_sector_id).uniq)
+    query = by_stock(filter_params[:sector_id])
     if filter_params[:sector].present?
       query = query.where('unaccent(lower(name)) like ?',
                           "%#{filter_params[:sector].downcase.parameterize(separator: ' ')}%")
@@ -78,8 +77,8 @@ class Sector < ApplicationRecord
   }
 
   scope :by_stock, lambda { |sector_id|
-    orders = InternalOrder.where(provider_sector_id: sector_id)
-    return orders
+    sectors = InternalOrder.where(provider_sector_id: sector_id).pluck(:applicant_sector_id).uniq
+    where(id: sectors)
   }
   scope :provide_hospitalization, -> { where(provide_hospitalization: true) }
 

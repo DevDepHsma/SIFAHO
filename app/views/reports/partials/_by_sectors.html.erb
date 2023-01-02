@@ -1,0 +1,18 @@
+<thead>
+  <tr>
+    <th>Cód producto</th>
+    <th>Producto</th>
+    <th>Sector</th>
+    <th>Cantidad</th>
+  </tr>
+</thead>
+<tbody id=reports>
+  <% @report.report_sectors.each do |rp| %>
+    <tr>
+      <td><%= rp.product_code %></td>
+      <td><%= rp.product_name %></td>
+     <td><%= rp.sector_name %></td>
+      <td class="text-center table-danger"><%= rp.quantity %></td>
+    </tr>
+  <% end %>
+</tbody>
