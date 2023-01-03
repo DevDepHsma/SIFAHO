@@ -33,7 +33,7 @@
       </div>
       <hr>
       <% Report.report_types.each do |type| %>
-        <div class="custom-control custom-radio">
+        <div class="custom-control custom-radio" <%=  !policy(:report).report_by?("report_#{type[0]}s") ? 'hidden' : ''   %>>
           <input type="radio" 
                  class="custom-control-input <%= 'is-invalid' if @errors.present? && @errors[:report_type].present? %>" 
                  id="<%= type[0] %>" 
@@ -127,7 +127,7 @@
       </div>
       <hr>
       <%# Patients %>
-      <div id="patients-module" <%= select_report_type(@report.report_type,'by_patient')%>>
+      <div id="patients-module" <%= select_report_type(@report.report_type,'by_patients')%>>
         <label for="patients-search" class="mb-0">Pacientes</label>
         <div id="patients-selection-container">
           <div id="selected-patients">
@@ -166,7 +166,7 @@
         </div>
       </div>
       <%# Sectors %>
-      <div id="sectors-module" <%= select_report_type(@report.report_type,'by_sector')%>>
+      <div id="sectors-module" <%= select_report_type(@report.report_type,'by_sectors')%>>
         <label for="sectors-search" class="mb-0">Sectores</label>
         <div id="sectors-selection-container">
           <div id="selected-sectors">
