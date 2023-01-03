@@ -39,21 +39,32 @@ $(document).on('turbolinks:load', function () {
     }
   });
   $("input[name='report[report_type]']").on('click', function () {
-    if ($(this).val() == 'by_sector') {
-      $("#patients-module").attr('hidden', 'true');
-      $("#patients-search").attr('disabled', 'true')
-      $("#sectors-search").removeAttr('disabled')
-      $("#sectors-module").removeAttr('hidden');
-    } else {
-      if (($(this).val() == 'by_patient')) {
-        $("#sectors-module").attr('hidden', 'true');
-        $("#sectors-search").attr('disabled', 'true')
-        $("#patients-search").removeAttr('disabled')
-        $("#patients-module").removeAttr('hidden');
-      }
-    }
+    hideSearchType($(this))
   })
+
+  if($("input[name='report[report_type]']").not(':checked')){//Charge first page select first option type
+   $("input[name='report[report_type]']").first().click()
+   
+  }
+
+
 });
+
+function hideSearchType(radio_selected){
+  if (radio_selected.val() == 'by_sector') {
+    $("#patients-module").attr('hidden', 'true');
+    $("#patients-search").attr('disabled', 'true')
+    $("#sectors-search").removeAttr('disabled')
+    $("#sectors-module").removeAttr('hidden');
+  } else {
+    if ((radio_selected.val() == 'by_patient')) {
+      $("#sectors-module").attr('hidden', 'true');
+      $("#sectors-search").attr('disabled', 'true')
+      $("#patients-search").removeAttr('disabled')
+      $("#patients-module").removeAttr('hidden');
+    }
+  }
+}
 
 
 
