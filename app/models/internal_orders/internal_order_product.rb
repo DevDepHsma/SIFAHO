@@ -75,7 +75,6 @@ class InternalOrderProduct < ApplicationRecord
     
     query = query.group('sectors.id', 'products.id')
                  .order('sector_name ASC')
-                 puts query.to_sql.colorize(background: :green)
     return query
   }
 end
