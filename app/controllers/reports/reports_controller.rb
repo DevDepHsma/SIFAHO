@@ -33,13 +33,13 @@ class ReportsController < ApplicationController
       @products = Product.filter_by_stock({ sector_id: @current_user.active_sector.id, product: params[:term],
                                             products_ids: report_params[:products_ids].split('_') }).limit(@result_size)
       @selected_patients = Patient.select(:id, :dni, :last_name,
-                                          :first_name).where(id: report_params[:patients_ids].split('_'))
+                                          :first_name).where(id: report_params[:patients_ids]&.split('_'))
       @patients = Patient.filter_by_sector_dispensation({ sector_id: @current_user.active_sector.id, patient: params[:term],
-                                                          patients_ids: report_params[:patients_ids].split('_') })
+                                                          patients_ids: report_params[:patients_ids]&.split('_') })
                          .limit(@result_size)
-      @selected_sectors = Sector.select(:id, :name).where({ id: report_params[:sectors_ids].split('_') })
+      @selected_sectors = Sector.select(:id, :name).where({ id: report_params[:sectors_ids]&.split('_') })
       @sectors = Sector.filter_by_internal_order({ sector_id: @current_user.active_sector.id,
-                                                   sector: params[:term], sectors_ids: report_params[:sectors_ids].split('_') })
+                                                   sector: params[:term], sectors_ids: report_params[:sectors_ids]&.split('_') })
                        .limit(@result_size)
       @errors = e.record.errors
       format.html { render :new }

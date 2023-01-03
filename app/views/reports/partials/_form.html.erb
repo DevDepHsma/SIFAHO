@@ -14,8 +14,8 @@
     <%= simple_form_for @report, html: { role: 'check-modified'} do |f| %>
       <%= f.error_notification %>
       <input type="hidden" name="report[products_ids]" value="<%= @report.products_ids if @report.products_ids.present? %>">
-      <input type="hidden" name="report[patients_ids]" value="<%= @report.patients_ids if @report.patients_ids.present? %>">
-      <input type="hidden" name="report[sectors_ids]" value="<%= @report.sectors_ids if @report.sectors_ids.present? %>">
+      <% if policy(:report).report_by?("report_by_patients") %>  <input type="hidden" name="report[patients_ids]" value="<%= @report.patients_ids if @report.patients_ids.present? %>"><%end %>
+      <% if policy(:report).report_by?("report_by_sectors") %> <input type="hidden" name="report[sectors_ids]" value="<%= @report.sectors_ids if @report.sectors_ids.present? %>"><% end %>
       <div class="form-group">
         <label for="name">Nombre</label>
         <input class="form-control <%= 'is-invalid' if @errors.present? && @errors[:name].present? %>" 
