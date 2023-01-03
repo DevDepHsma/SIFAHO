@@ -1,3 +1,16 @@
+# == Schema Information
+
+# Table name: lot_stocks
+
+# lot_id                      :bigint     not null
+# stock_id                    :bigint     not null
+# quantity                    :integer    default: 0
+# archived_quantity           :integer    default: 0
+# presentation                :integer
+# reserved_quantity           :integer    default: 0
+# created_at                  :datetime   auto
+# updated_at                  :datetime   auto
+
 class LotStock < ApplicationRecord
   # Relationships
   belongs_to :lot
@@ -5,6 +18,8 @@ class LotStock < ApplicationRecord
   has_many :int_ord_prod_lot_stocks
   has_many :ext_ord_prod_lot_stocks
   has_many :out_pres_prod_lot_stocks
+  has_many :outpatient_prescription_products, through: :out_pres_prod_lot_stocks
+  has_one :outpatient_prescription, through: :outpatient_prescription_products
   has_many :chron_pres_prod_lot_stocks
   has_many :in_pre_prod_lot_stocks
   has_many :receipt_products
@@ -75,11 +90,11 @@ class LotStock < ApplicationRecord
   scope :by_stock, ->(stock_id) { where(stock_id: stock_id) }
 
   scope :greater_than_zero, -> { where('lot_stocks.quantity > 0 OR lot_stocks.reserved_quantity > 0') }
-  
+
   scope :search_by_status, ->(status) { joins(:lot).where('lots.status = ?', status) }
-  
+
   scope :search_by_quantity, lambda { |quantity|
-    if quantity == 0 || quantity == 1
+    if [0, 1].include?(quantity)
       quantity == 0 ? where('lot_stocks.quantity = 0') : where('lot_stocks.quantity > 0')
     end
   }
@@ -114,14 +129,22 @@ class LotStock < ApplicationRecord
   end
 
   # Metodo para incrementar la cantidad del lote.
-  # Si se encuentra archivado, vuelve a vigente con 0 de cantidad.
+  # Si se encuentra archivado, vuelve a vigente con 0 de cantidad. #### DEPRECATED #####
   def increment(a_quantity, order)
     self.quantity += a_quantity
     save!
     stock.create_stock_movement(order, self, a_quantity, true, order.status)
   end
+  
+  # Metodo para incrementar la cantidad del lote.
+  # Si se encuentra archivado, vuelve a vigente con 0 de cantidad.
+  def increment!(a_quantity, order)
+    self.quantity += a_quantity
+    save!
+    stock.create_stock_movement(order, self, a_quantity, true, order.status)
+  end
 
-  # Disminuye la cantidad del stock
+  # Disminuye la cantidad del stock ### DEPRECATED ######
   def decrement(a_quantity, order)
     if a_quantity.negative?
       raise ArgumentError, 'La cantidad a decrementar debe ser mayor a 0.'
@@ -132,6 +155,13 @@ class LotStock < ApplicationRecord
       save!
       stock.create_stock_movement(order, self, a_quantity, false, order.status)
     end
+  end
+
+  # Disminuye la cantidad del stock
+  def decrement!(a_quantity, order)
+    self.quantity -= a_quantity
+    save!
+    stock.create_stock_movement(order, self, a_quantity, false, order.status)
   end
 
   # Incrementa la cantidad archivada y resta la cantidad en stock
@@ -188,7 +218,7 @@ class LotStock < ApplicationRecord
   def reserve(a_quantity, order)
     if a_quantity.negative?
       raise ArgumentError, 'La cantidad a reservar debe ser mayor a 0.'
-    else  
+    else
       decrement(a_quantity, order)
       self.reserved_quantity += a_quantity
       save!
@@ -197,5 +227,9 @@ class LotStock < ApplicationRecord
 
   def total_quantity
     self.quantity + self.reserved_quantity
+  end
+
+  def dispensed_order?
+    outpatient_prescription.dispensada?
   end
 end

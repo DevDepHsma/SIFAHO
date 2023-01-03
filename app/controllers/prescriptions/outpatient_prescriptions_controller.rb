@@ -45,31 +45,13 @@ class Prescriptions::OutpatientPrescriptionsController < ApplicationController
   # POST /outpatient_prescriptions
   # POST /outpatient_prescriptions.json
   def create
-    authorize @outpatient_prescription
-    @outpatient_prescription.provider_sector = @current_user.active_sector
-    @outpatient_prescription.establishment = @current_user.active_sector.establishment
-    @outpatient_prescription.remit_code = "AM#{DateTime.now.to_s(:number)}"
-    @outpatient_prescription.status = 'dispensada'
-    @outpatient_prescription.date_dispensed = DateTime.now
-
-    respond_to do |format|
-      # Si se entrega la receta
-
-      @outpatient_prescription.save!
-      @outpatient_prescription.dispense_by(@current_user)
-
+    authorize OutpatientPrescription
+    begin
+      @outpatient_prescription.dispense!(outpatient_prescription_params, @current_user)
       message = "La receta ambulatoria de #{@outpatient_prescription.patient.fullname} se ha creado y dispensado correctamente."
-      notification_type = 'creó y dispensó'
-
-      @outpatient_prescription.create_notification(@current_user, notification_type)
-      format.html { redirect_to @outpatient_prescription, notice: message }
-    rescue ArgumentError => e
-      # si fallo la validacion de stock debemos modificar el estado a proveedor_auditoria
-      flash[:error] = e.message
-    rescue ActiveRecord::RecordInvalid
-    ensure
-      @outpatient_prescription_products = @outpatient_prescription.outpatient_prescription_products.present? ? @outpatient_prescription.outpatient_prescription_products : @outpatient_prescription.outpatient_prescription_products.build
-      format.html { render :new }
+      redirect_to @outpatient_prescription, notice: message
+    rescue StandardError
+      render :new
     end
   end
 
@@ -77,24 +59,15 @@ class Prescriptions::OutpatientPrescriptionsController < ApplicationController
   # PATCH/PUT /outpatient_prescriptions/1.json
   def update
     authorize @outpatient_prescription
-
-    @outpatient_prescription.status = 'dispensada'
-    @outpatient_prescription.date_dispensed = DateTime.now
-
-    respond_to do |format|
-      @outpatient_prescription.update!(outpatient_prescription_params)
-      @outpatient_prescription.dispense_by(@current_user)
+    begin
+      @outpatient_prescription.dispense!(outpatient_prescription_params, @current_user)
       message = "La receta ambulatoria de #{@outpatient_prescription.patient.fullname} se ha auditado y dispensado correctamente."
-      notification_type = 'auditó y dispensó'
-
-      @outpatient_prescription.create_notification(@current_user, notification_type)
-      format.html { redirect_to @outpatient_prescription, notice: message }
-    rescue ArgumentError => e
-      flash[:error] = e.message
-    rescue ActiveRecord::RecordInvalid
-    ensure
-      @outpatient_prescription_products = @outpatient_prescription.outpatient_prescription_products.present? ? @outpatient_prescription.outpatient_prescription_products : @outpatient_prescription.outpatient_prescription_products.build
-      format.html { render :edit }
+      redirect_to @outpatient_prescription, notice: message
+    rescue StandardError
+      if @outpatient_prescription.errors.details[:presence_of_products_into_the_order].present?
+        @outpatient_prescription.outpatient_prescription_products.reload
+      end
+      render :edit
     end
   end
 
@@ -113,19 +86,12 @@ class Prescriptions::OutpatientPrescriptionsController < ApplicationController
   # GET /outpatient_prescriptions/1/dispense
   def dispense
     authorize @outpatient_prescription
-    respond_to do |format|
-      @outpatient_prescription.date_dispensed = DateTime.now
-      @outpatient_prescription.dispensada!
-      @outpatient_prescription.dispense_by(@current_user)
-      flash.now[:success] =
-        'La receta de ' + @outpatient_prescription.professional.fullname + ' se ha dispensado correctamente.'
-      format.html { redirect_to @outpatient_prescription }
-    rescue ArgumentError => e
-      flash[:error] = e.message
-    rescue ActiveRecord::RecordInvalid
-    ensure
-      @outpatient_prescription_products = @outpatient_prescription.outpatient_prescription_products.present? ? @outpatient_prescription.outpatient_prescription_products : @outpatient_prescription.outpatient_prescription_products.build
-      format.html { render :edit }
+    begin
+      @outpatient_prescription.dispense!(nil, @current_user)
+      message = "La receta ambulatoria de #{@outpatient_prescription.patient.fullname} se ha auditado y dispensado correctamente."
+      redirect_to @outpatient_prescription, notice: message
+    rescue StandardError
+      render :edit
     end
   end
 
@@ -133,7 +99,7 @@ class Prescriptions::OutpatientPrescriptionsController < ApplicationController
     authorize @outpatient_prescription
     respond_to do |format|
       begin
-        @outpatient_prescription.return_dispensation(@current_user)
+        @outpatient_prescription.return_dispensation!(@current_user)
       rescue ArgumentError => e
         flash[:error] = e.message
       else
@@ -151,7 +117,7 @@ class Prescriptions::OutpatientPrescriptionsController < ApplicationController
 
   # Set prescription and patient to prescription
   def set_patient_to_outpatient_prescription
-    @outpatient_prescription = params[:outpatient_prescription].present? ? OutpatientPrescription.create(outpatient_prescription_params) : OutpatientPrescription.new
+    @outpatient_prescription = OutpatientPrescription.new
     @patient = Patient.find(params[:patient_id])
     @outpatient_prescription.patient_id = @patient.id
   end
@@ -164,7 +130,6 @@ class Prescriptions::OutpatientPrescriptionsController < ApplicationController
   def outpatient_prescription_params
     params.require(:outpatient_prescription).permit(
       :professional_id,
-      :patient_id,
       :observation,
       :date_prescribed,
       :expiry_date,

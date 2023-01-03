@@ -15,5 +15,16 @@ Rails.application.routes.draw do
         get 'unselect_sector/:sector_id', to: 'reports#unselect_sector', as: 'unselect_sector'
       end
     end
+    # State reports
+    namespace :state_reports do
+      resources :patient_product_state_reports,
+                only: %i[show new create],
+                controller: :patient_product_state_reports,
+                model: :patient_product_state_report do
+        collection do
+          get :load_more
+        end
+      end
+    end
   end
 end

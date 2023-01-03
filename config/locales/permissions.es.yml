@@ -99,5 +99,6 @@ es:
       report_by_patients: 'Reporte por paciente'
       report_by_sectors: 'Reporte por sectores (en desarrollo)'
       report_by_establishments: 'Reporte por establecimientos (en desarrollo)'
+      report_by_patient_and_province: 'Reporte de provincia (Viejo)'
       read_reports: 'Ver / Listar'
       destroy_reports: 'Eliminar'
