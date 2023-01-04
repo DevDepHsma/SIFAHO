@@ -17,6 +17,11 @@
     <table class="table table-hover table-striped table-condensed">
       <thead>
         <tr>
+          <%if @report.all_patients %>
+            <th>Fecha dispensado</th>
+          <% end %>
+          
+          <th>Tipo prescripción</th>
           <th>Cód producto</th>
           <th>Producto</th>
           <th>Paciente</th>
@@ -29,6 +34,11 @@
       <tbody id=reports>
         <% @report.report_patients.each do |rp| %>
           <tr>
+            <%if @report.all_patients %>
+              <td><%= rp.dispensed_date.strftime("%d/%m/%Y") %></td>
+            <% end %>
+            
+            <td><%= rp.prescription_type.capitalize %></td>
             <td><%= rp.product_code %></td>
             <td><%= rp.product_name %></td>
             <td><%= rp.patient_full_name %></td>
