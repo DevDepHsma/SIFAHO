@@ -151,6 +151,7 @@ class ReportsController < ApplicationController
                                    :report_type,
                                    :products_ids,
                                    :patients_ids,
+                                   :all_patients,
                                    :from_date,
                                    :to_date)
   end

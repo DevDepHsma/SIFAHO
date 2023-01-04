@@ -127,7 +127,24 @@
       <hr>
       <%# Petients %>
       <div id="patients-module">
-        <label for="patients-search" class="mb-0">Pacientes</label>
+        <div>
+          <label for="patients-search" class="mb-0">Pacientes</label>
+          <label class="w-100" for="all_patients">
+            <span>Todos</span>
+            <div class="custom-control custom-switch">
+              <input type="checkbox" 
+                      class="custom-control-input perm-toggle-button" 
+                      id="all_patients" 
+                      name="report[all_patients]"
+                      data-patients-target="#patients-selection-container"
+                      <%= @report.all_patients ? 'checked': '' %>
+                      onchange="selectAll(event)">
+              <label class="custom-control-label" for="all_patients">
+              </label>
+            </label>
+          </div>
+        </div>
+        
         <div id="patients-selection-container">
           <div id="selected-patients">
             <% if @selected_patients.present? %>

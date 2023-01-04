@@ -43,3 +43,12 @@ function toggleSelectItem(event, type){
     data: { term, products_ids, patients_ids }
   });
 }
+
+function selectAll(event){
+  const target = $(event.target).attr('data-patients-target');
+  if($(event.target).is(':checked')){
+    $(target).hide();
+  }else{
+    $(target).show();
+  }
+}

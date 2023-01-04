@@ -72,16 +72,17 @@ class Report < ApplicationRecord
   def generate!(user, report_params)
     ActiveRecord::Base.transaction do
       @report = Report.create!(sector_id: user.active_sector.id,
-                              name: report_params[:name],
-                              sector_name: user.active_sector.name,
-                              establishment_name: user.active_sector.establishment.name,
-                              generated_date: Time.now,
-                              generated_by_user_id: user.id,
-                              report_type: report_params[:report_type],
-                              products_ids: report_params[:products_ids].to_s,
-                              patients_ids: report_params[:patients_ids].to_s,
-                              from_date: report_params[:from_date],
-                              to_date: report_params[:to_date])
+                               name: report_params[:name],
+                               sector_name: user.active_sector.name,
+                               establishment_name: user.active_sector.establishment.name,
+                               generated_date: Time.now,
+                               generated_by_user_id: user.id,
+                               report_type: report_params[:report_type],
+                               products_ids: report_params[:products_ids].to_s,
+                               patients_ids: report_params[:patients_ids].to_s,
+                               from_date: report_params[:from_date],
+                               to_date: report_params[:to_date],
+                               all_patients: report_params[:all_patients].present?)
       @report.build_report_values(report_params)
       @report
     end
@@ -95,55 +96,101 @@ class Report < ApplicationRecord
     opproducts = OutpatientPrescriptionProduct.get_delivery_products_by_patient({ sector_id: sector_id,
                                                                                   patients_ids: args[:patients_ids].split('_'),
                                                                                   products_ids: args[:products_ids].split('_'),
+                                                                                  all_patients: args[:all_patients],
                                                                                   from_date: args[:from_date],
                                                                                   to_date: args[:to_date] })
 
     cpproducts = ChronicPrescriptionProduct.get_delivery_products_by_patient({ sector_id: sector_id,
                                                                                patients_ids: args[:patients_ids].split('_'),
                                                                                products_ids: args[:products_ids].split('_'),
+                                                                               all_patients: args[:all_patients],
                                                                                from_date: args[:from_date],
                                                                                to_date: args[:to_date] })
-
-    query = "SELECT
-              SUM(t3.product_quantity) as product_quantity,
-              t3.product_id,
-              t3.patient_id,
-              t3.product_code,
-              t3.product_name,
-              t3.patient_full_name,
-              t3.patient_dni,
-              t3.patient_birthdate,
-              t3.patient_birthdate
-            FROM (
-              SELECT
-                t1.product_id,
-                t1.patient_id,
-                t1.product_code,
-                t1.product_name,
-                t1.product_quantity,
-                t1.patient_full_name,
-                t1.patient_dni,
-                t1.patient_birthdate
-              FROM (#{opproducts.to_sql}) as t1
-              UNION
-              SELECT
-                t2.product_id,
-                t2.patient_id,
-                t2.product_code,
-                t2.product_name,
-                t2.product_quantity,
-                t2.patient_full_name,
-                t2.patient_dni,
-                t2.patient_birthdate
-              FROM (#{cpproducts.to_sql}) as t2) as t3
-            GROUP BY
-              t3.patient_id,
-              t3.product_id,
-              t3.product_code,
-              t3.product_name,
-              t3.patient_full_name,
-              t3.patient_dni,
-              t3.patient_birthdate"
+    query = if args[:all_patients].present?
+              "SELECT
+                t3.prescription_type,
+                t3.date_dispensed,
+                t3.product_quantity,
+                t3.product_id,
+                t3.patient_id,
+                t3.product_code,
+                t3.product_name,
+                t3.patient_full_name,
+                t3.patient_dni,
+                t3.patient_birthdate,
+                t3.patient_birthdate
+              FROM (
+                SELECT
+                  t1.prescription_type,
+                  t1.date_dispensed,
+                  t1.product_id,
+                  t1.patient_id,
+                  t1.product_code,
+                  t1.product_name,
+                  t1.product_quantity,
+                  t1.patient_full_name,
+                  t1.patient_dni,
+                  t1.patient_birthdate
+                FROM (#{opproducts.to_sql}) as t1
+                UNION
+                SELECT
+                  t2.prescription_type,
+                  t2.date_dispensed,
+                  t2.product_id,
+                  t2.patient_id,
+                  t2.product_code,
+                  t2.product_name,
+                  t2.product_quantity,
+                  t2.patient_full_name,
+                  t2.patient_dni,
+                  t2.patient_birthdate
+                FROM (#{cpproducts.to_sql}) as t2) as t3"
+            else
+              "SELECT
+                SUM(t3.product_quantity) as product_quantity,
+                t3.prescription_type,
+                t3.product_id,
+                t3.patient_id,
+                t3.product_code,
+                t3.product_name,
+                t3.patient_full_name,
+                t3.patient_dni,
+                t3.patient_birthdate,
+                t3.patient_birthdate
+              FROM (
+                SELECT
+                  t1.prescription_type,
+                  t1.product_id,
+                  t1.patient_id,
+                  t1.product_code,
+                  t1.product_name,
+                  t1.product_quantity,
+                  t1.patient_full_name,
+                  t1.patient_dni,
+                  t1.patient_birthdate
+                FROM (#{opproducts.to_sql}) as t1
+                UNION
+                SELECT
+                  t2.prescription_type,
+                  t2.product_id,
+                  t2.patient_id,
+                  t2.product_code,
+                  t2.product_name,
+                  t2.product_quantity,
+                  t2.patient_full_name,
+                  t2.patient_dni,
+                  t2.patient_birthdate
+                FROM (#{cpproducts.to_sql}) as t2) as t3
+              GROUP BY
+                t3.prescription_type,
+                t3.patient_id,
+                t3.product_id,
+                t3.product_code,
+                t3.product_name,
+                t3.patient_full_name,
+                t3.patient_dni,
+                t3.patient_birthdate"
+            end
     dispensed_products = ActiveRecord::Base.connection.execute(query).entries
 
     dispensed_products.each do |dp|
@@ -152,6 +199,8 @@ class Report < ApplicationRecord
       end
       ReportPatient.create!(
         report_id: id,
+        dispensed_date: dp['date_dispensed'].present? ? dp['date_dispensed'] : '',
+        prescription_type: dp['prescription_type'],
         product_id: dp['product_id'],
         patient_id: dp['patient_id'],
         product_code: dp['product_code'],

@@ -45,7 +45,7 @@ class ChronicPrescriptionProduct < ApplicationRecord
     sub_query_prescriptions = ChronicDispensation.where(provider_sector_id: filter_params[:sector_id],
                                                         status: [:dispensada])
 
-    if filter_params[:patients_ids].present?
+    if filter_params[:patients_ids].present? && !filter_params[:all_patients].present?
       sub_query_prescriptions = sub_query_prescriptions.where(chronic_prescription_id: ChronicPrescription.where(patient_id: filter_params[:patients_ids]))
     end
 
@@ -57,19 +57,27 @@ class ChronicPrescriptionProduct < ApplicationRecord
       sub_query_prescriptions = sub_query_prescriptions.where('created_at <= ?', filter_params[:to_date])
     end
 
-    query = select('SUM("delivery_quantity") as product_quantity',
-                   'products.id as product_id',
-                   'products.code as product_code',
-                   'products.name as product_name',
-                   'patients.id as patient_id',
-                   'CONCAT(patients.last_name, \' \', patients.first_name) as patient_full_name',
-                   'patients.dni as patient_dni',
-                   'patients.birthdate as patient_birthdate')
+    column_select = ['products.id as product_id',
+                     'products.code as product_code',
+                     'products.name as product_name',
+                     'patients.id as patient_id',
+                     'CONCAT(patients.last_name, \' \', patients.first_name) as patient_full_name',
+                     'patients.dni as patient_dni',
+                     'patients.birthdate as patient_birthdate',
+                     "'CRÓNICA' as prescription_type"]
+
+    if filter_params[:all_patients].present?
+      column_select << 'chronic_prescription_products.created_at as date_dispensed'
+      column_select << 'delivery_quantity as product_quantity'
+    end
+    column_select << 'SUM("delivery_quantity") as product_quantity' unless filter_params[:all_patients].present?
+
+    query = select(column_select)
             .joins(:patient, :product)
             .where(chronic_dispensation_id: sub_query_prescriptions)
     query = query.where(product_id: filter_params[:products_ids]) if filter_params[:products_ids].present?
-    query = query.group('patients.id', 'products.id')
-                 .order('patient_full_name ASC')
+    query = query.group('patients.id', 'products.id') unless filter_params[:all_patients].present?
+    query = query.order('patient_full_name ASC')
     return query
   }
 
