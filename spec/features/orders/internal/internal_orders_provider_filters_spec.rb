@@ -223,8 +223,8 @@ RSpec.feature 'InternalOrdersProviderFiltersSpec.rbs', type: :feature do
 
     describe 'Destroy permission' do
       before(:each) do
-        internal_order = InternalOrder.by_provider(@farm_applicant.active_sector.id).where(provider_sector_id: @farm_applicant,
-                                                                                           status: 'proveedor_auditoria', order_type: 'provision').sample
+        internal_order = InternalOrder.by_provider(@farm_applicant.active_sector.id)
+        .where(status: 'proveedor_auditoria', order_type: 'provision').sample
         within '#internal-filter' do
           fill_in 'filter[code]', with: internal_order.remit_code
           click_button 'Buscar'

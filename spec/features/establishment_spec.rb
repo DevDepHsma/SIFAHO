@@ -36,7 +36,7 @@ RSpec.feature "Establishments", type: :feature do
         end
 
         within '#establishments' do
-          expect(page).to have_selector('.btn-detail', count: 2)
+          expect(page).to have_selector('.btn-detail', count: 3)
           page.execute_script %Q{$('a.btn-detail')[0].click()}
         end
         expect(page).to have_content('Viendo establecimiento')
@@ -69,12 +69,12 @@ RSpec.feature "Establishments", type: :feature do
         click_button 'Guardar'
         click_link 'Volver'
         within '#establishments' do
-          expect(page).to have_selector('.btn-detail', count: 3)
+          expect(page).to have_selector('.btn-detail', count: 4)
         end
         PermissionUser.create(user: @farm_applicant, sector: @farm_applicant.active_sector, permission: @update_establishments)
         visit current_path
         within '#establishments' do
-          expect(page).to have_selector('.btn-edit', count: 3)
+          expect(page).to have_selector('.btn-edit', count: 4)
           page.execute_script %Q{$('a.btn-edit')[0].click()}
         end
         expect(page).to  have_content('Editando establecimiento')

@@ -192,7 +192,7 @@ RSpec.feature 'Users', type: :feature, js: true do
           click_button 'Agregar sector'
           sleep 1
           find('select#remote_form_sector_selector + button').click
-          find('a', text: "#{sector.name} - #{sector.establishment.name}").click
+          all('a', text: "#{sector.name} - #{sector.establishment.name}").first.click
           sleep 1
           click_button 'Guardar'
           sleep 1

@@ -23,7 +23,7 @@ RSpec.feature 'Orders::Internal::Receives', type: :feature do
     subject { page }
 
     it 'click "Recibir" open a receive modal' do
-      order = InternalOrder.provision_en_camino.where(applicant_sector: @depo_applicant.active_sector).sample
+      order = InternalOrder.where(status:'provision_en_camino',applicant_sector: @depo_applicant.active_sector).sample
       visit "/sectores/pedidos/recibos/#{order.id}"
       expect(page).to have_button 'Recibir'
       click_button 'Recibir'
@@ -38,7 +38,7 @@ RSpec.feature 'Orders::Internal::Receives', type: :feature do
     end
 
     it 'receive action' do
-      order = InternalOrder.provision_en_camino.where(applicant_sector: @depo_applicant.active_sector).sample
+      order = InternalOrder.where(status:'provision_en_camino',applicant_sector: @depo_applicant.active_sector).sample
       visit "/sectores/pedidos/recibos/#{order.id}"
       click_button 'Recibir'
       sleep 1

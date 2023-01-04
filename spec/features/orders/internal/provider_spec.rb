@@ -69,7 +69,7 @@ RSpec.feature 'Orders::Internal::Providers', type: :feature do
         end
         fill_in 'internal_order[observation]', with: 'Lorem ipsum'
         click_button 'Guardar y agregar productos'
-        expect(page).to have_content('La provisión interna de Depósito se ha auditado correctamente.')
+        expect(page).to have_content('La provisión interna de Salud mental se ha auditado correctamente.')
         add_products(rand(1..3), request_quantity: true, observations: true, select_lot_stock: true)
         click_button 'Enviar'
         expect(page).to have_content('Enviando provisión de sector')
