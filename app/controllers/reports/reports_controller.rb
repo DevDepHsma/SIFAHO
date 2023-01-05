@@ -11,7 +11,7 @@ class ReportsController < ApplicationController
       flash[:error] = 'Usted no está autorizado para realizar esta acción.'
       redirect_back(fallback_location: root_path)
     end
-    @reports = Report.filter_by_params(params[:filter]).paginate(page: params[:page], per_page: params[:per_page] || 15)
+    @reports = Report.filter_by_params(params[:filter], @current_user).paginate(page: params[:page], per_page: params[:per_page] || 15)
   end
 
   def new

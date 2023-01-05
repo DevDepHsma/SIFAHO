@@ -12,7 +12,7 @@
         <label>Nombre</label>
       </div>
     </div>
-    <div class="filter-form-col">
+    <%# <div class="filter-form-col">
       <div class="form-group">
         <input class="form-control" 
                autocomplete="off" 
@@ -20,7 +20,7 @@
                name="filter[sector_name]" 
                id="filter_sector_name" 
                placeholder="Nombre sector"
-               value="<%= get_value_from_filter(:sector_name) %>">
+               value="<%= get_value_from_filter(:sector_name) >">
         <label>Nombre sector</label>
       </div>
     </div>
@@ -32,10 +32,10 @@
                name="filter[establishment_name]" 
                id="filter_establishment_name" 
                placeholder="Nombre establecimiento"
-               value="<%= get_value_from_filter(:establishment_name) %>">
+               value="<%= get_value_from_filter(:establishment_name) >">
         <label>Nombre establecimiento</label>
       </div>
-    </div>
+    </div> %>
     <div class="filter-form-col">
       <div class="form-group">
         <input class="form-control datepicker" 

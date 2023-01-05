@@ -28,8 +28,9 @@ class Report < ApplicationRecord
   validates_presence_of :report_type, :from_date, :to_date, :name
   validates_with CustomValidators::ReportValidator
 
-  scope :filter_by_params, lambda { |filter_params|
+  scope :filter_by_params, lambda { |filter_params, c_user|
     query = self.select(:id, :name, :sector_name, :establishment_name, :generated_date, :report_type)
+    query = query.where(sector_id: c_user.active_sector.id)
     if filter_params.present?
       # Name
       query = query.like_name(filter_params['name']) if filter_params['name'].present?
