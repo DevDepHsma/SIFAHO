@@ -12,7 +12,7 @@
       <% end %>
       <div class="ml-2">
         <p class="establishment-title">
-          <%= order.applicant_sector.establishment.short_name %>
+          <%= order.applicant_sector.establishment.short_name || order.applicant_sector.establishment.name %>
         </p>
         <div class="establishment-subtitle font-weight-bold">
           <%= order.applicant_sector.name %>
@@ -33,7 +33,7 @@
       <% end %>
       <div class="ml-2">
         <p class="establishment-title">
-          <%= order.provider_sector.establishment.short_name %>
+          <%= order.provider_sector.establishment.short_name || order.provider_sector.establishment.name %>
         </p>
         <div class="establishment-subtitle font-weight-bold">
           <%= order.provider_sector.name %>
