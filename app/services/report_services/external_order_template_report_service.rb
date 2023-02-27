@@ -26,7 +26,7 @@ module ReportServices
           list.add_row do |row|
             row.item(:product_code).value(iots.product_code)
             row.item(:product_name).value(iots.product_name)
-            row.item(:unity_name).value(iots.product.unity_name)
+            row.item(:unity_name).value(iots.product.unity.name)
           end
         end
       end
