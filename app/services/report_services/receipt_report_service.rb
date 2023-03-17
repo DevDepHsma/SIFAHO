@@ -32,7 +32,7 @@ module ReportServices
             row.values(
               product_code: r_product.product_code,
               product_name: r_product.product_name,
-              quantity: "#{r_product.quantity} #{r_product.product_unity_name.pluralize(r_product.quantity)}",
+              quantity: "#{r_product.quantity} #{r_product.product.unity.name.pluralize(r_product.quantity)}",
               provenance: r_product.provenance_name,
               lot_code: r_product.lot_code.present? ? r_product.lot_code : 'n/a',
               laboratory: r_product.laboratory_name,
@@ -45,8 +45,8 @@ module ReportServices
       # A cada pagina le agregamos el pie de pagina
       report.pages.each do |page|
         page[:page_count] = report.page_count
-        page[:sector] = @user.sector_name
-        page[:establishment] = @user.establishment_name
+        page[:sector] = @user.active_sector.name
+        page[:establishment] = @user.active_sector.establishment.name
       end
 
       report.generate
